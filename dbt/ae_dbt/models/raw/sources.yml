@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: b2b_e2e_report
+    database: snproject-cbb9ca25
+    schema: b2b_e2e_report
+    tables: 
+      - name: b2b_ga4_final_view
+      - name: b2b_cl_test_static
+  - name: Springer_Author_programs
+    database: snproject-cbb9ca25
+    schema: Springer_Author_programs
+    tables: 
+      - name: SPR_Maintain_Control
+      
+
+      
