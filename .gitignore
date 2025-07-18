@@ -1,0 +1,8 @@
+ae_dbt/logs/*
+ae_dbt/target/*
+infra/.terraform/
+.terraform*
+**/logs/
+.DS_Store
+
+.idea
