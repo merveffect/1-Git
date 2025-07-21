@@ -6,3 +6,8 @@ infra/.terraform/
 .DS_Store
 
 .idea
+<<<<<<< HEAD
+
+=======
+>>>>>>> f92d340d0f0802ccc868f3621d4e89675dc7df9b
+dbt_packages/
