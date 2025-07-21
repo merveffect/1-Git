@@ -1,5 +1,5 @@
-ae_dbt/logs/*
-ae_dbt/target/*
+dbt/logs/*
+dbt/target/*
 infra/.terraform/
 .terraform*
 **/logs/
