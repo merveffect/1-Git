@@ -1,0 +1,51 @@
+team: dat-analytics-engineering
+pipeline: dbt
+#notifications:
+#  failure:
+#  - teams: ((teams.workflow_url))
+feature_toggles:
+  - update-pipeline
+
+triggers:
+  - type: git
+    watched_paths:
+      - dbt
+
+tasks:
+  - type: run
+    name: plan-dev
+    script: plan-terraform.sh
+    docker:
+      image: eu.gcr.io/halfpipe-io/terraform-vault
+    vars:
+      TF_ENV_DIR: dev
+      GCP_SERVICE_ACCOUNT_INFO: ((dev.dbt_runner_service_account))
+
+  - type: run
+    name: apply-dev
+    script: apply-terraform.sh
+    manual_trigger: true
+    docker:
+      image: eu.gcr.io/halfpipe-io/terraform-vault
+    vars:
+      TF_ENV_DIR: dev
+      GCP_SERVICE_ACCOUNT_INFO: ((dev.dbt_runner_service_account))
+
+  - type: run
+    name: plan-prod
+    script: plan-terraform.sh
+    docker:
+      image: eu.gcr.io/halfpipe-io/terraform-vault
+    vars:
+      TF_ENV_DIR: prod
+      GCP_SERVICE_ACCOUNT_INFO: ((prod.dbt_runner_service_account))
+
+  - type: run
+    name: apply-prod
+    script: apply-terraform.sh
+    manual_trigger: true
+    docker:
+      image: eu.gcr.io/halfpipe-io/terraform-vault
+    vars:
+      TF_ENV_DIR: prod
+      GCP_SERVICE_ACCOUNT_INFO: ((prod.dbt_runner_service_account))
