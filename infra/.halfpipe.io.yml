@@ -3,7 +3,6 @@ pipeline: infra
 #notifications:
 #  failure:
 #  - teams: ((teams.workflow_url))
-
 feature_toggles:
   - update-pipeline
 
