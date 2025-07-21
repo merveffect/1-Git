@@ -62,4 +62,6 @@ module "google_cloud_storage_for_analytics_dbt_dev" {
   location                    = "EU"
   name                        = "${local.project_id}-sn-dbt_cloudbuild"
   uniform_bucket_level_access = true
+
+  depends_on = [module.analytics_sa_dev]
 }
