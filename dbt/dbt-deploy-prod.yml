@@ -1,11 +1,10 @@
-project_id: snproject-cbb9ca25
+project_id: "snproject-cbb9ca25"
 location: europe-west1
-runner_service_account: snproject-cbb9ca25-runner@snproject-cbb9ca25.iam.gserviceaccount.com
-invoker_service_account: snproject-cbb9ca25-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
-#teams_webhook_url: https://prod-36.westeurope.logic.azure.com:443/workflows/8a3c3a460433465e8b0c39a074b02e4b/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=FXMDWhTVPyh39cwnwseSIa-h5GPfItD61M2RD9m-ZZ0
+runner_service_account: prod-analytics-dbt-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
+invoker_service_account: prod-analytics-dbt-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
+# teams_webhook_url: https://prod-84.westeurope.logic.azure.com:443/workflows/3874c734e9ca46ca9e8339ae9df2af0c/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NTbSPvDToEw6h9apdS98K0j446FQCxesU0hu76_AFK8
 dbt_target: prod
 
 jobs:
-
-  - name: analytics-dbt
-    schedule: 0 8 * * 1
+  - name: analytics-dbt-prod
+    schedule: 30 10 * * *
