@@ -1,4 +1,4 @@
-# Generated using halfpipe cli version 3.176.0 from file dbt\.halfpipe.io.yml for team dat-analytics-engineering
+# Generated using halfpipe cli version 3.178.0 from file dbt\.halfpipe.io.yml for team dat-analytics-engineering
 jobs:
 - build_log_retention:
     minimum_succeeded_builds: 1
