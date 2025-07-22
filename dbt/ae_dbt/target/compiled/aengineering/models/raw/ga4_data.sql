@@ -1,1 +1,0 @@
-select event_date, country from `snproject-cbb9ca25`.`b2b_e2e_report`.`b2b_ga4_final_view`
