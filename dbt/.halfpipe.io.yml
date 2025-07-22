@@ -30,7 +30,7 @@ tasks:
 
   - type: run
     name: deploy-dev
-    script: \sndbt deploy
+    script: \sndbt deploy --verbose
     docker:
       image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
     vars:
@@ -40,7 +40,7 @@ tasks:
 
   - type: run
     name: deploy-prod
-    script: \sndbt deploy
+    script: \sndbt deploy --verbose
     docker:
       image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
     vars:
