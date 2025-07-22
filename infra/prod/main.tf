@@ -47,14 +47,15 @@ module "analytics_sa_prod" {
   service_accounts      = var.service_accounts
 }
 
+#uncomment this hen we switch to different GCP project for prod. Normally they are stored in different env
+#module "analytics_engineering_dbt_artifact_registry_prod" {
+ # source = "../modules/artifact-registry"
+  #bq_location            = "europe-west1"
+  #repository_description = "AE DBT docker repository"
+  #repository_format      = "DOCKER"
+  #repository_id          = "ae-dbt-deploy"
+#}
 
-module "analytics_engineering_dbt_artifact_registry_prod" {
-  source = "../modules/artifact-registry"
-  bq_location            = "europe-west1"
-  repository_description = "AE DBT docker repository"
-  repository_format      = "DOCKER"
-  repository_id          = "ae-dbt-deploy"
-}
 
 module "google_cloud_storage_for_analytics_dbt_prod" {
   source = "../modules/google_storage_bucket"

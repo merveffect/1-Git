@@ -53,7 +53,7 @@ module "analytics_engineering_dbt_artifact_registry" {
   bq_location            = "europe-west1"
   repository_description = "AE DBT docker repository"
   repository_format      = "DOCKER"
-  repository_id          = "ae-dbt-deploy"
+  repository_id          = "sn-dbt-deploy"
 }
 
 module "google_cloud_storage_for_analytics_dbt_dev" {
