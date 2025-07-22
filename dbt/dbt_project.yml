@@ -1,7 +1,7 @@
-name: 'dbt'
+name: 'analytics_dbt'
 version: '1.0.0'
 
-profile: 'dbt'
+profile: 'analytics_dbt'
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -43,3 +43,9 @@ models:
     columns: true
   dbt:
     +tags: analytics-dbt
+
+    raw:
+      +schema: "analytics_dbt_raw"
+      +materialized: table
+      +tags:
+        - raw

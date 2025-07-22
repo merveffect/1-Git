@@ -1,0 +1,26 @@
+analytics_dbt:
+  outputs:
+    dev:  # gcp environment
+      type: bigquery
+      method: oauth # can use a SA as authentication too
+      project: snproject-cbb9ca25
+      dataset: dev{{ env_var('DBT_USER', '') }} # You can also use "schema" here
+      threads: 8
+      job_execution_timeout_seconds: 6000
+      #timeout_seconds: 6000
+      location: EU # Optional, one of US or EU
+      priority: interactive
+      retries: 1
+      
+    prod:
+      type: bigquery
+      method: oauth #can use a SA as authentication too
+      project: snproject-cbb9ca25
+      dataset: prod # You can also use "schema" here
+      threads: 8
+      timeout_seconds: 6000
+      location: EU # Optional, one of US or EU
+      priority: interactive
+      retries: 1
+
+  target: "{{ env_var('DBT_TARGET', 'dev') }}" 
