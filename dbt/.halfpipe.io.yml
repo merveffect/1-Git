@@ -8,8 +8,6 @@ feature_toggles:
 
 triggers:
   - type: git
-  - uri: git@github.com:springernature/analytics_engineering_dbt.git
-  - branch: main
   - watched_paths:
       - dbt
 
