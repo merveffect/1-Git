@@ -13,5 +13,15 @@ sources:
     tables: 
       - name: SPR_Maintain_Control
       
+      
+  - name: cdp_profile_sync
+    database: cdp-data-55497fbb
+    schema: cdp_profile_sync
+    tables: 
+      - name: user_traits
+      
+      
+      
+      
 
       
