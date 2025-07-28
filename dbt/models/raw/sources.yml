@@ -13,7 +13,7 @@ sources:
     tables: 
       - name: SPR_Maintain_Control
       
-      
+#`cdp-data-55497fbb.cdp_profile_sync.user_traits`
   - name: cdp_profile_sync
     database: cdp-data-55497fbb
     schema: cdp_profile_sync
@@ -22,6 +22,16 @@ sources:
       
       
       
-      
+  #`cdp-data-55497fbb.analytics_dev.INFORMATION_SCHEMA.COLUMNS`
+  - name: info_schema
+    database: cdp-data-55497fbb
+    schema: analytics_dev.INFORMATION_SCHEMA
+    tables: 
+      - name: COLUMNS  
 
-      
+   #`cdp-data-55497fbb.analytics_dev.df_audience_explorer_test`
+  - name: analytics_dev
+    database: cdp-data-55497fbb
+    schema: analytics_dev
+    tables: 
+      - name: df_audience_explorer_test
