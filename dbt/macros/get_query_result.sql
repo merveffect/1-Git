@@ -6,13 +6,16 @@
   
   {% if table_entity is not none %}
     {% set sql_statement %}
-      select {{ column_name }} from {{ ref(model_name) }}
+      select CONCAT("'",
+              STRING_AGG(DISTINCT {{ column_name }}, "','"),
+              "'" 
+             ) as column_names from {{ ref(model_name) }}
     {% endset %}
 
     {% set result = dbt_utils.get_single_value(sql_statement, default=default) %}
 
     {# Wrap both default and result in single quotes for SQL #}
-    {% do return("'" ~ result ~ "'") %}
+    {% do return(result) %}
     
     {% do log("Running some_macro: " ~ result) %}
     

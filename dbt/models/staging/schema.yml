@@ -9,4 +9,4 @@ models:
     columns:
     - name: column_names
       description: 'unique list of names in user traits'
-      data_type: array<string>
+      data_type: string

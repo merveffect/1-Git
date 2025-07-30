@@ -10,5 +10,5 @@ select * from
     from {{ ref('raw_user_traits') }}
     where canonical_segment_id = 'use_PIoyyMbVhpz7kBGq2JH2zvWGnhB'
   )
-  Pivot(max(value) for name in ('{{ column_names }}'))
+  Pivot(max(value) for name in ({{ column_names }} ))
   

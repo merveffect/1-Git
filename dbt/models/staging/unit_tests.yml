@@ -15,4 +15,7 @@ unit_tests:
                               
     expect:
       rows:
-        - { column_names: ['1','2','3','4']}
+        - column_names: '1'
+        - column_names: '2'
+        - column_names: '3'
+        - column_names: '4'
