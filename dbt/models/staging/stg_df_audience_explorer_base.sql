@@ -6,9 +6,13 @@ select * from
   (select
     canonical_segment_id,
     name,
-    value
+    case
+      when name = 'list_keywords_dois_last_60_d'
+        then REPLACE(REPLACE(REPLACE(REPLACE( value,'[',''), ']',''),r'\"',''),r'"','')
+      else value
+    end as value
+       
     from {{ ref('raw_user_traits') }}
-    where canonical_segment_id = 'use_PIoyyMbVhpz7kBGq2JH2zvWGnhB'
   )
   Pivot(max(value) for name in ({{ column_names }} ))
   
