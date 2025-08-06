@@ -27,6 +27,7 @@ variable "service_account_roles" {
     runner = [
       "roles/bigquery.admin",
       "roles/iam.serviceAccountAdmin"
+
     ]
   }
 }
