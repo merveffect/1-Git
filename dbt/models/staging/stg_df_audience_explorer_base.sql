@@ -6,11 +6,7 @@ select * from
   (select
     canonical_segment_id,
     name,
-    case
-      when name = 'list_keywords_dois_last_60_d'
-        then REPLACE(REPLACE(REPLACE(REPLACE( value,'[',''), ']',''),r'\"',''),r'"','')
-      else value
-    end as value
+    value
        
     from {{ ref('raw_user_traits') }}
   )

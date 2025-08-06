@@ -3,8 +3,8 @@ analytics_dbt:
     poc:  # gcp environment
       type: bigquery
       method: oauth # can use a SA as authentication too
-      project: cdp-data-55497fbb
-      dataset: dev{{ env_var('DBT_USER', '') }} # You can also use "schema" here
+      project: dat-analytics-eng-ec869189
+      dataset: dev_audience_explorer # You can also use "schema" here
       threads: 8
       job_execution_timeout_seconds: 6000
       #timeout_seconds: 6000

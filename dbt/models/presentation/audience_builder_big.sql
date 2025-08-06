@@ -1,5 +1,5 @@
 select 
-	stg_df_audience_explorer_base.canonical_segment_id, 
+	cleaned.canonical_segment_id, 
 	True as all_audiences,
 	CAST(complete_mpc_profiles AS BOOL ) AS complete_mpc_profiles,
 	CAST(role AS STRING ) AS role,
@@ -122,6 +122,7 @@ select
 	CAST(sn_positive_power_author AS BOOL) AS sn_positive_power_author,
 	CAST(sn_positive_regular_author AS BOOL) AS sn_positive_regular_author
 
-  from {{ ref('stg_df_audience_explorer_base') }} stg_df_audience_explorer_base
-  left join {{ ref('stg_df_audience_explorer_id_flags') }} stg_df_audience_explorer_id_flags
-    on stg_df_audience_explorer_base.canonical_segment_id = stg_df_audience_explorer_id_flags.canonical_segment_id
+  from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
+  left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
+  on cleaned.canonical_segment_id = flags.canonical_segment_id
+  where cleaned.flag_column = 1

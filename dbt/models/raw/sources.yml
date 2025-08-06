@@ -1,27 +1,14 @@
 version: 2
 
-sources:
-  - name: b2b_e2e_report
-    database: snproject-cbb9ca25
-    schema: b2b_e2e_report
-    tables: 
-      - name: b2b_ga4_final_view
-      - name: b2b_cl_test_static
-  - name: Springer_Author_programs
-    database: snproject-cbb9ca25
-    schema: Springer_Author_programs
-    tables: 
-      - name: SPR_Maintain_Control
-      
-      
+sources:      
   - name: cdp_profile_sync
     database: cdp-data-55497fbb
     schema: cdp_profile_sync
     tables: 
       - name: user_traits
-      
-      
-      
-      
-
-      
+  - name: dev_audience_explorer_analytics_dbt_staging
+    database: dat-analytics-eng-ec869189
+    schema: dev_audience_explorer_analytics_dbt_staging
+    tables: 
+      - name: INFORMATION_SCHEMA.COLUMNS
+        description: "Columns in the dev_audience_explorer_analytics_dbt_staging schema"
