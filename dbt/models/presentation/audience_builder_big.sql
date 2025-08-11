@@ -1,6 +1,7 @@
 select 
 	cleaned.canonical_segment_id, 
 	True as all_audiences,
+	CAST(snid as STRING) as snid,
 	CAST(complete_mpc_profiles AS BOOL ) AS complete_mpc_profiles,
 	CAST(role AS STRING ) AS role,
 	CAST(oa_agreement_bmc_url1 AS STRING ) AS oa_agreement_bmc_url1,

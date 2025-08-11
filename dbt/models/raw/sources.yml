@@ -12,3 +12,10 @@ sources:
     tables: 
       - name: INFORMATION_SCHEMA.COLUMNS
         description: "Columns in the dev_audience_explorer_analytics_dbt_staging schema"
+  - name: dev_audience_explorer_analytics_dbt_staging
+    database: dat-analytics-eng-ec869189
+    schema: dev_audience_explorer_analytics_dbt_staging
+    tables: 
+      - name: INFORMATION_SCHEMA.COLUMNS
+        description: "Columns in the dev_audience_explorer_analytics_dbt_staging schema"
+

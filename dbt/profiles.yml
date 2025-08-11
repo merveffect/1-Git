@@ -1,14 +1,6 @@
 analytics_dbt:
+  target: poc
   outputs:
-    dev:
-      dataset: dbt_audience_explorer
-      job_execution_timeout_seconds: 300
-      job_retries: 1
-      location: EU
-      method: oauth
-      priority: interactive
-      project: cdp-data-55497fbb
-      threads: 4
     poc:  # gcp environment
       type: bigquery
       method: oauth # can use a SA as authentication too
@@ -20,7 +12,16 @@ analytics_dbt:
       location: EU # Optional, one of US or EU
       priority: interactive
       retries: 1
-      
-    dev:  # gcp environment
+    prod:  # gcp environment
       type: bigquery
-  target: dev
+      method: oauth # can use a SA as authentication too
+      project: dat-analytics-eng-ec869189
+      dataset: prod_audience_explorer # You can also use "schema" here
+      threads: 8
+      job_execution_timeout_seconds: 6000
+      #timeout_seconds: 6000
+      location: EU # Optional, one of US or EU
+      priority: interactive
+      retries: 1
+      
+    
