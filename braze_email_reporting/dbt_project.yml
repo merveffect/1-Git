@@ -38,19 +38,19 @@ models:
     +tags: braze_email_reporting_dbt
 
     raw:
-      +schema: "raw_braze_email_reporting_dbt"
+      +schema: "raw"
       +materialized: table
       +tags:
         - raw
 
     staging:
-      +schema: "staging_raw_braze_email_reporting_dbt"
+      +schema: "staging"
       +materialized: table
       +tags:
         - staging
 
     presentation:
-      +schema: "presentation_braze_email_reporting_dbt"
+      +schema: "presentation"
       +materialized: table
       +tags:
         - presentation
