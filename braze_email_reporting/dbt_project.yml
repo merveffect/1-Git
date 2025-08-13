@@ -18,10 +18,9 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
-clean-targets:         # directories to be removed by `dbt clean`
+clean-targets:
   - "target"
   - "dbt_packages"
-
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -29,21 +28,14 @@ clean-targets:         # directories to be removed by `dbt clean`
 # In this example config, we tell dbt to build all models in the example/
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
-models:
-  braze_email_reporting:
-    # Config indicated by + and applies to all files under models/example/
-    example:
-      +materialized: view
-clean-targets:
-  - "target"
-  - "dbt_packages"
 
+    
 models:
   +persist_docs:
     relation: true
     columns: true
   braze_email_reporting:
-    +tags: braze_email_reporting-dbt
+    +tags: braze_email_reporting_dbt
 
     raw:
       +schema: "raw_braze_email_reporting_dbt"
@@ -62,3 +54,5 @@ models:
       +materialized: table
       +tags:
         - presentation
+
+
