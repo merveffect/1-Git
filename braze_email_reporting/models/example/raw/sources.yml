@@ -1,0 +1,14 @@
+version: 2
+
+sources:      
+  - name: prod_braze_currents
+    database: braze-3f553fdf
+    schema: prod_braze_currents
+    tables: 
+      - name: email_bounce
+      - name: email_send
+      - name: email_delivery
+      - name: email_open
+      - name: email_unsubscribe
+      - name: email_click
+

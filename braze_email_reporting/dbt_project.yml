@@ -1,0 +1,64 @@
+
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'braze_email_reporting'
+version: '1.0.0'
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'braze_email_reporting'
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+# In this example config, we tell dbt to build all models in the example/
+# directory as views. These settings can be overridden in the individual model
+# files using the `{{ config(...) }}` macro.
+models:
+  braze_email_reporting:
+    # Config indicated by + and applies to all files under models/example/
+    example:
+      +materialized: view
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  +persist_docs:
+    relation: true
+    columns: true
+  braze_email_reporting:
+    +tags: braze_email_reporting-dbt
+
+    raw:
+      +schema: "raw_braze_email_reporting_dbt"
+      +materialized: table
+      +tags:
+        - raw
+
+    staging:
+      +schema: "staging_raw_braze_email_reporting_dbt"
+      +materialized: table
+      +tags:
+        - staging
+
+    presentation:
+      +schema: "presentation_braze_email_reporting_dbt"
+      +materialized: table
+      +tags:
+        - presentation
