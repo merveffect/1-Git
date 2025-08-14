@@ -11,4 +11,10 @@ sources:
       - name: email_open
       - name: email_unsubscribe
       - name: email_click
+      - name: email_soft_bounce
 
+  - name: ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: ga4_ria_researcher_report
+    tables:
+      - name: j7
