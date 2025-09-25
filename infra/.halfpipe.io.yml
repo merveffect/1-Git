@@ -13,6 +13,8 @@ feature_toggles:
 
 triggers:
   - type: git
+    branch: dev 
+    uri: git@github.com:springernature/analytics_engineering_dbt.git
     watched_paths:
       - infra
 
@@ -57,7 +59,7 @@ tasks:
 
   - type: run
     name: dbt deps
-    script: dbt deps
+    script: bash -lc 'dbt deps'
     notifications:
       failure:
         - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
@@ -65,7 +67,7 @@ tasks:
 
   - type: run
     name: dbt run
-    script: dbt run --target dev
+    script: bash -lc 'dbt run --target dev'
     notifications:
       success:
         - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
@@ -76,7 +78,7 @@ tasks:
   - type: run
     name: notif-smoke-fail
     manual_trigger: true
-    script: pwsh -c 'Write-Host "forcing failure"; exit 1'
+    script: sh -lc 'echo "..."; exit 1'
     notifications:
       failure:
         - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
