@@ -1,10 +1,15 @@
 team: dat-analytics-engineering
 pipeline: infra
-#notifications:
-#  failure:
-#  - teams: ((teams.workflow_url))
+notifications:
+  failure:
+  - teams: ((teams.https://defaultd9aabe7c608b4fe1957c0739cb0dfe.22.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8eabd5183ab24f2a9b5bdadd8c2a4cf2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zj69VBLjnSFc9B2Im7LHooq5Hi53SfBWWJROGwlWpHI))
+
+  - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
+    message: "❌ Pipeline failed"
+
 feature_toggles:
   - update-pipeline
+
 
 triggers:
   - type: git
@@ -49,3 +54,32 @@ tasks:
     vars:
       TF_ENV_DIR: prod
       GCP_SERVICE_ACCOUNT_INFO: ((prod.dbt_deployer_service_account))
+
+  - type: run
+    name: dbt deps
+    script: dbt deps
+    notifications:
+      failure:
+        - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
+          message: "❌ dbt deps failed"
+
+  - type: run
+    name: dbt run
+    script: dbt run --target dev
+    notifications:
+      success:
+        - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
+          message: "✅ dbt run succeeded"
+      failure:
+        - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
+          message: "❌ dbt run failed"
+  - type: run
+    name: notif-smoke-fail
+    manual_trigger: true
+    script: pwsh -c 'Write-Host "forcing failure"; exit 1'
+    notifications:
+      failure:
+        - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
+          message: "🔔 Smoke test: failure reached"
+        - teams: ((teams.https://defaultd9aabe7c608b4fe1957c0739cb0dfe.22.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8eabd5183ab24f2a9b5bdadd8c2a4cf2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zj69VBLjnSFc9B2Im7LHooq5Hi53SfBWWJROGwlWpHI))
+          message: "🔔 Smoke test: failure reached"

@@ -10,14 +10,8 @@
 {% do log("Included columns: " ~ included_columns, info=True) %}
 
 
---{% set null_check_expr = get_null_flag_expression(included_columns) %}
-
---{{ log("🧪 Generated NULL check expression:", info=True) }}
---{{ log(null_check_expr, info=True) }}
-
-
 WITH base AS (
-  SELECT * FROM {{ ref('stg_df_audience_explorer_base') }}
+  SELECT * FROM {{ ref('stg_df_nested_columns_joined') }}
 
 )
 

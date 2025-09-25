@@ -49,6 +49,42 @@ models:
       - name: institution_name
         description: "Pivoted trait column 'institution_name' from raw_user_traits."
         data_type: string
+      - name: braze_received_all
+        description: "Pivoted trait column 'braze_received_all' from raw_user_traits."
+        data_type: string
+      - name: count_reach_fta_last_60_d
+        description: "Pivoted trait column 'count_reach_fta_last_60_d' from raw_user_traits."
+        data_type: string
+      - name: email_received_all
+        description: "Pivoted trait column 'email_received_all' from raw_user_traits."
+        data_type: string
+      - name: etoc_received_all
+        description: "Pivoted trait column 'etoc_received_all' from raw_user_traits."
+        data_type: string
+      - name: journal_nurture
+        description: "Pivoted trait column 'journal_nurture' from raw_user_traits."
+        data_type: string
+      - name: journal_nurture_braze
+        description: "Pivoted trait column 'journal_nurture_braze' from raw_user_traits."
+        data_type: string
+      - name: la_power_author_21_publications
+        description: "Pivoted trait column 'la_power_author_21_publications' from raw_user_traits."
+        data_type: string
+      - name: la_power_author_21_publications_entity_data
+        description: "Pivoted trait column 'la_power_author_21_publications_entity_data' from raw_user_traits."
+        data_type: string
+      - name: la_power_author_21_publications_mix
+        description: "Pivoted trait column 'la_power_author_21_publications_mix' from raw_user_traits."
+        data_type: string
+      - name: last_time_online_rh
+        description: "Pivoted trait column 'last_time_online_rh' from raw_user_traits."
+        data_type: string
+      - name: online_marketing_engagement
+        description: "Pivoted trait column 'online_marketing_engagement' from raw_user_traits."
+        data_type: string
+      - name: segment_consent_preference
+        description: "Pivoted trait column 'segment_consent_preference' from raw_user_traits."
+        data_type: string
       - name: author_group_spr
         description: "Pivoted trait column 'author_group_spr' from raw_user_traits."
         data_type: string

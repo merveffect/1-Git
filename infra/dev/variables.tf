@@ -1,5 +1,5 @@
 variable project_id {
-  default = "snproject-cbb9ca25"
+  default = "dat-analytics-eng-ec869189"
 }
 
 variable "region" {

@@ -1,8 +1,8 @@
 team: dat-analytics-engineering
 pipeline: dbt
-#notifications:
-#  failure:
-#    - teams: ((teams.workflow_url))
+notifications:
+  failure:
+    - teams: ((teams.workflow_url))
 feature_toggles:
   - update-pipeline
 

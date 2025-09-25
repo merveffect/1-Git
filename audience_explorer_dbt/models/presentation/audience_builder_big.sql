@@ -121,7 +121,15 @@ select
 	CAST(sn_opportunity_regular_author AS BOOL) AS sn_opportunity_regular_author,
 	CAST(sn_positive_occasional_author AS BOOL) AS sn_positive_occasional_author,
 	CAST(sn_positive_power_author AS BOOL) AS sn_positive_power_author,
-	CAST(sn_positive_regular_author AS BOOL) AS sn_positive_regular_author
+	CAST(sn_positive_regular_author AS BOOL) AS sn_positive_regular_author,
+	CAST(submissions[SAFE_OFFSET(0)].imprint AS STRING)               AS imprint,
+	CAST(submissions[SAFE_OFFSET(0)].journal_id AS STRING)            AS journal_id,
+	CAST(submissions[SAFE_OFFSET(0)].journal_title AS STRING)         AS journal_title,
+	CAST(submissions[SAFE_OFFSET(0)].submission_timestamp AS TIMESTAMP) AS submission_timestamp,	
+	CAST(total_accepts AS INT) AS total_accepts,
+    CAST(total_rejects AS INT) AS total_rejects,
+    CAST(total_oa_submissions AS INT) AS total_oa_submissions,
+    CAST(total_submissions AS INT) AS total_submissions
 
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags

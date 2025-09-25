@@ -23,7 +23,7 @@ models:
 
     raw:
       +schema: "analytics_dbt_raw"
-      +materialized: view
+      +materialized: table
       +tags:
         - raw
 
