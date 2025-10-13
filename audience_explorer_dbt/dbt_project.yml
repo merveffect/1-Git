@@ -24,17 +24,14 @@ models:
     raw:
       +schema: "analytics_dbt_raw"
       +materialized: table
-      +tags:
-        - raw
+      +tags: raw
 
     staging:
       +schema: "analytics_dbt_staging"
       +materialized: table
-      +tags:
-        - staging
+      +tags: staging
 
     presentation:
       +schema: "analytics_dbt_presentation"
       +materialized: table
-      +tags:
-        - presentation
+      +tags: presentation
