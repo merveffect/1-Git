@@ -9,7 +9,7 @@ feature_toggles:
 triggers:
   - type: git
     uri: git@github.com:springernature/analytics_engineering_dbt.git
-    branch: vaishnav
+    branch: dev
     watched_paths:
       - researcher_marketing_dashboard_dbt
 
