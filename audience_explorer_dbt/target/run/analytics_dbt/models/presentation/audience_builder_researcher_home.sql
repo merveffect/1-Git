@@ -1,0 +1,83 @@
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_researcher_home`
+      
+    
+    
+
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
+
+SELECT user_researcher_home,
+count_researcherhome_last_180_d,
+author_group_global,
+control_cells_rg_2025,
+author_group_global_detailed,
+cep_id_flag,
+list_journals_submission_opened_last_90_d,
+list_keywords_dois_last_60_d,
+list_doi_last_60_d,
+list_journals_submguide_about_last_60_d,
+list_journals_read_last_60_d,
+list_doi_last_90_d,
+sn_journal_authors,
+sn_journal_submitter,
+list_journals_read_last_30_d,
+count_about_last_90_days,
+pred_goal_snapp_submission_new_bottom_80,
+pred_all_submission_existing_bottom_80,
+count_research_integrity_last_180_d,
+list_journals_submguide_about_last_30_d,
+pred_all_submission_existing_top_20,
+predict_all_submission_existing_authors,
+list_doi_last_180_d,
+predict_new_snapp_submission,
+the_source_pages_visitors,
+pred_snapp_submission_new_top_20,
+has_recent_online_behaviour,
+count_doi_last_180_d,
+count_els_last_60_d,
+count_oa_content_online_last_60_d,
+count_submguidelines_last_90_days,
+count_submission_start_last_180_d,
+count_submission_complete_last_180_d,
+anonymous_id_flag,
+sap_outbound_id_flag,
+last_name_flag,
+email_flag,
+researcher_id_flag,
+orcid_flag,
+ga_client_id_flag,
+first_name_flag,
+snid_flag,
+non_engaged_users,
+persona,
+country,
+top_publisher,
+max_if,
+min_if,
+total_amt_5yr_author_group,
+years_active,
+loyalty_group,
+avg_if,
+most_recent_pub,
+h_index,
+percent_oa,
+oa_articles,
+change_over_py_sn_loyalty,
+main_f2,
+mkt_pref_opt_in,
+subjects,
+advertising_opt_in,
+institution_name,
+role,
+canonical_segment_id
+FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+WHERE user_researcher_home is true
+    );
+  

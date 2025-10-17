@@ -122,15 +122,32 @@ select
 	CAST(sn_positive_occasional_author AS BOOL) AS sn_positive_occasional_author,
 	CAST(sn_positive_power_author AS BOOL) AS sn_positive_power_author,
 	CAST(sn_positive_regular_author AS BOOL) AS sn_positive_regular_author,
-	CAST(submissions[SAFE_OFFSET(0)].imprint AS STRING)               AS imprint,
+	CAST(submissions[SAFE_OFFSET(0)].imprint AS STRING)               AS last_submission_imprint,
 	CAST(submissions[SAFE_OFFSET(0)].journal_id AS STRING)            AS journal_id,
 	CAST(submissions[SAFE_OFFSET(0)].journal_title AS STRING)         AS journal_title,
 	CAST(submissions[SAFE_OFFSET(0)].submission_timestamp AS TIMESTAMP) AS submission_timestamp,	
-	CAST(total_accepts AS INT) AS total_accepts,
-    CAST(total_rejects AS INT) AS total_rejects,
-    CAST(total_oa_submissions AS INT) AS total_oa_submissions,
-    CAST(total_submissions AS INT) AS total_submissions
-
+	CAST(total_accepts AS INT) AS lifetime_aggregations_accepts,
+    CAST(total_rejects AS INT) AS lifetime_aggregations_rejects,
+    CAST(total_oa_submissions AS INT) AS lifetime_aggregations_oa_submissions,
+    CAST(total_submissions AS INT) AS lifetime_aggregations_submissions,
+	--recently added columns
+	CAST(braze_received_all AS BOOL) AS braze_received_all,
+	CAST(chatpgt_users AS BOOL) AS chatpgt_users,
+	CAST(conr_jrnls_rep_1_gl_pjnl_05_rok_inspire AS BOOL) AS conr_jrnls_rep_1_gl_pjnl_05_rok_inspire,
+	CAST(count_about_last_30_d AS INT) AS count_about_last_30_d,
+	CAST(count_article_readership_last_60_d AS INT) AS count_article_readership_last_60_d,
+	CAST(count_reach_fta_last_180_d AS INT) AS count_reach_fta_last_180_d,
+	CAST(count_reach_fta_last_60_d AS INT) AS count_reach_fta_last_60_d,
+	CAST(count_reach_fta_last_90_d AS INT) AS count_reach_fta_last_90_d,
+	CAST(count_submguidelines_last_30_d AS INT) AS count_submguidelines_last_30_d,
+	CAST(email_received_all AS BOOL) AS email_received_all,
+	CAST(etoc_received_all AS BOOL) AS etoc_received_all,
+	CAST(journal_awareness_1 AS BOOL) AS journal_awareness_1,
+	CAST(list_journals_etocs_last_180_d AS STRING) AS list_journals_etocs_last_180_d,
+	CAST(list_journals_submissions_alltime AS STRING) AS list_journals_submissions_alltime,
+	CAST(online_marketing_engagement AS BOOL) AS online_marketing_engagement,
+	CAST(welcome_onboarding_retargeting_internal_display AS BOOL) AS welcome_onboarding_retargeting_internal_display,
+	CAST(last_submission_journal AS STRING) AS last_submission_journal
   from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
   left join `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id

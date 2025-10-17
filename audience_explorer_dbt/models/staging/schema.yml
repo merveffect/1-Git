@@ -645,6 +645,88 @@ models:
         description: "Pivoted trait column 'list_keywords_dois_last_60_d' from raw_user_traits."
         data_type: string
 
+      - name: braze_received_all
+        description: "Pivoted trait column 'braze_received_all' from raw_user_traits."
+        data_type: string
+
+      - name: chatpgt_users
+        description: "Pivoted trait column 'chatpgt_users' from raw_user_traits."
+        data_type: string
+
+      - name: conr_jrnls_rep_1_gl_pjnl_05_rok_inspire
+        description: "Pivoted trait column 'conr_jrnls_rep_1_gl_pjnl_05_rok_inspire' from raw_user_traits."
+        data_type: string
+
+      - name: count_about_last_30_d
+        description: "Pivoted trait column 'count_about_last_30_d' from raw_user_traits."
+        data_type: string
+
+      - name: count_article_readership_last_60_d
+        description: "Pivoted trait column 'count_article_readership_last_60_d' from raw_user_traits."
+        data_type: string
+
+      - name: count_reach_fta_last_180_d
+        description: "Pivoted trait column 'count_reach_fta_last_180_d' from raw_user_traits."
+        data_type: string
+
+      - name: count_reach_fta_last_60_d
+        description: "Pivoted trait column 'count_reach_fta_last_60_d' from raw_user_traits."
+        data_type: string
+
+      - name: count_reach_fta_last_90_d
+        description: "Pivoted trait column 'count_reach_fta_last_90_d' from raw_user_traits."
+        data_type: string
+
+      - name: count_submguidelines_last_30_d
+        description: "Pivoted trait column 'count_submguidelines_last_30_d' from raw_user_traits."
+        data_type: string
+
+      - name: email_received_all
+        description: "Pivoted trait column 'email_received_all' from raw_user_traits."
+        data_type: string
+
+      - name: etoc_received_all
+        description: "Pivoted trait column 'etoc_received_all' from raw_user_traits."
+        data_type: string
+
+      - name: journal_awareness_1
+        description: "Pivoted trait column 'journal_awareness_1' from raw_user_traits."
+        data_type: string
+
+      - name: books_nurture_hierarchy_1
+        description: "Pivoted trait column 'books_nurture_hierarchy_1' from raw_user_traits."
+        data_type: string
+
+      - name: books_nurture_hierarchy_2
+        description: "Pivoted trait column 'books_nurture_hierarchy_2' from raw_user_traits."
+        data_type: string
+
+      - name: explicit_user_choice
+        description: "Pivoted trait column 'explicit_user_choice' from raw_user_traits."
+        data_type: string
+
+      - name: list_journal_etocs_last_180_d
+        description: "Pivoted trait column 'list_journal_etocs_last_180_d' from raw_user_traits."
+        data_type: string
+
+      - name: list_journals_etocs_last_180_d
+        description: "Pivoted trait column 'list_journals_etocs_last_180_d' from raw_user_traits."
+        data_type: string
+
+      - name: marketing_opt_in_past_month_to_be_removed
+        description: "Pivoted trait column 'marketing_opt_in_past_month_to_be_removed' from raw_user_traits."
+        data_type: string
+
+      - name: newsletters
+        description: "Pivoted trait column 'newsletters' from raw_user_traits."
+        data_type: string
+
+      - name: welcome_onboarding_retargeting_internal_display
+        description: "Pivoted trait column 'welcome_onboarding_retargeting_internal_display' from raw_user_traits."
+        data_type: string
+
+
+
 
   - name: stg_df_audience_explorer_id_flags
     description: >

@@ -12,7 +12,7 @@ snapshot-paths: ["snapshots"]
 
 clean-targets:
   - "target"
-  - "dbt_packages"
+  - "ae_packages"
 
 models:
   +persist_docs:

@@ -1,5 +1,5 @@
 team: dat-analytics-engineering
-pipeline: dbt
+pipeline: audience_explorer_dbt
 notifications:
   failure:
     - teams: ((teams.workflow_url))
@@ -9,7 +9,7 @@ feature_toggles:
 triggers:
   - type: git
     uri: git@github.com:springernature/analytics_engineering_dbt.git
-    branch: main
+    branch: merve
     watched_paths:
       - dbt
 
@@ -44,6 +44,6 @@ tasks:
     docker:
       image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
     vars:
-      GCP_PROJECT: snproject-cbb9ca25
+      GCP_PROJECT: snproject-cbb9ca25 
       GCP_SERVICE_ACCOUNT_INFO: ((prod.dbt_deployer_service_account))
       SNDBT_CONFIG_FILE: dbt-deploy-prod.yml
