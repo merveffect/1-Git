@@ -1,0 +1,14 @@
+project_id: "snproject-cbb9ca25"
+location: europe-west1
+# invoker_service_account: ae-researcher-dashboard-df@snproject-cbb9ca25.iam.gserviceaccount.com
+# runner_service_account: ae-researcher-dashboard-df@snproject-cbb9ca25.iam.gserviceaccount.com
+runner_service_account: dev-analytics-dbt-runner@snproject-cbb9ca25.iam.gserviceaccount.com
+# runner_service_account: ae-researcher-dashboard-df@snproject-cbb9ca25.iam.gserviceaccount.com
+invoker_service_account: dev-analytics-dbt-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
+# teams_webhook_url: https://prod-84.westeurope.logic.azure.com:443/workflows/3874c734e9ca46ca9e8339ae9df2af0c/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NTbSPvDToEw6h9apdS98K0j446FQCxesU0hu76_AFK8
+dbt_target: dev
+
+# jobs:
+#   - name: analytics-dbt-dev
+#     schedule: 0 8 * * 1
+#     select_criteria: tag:analytics-dbt
