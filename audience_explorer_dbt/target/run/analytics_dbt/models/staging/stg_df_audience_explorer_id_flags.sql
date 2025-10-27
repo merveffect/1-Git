@@ -7,8 +7,9 @@
     
     
 
+    
     OPTIONS(
-      description="""Flags for checking not null presence in key identifier fields from the audience explorer base table.\n"""
+      description=""""""
     )
     as (
       select

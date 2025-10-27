@@ -4,3 +4,4 @@ select
 
   from {{ ref('raw_user_traits') }}
 
+  where lower(status) = 'keep'
