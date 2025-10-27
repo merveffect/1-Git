@@ -16,18 +16,6 @@ triggers:
 
 tasks:
 
-#  - type: run
-#    name: unit-test-prod
-#    script: unit-test.sh
-#    docker:
-#      image: eu.gcr.io/halfpipe-io/project-data/dbt-bigquery-1.9:latest
-#    vars:
-#      GCP_PROJECT: braze-3f553fdf
-#      GCP_SERVICE_ACCOUNT_INFO: ((prod.dbt_runner_service_account))
-#      SNDBT_CONFIG_FILE: dbt-deploy-prod.yml
-#      BUCKET_PATH_DIR: gs://braze-currents-dropoff/currents/dataexport.prod-02.GCS.integration.67c5c3963ac9d10074c3d2b0
-#      DBT_TARGET: prod
-
   - type: run
     name: deploy-dev
     script: \sndbt deploy --verbose
