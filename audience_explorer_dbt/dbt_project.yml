@@ -1,0 +1,37 @@
+name: 'analytics_dbt'
+version: '1.0.0'
+
+profile: 'analytics_dbt'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "ae_packages"
+
+models:
+  +persist_docs:
+    relation: true
+    columns: true
+  analytics_dbt:
+    +tags: analytics-dbt
+
+    raw:
+      +schema: "analytics_dbt_raw"
+      +materialized: table
+      +tags: raw
+
+    staging:
+      +schema: "analytics_dbt_staging"
+      +materialized: table
+      +tags: staging
+
+    presentation:
+      +schema: "analytics_dbt_presentation"
+      +materialized: table
+      +tags: presentation

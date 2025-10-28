@@ -1,0 +1,104 @@
+version: 2
+
+sources:      
+  - name: ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: ga4_ria_researcher_report
+    tables:
+      - name: googleanalytics
+  
+  - name: dbt_dev_ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: dbt_dev_ga4_ria_researcher_report
+    tables:
+      - name: countries
+
+  - name: dbt_dev_ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: dbt_dev_ga4_ria_researcher_report
+    tables:
+      - name: optins_sheet    
+
+  - name: zz_content_hub
+    database: snproject52c6e272
+    schema: zz_content_hub
+    tables:
+      - name: jflow_journals
+
+  - name: dbt_dev_ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: dbt_dev_ga4_ria_researcher_report
+    tables:
+      - name: journalids
+
+  - name: marmind_fnd
+    database: datasn-rm-live
+    schema: marmind_fnd
+    tables:
+      - name: marmind_data
+
+  - name: dbt_dev_ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: dbt_dev_ga4_ria_researcher_report
+    tables:
+      - name: regions
+
+  - name: dbt_dev_ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: dbt_dev_ga4_ria_researcher_report
+    tables:
+      - name: team_codes
+
+  - name: dbt_dev_ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: dbt_dev_ga4_ria_researcher_report
+    tables:
+      - name: transformative_agreements_sheet
+
+  - name: ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: ga4_ria_researcher_report
+    tables:
+      - name: BooksMarketing
+  
+  - name: dbt_dev_ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: dbt_dev_ga4_ria_researcher_report
+    tables:
+      - name: channel_groupings
+
+  - name: dbt_dev_ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: dbt_dev_ga4_ria_researcher_report
+    tables:
+      - name: journal_table
+  
+  - name: prod_joint_submissions_core
+    database: datasn-submissions-55677263
+    schema: prod_joint_submissions_core
+    tables:
+      - name: journals
+
+  - name: cookie_consent_data
+    database: snproject-cbb9ca25
+    schema: cookie_consent_data
+    tables:
+      - name: marketing_view
+
+  - name: sparkpost_metrics_live
+    database: poc-spring-email-metrics
+    schema: sparkpost_metrics_live
+    tables:
+      - name: message_event
+
+  - name: RM_adspend
+    database: snproject-cbb9ca25
+    schema: RM_adspend
+    tables:
+      - name: rm_adspend_static
+
+  - name: sdm_raw
+    database: datasn-rm-live
+    schema: sdm_raw
+    tables:
+      - name: sdm_raw
