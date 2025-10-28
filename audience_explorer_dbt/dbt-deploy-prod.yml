@@ -7,4 +7,9 @@ dbt_target: prod
 
 jobs:
   - name: analytics-dbt-prod
-    schedule: 30 10 * * *
+    schedule: 0 8 * * 1
+    select_criteria: tag:audience_explorer_prod
+
+
+
+
