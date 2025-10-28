@@ -8,5 +8,5 @@ dbt_target: dev
 jobs:
   - name: rmdb-dbt-dev
     schedule: 0 8 * * 1
-   # select_criteria: tag:rmdb-dbt
+    select_criteria: tag:rmdb-dbt
 

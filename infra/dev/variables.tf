@@ -22,11 +22,28 @@ variable "service_account_roles" {
       "roles/iam.securityAdmin",
       "roles/bigquery.admin",
       "roles/storage.objectAdmin",
-      "roles/storage.admin"
+      "roles/storage.admin",
+      "roles/drive.readonly",
+      "roles/bigquery.connectionUser",
+      "roles/drive.file"
     ]
     runner = [
       "roles/bigquery.admin",
-      "roles/iam.serviceAccountAdmin"
+      "roles/iam.serviceAccountAdmin",
+            "roles/artifactregistry.admin",
+      "roles/cloudbuild.builds.builder",
+      "roles/run.admin",
+      "roles/cloudscheduler.admin",
+      "roles/iam.serviceAccountUser",
+      "roles/iam.serviceAccountAdmin",
+      "roles/serviceusage.serviceUsageConsumer",
+      "roles/iam.securityAdmin",
+      "roles/bigquery.admin",
+      "roles/storage.objectAdmin",
+      "roles/storage.admin",
+      "roles/drive.readonly",
+      "roles/bigquery.connectionUser",
+      "roles/drive.file"
 
     ]
   }
