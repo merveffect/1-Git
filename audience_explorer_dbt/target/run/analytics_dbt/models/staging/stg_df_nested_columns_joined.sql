@@ -13,7 +13,7 @@
     )
     as (
       WITH base AS (
-    SELECT * EXCEPT(submissions)
+    SELECT *
     FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base`
 ),
 subs AS (

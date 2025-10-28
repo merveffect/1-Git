@@ -5,7 +5,7 @@
   'researcher_id', 'orcid', 'ga_client_id', 'email', 'first_name', 'permutive_id'
 ] %}
 
-{% set included_columns = get_columns_except_excluded('raw_user_traits', 'name', exclude_columns) %}
+{% set included_columns = get_columns_except_excluded('stg_user_traits_column_names', 'column_names', exclude_columns) %}
 
 {% do log("Included columns: " ~ included_columns, info=True) %}
 
