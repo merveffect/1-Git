@@ -2,7 +2,8 @@ team: dat-analytics-engineering
 pipeline: audience_explorer_dbt
 notifications:
   failure:
-  - teams: ((teams.workflow_url))
+  - teams: ((TEAMS.WORKFLOW_URL))
+  - message: "Audience Explorer DBT pipeline failed :warning:"
 dbt_target: poc
 feature_toggles:
   - update-pipeline
@@ -27,6 +28,11 @@ tasks:
 
   - type: run
     name: deploy-prod
+    notifications:
+    failure:
+    - teams: '((TEAMS.WORKFLOW_URL))'
+      message: "Audience Explorer DBT PROD deployment failed :warning:"
+      status: "failed"
     script: \sndbt deploy --verbose
     docker:
       image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
