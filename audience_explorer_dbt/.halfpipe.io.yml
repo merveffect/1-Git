@@ -29,10 +29,10 @@ tasks:
   - type: run
     name: deploy-prod
     notifications:
-    failure:
-    - teams: '((TEAMS.WORKFLOW_URL))'
-      message: "Audience Explorer DBT PROD deployment failed :warning:"
-      status: "failed"
+     failure:
+      - teams: '((TEAMS.WORKFLOW_URL))'
+        message: "Audience Explorer DBT PROD deployment failed :warning:"
+        status: "failed"
     script: \sndbt deploy --verbose
     docker:
       image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
