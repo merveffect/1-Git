@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
       
     
     
@@ -138,8 +138,8 @@ CAST(sn_journal_submitters AS STRING) AS sn_journal_submitters,
 CAST(third_party_prom AS STRING) AS third_party_prom,
 
 
-  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
-  left join `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
+  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
+  left join `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id
   where cleaned.flag_column = 1
     );
