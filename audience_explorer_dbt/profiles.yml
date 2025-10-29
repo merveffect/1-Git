@@ -1,5 +1,5 @@
 analytics_dbt:
-  target: prod
+  target: poc
   outputs:
     poc:  # gcp environment
       type: bigquery

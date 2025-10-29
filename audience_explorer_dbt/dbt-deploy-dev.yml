@@ -2,7 +2,7 @@ project_id: "snproject-cbb9ca25"
 location: europe-west1
 runner_service_account: dev-analytics-dbt-runner@snproject-cbb9ca25.iam.gserviceaccount.com
 invoker_service_account: dev-analytics-dbt-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
-# teams_webhook_url: https://prod-84.westeurope.logic.azure.com:443/workflows/3874c734e9ca46ca9e8339ae9df2af0c/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NTbSPvDToEw6h9apdS98K0j446FQCxesU0hu76_AFK8
+teams_webhook_url: https://springernature.webhook.office.com/webhookb2/f9b9be4c-f11b-491d-94ed-527bdd97fb6a@d9aabe7c-608b-4fe1-957c-0739cb0dfe22/IncomingWebhook/0e5a7c7495854e8f89a549eceb0bef18/0126a1b6-e549-47c5-8b27-dae70920b7fc/V2d_JKYR_HuQg4UIu05uDecDkWl0fIi0ArilWp1DeQq2g1
 dbt_target: poc
 
 jobs:
