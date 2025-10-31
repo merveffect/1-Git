@@ -125,7 +125,7 @@ CAST(third_party_prom AS STRING) AS third_party_prom,
 CAST(marketing_optin_mpc AS STRING) AS marketing_optin_mpc,
 CAST(japa_all AS STRING) AS japa_all,
 CAST(marketing_opt_in_not_mpc AS STRING) AS marketing_opt_in_not_mpc,
-CAST(is_editor_referral_opted_in AS BOOL) AS is_editor_referral_opted_in,
+--CAST(is_editor_referral_opted_in AS BOOL) AS is_editor_referral_opted_in,
 
 
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
