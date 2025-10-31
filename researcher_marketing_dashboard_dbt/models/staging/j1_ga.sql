@@ -1,6 +1,8 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"}
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
+
  )}}
 
 WITH
@@ -32,7 +34,7 @@ WITH
     LOWER(isoalphatwo) AS isoalphatwo,
     LOWER(world_region) AS world_region
   FROM
-    {{source('dbt_dev_ga4_ria_researcher_report','regions')}} ),
+    {{source('ga4_ria_researcher_report','regions')}} ),
   joined_data AS (
   SELECT
     *
@@ -123,8 +125,7 @@ WITH
     18,
     19,
     20,
-    21,
-    22)
+    21)
     --final table
 SELECT
   *

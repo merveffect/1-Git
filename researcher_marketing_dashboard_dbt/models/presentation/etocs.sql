@@ -1,6 +1,7 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "etoc_date"}
+    partition_by = {"field": "etoc_date"},
+    tags= ["daily", "etocs"]
  )}}
 
 SELECT
@@ -15,17 +16,17 @@ SELECT
 FROM
   {{ref('etoc_4ria')}} a
 LEFT JOIN
-  {{source('dbt_dev_ga4_ria_researcher_report','journal_table')}} b
+  {{source('e2e_b2c_researcher_dev','journal_table')}} b
 ON
   SAFE_CAST(a.journal_id AS int64) = b.journal_id
 LEFT JOIN (
 -- ensure 1 row per journal_id from JFlow
   SELECT
-    DISTINCT journal_id,
-    journal_title,
-    main_discipline
+    DISTINCT jf.journal_id,
+    product_title as journal_title,
+    m.marketing.main_discipline
   FROM
-    {{source('zz_content_hub','jflow_journals')}} ) c
+    {{source('xx_jflow','jflow')}} jf, unnest(marketing) as m ) c
 ON
   COALESCE(SAFE_CAST(a.journal_id AS int64), b.journal_id) = c.journal_id
   {% if is_incremental() %}

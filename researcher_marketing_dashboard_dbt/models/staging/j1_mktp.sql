@@ -1,6 +1,8 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"}
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
+
  )}}
 
 
@@ -32,7 +34,7 @@ WITH
     DISTINCT LOWER(isoalphatwo) AS isoalphatwo,
     LOWER(world_region) AS world_region
   FROM
-    {{source('dbt_dev_ga4_ria_researcher_report','regions')}} ),
+    {{source('ga4_ria_researcher_report','regions')}} ),
   non_facebook AS (
   SELECT
     * EXCEPT(country),
@@ -61,7 +63,7 @@ WITH
     LOWER(isoalphatwo) AS isoalphatwo,
     LOWER(world_region) AS world_region
   FROM
-    {{source('dbt_dev_ga4_ria_researcher_report','regions')}} )
+    {{source('ga4_ria_researcher_report','regions')}} )
 SELECT
   * EXCEPT(country,
     cost,
