@@ -8,5 +8,7 @@ dbt_target: poc
 jobs:
   - name: analytics-dbt-dev
     schedule: 0 8 * * 1
-    select_criteria: tag:analytics-dbt
+    select_criteria: path:audience_Explorer_dbt/models
+
+
 
