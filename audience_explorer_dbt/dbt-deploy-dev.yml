@@ -1,0 +1,15 @@
+project_id: "snproject-cbb9ca25"
+location: europe-west1
+runner_service_account: dev-analytics-dbt-runner@snproject-cbb9ca25.iam.gserviceaccount.com
+invoker_service_account: dev-analytics-dbt-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
+#teams.webhook_url: https://springernature.webhook.office.com/webhookb2/f9b9be4c-f11b-491d-94ed-527bdd97fb6a@d9aabe7c-608b-4fe1-957c-0739cb0dfe22/IncomingWebhook/0e5a7c7495854e8f89a549eceb0bef18/0126a1b6-e549-47c5-8b27-dae70920b7fc/V2d_JKYR_HuQg4UIu05uDecDkWl0fIi0ArilWp1DeQq2g1
+dbt_target: poc
+
+jobs:
+  - name: analytics-dbt-dev
+    schedule: 0 8 * * 1
+    select_criteria: tag:audience_explorer_poc
+
+
+
+

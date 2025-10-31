@@ -1,0 +1,77 @@
+name: 'rmdb_dbt'
+version: '1.0.0'
+
+profile: 'rmdb_dbt'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  +persist_docs:
+    relation: true
+    columns: true
+
+  rmdb_dbt:
+    raw:
+      +materialized: table  # default materialization
+    staging:
+      +materialized: table
+    presentation:
+      +materialized: table
+
+
+vars:
+  backfill_start_date: '2025-01-01'
+  backfill_end_date: '2025-01-05'
+  start_date: '2024-01-01'
+  end_date: '2025-10-28'
+
+
+
+#models:
+#  +persist_docs:
+#    relation: true
+#    columns: true
+#  dbt:
+#    +full_refresh: false
+#    +tags: rmdb-dbt
+#
+#    raw:
+#      +schema: "rmdb_dbt_raw"
+#      +materialized: table
+#      +tags:
+#        - raw
+#    staging:
+#      +schema: "rmdb_dbt_staging"
+#      +materialized: table
+#      +tags:
+#        - staging
+#    presentation:
+#      +schema: "rmdb_dbt_presentation"
+#      +materialized: table
+#      +tags:
+# #        - presentation
+# models:
+#   +persist_docs:
+#     relation: true
+#     columns: true
+#   rmdb_dbt:
+#     +tags: rmdb-dbt
+
+#     raw:
+#       +schema: "rmdb_dbt_raw"
+#       +materialized: table
+#       +tags:
+#         - raw
+
+
+
+

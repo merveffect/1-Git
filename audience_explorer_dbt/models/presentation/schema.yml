@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: audience_builder_big
+    description: This model includes a comprehensive set of features for audience segmentation and analysis.
+    columns:
+     - name: canonical_segment_id
+       description: The unique identifier for the audience segment.
+       tests:
+         - not_null
+         - unique
+
+         

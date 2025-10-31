@@ -1,13 +1,15 @@
 team: dat-analytics-engineering
 pipeline: infra
-#notifications:
-#  failure:
-#  - teams: ((teams.workflow_url))
+
+
 feature_toggles:
   - update-pipeline
 
+
 triggers:
   - type: git
+    branch: main 
+    uri: git@github.com:springernature/analytics_engineering_dbt.git
     watched_paths:
       - infra
 
@@ -49,3 +51,7 @@ tasks:
     vars:
       TF_ENV_DIR: prod
       GCP_SERVICE_ACCOUNT_INFO: ((prod.dbt_deployer_service_account))
+
+
+
+

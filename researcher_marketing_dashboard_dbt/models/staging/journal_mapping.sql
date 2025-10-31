@@ -1,0 +1,64 @@
+{{ config(
+    materialized = "incremental",
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
+
+)}}
+
+SELECT
+  a.* EXCEPT(JournalID),
+  c.journal_title,
+  -- from JFlow
+  b.business_model,
+  b.main_group,
+  b.portfolio,
+  -- portfolio only from sheet
+  c.main_discipline,
+  -- from JFlow
+  COALESCE(SAFE_CAST(a.JournalID AS int64), b.journal_id) AS journal_id
+FROM (
+  SELECT
+    * EXCEPT(Journal_ID___GA4__Google_Analytics),
+    CASE
+      WHEN Journal_ID___GA4__Google_Analytics IN ("(not set)|ghostery|false|(not+set)|(notset)") THEN "0"
+      ELSE Journal_ID___GA4__Google_Analytics
+  END
+    AS JournalID
+  FROM
+    {{ref('b2c_googleanalytics_static')}}
+    
+    {% if is_incremental() %}
+  WHERE date BETWEEN 
+        COALESCE(
+          DATE('{{ var("backfill_start_date", "") }}') ,
+          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+        )
+        AND
+        COALESCE(
+          DATE('{{ var("backfill_end_date", "") }}') ,
+          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+        )
+{% else %}
+  WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
+                  AND DATE('{{ var("end_date", "2025-12-31") }}')
+{% endif %}
+    ) a
+FULL JOIN (
+  SELECT
+    * EXCEPT(journal_title,
+      main_discipline)
+      -- drop sheet’s title & discipline
+  FROM
+   {{source('e2e_b2c_researcher_dev', 'journal_table') }} ) b
+ON
+  SAFE_CAST(a.JournalID AS int64) = b.journal_id
+LEFT JOIN (
+-- ensure 1 row per journal_id
+  SELECT
+    DISTINCT jf.journal_id,
+    product_title as journal_title,
+    m.marketing.main_discipline
+  FROM
+    {{source('xx_jflow','jflow') }} jf, unnest(marketing) as m  ) c
+ON
+  COALESCE(SAFE_CAST(a.JournalID AS int64), b.journal_id) = c.journal_id
