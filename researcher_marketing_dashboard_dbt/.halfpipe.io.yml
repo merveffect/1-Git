@@ -11,7 +11,7 @@ triggers:
     uri: git@github.com:springernature/analytics_engineering_dbt.git
     branch: main
     watched_paths:
-      - researcher_marketing_dashboard_dbtae
+      - researcher_marketing_dashboard_dbt
  
  
 tasks:
