@@ -1,6 +1,7 @@
 {{ config(
     materialized='table',
-    partition_by={'field': 'date', 'data_type': 'date'}
+    partition_by={'field': 'date', 'data_type': 'date'},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
 )}}
 
 select

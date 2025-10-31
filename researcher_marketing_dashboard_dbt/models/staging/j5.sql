@@ -1,6 +1,8 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"}
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
+
  )}}
 
 WITH
@@ -318,7 +320,7 @@ END
   AS researchER_marketing_activity,
   -- research_marketing: boolean dimension, splitting between RM and not RM traffic; RM traffic here includes e.g. eCom or B2B campaigns
   CASE
-    WHEN REGEXP_CONTAINS(clean_campaign, '(acgo|acpg|apsr|bepl|conr|corp|edbm|hscr|hssr|humr|lscr|medr|mlsr|mpsr|newb|pere|reof|sscr)') OR team_code IN ( SELECT code FROM {{source('dbt_dev_ga4_ria_researcher_report','team_codes')}}) OR REGEXP_CONTAINS(clean_campaign, '(aexs|bbkk|bcps|bmcf|bmcs|bsch|bslb|bsng|bsph|bsps|bsss|cmtl|jftt|jjpn|jrpc|mkef|ncom|ngmt|njpn|npjs|nrcb|nrcc|nrcp|nrrj|rsdt|sbps|scdt|snaj|spsn|srbm|srcl|srcs|srep|srhs|srlf|srmt|stnl|ddcn|none1|anima|award|brcon|bpdmr|cuspb|cusev|evlst|focal|focus|forsc|immrs|infog|innov|insit|postr|spotl|video|wbcas|outlk|outln|nafrc|nitly|iview|nindx|ncafe|natcf|bdjjb|bdjjl|bdjmp|jrnls|sproa|sprin|natoa|najrn|discv|scirp|oajrn|oaagr|books|gbook|obook|tbook|sbook|ncars|b2bgn)') THEN TRUE
+    WHEN REGEXP_CONTAINS(clean_campaign, '(acgo|acpg|apsr|bepl|conr|corp|edbm|hscr|hssr|humr|lscr|medr|mlsr|mpsr|newb|pere|reof|sscr)') OR team_code IN ( SELECT code FROM {{source('ria_researcher_report','team_codes')}}) OR REGEXP_CONTAINS(clean_campaign, '(aexs|bbkk|bcps|bmcf|bmcs|bsch|bslb|bsng|bsph|bsps|bsss|cmtl|jftt|jjpn|jrpc|mkef|ncom|ngmt|njpn|npjs|nrcb|nrcc|nrcp|nrrj|rsdt|sbps|scdt|snaj|spsn|srbm|srcl|srcs|srep|srhs|srlf|srmt|stnl|ddcn|none1|anima|award|brcon|bpdmr|cuspb|cusev|evlst|focal|focus|forsc|immrs|infog|innov|insit|postr|spotl|video|wbcas|outlk|outln|nafrc|nitly|iview|nindx|ncafe|natcf|bdjjb|bdjjl|bdjmp|jrnls|sproa|sprin|natoa|najrn|discv|scirp|oajrn|oaagr|books|gbook|obook|tbook|sbook|ncars|b2bgn)') THEN TRUE
     ELSE FALSE
 END
   AS research_marketing_activity,

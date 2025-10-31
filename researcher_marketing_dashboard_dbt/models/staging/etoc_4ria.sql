@@ -1,7 +1,8 @@
 {{ config(
     materialized = "incremental",
     partition_by = {"field": "etoc_date"},
-    incremental_strategy = "insert_overwrite"
+    incremental_strategy = "insert_overwrite",
+    tags= ["daily", "etocs"]
 ) }}
 
 WITH main AS (

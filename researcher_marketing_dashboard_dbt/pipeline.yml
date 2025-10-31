@@ -1,4 +1,4 @@
-# Generated using halfpipe cli version 3.184.0 from file researcher_marketing_dashboard_dbt\.halfpipe.io.yml for team dat-analytics-engineering
+# Generated using halfpipe cli version 3.178.0 from file dbt\.halfpipe.io.yml for team dat-analytics-engineering
 jobs:
 - build_log_retention:
     minimum_succeeded_builds: 1
@@ -30,10 +30,10 @@ jobs:
         HALFPIPE_DOMAIN: halfpipe.io
         HALFPIPE_FILE_PATH: .halfpipe.io.yml
         HALFPIPE_PROJECT: halfpipe-io
-        PIPELINE_NAME: rmdb_dbt-dev
+        PIPELINE_NAME: dbt
       platform: linux
       run:
-        dir: git/researcher_marketing_dashboard_dbt
+        dir: git/dbt
         path: update-pipeline
     task: update
     timeout: 15m
@@ -119,7 +119,7 @@ jobs:
           if [ $EXIT_STATUS != 0 ] ; then
             exit 1
           fi
-        dir: git/researcher_marketing_dashboard_dbt
+        dir: git/dbt
         path: /bin/sh
     task: deploy-dev
     timeout: 1h
@@ -199,7 +199,7 @@ jobs:
           if [ $EXIT_STATUS != 0 ] ; then
             exit 1
           fi
-        dir: git/researcher_marketing_dashboard_dbt
+        dir: git/dbt
         path: /bin/sh
     task: deploy-prod
     timeout: 1h
@@ -208,9 +208,9 @@ resources:
 - check_every: 10m0s
   name: git
   source:
-    branch: dev
+    branch: main
     paths:
-    - researcher_marketing_dashboard_dbt
+    - dbt
     private_key: ((halfpipe-github.private_key))
     uri: git@github.com:springernature/analytics_engineering_dbt.git
   type: git
@@ -220,6 +220,6 @@ resources:
     bucket: ((halfpipe-semver.bucket))
     driver: gcs
     json_key: ((halfpipe-semver.private_key))
-    key: dat-analytics-engineering-rmdb_dbt-dev
+    key: dat-analytics-engineering-dbt
   type: semver
 
