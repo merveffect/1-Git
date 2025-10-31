@@ -11,7 +11,7 @@ triggers:
     uri: git@github.com:springernature/analytics_engineering_dbt.git
     branch: main
     watched_paths:
-      - dbt
+      - audience_explorer_dbt
 
 tasks:
   - type: run
