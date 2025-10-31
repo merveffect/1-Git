@@ -1,6 +1,7 @@
 {{ config(
     materialized = "incremental",
     partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"],
     cluster_by = ["campaign", "sub_channels", "medium", "Data_Source_type"]
  )}}
 

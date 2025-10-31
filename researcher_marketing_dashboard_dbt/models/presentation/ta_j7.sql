@@ -1,5 +1,6 @@
 {{ config(
     materialized = "incremental",
+    tags= ["daily", "ta_j7"],
     partition_by = {"field": "date"},
     cluster_by = ["journal_id", "country", "oatype", "researchER_marketing_activity"]
  )}} 
@@ -17,7 +18,7 @@ END
 FROM
   {{ref('j7')}} a
 LEFT JOIN
-  {{source('dbt_dev_ga4_ria_researcher_report','transformative_agreements_sheet')}} b
+  {{source('ga4_ria_researcher_report','transformative_agreements_sheet')}} b
 ON
   a.journal_id = b.journal_id
    {% if is_incremental() %}

@@ -1,6 +1,7 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"}
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
 )}}
 
 WITH
@@ -42,7 +43,7 @@ SELECT
   LOWER(adnetwork) AS adnetwork,
   sub_channels
 FROM
-  {{source('dbt_dev_ga4_ria_researcher_report','channel_groupings')}} ),
+  {{source('ga4_ria_researcher_report','channel_groupings')}} ),
   -- Step 3: Join and aggregate metrics
   aggregated_metrics AS (
 SELECT
@@ -155,8 +156,7 @@ GROUP BY
   17,
   18,
   19,
-  20,
-  21 ),
+  20 ),
   -- Step 4: Calculate combined KPIs and enrich with derived fields
   final_output AS (
 SELECT
