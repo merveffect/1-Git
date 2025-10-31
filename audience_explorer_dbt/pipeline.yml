@@ -1,4 +1,4 @@
-# Generated using halfpipe cli version 3.184.0 from file audience_Explorer_dbt\.halfpipe.io.yml for team dat-analytics-engineering
+# Generated using halfpipe cli version 3.184.0 from file audience_explorer_dbt\.halfpipe.io.yml for team dat-analytics-engineering
 jobs:
 - build_log_retention:
     minimum_succeeded_builds: 1
@@ -43,7 +43,7 @@ jobs:
         PIPELINE_NAME: audience_explorer_dbt
       platform: linux
       run:
-        dir: git/audience_Explorer_dbt
+        dir: git/audience_explorer_dbt
         path: update-pipeline
     task: update
     timeout: 15m
@@ -139,7 +139,7 @@ jobs:
           if [ $EXIT_STATUS != 0 ] ; then
             exit 1
           fi
-        dir: git/audience_Explorer_dbt
+        dir: git/audience_explorer_dbt
         path: /bin/sh
     task: deploy-dev
     timeout: 1h
@@ -229,7 +229,7 @@ jobs:
           if [ $EXIT_STATUS != 0 ] ; then
             exit 1
           fi
-        dir: git/audience_Explorer_dbt
+        dir: git/audience_explorer_dbt
         path: /bin/sh
     task: deploy-prod
     timeout: 1h
