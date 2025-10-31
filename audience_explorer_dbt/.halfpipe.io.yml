@@ -2,9 +2,7 @@ team: dat-analytics-engineering
 pipeline: audience_explorer_dbt
 notifications:
   failure:
-  - teams: ((teams.webhook_url))
-    message: "Audience Explorer DBT pipeline failed :warning:"
-
+    - teams: ((teams.workflow_url))
 feature_toggles:
   - update-pipeline
 
@@ -13,7 +11,7 @@ triggers:
     uri: git@github.com:springernature/analytics_engineering_dbt.git
     branch: main
     watched_paths:
-      - audience_explorer_dbt
+      - dbt
 
 tasks:
   - type: run
@@ -28,11 +26,6 @@ tasks:
 
   - type: run
     name: deploy-prod
-    notifications:
-     failure:
-      - teams: ((teams.webhook_url))
-        message: 'Audience Explorer DBT PROD deployment failed :warning:'
-
     script: \sndbt deploy --verbose
     docker:
       image: eu.gcr.io/halfpipe-io/sn-dbt-0.2

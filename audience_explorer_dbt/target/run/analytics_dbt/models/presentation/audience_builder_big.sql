@@ -2,12 +2,11 @@
   
     
 
-    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
       
     
     
 
-    
     OPTIONS(
       description="""This model includes a comprehensive set of features for audience segmentation and analysis."""
     )
@@ -127,7 +126,7 @@
    CAST(is_webshop_buyer_communications_opted_in AS STRING) AS is_webshop_buyer_communications_opted_in,
    
 
-   CAST(last_name AS STRING) AS last_name,
+CAST(last_name AS STRING) AS last_name,
 CAST(list_journals_allpageviews_30_d AS STRING) AS list_journals_allpageviews_30_d,
 CAST(newsletters AS STRING) AS newsletters,
 CAST(orcid AS STRING) AS orcid,
@@ -136,10 +135,14 @@ CAST(researcher_id AS STRING) AS researcher_id,
 CAST(sap_outbound_id AS STRING) AS sap_outbound_id,
 CAST(sn_journal_submitters AS STRING) AS sn_journal_submitters,
 CAST(third_party_prom AS STRING) AS third_party_prom,
+CAST(marketing_optin_mpc AS STRING) AS marketing_optin_mpc,
+CAST(japa_all AS STRING) AS japa_all,
+CAST(marketing_opt_in_not_mpc AS STRING) AS marketing_opt_in_not_mpc,
+CAST(is_editor_referral_opted_in AS BOOL) AS is_editor_referral_opted_in,
 
 
-  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
-  left join `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
+  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
+  left join `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id
   where cleaned.flag_column = 1
     );
