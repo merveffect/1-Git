@@ -1,8 +1,18 @@
-# Generated using halfpipe cli version 3.178.0 from file dbt\.halfpipe.io.yml for team dat-analytics-engineering
+# Generated using halfpipe cli version 3.184.0 from file audience_Explorer_dbt\.halfpipe.io.yml for team dat-analytics-engineering
 jobs:
 - build_log_retention:
     minimum_succeeded_builds: 1
   name: update
+  on_failure:
+    attempts: 2
+    no_get: true
+    params:
+      icon: https://concourse.halfpipe.io/public/images/favicon-failed.png
+      text: Pipeline `$BUILD_PIPELINE_NAME` task `$BUILD_JOB_NAME` failed.
+      title: ❌ Concourse pipeline failed
+      webhook: ((teams.workflow_url))
+    put: teams
+    timeout: 15m
   plan:
   - attempts: 2
     get: git
@@ -30,10 +40,10 @@ jobs:
         HALFPIPE_DOMAIN: halfpipe.io
         HALFPIPE_FILE_PATH: .halfpipe.io.yml
         HALFPIPE_PROJECT: halfpipe-io
-        PIPELINE_NAME: dbt
+        PIPELINE_NAME: audience_explorer_dbt
       platform: linux
       run:
-        dir: git/dbt
+        dir: git/audience_Explorer_dbt
         path: update-pipeline
     task: update
     timeout: 15m
@@ -47,6 +57,16 @@ jobs:
 - build_log_retention:
     minimum_succeeded_builds: 1
   name: deploy-dev
+  on_failure:
+    attempts: 2
+    no_get: true
+    params:
+      icon: https://concourse.halfpipe.io/public/images/favicon-failed.png
+      text: Pipeline `$BUILD_PIPELINE_NAME` task `$BUILD_JOB_NAME` failed.
+      title: ❌ Concourse pipeline failed
+      webhook: ((teams.workflow_url))
+    put: teams
+    timeout: 15m
   plan:
   - attempts: 2
     in_parallel:
@@ -119,7 +139,7 @@ jobs:
           if [ $EXIT_STATUS != 0 ] ; then
             exit 1
           fi
-        dir: git/dbt
+        dir: git/audience_Explorer_dbt
         path: /bin/sh
     task: deploy-dev
     timeout: 1h
@@ -127,6 +147,16 @@ jobs:
 - build_log_retention:
     minimum_succeeded_builds: 1
   name: deploy-prod
+  on_failure:
+    attempts: 2
+    no_get: true
+    params:
+      icon: https://concourse.halfpipe.io/public/images/favicon-failed.png
+      text: Pipeline `$BUILD_PIPELINE_NAME` task `$BUILD_JOB_NAME` failed.
+      title: ❌ Concourse pipeline failed
+      webhook: ((teams.workflow_url))
+    put: teams
+    timeout: 15m
   plan:
   - attempts: 2
     in_parallel:
@@ -199,27 +229,40 @@ jobs:
           if [ $EXIT_STATUS != 0 ] ; then
             exit 1
           fi
-        dir: git/dbt
+        dir: git/audience_Explorer_dbt
         path: /bin/sh
     task: deploy-prod
     timeout: 1h
   serial: true
+resource_types:
+- check_every: 24h0m0s
+  name: halfpipe-teams-resource
+  source:
+    password: ((halfpipe-gcr.private_key))
+    repository: eu.gcr.io/halfpipe-io/halfpipe-teams-resource
+    tag: latest
+    username: _json_key
+  type: registry-image
 resources:
 - check_every: 10m0s
   name: git
   source:
     branch: main
     paths:
-    - dbt
+    - audience_explorer_dbt
     private_key: ((halfpipe-github.private_key))
     uri: git@github.com:springernature/analytics_engineering_dbt.git
   type: git
+- check_every: 24h0m0s
+  name: teams
+  source: null
+  type: halfpipe-teams-resource
 - check_every: 24h0m0s
   name: version
   source:
     bucket: ((halfpipe-semver.bucket))
     driver: gcs
     json_key: ((halfpipe-semver.private_key))
-    key: dat-analytics-engineering-dbt
+    key: dat-analytics-engineering-audience_explorer_dbt
   type: semver
 
