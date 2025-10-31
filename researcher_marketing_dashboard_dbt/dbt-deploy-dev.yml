@@ -11,4 +11,4 @@ dbt_target: dev
 jobs:
   - name: rmdb-dbt-dev
     schedule: 0 7 * * *
-    select_criteria: tag:rmdb-dbt
+  
