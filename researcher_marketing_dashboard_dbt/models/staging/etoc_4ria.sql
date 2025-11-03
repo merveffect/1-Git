@@ -18,6 +18,14 @@ WITH main AS (
     GROUP BY 1,2,3
 )
 
+SELECT
+  time_firstseen AS etoc_date,
+  journal_id,
+  journal_title,
+  COUNT(DISTINCT(rcpt_to)) AS num_etoc_signups
+FROM
+  main
+
 {% if is_incremental() %}
   WHERE DATE(time_firstseen) BETWEEN 
     {% if backfill_start %}
@@ -35,3 +43,7 @@ WITH main AS (
   WHERE DATE(time_firstseen) BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
 {% endif %}
+GROUP BY
+  1,
+  2,
+  3

@@ -1,15 +1,25 @@
 
+   
+      -- generated script to merge partitions into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`etoc_4ria`
+      declare dbt_partitions_for_replacement array<date>;
+
+      
+      
+       -- 1. create a temp table with model data
+        
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`etoc_4ria`
+    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`etoc_4ria__dbt_tmp`
       
     partition by etoc_date
     
 
     
     OPTIONS(
-      description=""""""
+      description="""""",
+    
+      expiration_timestamp=TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 12 hour)
     )
     as (
       
@@ -28,15 +38,64 @@ WITH main AS (
 )
 
 SELECT
-    time_firstseen AS etoc_date,
-    journal_id,
-    journal_title,
-    COUNT(DISTINCT rcpt_to) AS num_etoc_signups
-FROM main
+  time_firstseen AS etoc_date,
+  journal_id,
+  journal_title,
+  COUNT(DISTINCT(rcpt_to)) AS num_etoc_signups
+FROM
+  main
 
-    WHERE DATE(time_firstseen) BETWEEN DATE('2024-01-01')
-                            AND DATE('2025-10-28')
 
-GROUP BY 1,2,3
+  WHERE DATE(time_firstseen) BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)
+    
+    AND
+    
+      CURRENT_DATE()
+    
+
+GROUP BY
+  1,
+  2,
+  3
     );
   
+      -- 2. define partitions to update
+      set (dbt_partitions_for_replacement) = (
+          select as struct
+              -- IGNORE NULLS: this needs to be aligned to _dbt_max_partition, which ignores null
+              array_agg(distinct date(etoc_date) IGNORE NULLS)
+          from `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`etoc_4ria__dbt_tmp`
+      );
+
+      -- 3. run the merge statement
+      
+
+    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`etoc_4ria` as DBT_INTERNAL_DEST
+        using (
+        select
+        * from `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`etoc_4ria__dbt_tmp`
+      ) as DBT_INTERNAL_SOURCE
+        on FALSE
+
+    when not matched by source
+         and date(DBT_INTERNAL_DEST.etoc_date) in unnest(dbt_partitions_for_replacement) 
+        then delete
+
+    when not matched then insert
+        (`etoc_date`, `journal_id`, `journal_title`, `num_etoc_signups`)
+    values
+        (`etoc_date`, `journal_id`, `journal_title`, `num_etoc_signups`)
+
+;
+
+      -- 4. clean up the temp table
+      drop table if exists `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`etoc_4ria__dbt_tmp`
+
+  
+
+
+  
+
+    

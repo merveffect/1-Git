@@ -14,13 +14,24 @@ WITH main AS (
 )
 
 SELECT
-    time_firstseen AS etoc_date,
-    journal_id,
-    journal_title,
-    COUNT(DISTINCT rcpt_to) AS num_etoc_signups
-FROM main
+  time_firstseen AS etoc_date,
+  journal_id,
+  journal_title,
+  COUNT(DISTINCT(rcpt_to)) AS num_etoc_signups
+FROM
+  main
 
-    WHERE DATE(time_firstseen) BETWEEN DATE('2024-01-01')
-                            AND DATE('2025-10-28')
 
-GROUP BY 1,2,3
+  WHERE DATE(time_firstseen) BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)
+    
+    AND
+    
+      CURRENT_DATE()
+    
+
+GROUP BY
+  1,
+  2,
+  3
