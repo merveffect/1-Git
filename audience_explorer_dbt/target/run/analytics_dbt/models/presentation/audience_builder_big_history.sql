@@ -6,10 +6,10 @@
 
     
 
-    merge into `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history` as DBT_INTERNAL_DEST
+    merge into `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history` as DBT_INTERNAL_DEST
         using (
         select
-        * from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history__dbt_tmp`
+        * from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history__dbt_tmp`
         ) as DBT_INTERNAL_SOURCE
         on (FALSE)
 

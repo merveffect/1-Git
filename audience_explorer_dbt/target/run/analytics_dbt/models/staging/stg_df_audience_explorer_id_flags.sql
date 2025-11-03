@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags`
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags`
       
     
     
@@ -26,6 +26,6 @@ canonical_segment_id,
   (permutive_id IS NOT NULL) AS permutive_id_flag,
   (cep_id IS NOT NULL) AS cep_id_flag,
   
-  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
+  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
     );
   

@@ -3,7 +3,7 @@
 with new_data as (
 	select distinct 
 	  column_names	  
-	  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+	  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
 ),
 
 change_detection as (
@@ -15,7 +15,7 @@ change_detection as (
 	  except distinct
 	  select
 	    column_names
-	    from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history`
+	    from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history`
 	    
 )
 

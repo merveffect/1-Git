@@ -1,14 +1,14 @@
 WITH base AS (
     SELECT *
-    FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base`
+    FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base`
 ),
 subs AS (
     SELECT * 
-    FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_submissions`
+    FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_submissions`
 ),
 life AS (
     SELECT * 
-    FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_lifetime_aggregations`
+    FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_lifetime_aggregations`
 )
 
 SELECT

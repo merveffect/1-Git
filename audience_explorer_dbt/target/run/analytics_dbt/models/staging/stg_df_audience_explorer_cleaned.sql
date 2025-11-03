@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned`
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned`
       
     
     
@@ -35,6 +35,6 @@ SELECT
     '"', ''
   ) AS list_keywords_dois_last_60_d
 
-FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
+FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
     );
   

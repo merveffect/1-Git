@@ -128,7 +128,7 @@ CAST(marketing_opt_in_not_mpc AS STRING) AS marketing_opt_in_not_mpc,
 CAST(is_editor_referral_opted_in AS BOOL) AS is_editor_referral_opted_in,
 
 
-  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
-  left join `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
+  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
+  left join `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id
   where cleaned.flag_column = 1

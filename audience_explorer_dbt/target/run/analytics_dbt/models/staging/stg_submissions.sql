@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_submissions`
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_submissions`
       
     
     
@@ -23,7 +23,7 @@
     FROM UNNEST(JSON_EXTRACT_ARRAY(t.value, '$')) AS item
     ORDER BY SAFE_CAST(JSON_VALUE(item, '$.submission_timestamp') AS TIMESTAMP) DESC
   ) AS submissions
-FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_user_traits` AS t
+FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`raw_user_traits` AS t
 WHERE t.name = 'submissions'
     );
   
