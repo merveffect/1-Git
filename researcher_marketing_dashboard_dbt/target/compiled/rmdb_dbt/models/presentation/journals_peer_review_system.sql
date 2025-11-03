@@ -45,8 +45,3 @@ LEFT JOIN
   submissions s
   ON
   j.journal_id = s.journal_id
-
---  
---   WHERE date(status_date) BETWEEN DATE('2024-01-01')
---                   AND DATE('2025-10-28')
--- 

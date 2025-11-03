@@ -17,9 +17,18 @@ WITH
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j7`
      
-     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+    
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+
 
   GROUP BY
     1,
@@ -45,9 +54,17 @@ WITH
     SUM(freq_events) AS freq_events
   FROM
     `snproject-cbb9ca25`.`cookie_consent_data`.`marketing_view`
-     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+    
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
   GROUP BY
     1,

@@ -1,18 +1,13 @@
-
+-- back compat for old kwarg name
   
-    
-
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j2`
-      
-    partition by date
+  
+        
     
 
     
-    OPTIONS(
-      description=""""""
-    )
-    as (
-      
+
+    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j2` as DBT_INTERNAL_DEST
+        using (
 
 WITH
   step3 AS (
@@ -59,9 +54,17 @@ WITH
     SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_ga`
-     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+    
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
   GROUP BY
     date,
@@ -94,9 +97,17 @@ WITH
     world_region AS cost_world_region
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_mktp`
-     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+    
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
   GROUP BY
     cost_date,
@@ -243,5 +254,15 @@ END
   AS impressions
 FROM
   sort_rows
-    );
-  
+        ) as DBT_INTERNAL_SOURCE
+        on (FALSE)
+
+    
+
+    when not matched then insert
+        (`date`, `campaign`, `SOURCE`, `medium`, `main_channels`, `sub_channels`, `journal_title`, `journal_id`, `business_model`, `main_discipline`, `main_group`, `portfolio`, `isoalphatwo`, `world_region`, `imprint`, `kpi_marbl_leads`, `Sessions`, `pi_publishing_guidelines`, `EngagedSessions`, `ELS`, `snapp_submission_complete`, `content_consumption`, `reach_india_apc_thankyou`, `reach_oa_general`, `snapp_submission_start`, `kpi_submit_click`, `pi_reach_fta`, `kpi_reach_submission_guideline_pages`, `kpi_reach_about_pages`, `pi_contact_an_editor`, `kpi_submit_your_book_idea`, `reach_b2c_blog_page`, `ta_file_download`, `search_volume`, `journal_engagement`, `research_article_readership`, `source_readership`, `ejp_submission_start`, `ejp_submission_complete`, `nav_sign_up_for_alerts`, `ROW`, `cost`, `clicks`, `impressions`)
+    values
+        (`date`, `campaign`, `SOURCE`, `medium`, `main_channels`, `sub_channels`, `journal_title`, `journal_id`, `business_model`, `main_discipline`, `main_group`, `portfolio`, `isoalphatwo`, `world_region`, `imprint`, `kpi_marbl_leads`, `Sessions`, `pi_publishing_guidelines`, `EngagedSessions`, `ELS`, `snapp_submission_complete`, `content_consumption`, `reach_india_apc_thankyou`, `reach_oa_general`, `snapp_submission_start`, `kpi_submit_click`, `pi_reach_fta`, `kpi_reach_submission_guideline_pages`, `kpi_reach_about_pages`, `pi_contact_an_editor`, `kpi_submit_your_book_idea`, `reach_b2c_blog_page`, `ta_file_download`, `search_volume`, `journal_engagement`, `research_article_readership`, `source_readership`, `ejp_submission_start`, `ejp_submission_complete`, `nav_sign_up_for_alerts`, `ROW`, `cost`, `clicks`, `impressions`)
+
+
+    

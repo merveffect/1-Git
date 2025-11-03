@@ -1,18 +1,13 @@
-
+-- back compat for old kwarg name
   
-    
-
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_mktp`
-      
-    partition by date
+  
+        
     
 
     
-    OPTIONS(
-      description=""""""
-    )
-    as (
-      
+
+    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_mktp` as DBT_INTERNAL_DEST
+        using (
 
 
 WITH
@@ -23,8 +18,16 @@ WITH
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_mktp`
     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
     AND SOURCE = "facebook" ),
   facebook_regions AS (
@@ -40,8 +43,16 @@ WITH
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_mktp`
      
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
     AND SOURCE != "facebook" ),
   non_facebook_regions AS (
@@ -89,5 +100,15 @@ GROUP BY
   9,
   10,
   11
-    );
-  
+        ) as DBT_INTERNAL_SOURCE
+        on (FALSE)
+
+    
+
+    when not matched then insert
+        (`Date`, `campaign`, `Data_Source_type`, `SOURCE`, `medium`, `google_ad_network`, `ad_content`, `sub_channels`, `main_channels`, `isoalphatwo`, `world_region`, `cost`, `clicks`, `impressions`)
+    values
+        (`Date`, `campaign`, `Data_Source_type`, `SOURCE`, `medium`, `google_ad_network`, `ad_content`, `sub_channels`, `main_channels`, `isoalphatwo`, `world_region`, `cost`, `clicks`, `impressions`)
+
+
+    

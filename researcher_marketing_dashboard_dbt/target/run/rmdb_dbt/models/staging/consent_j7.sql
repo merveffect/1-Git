@@ -1,18 +1,13 @@
-
+-- back compat for old kwarg name
   
-    
-
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`consent_j7`
-      
-    partition by date
+  
+        
     
 
     
-    OPTIONS(
-      description=""""""
-    )
-    as (
-      
+
+    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`consent_j7` as DBT_INTERNAL_DEST
+        using (
 
 WITH
   main AS (
@@ -31,9 +26,18 @@ WITH
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j7`
      
-     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+    
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+
 
   GROUP BY
     1,
@@ -59,9 +63,17 @@ WITH
     SUM(freq_events) AS freq_events
   FROM
     `snproject-cbb9ca25`.`cookie_consent_data`.`marketing_view`
-     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+    
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
   GROUP BY
     1,
@@ -177,5 +189,15 @@ GROUP BY
   consent_channels,
   page_location,
   Sessions
-    );
-  
+        ) as DBT_INTERNAL_SOURCE
+        on (FALSE)
+
+    
+
+    when not matched then insert
+        (`date`, `campaign`, `SOURCE`, `medium`, `main_channels`, `sub_channels`, `imprint`, `researchER_marketing_activity`, `research_marketing_activity`, `Sessions`, `consent_date`, `utm_campaign`, `utm_source`, `utm_medium`, `consent_channels`, `page_location`, `total_banner_visible`, `total_close_cookie_preferences`, `total_manage_cookie_preferences`, `total_save_cookie_preferences`, `total_accept_all_cookies`, `total_accept_all_cookies_preference_dialogue`, `total_interaction`, `total_reject_non_essential_cookies`, `total_reject_non_essential_cookies_preference_dialogue`)
+    values
+        (`date`, `campaign`, `SOURCE`, `medium`, `main_channels`, `sub_channels`, `imprint`, `researchER_marketing_activity`, `research_marketing_activity`, `Sessions`, `consent_date`, `utm_campaign`, `utm_source`, `utm_medium`, `consent_channels`, `page_location`, `total_banner_visible`, `total_close_cookie_preferences`, `total_manage_cookie_preferences`, `total_save_cookie_preferences`, `total_accept_all_cookies`, `total_accept_all_cookies_preference_dialogue`, `total_interaction`, `total_reject_non_essential_cookies`, `total_reject_non_essential_cookies_preference_dialogue`)
+
+
+    

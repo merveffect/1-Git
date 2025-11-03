@@ -1,18 +1,13 @@
-
+-- back compat for old kwarg name
   
+  
+        
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_mktp`
-      
-    partition by date
-    cluster by campaign, sub_channels, medium, Data_Source_type
-
     
-    OPTIONS(
-      description=""""""
-    )
-    as (
-      
+
+    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_mktp` as DBT_INTERNAL_DEST
+        using (
 
 
 WITH
@@ -41,9 +36,17 @@ WITH
     SUM(impressions) AS impressions
   FROM
     `snproject-cbb9ca25`.`RM_adspend`.`rm_adspend_static`
+   
+  
+  
+  WHERE date BETWEEN 
     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
   GROUP BY
     date,
@@ -88,5 +91,15 @@ END
   AS main_channels
 FROM
   transformations
-    );
-  
+        ) as DBT_INTERNAL_SOURCE
+        on (FALSE)
+
+    
+
+    when not matched then insert
+        (`Date`, `campaign`, `country`, `Data_Source_type`, `SOURCE`, `medium`, `google_ad_network`, `ad_content`, `cost`, `clicks`, `impressions`, `sub_channels`, `main_channels`)
+    values
+        (`Date`, `campaign`, `country`, `Data_Source_type`, `SOURCE`, `medium`, `google_ad_network`, `ad_content`, `cost`, `clicks`, `impressions`, `sub_channels`, `main_channels`)
+
+
+    
