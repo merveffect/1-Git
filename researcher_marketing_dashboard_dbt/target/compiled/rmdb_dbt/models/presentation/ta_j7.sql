@@ -16,6 +16,14 @@ LEFT JOIN
   `snproject-cbb9ca25`.`ga4_ria_researcher_report`.`transformative_agreements_sheet` b
 ON
   a.journal_id = b.journal_id
-   
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+  
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    

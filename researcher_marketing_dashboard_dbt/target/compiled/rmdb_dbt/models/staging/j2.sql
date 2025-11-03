@@ -45,9 +45,17 @@ WITH
     SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_ga`
-     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+    
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
   GROUP BY
     date,
@@ -80,9 +88,17 @@ WITH
     world_region AS cost_world_region
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_mktp`
-     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+    
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
   GROUP BY
     cost_date,

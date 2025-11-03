@@ -14,6 +14,15 @@ LEFT JOIN (
     `datasn-rm-live`.`marmind_fnd`.`marmind_data` ) b
 ON
   a.campaign_code = LOWER(b.marmind_campaign_code)
-   
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+  
+  
+  
+  
+  WHERE date BETWEEN 
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    

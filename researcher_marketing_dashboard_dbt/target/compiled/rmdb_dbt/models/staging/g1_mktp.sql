@@ -27,9 +27,17 @@ WITH
     SUM(impressions) AS impressions
   FROM
     `snproject-cbb9ca25`.`RM_adspend`.`rm_adspend_static`
+   
+  
+  
+  WHERE date BETWEEN 
     
-  WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-10-28')
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
+    AND
+    
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    
 
   GROUP BY
     date,
