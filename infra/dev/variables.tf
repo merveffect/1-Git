@@ -25,7 +25,8 @@ variable "service_account_roles" {
       "roles/storage.admin",
       "roles/drive.readonly",
       "roles/bigquery.connectionUser",
-      "roles/drive.file"
+      "roles/drive.file",
+      "roles/bigquery.jobUser"
     ]
     runner = [
       "roles/bigquery.admin",
@@ -43,7 +44,8 @@ variable "service_account_roles" {
       "roles/storage.admin",
       "roles/drive.readonly",
       "roles/bigquery.connectionUser",
-      "roles/drive.file"
+      "roles/drive.file",
+      "roles/bigquery.jobUser"
 
     ]
   }

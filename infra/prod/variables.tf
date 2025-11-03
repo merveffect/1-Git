@@ -21,11 +21,23 @@ variable "service_account_roles" {
       "roles/serviceusage.serviceUsageConsumer",
       "roles/iam.securityAdmin",
       "roles/bigquery.admin",
-      "roles/storage.objectAdmin"
+      "roles/storage.objectAdmin",
+      "roles/bigquery.jobUser"
     ]
     runner = [
       "roles/bigquery.admin",
-      "roles/iam.serviceAccountAdmin"
+      "roles/iam.serviceAccountAdmin",
+      "roles/run.admin",
+      "roles/cloudscheduler.admin",
+      "roles/iam.serviceAccountUser",
+      "roles/iam.serviceAccountAdmin",
+      "roles/serviceusage.serviceUsageConsumer",
+      "roles/iam.securityAdmin",
+      "roles/bigquery.admin",
+      "roles/storage.objectAdmin",
+      "roles/bigquery.jobUser"
+      
+
     ]
   }
 }
