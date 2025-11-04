@@ -1,13 +1,18 @@
--- back compat for old kwarg name
+
   
-  
-        
     
 
-    
+    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`googleanalytics_and_marbl`
+      
+    partition by date
+    cluster by campaign, journal_id, source, medium
 
-    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`googleanalytics_and_marbl` as DBT_INTERNAL_DEST
-        using (
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
 
 WITH
   main_data AS (
@@ -21,16 +26,8 @@ WITH
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`journal_mapping`
     
    
-  
-  
-  WHERE date BETWEEN 
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
-    AND
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
+  WHERE date BETWEEN DATE('2024-01-01')
+                  AND DATE('2025-11-01')
 
   ),
   
@@ -49,16 +46,8 @@ WITH
   FROM
     `snproject-cbb9ca25`.`ga4_ria_researcher_report`.`BooksMarketing`
     
-  
-  
-  WHERE CAST(SubmitDate AS date) BETWEEN 
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
-    AND
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
+  WHERE CAST(SubmitDate AS date) BETWEEN DATE('2024-01-01')
+                  AND DATE('2025-11-01')
 
   GROUP BY
     campaign,
@@ -129,15 +118,5 @@ SELECT
   END AS kpi_marbl_leads
 FROM
   row_number
-        ) as DBT_INTERNAL_SOURCE
-        on (FALSE)
-
-    
-
-    when not matched then insert
-        (`Hostname___GA4__Google_Analytics`, `Data_Source_name`, `Data_Source_type`, `Data_Source_id`, `Samples_read_rate___GA4__Google_Analytics`, `Sessions___GA4_event_based__Google_Analytics`, `ga4_click_submit_manuscript`, `ga4_reach_fta`, `ga4_reach_submission_guidelines`, `ga4_reach_about_page`, `ga4_reach_books_contact_editor_page`, `ga4_reach_books_publishing_guidelines`, `ga4_submit_your_book_idea_click`, `Engaged_sessions___GA4__Google_Analytics`, `ga4_engagement_leading_to_submission`, `ga4_reach_b2c_blog_page`, `ga4_snapp_submission_complete`, `ga4_content_consumption`, `ga4_reach_india_apc_thankyou`, `ga4_reach_oa_general`, `ga4_ta_file_download`, `ga4_snapp_submission_start`, `ga4_click_submit_manuscript_all_old_events`, `ga4_submit_your_book_idea_click_old_events`, `ga4_ta_file_download_all_old_events`, `ga4_reach_books_contact_editor_old_events`, `ga4_reach_full_text_article_old_events`, `ga4_reach_journal_about_old_events`, `ga4_reach_journal_submission_guidelines_old_events`, `ga4_reach_b2c_blog_page_old_events`, `ga4_journal_engagement`, `ga4_research_article_readership`, `ga4_ejp_submission_complete`, `ga4_ejp_submission_start`, `ga4_source_readership`, `ga4_nav_sign_up_for_alerts`, `journal_title`, `business_model`, `main_group`, `portfolio`, `main_discipline`, `journal_id`, `date`, `campaign`, `country`, `RN`, `SOURCE`, `medium`, `ad_content`, `google_ad_network`, `kpi_marbl_leads`)
-    values
-        (`Hostname___GA4__Google_Analytics`, `Data_Source_name`, `Data_Source_type`, `Data_Source_id`, `Samples_read_rate___GA4__Google_Analytics`, `Sessions___GA4_event_based__Google_Analytics`, `ga4_click_submit_manuscript`, `ga4_reach_fta`, `ga4_reach_submission_guidelines`, `ga4_reach_about_page`, `ga4_reach_books_contact_editor_page`, `ga4_reach_books_publishing_guidelines`, `ga4_submit_your_book_idea_click`, `Engaged_sessions___GA4__Google_Analytics`, `ga4_engagement_leading_to_submission`, `ga4_reach_b2c_blog_page`, `ga4_snapp_submission_complete`, `ga4_content_consumption`, `ga4_reach_india_apc_thankyou`, `ga4_reach_oa_general`, `ga4_ta_file_download`, `ga4_snapp_submission_start`, `ga4_click_submit_manuscript_all_old_events`, `ga4_submit_your_book_idea_click_old_events`, `ga4_ta_file_download_all_old_events`, `ga4_reach_books_contact_editor_old_events`, `ga4_reach_full_text_article_old_events`, `ga4_reach_journal_about_old_events`, `ga4_reach_journal_submission_guidelines_old_events`, `ga4_reach_b2c_blog_page_old_events`, `ga4_journal_engagement`, `ga4_research_article_readership`, `ga4_ejp_submission_complete`, `ga4_ejp_submission_start`, `ga4_source_readership`, `ga4_nav_sign_up_for_alerts`, `journal_title`, `business_model`, `main_group`, `portfolio`, `main_discipline`, `journal_id`, `date`, `campaign`, `country`, `RN`, `SOURCE`, `medium`, `ad_content`, `google_ad_network`, `kpi_marbl_leads`)
-
-
-    
+    );
+  

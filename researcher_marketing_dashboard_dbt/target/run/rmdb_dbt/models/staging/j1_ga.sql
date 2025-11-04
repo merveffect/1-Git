@@ -1,13 +1,18 @@
--- back compat for old kwarg name
+
   
-  
-        
+    
+
+    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_ga`
+      
+    partition by date
     
 
     
-
-    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_ga` as DBT_INTERNAL_DEST
-        using (
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
 
 WITH
   main AS (
@@ -17,16 +22,8 @@ WITH
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_ga`
      
-  
-  
-  WHERE date BETWEEN 
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
-    AND
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
+  WHERE date BETWEEN DATE('2024-01-01')
+                  AND DATE('2025-11-01')
 
     ),
   regions AS (
@@ -132,15 +129,5 @@ SELECT
   *
 FROM
   aggregations
-        ) as DBT_INTERNAL_SOURCE
-        on (FALSE)
-
-    
-
-    when not matched then insert
-        (`Data_Source_name`, `Data_Source_type`, `Data_Source_id`, `Samples_read_rate___GA4__Google_Analytics`, `journal_title`, `business_model`, `main_group`, `portfolio`, `main_discipline`, `journal_id`, `date`, `campaign`, `RN`, `google_ad_network`, `SOURCE`, `medium`, `sub_channels`, `main_channels`, `imprint`, `isoalphatwo`, `world_region`, `kpi_marbl_leads`, `Sessions`, `ga4_reach_books_publishing_guidelines`, `EngagedSessions`, `ELS`, `snapp_submission_complete`, `content_consumption`, `reach_india_apc_thankyou`, `reach_oa_general`, `snapp_submission_start`, `kpi_submit_click`, `pi_reach_fta`, `kpi_reach_submission_guideline_pages`, `kpi_reach_about_pages`, `pi_contact_an_editor`, `kpi_submit_your_book_idea`, `reach_b2c_blog_page`, `ta_file_download`, `journal_engagement`, `research_article_readership`, `source_readership`, `ejp_submission_start`, `ejp_submission_complete`, `nav_sign_up_for_alerts`, `search_volume`)
-    values
-        (`Data_Source_name`, `Data_Source_type`, `Data_Source_id`, `Samples_read_rate___GA4__Google_Analytics`, `journal_title`, `business_model`, `main_group`, `portfolio`, `main_discipline`, `journal_id`, `date`, `campaign`, `RN`, `google_ad_network`, `SOURCE`, `medium`, `sub_channels`, `main_channels`, `imprint`, `isoalphatwo`, `world_region`, `kpi_marbl_leads`, `Sessions`, `ga4_reach_books_publishing_guidelines`, `EngagedSessions`, `ELS`, `snapp_submission_complete`, `content_consumption`, `reach_india_apc_thankyou`, `reach_oa_general`, `snapp_submission_start`, `kpi_submit_click`, `pi_reach_fta`, `kpi_reach_submission_guideline_pages`, `kpi_reach_about_pages`, `pi_contact_an_editor`, `kpi_submit_your_book_idea`, `reach_b2c_blog_page`, `ta_file_download`, `journal_engagement`, `research_article_readership`, `source_readership`, `ejp_submission_start`, `ejp_submission_complete`, `nav_sign_up_for_alerts`, `search_volume`)
-
-
-    
+    );
+  

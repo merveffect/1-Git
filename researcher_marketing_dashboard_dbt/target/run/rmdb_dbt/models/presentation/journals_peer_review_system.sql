@@ -1,13 +1,18 @@
--- back compat for old kwarg name
+
   
-  
-        
+    
+
+    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`journals_peer_review_system`
+      
+    partition by status_date
     
 
     
-
-    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`journals_peer_review_system` as DBT_INTERNAL_DEST
-        using (
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
 
 
 
@@ -54,15 +59,5 @@ LEFT JOIN
   submissions s
   ON
   j.journal_id = s.journal_id
-        ) as DBT_INTERNAL_SOURCE
-        on (FALSE)
-
-    
-
-    when not matched then insert
-        (`journal_id`, `journal_title`, `peer_review_system`, `site_status`, `status_date`)
-    values
-        (`journal_id`, `journal_title`, `peer_review_system`, `site_status`, `status_date`)
-
-
-    
+    );
+  

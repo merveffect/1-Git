@@ -46,16 +46,8 @@ WITH
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_ga`
     
-  
-  
-  WHERE date BETWEEN 
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
-    AND
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
+  WHERE date BETWEEN DATE('2024-01-01')
+                  AND DATE('2025-11-01')
 
   GROUP BY
     date,
@@ -89,16 +81,8 @@ WITH
   FROM
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_mktp`
     
-  
-  
-  WHERE date BETWEEN 
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
-    AND
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
+  WHERE date BETWEEN DATE('2024-01-01')
+                  AND DATE('2025-11-01')
 
   GROUP BY
     cost_date,
