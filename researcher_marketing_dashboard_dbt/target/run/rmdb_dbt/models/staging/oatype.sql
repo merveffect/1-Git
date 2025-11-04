@@ -1,13 +1,18 @@
--- back compat for old kwarg name
+
   
-  
-        
+    
+
+    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`oatype`
+      
+    
     
 
     
-
-    merge into `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`oatype` as DBT_INTERNAL_DEST
-        using (
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
 
 WITH
   main AS (
@@ -52,15 +57,5 @@ WITH
     1. only select fields necessary for OA type mapping as there are a lot of duplicate entries in the journals table data set (pricing for instance tends to have multiple values for otherwise identical entries *shrug emoji*)
     2. only select where JournalStatus = "ACTIVE"; 5 journals who have both active and inactive entries with different journal keys, specifically: journal of activity, sedentary and sleep behaviors/quantum frontiers/african journal of urology/annals of pediatric surgery/international transactions on systems science and applications
     */
-        ) as DBT_INTERNAL_SOURCE
-        on (FALSE)
-
-    
-
-    when not matched then insert
-        (`journaltitle`, `oatype`, `JournalKey`, `JournalValidFrom`, `journal_imprint`, `sequence`)
-    values
-        (`journaltitle`, `oatype`, `JournalKey`, `JournalValidFrom`, `journal_imprint`, `sequence`)
-
-
-    
+    );
+  

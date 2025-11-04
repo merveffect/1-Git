@@ -18,16 +18,8 @@ WITH
     `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j7`
      
     
-  
-  
-  WHERE date BETWEEN 
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
-    AND
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
+  WHERE date BETWEEN DATE('2024-01-01')
+                  AND DATE('2025-11-01')
 
 
   GROUP BY
@@ -55,16 +47,8 @@ WITH
   FROM
     `snproject-cbb9ca25`.`cookie_consent_data`.`marketing_view`
     
-  
-  
-  WHERE date BETWEEN 
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
-    AND
-    
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    
+  WHERE date BETWEEN DATE('2024-01-01')
+                  AND DATE('2025-11-01')
 
   GROUP BY
     1,
