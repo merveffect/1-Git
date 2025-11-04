@@ -23,7 +23,7 @@ resource "time_static" "trigger" {}
 #These values can be referenced anywhere in the code using local.<name>.
 
 locals { 
-  ae_project_id = "	dat-analytics-eng-ec869189" # defines a local variable called ae_project_id
+  ae_project_id = "	snproject-cbb9ca25" # defines a local variable called ae_project_id
   env        = "dev"  #Commonly used for naming resources ("bucket-${local.env}") or labeling them.
   default_labels = {
     "terraform" : true
