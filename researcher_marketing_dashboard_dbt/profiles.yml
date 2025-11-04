@@ -12,6 +12,7 @@ rmdb_dbt:
       location: EU # Optional, one of US or EU
       priority: interactive
       retries: 1
+
       
     prod:
       type: bigquery
