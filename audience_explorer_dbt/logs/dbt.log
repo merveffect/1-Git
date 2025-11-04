@@ -115279,3 +115279,1050 @@ select
 [0m14:55:39.778080 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002A4E683FD10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002A4935F1370>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002A4935F09B0>]}
 [0m14:55:39.780038 [debug] [MainThread]: Flushing usage events
 [0m14:55:40.416580 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m14:09:56.752208 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001BAD91C01A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001BADB1C7ED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001BADB1C7B10>]}
+
+
+============================== 14:09:56.763371 | 52eed39b-1b02-4661-a2ed-0b6886ab69d9 ==============================
+[0m14:09:56.763371 [info ] [MainThread]: Running with dbt=1.10.5
+[0m14:09:56.764378 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'version_check': 'True', 'debug': 'False', 'log_path': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt\\logs', 'profiles_dir': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt', 'fail_fast': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'None', 'quiet': 'False', 'no_print': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'invocation_command': 'dbt debug', 'static_parser': 'True', 'introspect': 'True', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m14:09:56.814493 [info ] [MainThread]: dbt version: 1.10.5
+[0m14:09:56.815824 [info ] [MainThread]: python version: 3.13.5
+[0m14:09:56.816554 [info ] [MainThread]: python path: C:\analytics_engineering_dbt\dbt-env\Scripts\python.exe
+[0m14:09:56.817240 [info ] [MainThread]: os info: Windows-11-10.0.26100-SP0
+[0m14:10:03.459493 [info ] [MainThread]: Using profiles dir at C:\analytics_engineering_dbt\audience_explorer_dbt
+[0m14:10:03.461087 [info ] [MainThread]: Using profiles.yml file at C:\analytics_engineering_dbt\audience_explorer_dbt\profiles.yml
+[0m14:10:03.461853 [info ] [MainThread]: Using dbt_project.yml file at C:\analytics_engineering_dbt\audience_explorer_dbt\dbt_project.yml
+[0m14:10:03.462490 [info ] [MainThread]: adapter type: bigquery
+[0m14:10:03.463184 [info ] [MainThread]: adapter version: 1.10.0
+[0m14:10:03.629405 [info ] [MainThread]: Configuration:
+[0m14:10:03.633739 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m14:10:03.635066 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m14:10:03.638107 [info ] [MainThread]: Required dependencies:
+[0m14:10:03.642362 [debug] [MainThread]: Executing "git --help"
+[0m14:10:03.808550 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--no-lazy-fetch]\n           [--no-optional-locks] [--no-advice] [--bare] [--git-dir=<path>]\n           [--work-tree=<path>] [--namespace=<name>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone      Clone a repository into a new directory\n   init       Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add        Add file contents to the index\n   mv         Move or rename a file, a directory, or a symlink\n   restore    Restore working tree files\n   rm         Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect     Use binary search to find the commit that introduced a bug\n   diff       Show changes between commits, commit and working tree, etc\n   grep       Print lines matching a pattern\n   log        Show commit logs\n   show       Show various types of objects\n   status     Show the working tree status\n\ngrow, mark and tweak your common history\n   backfill   Download missing objects in a partial clone\n   branch     List, create, or delete branches\n   commit     Record changes to the repository\n   merge      Join two or more development histories together\n   rebase     Reapply commits on top of another base tip\n   reset      Reset current HEAD to the specified state\n   switch     Switch branches\n   tag        Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch      Download objects and refs from another repository\n   pull       Fetch from and integrate with another repository or a local branch\n   push       Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m14:10:03.809569 [debug] [MainThread]: STDERR: "b''"
+[0m14:10:03.810166 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m14:10:03.810971 [info ] [MainThread]: Connection:
+[0m14:10:03.811743 [info ] [MainThread]:   method: oauth
+[0m14:10:03.812389 [info ] [MainThread]:   database: dat-analytics-eng-ec869189
+[0m14:10:03.813054 [info ] [MainThread]:   execution_project: dat-analytics-eng-ec869189
+[0m14:10:03.813821 [info ] [MainThread]:   schema: dev_audience_explorer
+[0m14:10:03.814342 [info ] [MainThread]:   location: EU
+[0m14:10:03.814824 [info ] [MainThread]:   priority: interactive
+[0m14:10:03.815266 [info ] [MainThread]:   maximum_bytes_billed: None
+[0m14:10:03.815996 [info ] [MainThread]:   impersonate_service_account: None
+[0m14:10:03.816773 [info ] [MainThread]:   job_retry_deadline_seconds: None
+[0m14:10:03.817486 [info ] [MainThread]:   job_retries: 1
+[0m14:10:03.818218 [info ] [MainThread]:   job_creation_timeout_seconds: None
+[0m14:10:03.819395 [info ] [MainThread]:   job_execution_timeout_seconds: 6000
+[0m14:10:03.820123 [info ] [MainThread]:   timeout_seconds: 6000
+[0m14:10:03.820884 [info ] [MainThread]:   client_id: None
+[0m14:10:03.821577 [info ] [MainThread]:   token_uri: None
+[0m14:10:03.822456 [info ] [MainThread]:   compute_region: None
+[0m14:10:03.823420 [info ] [MainThread]:   dataproc_cluster_name: None
+[0m14:10:03.824343 [info ] [MainThread]:   gcs_bucket: None
+[0m14:10:03.825124 [info ] [MainThread]:   dataproc_batch: None
+[0m14:10:03.826268 [info ] [MainThread]: Registered adapter: bigquery=1.10.0
+[0m14:10:05.130277 [debug] [MainThread]: Acquiring new bigquery connection 'debug'
+[0m14:10:05.130854 [debug] [MainThread]: On debug: select 1 as id
+[0m14:10:05.131442 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m14:10:09.595359 [debug] [MainThread]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:e8b06e05-11a0-43b7-9259-f9ae46cae86c&page=queryresults
+[0m14:10:10.469834 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m14:10:10.471051 [info ] [MainThread]: [32mAll checks passed![0m
+[0m14:10:10.472619 [debug] [MainThread]: Command `dbt debug` succeeded at 14:10:10.472415 after 13.99 seconds
+[0m14:10:10.473075 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m14:10:10.473567 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001BAD95196E0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001BA82EB3410>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001BA82D09F20>]}
+[0m14:10:10.474198 [debug] [MainThread]: Flushing usage events
+[0m14:10:11.103813 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m14:10:19.550467 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D65DD901A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D65FDA3ED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D65FDA3B10>]}
+
+
+============================== 14:10:19.558141 | baef8158-bbde-4738-b5d5-7951bef439a5 ==============================
+[0m14:10:19.558141 [info ] [MainThread]: Running with dbt=1.10.5
+[0m14:10:19.559879 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'fail_fast': 'False', 'version_check': 'True', 'log_path': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt\\logs', 'profiles_dir': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True', 'static_parser': 'True', 'log_format': 'default', 'target_path': 'None', 'invocation_command': 'dbt run', 'send_anonymous_usage_stats': 'True'}
+[0m14:10:25.126122 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D65E0EF6F0>]}
+[0m14:10:25.321797 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D6077D7240>]}
+[0m14:10:25.323368 [info ] [MainThread]: Registered adapter: bigquery=1.10.0
+[0m14:10:27.065985 [debug] [MainThread]: checksum: fa4c2685620973c5adba0a491aa9c06e8cf48c9113a5280b45b6efa706ae8f4b, vars: {}, profile: , target: , version: 1.10.5
+[0m14:10:27.602067 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m14:10:27.602622 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m14:10:27.700855 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D607879250>]}
+[0m14:10:27.956126 [debug] [MainThread]: Wrote artifact WritableManifest to C:\analytics_engineering_dbt\audience_explorer_dbt\target\manifest.json
+[0m14:10:27.963037 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\analytics_engineering_dbt\audience_explorer_dbt\target\semantic_manifest.json
+[0m14:10:28.014481 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D6078C9B80>]}
+[0m14:10:28.016012 [info ] [MainThread]: Found 15 models, 1 snapshot, 2 data tests, 4 sources, 614 macros, 1 unit test
+[0m14:10:28.017127 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D6079D9D30>]}
+[0m14:10:28.022931 [info ] [MainThread]: 
+[0m14:10:28.024000 [info ] [MainThread]: Concurrency: 8 threads (target='poc')
+[0m14:10:28.024999 [info ] [MainThread]: 
+[0m14:10:28.026178 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m14:10:28.036619 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189'
+[0m14:10:28.037997 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m14:10:28.038989 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189'
+[0m14:10:28.040602 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189'
+[0m14:10:28.041272 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m14:10:28.042047 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m14:10:32.504463 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189_dev_audience_explorer_analytics_dbt_staging'
+[0m14:10:32.505944 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m14:10:32.507306 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189_dev_audience_explorer_analytics_dbt_raw'
+[0m14:10:32.509527 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m14:10:32.510774 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189_snapshots'
+[0m14:10:32.515038 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m14:10:32.516582 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189_dev_audience_explorer_analytics_dbt_presentation'
+[0m14:10:32.520201 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m14:10:32.876070 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D607F8EA90>]}
+[0m14:10:32.877358 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m14:10:32.894373 [debug] [Thread-1 (]: Began running node model.analytics_dbt.raw_information_schema_columns
+[0m14:10:32.895188 [debug] [Thread-2 (]: Began running node model.analytics_dbt.raw_user_traits
+[0m14:10:32.896025 [debug] [Thread-3 (]: Began running node model.analytics_dbt.stg_user_traits_column_names
+[0m14:10:32.897270 [info ] [Thread-1 (]: 1 of 15 START sql table model dev_audience_explorer_analytics_dbt_raw.raw_information_schema_columns  [RUN]
+[0m14:10:32.901134 [debug] [Thread-1 (]: Acquiring new bigquery connection 'model.analytics_dbt.raw_information_schema_columns'
+[0m14:10:32.898734 [info ] [Thread-2 (]: 2 of 15 START sql table model dev_audience_explorer_analytics_dbt_raw.raw_user_traits  [RUN]
+[0m14:10:32.902630 [debug] [Thread-1 (]: Began compiling node model.analytics_dbt.raw_information_schema_columns
+[0m14:10:32.903850 [debug] [Thread-2 (]: Acquiring new bigquery connection 'model.analytics_dbt.raw_user_traits'
+[0m14:10:32.899913 [info ] [Thread-3 (]: 3 of 15 START sql table model dev_audience_explorer_analytics_dbt_staging.stg_user_traits_column_names  [RUN]
+[0m14:10:32.919890 [debug] [Thread-2 (]: Began compiling node model.analytics_dbt.raw_user_traits
+[0m14:10:32.925114 [debug] [Thread-1 (]: Writing injected SQL for node "model.analytics_dbt.raw_information_schema_columns"
+[0m14:10:32.926531 [debug] [Thread-3 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_user_traits_column_names'
+[0m14:10:32.934181 [debug] [Thread-2 (]: Writing injected SQL for node "model.analytics_dbt.raw_user_traits"
+[0m14:10:32.935518 [debug] [Thread-3 (]: Began compiling node model.analytics_dbt.stg_user_traits_column_names
+[0m14:10:32.940789 [debug] [Thread-3 (]: Writing injected SQL for node "model.analytics_dbt.stg_user_traits_column_names"
+[0m14:10:32.944604 [debug] [Thread-2 (]: Began executing node model.analytics_dbt.raw_user_traits
+[0m14:10:32.945480 [debug] [Thread-1 (]: Began executing node model.analytics_dbt.raw_information_schema_columns
+[0m14:10:32.946567 [debug] [Thread-3 (]: Began executing node model.analytics_dbt.stg_user_traits_column_names
+[0m14:10:32.982622 [debug] [Thread-1 (]: Opening a new connection, currently in state init
+[0m14:10:32.978487 [debug] [Thread-2 (]: Opening a new connection, currently in state init
+[0m14:10:32.986320 [debug] [Thread-3 (]: Opening a new connection, currently in state init
+[0m14:10:33.307183 [debug] [Thread-1 (]: Writing runtime sql for node "model.analytics_dbt.raw_information_schema_columns"
+[0m14:10:33.308795 [debug] [Thread-2 (]: Writing runtime sql for node "model.analytics_dbt.raw_user_traits"
+[0m14:10:33.311451 [debug] [Thread-3 (]: Writing runtime sql for node "model.analytics_dbt.stg_user_traits_column_names"
+[0m14:10:33.314058 [debug] [Thread-1 (]: On model.analytics_dbt.raw_information_schema_columns: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.raw_information_schema_columns"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`raw_information_schema_columns`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      select
+  column_name
+  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`INFORMATION_SCHEMA.COLUMNS`
+  where table_name = 'stg_df_audience_explorer_cleaned'
+    );
+  
+[0m14:10:33.315777 [debug] [Thread-2 (]: On model.analytics_dbt.raw_user_traits: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.raw_user_traits"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`raw_user_traits`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      select
+  *
+  from `cdp-data-55497fbb`.`cdp_profile_sync`.`user_traits`
+    );
+  
+[0m14:10:33.321774 [debug] [Thread-3 (]: On model.analytics_dbt.stg_user_traits_column_names: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_user_traits_column_names"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      select
+name as column_names
+from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`user_traits_spreadsheet`
+where lower(status) = '✅ keep'
+    );
+  
+[0m14:10:33.725095 [debug] [Thread-3 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:20b22726-9b81-4ae8-8b04-11e1a2a98542&page=queryresults
+[0m14:10:33.823177 [debug] [Thread-2 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:02f626c0-9a9f-4bff-9a67-545003ac2f99&page=queryresults
+[0m14:10:34.151953 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:8bf276b3-b218-4271-8f03-ed451edd85b0&page=queryresults
+[0m14:10:36.480962 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D607FDF710>]}
+[0m14:10:36.482792 [info ] [Thread-1 (]: 1 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_raw.raw_information_schema_columns  [[32mCREATE TABLE (109.0 rows, 10.0 MiB processed)[0m in 3.58s]
+[0m14:10:36.485562 [debug] [Thread-1 (]: Finished running node model.analytics_dbt.raw_information_schema_columns
+[0m14:10:37.135506 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D607F9D180>]}
+[0m14:10:37.137578 [info ] [Thread-3 (]: 3 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_staging.stg_user_traits_column_names  [[32mCREATE TABLE (102.0 rows, 20.4 KiB processed)[0m in 4.21s]
+[0m14:10:37.139716 [debug] [Thread-3 (]: Finished running node model.analytics_dbt.stg_user_traits_column_names
+[0m14:10:37.141244 [debug] [Thread-4 (]: Began running node model.analytics_dbt.stg_user_traits_column_names_history
+[0m14:10:37.142797 [info ] [Thread-4 (]: 4 of 15 START sql incremental model dev_audience_explorer_analytics_dbt_staging.stg_user_traits_column_names_history  [RUN]
+[0m14:10:37.145516 [debug] [Thread-4 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_user_traits_column_names_history'
+[0m14:10:37.147034 [debug] [Thread-4 (]: Began compiling node model.analytics_dbt.stg_user_traits_column_names_history
+[0m14:10:37.171528 [debug] [Thread-4 (]: Writing injected SQL for node "model.analytics_dbt.stg_user_traits_column_names_history"
+[0m14:10:37.175866 [debug] [Thread-4 (]: Began executing node model.analytics_dbt.stg_user_traits_column_names_history
+[0m14:10:37.282888 [debug] [Thread-4 (]: On model.analytics_dbt.stg_user_traits_column_names_history: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_user_traits_column_names_history"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history__dbt_tmp`
+      
+    partition by timestamp_trunc(ingestion_timestamp, day)
+    
+
+    
+    OPTIONS(
+      description="""""",
+    
+      expiration_timestamp=TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 12 hour)
+    )
+    as (
+      
+
+with new_data as (
+	select distinct 
+	  column_names	  
+	  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+),
+
+change_detection as (
+  select
+    column_names
+    from new_data
+    
+	    
+	  except distinct
+	  select
+	    column_names
+	    from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history`
+	    
+)
+
+select
+  column_names,
+  current_timestamp() as ingestion_timestamp
+  from change_detection
+    );
+  
+[0m14:10:37.283762 [debug] [Thread-4 (]: Opening a new connection, currently in state init
+[0m14:10:37.868841 [debug] [Thread-4 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:bb7bd4c6-c2a2-48d7-8b66-9def2c1fa031&page=queryresults
+[0m14:10:40.447676 [debug] [Thread-4 (]: 
+    In `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history`:
+        Schema changed: False
+        Source columns not in target: []
+        Target columns not in source: []
+        New column types: []
+  
+[0m14:10:40.494005 [debug] [Thread-4 (]: Writing runtime sql for node "model.analytics_dbt.stg_user_traits_column_names_history"
+[0m14:10:40.512559 [debug] [Thread-4 (]: On model.analytics_dbt.stg_user_traits_column_names_history: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_user_traits_column_names_history"} */
+-- back compat for old kwarg name
+  
+  
+        
+    
+
+    
+
+    merge into `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history` as DBT_INTERNAL_DEST
+        using (
+        select
+        * from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history__dbt_tmp`
+        ) as DBT_INTERNAL_SOURCE
+        on (FALSE)
+
+    
+
+    when not matched then insert
+        (`column_names`, `ingestion_timestamp`)
+    values
+        (`column_names`, `ingestion_timestamp`)
+
+
+    
+[0m14:10:41.069429 [debug] [Thread-4 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:a21d2933-5218-45bf-b1f7-7601672f1100&page=queryresults
+[0m14:10:44.066556 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D607FF2DF0>]}
+[0m14:10:44.068100 [info ] [Thread-4 (]: 4 of 15 OK created sql incremental model dev_audience_explorer_analytics_dbt_staging.stg_user_traits_column_names_history  [[32mMERGE (0.0 rows, 0 processed)[0m in 6.92s]
+[0m14:10:44.069949 [debug] [Thread-4 (]: Finished running node model.analytics_dbt.stg_user_traits_column_names_history
+[0m14:11:21.626473 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D607D2A350>]}
+[0m14:11:21.627629 [info ] [Thread-2 (]: 2 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_raw.raw_user_traits  [[32mCREATE TABLE (2.0b rows, 367.0 GiB processed)[0m in 48.72s]
+[0m14:11:21.628613 [debug] [Thread-2 (]: Finished running node model.analytics_dbt.raw_user_traits
+[0m14:11:21.629525 [debug] [Thread-6 (]: Began running node model.analytics_dbt.stg_lifetime_aggregations
+[0m14:11:21.630906 [debug] [Thread-5 (]: Began running node model.analytics_dbt.stg_df_audience_explorer_base
+[0m14:11:21.631369 [debug] [Thread-7 (]: Began running node model.analytics_dbt.stg_submissions
+[0m14:11:21.630363 [info ] [Thread-6 (]: 6 of 15 START sql table model dev_audience_explorer_analytics_dbt_staging.stg_lifetime_aggregations  [RUN]
+[0m14:11:21.632036 [info ] [Thread-5 (]: 5 of 15 START sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_base  [RUN]
+[0m14:11:21.634029 [debug] [Thread-6 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_lifetime_aggregations'
+[0m14:11:21.633011 [info ] [Thread-7 (]: 7 of 15 START sql table model dev_audience_explorer_analytics_dbt_staging.stg_submissions  [RUN]
+[0m14:11:21.634905 [debug] [Thread-5 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_df_audience_explorer_base'
+[0m14:11:21.635445 [debug] [Thread-6 (]: Began compiling node model.analytics_dbt.stg_lifetime_aggregations
+[0m14:11:21.636108 [debug] [Thread-7 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_submissions'
+[0m14:11:21.636640 [debug] [Thread-5 (]: Began compiling node model.analytics_dbt.stg_df_audience_explorer_base
+[0m14:11:21.641010 [debug] [Thread-6 (]: Writing injected SQL for node "model.analytics_dbt.stg_lifetime_aggregations"
+[0m14:11:21.641670 [debug] [Thread-7 (]: Began compiling node model.analytics_dbt.stg_submissions
+[0m14:11:21.662707 [debug] [Thread-5 (]: On model.analytics_dbt.stg_df_audience_explorer_base: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_df_audience_explorer_base"} */
+
+      select CONCAT("'",
+              STRING_AGG(DISTINCT column_names, "','"),
+              "'" 
+             ) as column_names from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+    
+[0m14:11:21.667154 [debug] [Thread-7 (]: Writing injected SQL for node "model.analytics_dbt.stg_submissions"
+[0m14:11:21.667953 [debug] [Thread-5 (]: Opening a new connection, currently in state init
+[0m14:11:21.669548 [debug] [Thread-6 (]: Began executing node model.analytics_dbt.stg_lifetime_aggregations
+[0m14:11:21.672661 [debug] [Thread-6 (]: Opening a new connection, currently in state init
+[0m14:11:21.675158 [debug] [Thread-7 (]: Began executing node model.analytics_dbt.stg_submissions
+[0m14:11:21.679481 [debug] [Thread-7 (]: Opening a new connection, currently in state init
+[0m14:11:22.063712 [debug] [Thread-6 (]: Writing runtime sql for node "model.analytics_dbt.stg_lifetime_aggregations"
+[0m14:11:22.066511 [debug] [Thread-7 (]: Writing runtime sql for node "model.analytics_dbt.stg_submissions"
+[0m14:11:22.067825 [debug] [Thread-6 (]: On model.analytics_dbt.stg_lifetime_aggregations: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_lifetime_aggregations"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_lifetime_aggregations`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      WITH src AS (
+  SELECT
+    t.*,
+    SAFE.PARSE_JSON(value) AS j
+  FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`raw_user_traits` AS t
+  WHERE name = 'lifetime_aggregations'
+),
+
+payload AS (
+  SELECT
+    s.* EXCEPT(j),
+    CASE
+      WHEN JSON_VALUE(s.j, '$.all_imprints') IS NOT NULL
+           AND SAFE.PARSE_JSON(JSON_VALUE(s.j, '$.all_imprints')) IS NOT NULL
+        THEN SAFE.PARSE_JSON(JSON_VALUE(s.j, '$.all_imprints'))
+      WHEN JSON_QUERY(s.j, '$.all_imprints') IS NOT NULL
+        THEN SAFE.PARSE_JSON(TO_JSON_STRING(JSON_QUERY(s.j, '$.all_imprints')))
+      ELSE NULL
+    END AS ai
+  FROM src AS s
+)
+SELECT
+  p.canonical_segment_id,
+
+  CAST(JSON_VALUE(p.ai, '$.total_accepts')        AS INT64) AS total_accepts,
+  CAST(JSON_VALUE(p.ai, '$.total_rejects')        AS INT64) AS total_rejects,
+  CAST(JSON_VALUE(p.ai, '$.total_oa_submissions') AS INT64) AS total_oa_submissions,
+  CAST(JSON_VALUE(p.ai, '$.total_submissions')    AS INT64) AS total_submissions
+FROM payload p
+    );
+  
+[0m14:11:22.069089 [debug] [Thread-7 (]: On model.analytics_dbt.stg_submissions: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_submissions"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_submissions`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      SELECT
+  t.canonical_segment_id,
+  ARRAY(
+    SELECT AS STRUCT
+      JSON_VALUE(item, '$.imprint')       AS imprint,
+      JSON_VALUE(item, '$.journal_id')    AS journal_id,
+      JSON_VALUE(item, '$.journal_title') AS journal_title,
+      SAFE_CAST(JSON_VALUE(item, '$.submission_timestamp') AS TIMESTAMP) AS submission_timestamp
+    FROM UNNEST(JSON_EXTRACT_ARRAY(t.value, '$')) AS item
+    ORDER BY SAFE_CAST(JSON_VALUE(item, '$.submission_timestamp') AS TIMESTAMP) DESC
+  ) AS submissions
+FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`raw_user_traits` AS t
+WHERE t.name = 'submissions'
+    );
+  
+[0m14:11:22.471445 [debug] [Thread-7 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:5b141504-751f-481c-8f79-3d91edda1f07&page=queryresults
+[0m14:11:22.517818 [debug] [Thread-6 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:12f9ad05-01db-4169-8d1e-7eca5bceaff8&page=queryresults
+[0m14:11:22.585018 [debug] [Thread-5 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:4c921830-6ea2-4e67-9659-192f869b98cd&page=queryresults
+[0m14:11:23.124991 [debug] [Thread-5 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_audience_explorer_base"
+[0m14:11:23.128545 [debug] [Thread-5 (]: Began executing node model.analytics_dbt.stg_df_audience_explorer_base
+[0m14:11:23.458070 [debug] [Thread-5 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_audience_explorer_base"
+[0m14:11:23.461177 [debug] [Thread-5 (]: On model.analytics_dbt.stg_df_audience_explorer_base: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_df_audience_explorer_base"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      -- depends_on: `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+
+
+
+select * from
+  (select
+    canonical_segment_id,
+    name,
+    value
+       
+    from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`raw_user_traits`
+  )
+  Pivot(max(value) for name in ('list_journals_read_last_30_d','count_article_readership_last_60_d','sn_fan_power_author','first_name','sn_journal_submitter','country','not_sn_regular_author','count_doi_last_180_d','count_submguidelines_last_30_d','most_recent_pub','not_sn_power_author','journal_awareness_1','explicit_user_choice','newsletters','list_journals_etocs_last_180_d','has_received_email','count_reach_fta_last_180_d','count_reach_fta_last_60_d','japa_all','occasional_author_2_10_publications','chatpgt_users','avg_if','researcher_id','persona','is_editorial_board_members_communications_opted_in','list_journals_submguide_about_last_30_d','permutive_id','institution_name','sn_positive_regular_author','list_journals_submissions_alltime','has_recent_online_behaviour','list_journals_submguide_about_last_60_d','sn_opportunity_regular_author','is_legitimate_interest_author_opted_in','marketing_opt_in_not_mpc','regular_author_11_20_publications','sn_opportunity_power_author','list_journals_read_last_60_d','list_doi_last_90_d','author_group_global','ga_client_id','total_amt_5yr_author_group','user_researcher_home','is_book_author_communications_opted_in','subjects','power_author_21_publications','the_source_pages_visitors','change_over_py_sn_loyalty','list_journals_allpageviews_30_d','is_editor_referral_opted_in','welcome_onboarding_retargeting_internal_display','not_sn_occasional_author','h_index','etoc_received_all','author_group_global_detailed','list_doi_last_60_d','list_journals_submission_opened_last_90_d','not_sn_one_time_author','percent_oa','count_submguidelines_last_90_days','one_time_author_1_publication','snid','years_active','count_research_integrity_last_180_d','main_f2','list_journal_etocs_last_180_d','count_reach_fta_last_90_d','sn_journal_submitters','top_publisher','is_global_subscribed','sn_fan_occasional_author','sn_positive_power_author','email','oa_articles','count_about_last_30_d','role','orcid','count_oa_content_online_last_60_d','last_name','count_els_last_60_d','sn_fan_one_time_author','cep_id','is_webshop_buyer_communications_opted_in','third_party_prom','sn_journal_authors','mkt_pref_opt_in','list_doi_last_180_d','loyalty_group','list_keywords_dois_last_60_d','email_address','braze_received_all','count_about_last_90_days','advertising_opt_in','marketing_optin_mpc','sap_outbound_id','count_researcherhome_last_180_d','sn_positive_occasional_author','online_marketing_engagement','sn_fan_regular_author','sn_opportunity_occasional_author','email_received_all','anonymous_id' ))
+    );
+  
+[0m14:11:23.828387 [debug] [Thread-5 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:720efbef-a7c5-4e15-8f2d-cd0599e1f19a&page=queryresults
+[0m14:11:27.080985 [debug] [Thread-6 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D608079080>]}
+[0m14:11:27.082250 [info ] [Thread-6 (]: 6 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_staging.stg_lifetime_aggregations  [[32mCREATE TABLE (18.8m rows, 161.9 GiB processed)[0m in 5.45s]
+[0m14:11:27.083408 [debug] [Thread-6 (]: Finished running node model.analytics_dbt.stg_lifetime_aggregations
+[0m14:11:28.855756 [debug] [Thread-7 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D608029250>]}
+[0m14:11:28.856832 [info ] [Thread-7 (]: 7 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_staging.stg_submissions  [[32mCREATE TABLE (27.2m rows, 161.9 GiB processed)[0m in 7.22s]
+[0m14:11:28.857817 [debug] [Thread-7 (]: Finished running node model.analytics_dbt.stg_submissions
+[0m14:11:56.737054 [debug] [Thread-5 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60802B6B0>]}
+[0m14:11:56.738211 [info ] [Thread-5 (]: 5 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_base  [[32mCREATE TABLE (152.4m rows, 161.9 GiB processed)[0m in 35.10s]
+[0m14:11:56.739355 [debug] [Thread-5 (]: Finished running node model.analytics_dbt.stg_df_audience_explorer_base
+[0m14:11:56.740308 [debug] [Thread-8 (]: Began running node model.analytics_dbt.stg_df_nested_columns_joined
+[0m14:11:56.741121 [info ] [Thread-8 (]: 8 of 15 START sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_nested_columns_joined  [RUN]
+[0m14:11:56.742278 [debug] [Thread-8 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_df_nested_columns_joined'
+[0m14:11:56.742900 [debug] [Thread-8 (]: Began compiling node model.analytics_dbt.stg_df_nested_columns_joined
+[0m14:11:56.748986 [debug] [Thread-8 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_nested_columns_joined"
+[0m14:11:56.751961 [debug] [Thread-8 (]: Began executing node model.analytics_dbt.stg_df_nested_columns_joined
+[0m14:11:56.755596 [debug] [Thread-8 (]: Opening a new connection, currently in state init
+[0m14:11:57.044753 [debug] [Thread-8 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_nested_columns_joined"
+[0m14:11:57.047982 [debug] [Thread-8 (]: On model.analytics_dbt.stg_df_nested_columns_joined: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_df_nested_columns_joined"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_nested_columns_joined`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      WITH base AS (
+    SELECT *
+    FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base`
+),
+subs AS (
+    SELECT * 
+    FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_submissions`
+),
+life AS (
+    SELECT * 
+    FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_lifetime_aggregations`
+)
+
+SELECT
+    base.*,
+    subs.* EXCEPT(canonical_segment_id),
+    life.* EXCEPT(canonical_segment_id)
+FROM base
+LEFT JOIN subs USING (canonical_segment_id)
+LEFT JOIN life USING (canonical_segment_id)
+    );
+  
+[0m14:11:57.385669 [debug] [Thread-8 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:0f3aa0ef-5664-4c9b-820b-5863aaac7532&page=queryresults
+[0m14:12:13.695660 [debug] [Thread-8 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60802AE10>]}
+[0m14:12:13.696428 [info ] [Thread-8 (]: 8 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_nested_columns_joined  [[32mCREATE TABLE (152.4m rows, 36.9 GiB processed)[0m in 16.95s]
+[0m14:12:13.697259 [debug] [Thread-8 (]: Finished running node model.analytics_dbt.stg_df_nested_columns_joined
+[0m14:12:13.698097 [debug] [Thread-1 (]: Began running node model.analytics_dbt.stg_df_audience_explorer_base_2
+[0m14:12:13.698660 [info ] [Thread-1 (]: 9 of 15 START sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_base_2  [RUN]
+[0m14:12:13.699261 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.raw_information_schema_columns, now model.analytics_dbt.stg_df_audience_explorer_base_2)
+[0m14:12:13.699580 [debug] [Thread-1 (]: Began compiling node model.analytics_dbt.stg_df_audience_explorer_base_2
+[0m14:12:13.721973 [debug] [Thread-1 (]: On model.analytics_dbt.stg_df_audience_explorer_base_2: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_df_audience_explorer_base_2"} */
+select
+                column_names as value
+
+            from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+
+            
+
+            group by column_names
+            order by count(*) desc
+
+            
+
+        
+[0m14:12:13.722912 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m14:12:14.412918 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:a9c242dd-2d39-41bb-8a0c-c3a1a2cfd5c4&page=queryresults
+[0m14:12:14.967389 [info ] [Thread-1 (]: Included columns: ['list_journals_read_last_30_d', 'count_article_readership_last_60_d', 'sn_fan_power_author', 'sn_journal_submitter', 'country', 'not_sn_regular_author', 'count_doi_last_180_d', 'count_submguidelines_last_30_d', 'most_recent_pub', 'not_sn_power_author', 'journal_awareness_1', 'explicit_user_choice', 'newsletters', 'list_journals_etocs_last_180_d', 'has_received_email', 'count_reach_fta_last_180_d', 'count_reach_fta_last_60_d', 'japa_all', 'occasional_author_2_10_publications', 'chatpgt_users', 'avg_if', 'persona', 'is_editorial_board_members_communications_opted_in', 'list_journals_submguide_about_last_30_d', 'institution_name', 'sn_positive_regular_author', 'list_journals_submissions_alltime', 'has_recent_online_behaviour', 'list_journals_submguide_about_last_60_d', 'sn_opportunity_regular_author', 'is_legitimate_interest_author_opted_in', 'marketing_opt_in_not_mpc', 'regular_author_11_20_publications', 'sn_opportunity_power_author', 'list_journals_read_last_60_d', 'list_doi_last_90_d', 'author_group_global', 'total_amt_5yr_author_group', 'user_researcher_home', 'is_book_author_communications_opted_in', 'subjects', 'power_author_21_publications', 'the_source_pages_visitors', 'change_over_py_sn_loyalty', 'list_journals_allpageviews_30_d', 'is_editor_referral_opted_in', 'welcome_onboarding_retargeting_internal_display', 'not_sn_occasional_author', 'h_index', 'etoc_received_all', 'author_group_global_detailed', 'list_doi_last_60_d', 'list_journals_submission_opened_last_90_d', 'not_sn_one_time_author', 'percent_oa', 'count_submguidelines_last_90_days', 'one_time_author_1_publication', 'years_active', 'count_research_integrity_last_180_d', 'main_f2', 'list_journal_etocs_last_180_d', 'count_reach_fta_last_90_d', 'sn_journal_submitters', 'top_publisher', 'is_global_subscribed', 'sn_fan_occasional_author', 'sn_positive_power_author', 'oa_articles', 'count_about_last_30_d', 'role', 'count_oa_content_online_last_60_d', 'count_els_last_60_d', 'sn_fan_one_time_author', 'cep_id', 'is_webshop_buyer_communications_opted_in', 'third_party_prom', 'sn_journal_authors', 'mkt_pref_opt_in', 'list_doi_last_180_d', 'loyalty_group', 'list_keywords_dois_last_60_d', 'email_address', 'braze_received_all', 'count_about_last_90_days', 'advertising_opt_in', 'marketing_optin_mpc', 'count_researcherhome_last_180_d', 'sn_positive_occasional_author', 'online_marketing_engagement', 'sn_fan_regular_author', 'sn_opportunity_occasional_author', 'email_received_all']
+[0m14:12:14.974274 [debug] [Thread-1 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_audience_explorer_base_2"
+[0m14:12:14.977578 [debug] [Thread-1 (]: Began executing node model.analytics_dbt.stg_df_audience_explorer_base_2
+[0m14:12:15.164153 [debug] [Thread-1 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_audience_explorer_base_2"
+[0m14:12:15.166923 [debug] [Thread-1 (]: On model.analytics_dbt.stg_df_audience_explorer_base_2: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_df_audience_explorer_base_2"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      -- depends_on: `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`raw_user_traits`
+
+
+
+
+
+
+
+
+WITH base AS (
+  SELECT * FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_nested_columns_joined`
+
+)
+
+
+SELECT *, 
+       CASE 
+        WHEN list_journals_read_last_30_d IS NULL AND count_article_readership_last_60_d IS NULL AND sn_fan_power_author IS NULL AND sn_journal_submitter IS NULL AND country IS NULL AND not_sn_regular_author IS NULL AND count_doi_last_180_d IS NULL AND count_submguidelines_last_30_d IS NULL AND most_recent_pub IS NULL AND not_sn_power_author IS NULL AND journal_awareness_1 IS NULL AND explicit_user_choice IS NULL AND newsletters IS NULL AND list_journals_etocs_last_180_d IS NULL AND has_received_email IS NULL AND count_reach_fta_last_180_d IS NULL AND count_reach_fta_last_60_d IS NULL AND japa_all IS NULL AND occasional_author_2_10_publications IS NULL AND chatpgt_users IS NULL AND avg_if IS NULL AND persona IS NULL AND is_editorial_board_members_communications_opted_in IS NULL AND list_journals_submguide_about_last_30_d IS NULL AND institution_name IS NULL AND sn_positive_regular_author IS NULL AND list_journals_submissions_alltime IS NULL AND has_recent_online_behaviour IS NULL AND list_journals_submguide_about_last_60_d IS NULL AND sn_opportunity_regular_author IS NULL AND is_legitimate_interest_author_opted_in IS NULL AND marketing_opt_in_not_mpc IS NULL AND regular_author_11_20_publications IS NULL AND sn_opportunity_power_author IS NULL AND list_journals_read_last_60_d IS NULL AND list_doi_last_90_d IS NULL AND author_group_global IS NULL AND total_amt_5yr_author_group IS NULL AND user_researcher_home IS NULL AND is_book_author_communications_opted_in IS NULL AND subjects IS NULL AND power_author_21_publications IS NULL AND the_source_pages_visitors IS NULL AND change_over_py_sn_loyalty IS NULL AND list_journals_allpageviews_30_d IS NULL AND is_editor_referral_opted_in IS NULL AND welcome_onboarding_retargeting_internal_display IS NULL AND not_sn_occasional_author IS NULL AND h_index IS NULL AND etoc_received_all IS NULL AND author_group_global_detailed IS NULL AND list_doi_last_60_d IS NULL AND list_journals_submission_opened_last_90_d IS NULL AND not_sn_one_time_author IS NULL AND percent_oa IS NULL AND count_submguidelines_last_90_days IS NULL AND one_time_author_1_publication IS NULL AND years_active IS NULL AND count_research_integrity_last_180_d IS NULL AND main_f2 IS NULL AND list_journal_etocs_last_180_d IS NULL AND count_reach_fta_last_90_d IS NULL AND sn_journal_submitters IS NULL AND top_publisher IS NULL AND is_global_subscribed IS NULL AND sn_fan_occasional_author IS NULL AND sn_positive_power_author IS NULL AND oa_articles IS NULL AND count_about_last_30_d IS NULL AND role IS NULL AND count_oa_content_online_last_60_d IS NULL AND count_els_last_60_d IS NULL AND sn_fan_one_time_author IS NULL AND cep_id IS NULL AND is_webshop_buyer_communications_opted_in IS NULL AND third_party_prom IS NULL AND sn_journal_authors IS NULL AND mkt_pref_opt_in IS NULL AND list_doi_last_180_d IS NULL AND loyalty_group IS NULL AND list_keywords_dois_last_60_d IS NULL AND email_address IS NULL AND braze_received_all IS NULL AND count_about_last_90_days IS NULL AND advertising_opt_in IS NULL AND marketing_optin_mpc IS NULL AND count_researcherhome_last_180_d IS NULL AND sn_positive_occasional_author IS NULL AND online_marketing_engagement IS NULL AND sn_fan_regular_author IS NULL AND sn_opportunity_occasional_author IS NULL AND email_received_all IS NULL THEN 0 
+        ELSE 1 
+        END AS flag_column 
+FROM base
+    );
+  
+[0m14:12:15.585273 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:e48c700c-b57b-4e02-90a4-d5cc5f2dd562&page=queryresults
+[0m14:12:27.618868 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60848D9D0>]}
+[0m14:12:27.620257 [info ] [Thread-1 (]: 9 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_base_2  [[32mCREATE TABLE (152.4m rows, 35.5 GiB processed)[0m in 13.92s]
+[0m14:12:27.621530 [debug] [Thread-1 (]: Finished running node model.analytics_dbt.stg_df_audience_explorer_base_2
+[0m14:12:27.622796 [debug] [Thread-4 (]: Began running node model.analytics_dbt.stg_df_audience_explorer_id_flags
+[0m14:12:27.623539 [debug] [Thread-3 (]: Began running node model.analytics_dbt.stg_df_audience_explorer_cleaned
+[0m14:12:27.624348 [info ] [Thread-4 (]: 11 of 15 START sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_id_flags  [RUN]
+[0m14:12:27.626650 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_user_traits_column_names_history, now model.analytics_dbt.stg_df_audience_explorer_id_flags)
+[0m14:12:27.625252 [info ] [Thread-3 (]: 10 of 15 START sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_cleaned  [RUN]
+[0m14:12:27.627759 [debug] [Thread-4 (]: Began compiling node model.analytics_dbt.stg_df_audience_explorer_id_flags
+[0m14:12:27.628468 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_user_traits_column_names, now model.analytics_dbt.stg_df_audience_explorer_cleaned)
+[0m14:12:27.632884 [debug] [Thread-4 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_audience_explorer_id_flags"
+[0m14:12:27.633568 [debug] [Thread-3 (]: Began compiling node model.analytics_dbt.stg_df_audience_explorer_cleaned
+[0m14:12:27.638605 [debug] [Thread-3 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_audience_explorer_cleaned"
+[0m14:12:27.642017 [debug] [Thread-4 (]: Began executing node model.analytics_dbt.stg_df_audience_explorer_id_flags
+[0m14:12:27.645328 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m14:12:27.645947 [debug] [Thread-3 (]: Began executing node model.analytics_dbt.stg_df_audience_explorer_cleaned
+[0m14:12:27.650108 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m14:12:27.956786 [debug] [Thread-4 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_audience_explorer_id_flags"
+[0m14:12:27.962550 [debug] [Thread-4 (]: On model.analytics_dbt.stg_df_audience_explorer_id_flags: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_df_audience_explorer_id_flags"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      select
+canonical_segment_id,
+ (email IS NOT NULL) AS email_flag,
+  (anonymous_id IS NOT NULL) AS anonymous_id_flag,
+  (sap_outbound_id IS NOT NULL) AS sap_outbound_id_flag,
+  (last_name IS NOT NULL) AS last_name_flag,
+  (snid IS NOT NULL) AS snid_flag,
+  (researcher_id IS NOT NULL) AS researcher_id_flag,
+  (orcid IS NOT NULL) AS orcid_flag,
+  (ga_client_id IS NOT NULL) AS ga_client_id_flag,
+  (first_name IS NOT NULL) AS first_name_flag,
+  (permutive_id IS NOT NULL) AS permutive_id_flag,
+  (cep_id IS NOT NULL) AS cep_id_flag,
+  
+  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
+    );
+  
+[0m14:12:28.013616 [debug] [Thread-3 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_audience_explorer_cleaned"
+[0m14:12:28.015710 [debug] [Thread-3 (]: On model.analytics_dbt.stg_df_audience_explorer_cleaned: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.stg_df_audience_explorer_cleaned"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
+
+SELECT
+
+  * EXCEPT(advertising_opt_in, mkt_pref_opt_in, subjects, list_keywords_dois_last_60_d),
+
+
+  NULLIF(advertising_opt_in, 'null') AS advertising_opt_in,
+  NULLIF(mkt_pref_opt_in, 'null') AS mkt_pref_opt_in,
+  NULLIF(subjects, '[]') AS subjects,
+
+
+  REPLACE(
+    REPLACE(
+      REPLACE(
+        REPLACE(list_keywords_dois_last_60_d, '[', ''),
+        ']', ''
+      ),
+      '\"', ''
+    ),
+    '"', ''
+  ) AS list_keywords_dois_last_60_d
+
+FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
+    );
+  
+[0m14:12:28.326673 [debug] [Thread-4 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:a5057cbc-fd84-4dd1-bf53-f54d5c6ffe18&page=queryresults
+[0m14:12:28.363394 [debug] [Thread-3 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:471e3c3e-432e-4a13-b660-c46545c8956f&page=queryresults
+[0m14:12:33.660466 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60848DC10>]}
+[0m14:12:33.661747 [info ] [Thread-4 (]: 11 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_id_flags  [[32mCREATE TABLE (152.4m rows, 8.9 GiB processed)[0m in 6.03s]
+[0m14:12:33.662655 [debug] [Thread-4 (]: Finished running node model.analytics_dbt.stg_df_audience_explorer_id_flags
+[0m14:12:54.468186 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60848D7F0>]}
+[0m14:12:54.469212 [info ] [Thread-3 (]: 10 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_cleaned  [[32mCREATE TABLE (152.4m rows, 36.7 GiB processed)[0m in 26.84s]
+[0m14:12:54.470548 [debug] [Thread-3 (]: Finished running node model.analytics_dbt.stg_df_audience_explorer_cleaned
+[0m14:12:54.471497 [debug] [Thread-2 (]: Began running node model.analytics_dbt.audience_builder_big
+[0m14:12:54.472136 [info ] [Thread-2 (]: 12 of 15 START sql table model dev_audience_explorer_analytics_dbt_presentation.audience_builder_big  [RUN]
+[0m14:12:54.473110 [debug] [Thread-2 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.raw_user_traits, now model.analytics_dbt.audience_builder_big)
+[0m14:12:54.473716 [debug] [Thread-2 (]: Began compiling node model.analytics_dbt.audience_builder_big
+[0m14:12:54.480391 [debug] [Thread-2 (]: Writing injected SQL for node "model.analytics_dbt.audience_builder_big"
+[0m14:12:54.484400 [debug] [Thread-2 (]: Began executing node model.analytics_dbt.audience_builder_big
+[0m14:12:54.487949 [debug] [Thread-2 (]: Opening a new connection, currently in state closed
+[0m14:12:54.785907 [debug] [Thread-2 (]: Writing runtime sql for node "model.analytics_dbt.audience_builder_big"
+[0m14:12:54.789292 [debug] [Thread-2 (]: On model.analytics_dbt.audience_builder_big: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.audience_builder_big"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+      
+    
+    
+
+    
+    OPTIONS(
+      description="""This model includes a comprehensive set of features for audience segmentation and analysis."""
+    )
+    as (
+      select 
+	cleaned.canonical_segment_id, 
+	True as all_audiences,
+	CAST(snid as STRING) as snid,
+	CAST(role AS STRING ) AS role,
+	CAST(institution_name AS STRING ) AS institution_name,
+	CAST(advertising_opt_in AS BOOL ) AS advertising_opt_in,
+	CAST(subjects AS STRING ) AS subjects,
+	CAST(mkt_pref_opt_in AS BOOL ) AS mkt_pref_opt_in,
+	CAST(main_f2 AS STRING ) AS main_f2,
+	CAST(change_over_py_sn_loyalty AS STRING ) AS change_over_py_sn_loyalty,
+	CAST(oa_articles AS INT ) AS oa_articles,
+	CAST(percent_oa AS NUMERIC ) AS percent_oa,
+	CAST(h_index AS INT ) AS h_index,
+	CAST(most_recent_pub AS DATE ) AS most_recent_pub,
+	CAST(avg_if AS NUMERIC ) AS avg_if,
+	CAST(loyalty_group AS STRING ) AS loyalty_group,
+	CAST(years_active AS INT ) AS years_active,
+	CAST(total_amt_5yr_author_group AS STRING ) AS total_amt_5yr_author_group,
+	CAST(top_publisher AS STRING ) AS top_publisher,
+	CAST(country AS STRING ) AS country,
+	CAST(persona AS STRING ) AS persona,
+	CAST(snid_flag AS BOOL ) AS snid_flag,
+	CAST(first_name_flag AS BOOL ) AS first_name_flag,
+	CAST(ga_client_id_flag AS BOOL ) AS ga_client_id_flag,
+	CAST(orcid_flag AS BOOL ) AS orcid_flag,
+	CAST(researcher_id_flag AS BOOL ) AS researcher_id_flag,
+	CAST(email_flag AS BOOL ) AS email_flag,
+	CAST(last_name_flag AS BOOL ) AS last_name_flag,
+	CAST(sap_outbound_id_flag AS BOOL ) AS sap_outbound_id_flag,
+	CAST(anonymous_id_flag AS BOOL ) AS anonymous_id_flag,
+	CAST(flag_column AS BOOL ) AS flag_column,
+	CAST(permutive_id_flag AS BOOL ) AS permutive_id_flag,
+	CAST(count_submguidelines_last_90_days AS INT ) AS count_submguidelines_last_90_days,
+	CAST(count_oa_content_online_last_60_d AS INT ) AS count_oa_content_online_last_60_d,
+	CAST(count_els_last_60_d AS INT ) AS count_els_last_60_d,
+	CAST(count_doi_last_180_d AS INT ) AS count_doi_last_180_d,
+	CAST(has_recent_online_behaviour AS INT ) AS has_recent_online_behaviour,
+	CAST(the_source_pages_visitors AS BOOL ) AS the_source_pages_visitors,
+	CAST(list_doi_last_180_d AS STRING ) AS list_doi_last_180_d,
+	CAST(list_journals_submguide_about_last_30_d AS STRING ) AS list_journals_submguide_about_last_30_d,
+	CAST(count_research_integrity_last_180_d AS INT ) AS count_research_integrity_last_180_d,
+	CAST(count_about_last_90_days AS INT ) AS count_about_last_90_days,
+	CAST(list_journals_read_last_30_d AS STRING ) AS list_journals_read_last_30_d,
+	CAST(sn_journal_submitter AS INT ) AS sn_journal_submitter,
+	CAST(sn_journal_authors AS INT ) AS sn_journal_authors,
+	CAST(list_doi_last_90_d as STRING) as list_doi_last_90_d,
+	CAST(list_journals_read_last_60_d as STRING) as list_journals_read_last_60_d,
+	CAST(list_journals_submguide_about_last_60_d as STRING) as list_journals_submguide_about_last_60_d,
+	CAST(list_doi_last_60_d as STRING) as list_doi_last_60_d,
+	CAST(list_keywords_dois_last_60_d as STRING) as list_keywords_dois_last_60_d,
+	CAST(list_journals_submission_opened_last_90_d as STRING) as list_journals_submission_opened_last_90_d,
+	CAST(occasional_author_2_10_publications as BOOL) as occasional_author_2_10_publications,
+	CAST(one_time_author_1_publication as BOOL) as one_time_author_1_publication,
+	CAST(regular_author_11_20_publications as BOOL) as regular_author_11_20_publications,
+	CAST(power_author_21_publications as BOOL) as power_author_21_publications,
+	CAST(cep_id_flag as BOOL) as cep_id_flag,
+	CAST(author_group_global_detailed as STRING) as author_group_global_detailed,
+	CAST(author_group_global as STRING) as author_group_global,
+	CAST(count_researcherhome_last_180_d as INT) as count_researcherhome_last_180_d,
+	CAST(user_researcher_home as BOOL) as user_researcher_home,
+	CAST(not_sn_occasional_author AS BOOL) AS not_sn_occasional_author,
+	CAST(not_sn_one_time_author AS BOOL) AS not_sn_one_time_author,
+	CAST(not_sn_power_author AS BOOL) AS not_sn_power_author,
+	CAST(not_sn_regular_author AS BOOL) AS not_sn_regular_author,
+	CAST(sn_fan_occasional_author AS BOOL) AS sn_fan_occasional_author,
+	CAST(sn_fan_one_time_author AS BOOL) AS sn_fan_one_time_author,
+	CAST(sn_fan_power_author AS BOOL) AS sn_fan_power_author,
+	CAST(sn_fan_regular_author AS BOOL) AS sn_fan_regular_author,
+	CAST(sn_opportunity_occasional_author AS BOOL) AS sn_opportunity_occasional_author,
+	CAST(sn_opportunity_power_author AS BOOL) AS sn_opportunity_power_author,
+	CAST(sn_opportunity_regular_author AS BOOL) AS sn_opportunity_regular_author,
+	CAST(sn_positive_occasional_author AS BOOL) AS sn_positive_occasional_author,
+	CAST(sn_positive_power_author AS BOOL) AS sn_positive_power_author,
+	CAST(sn_positive_regular_author AS BOOL) AS sn_positive_regular_author,
+	CAST(submissions[SAFE_OFFSET(0)].imprint AS STRING)               AS last_submission_imprint,
+	CAST(submissions[SAFE_OFFSET(0)].journal_id AS STRING)            AS journal_id,
+	CAST(submissions[SAFE_OFFSET(0)].journal_title AS STRING)         AS journal_title,
+	CAST(submissions[SAFE_OFFSET(0)].submission_timestamp AS TIMESTAMP) AS submission_timestamp,	
+	CAST(total_accepts AS INT) AS lifetime_aggregations_accepts,
+    CAST(total_rejects AS INT) AS lifetime_aggregations_rejects,
+    CAST(total_oa_submissions AS INT) AS lifetime_aggregations_oa_submissions,
+    CAST(total_submissions AS INT) AS lifetime_aggregations_submissions,
+	--recently added columns
+	CAST(braze_received_all AS BOOL) AS braze_received_all,
+	CAST(chatpgt_users AS BOOL) AS chatpgt_users,
+	CAST(count_about_last_30_d AS INT) AS count_about_last_30_d,
+	CAST(count_article_readership_last_60_d AS INT) AS count_article_readership_last_60_d,
+	CAST(count_reach_fta_last_180_d AS INT) AS count_reach_fta_last_180_d,
+	CAST(count_reach_fta_last_60_d AS INT) AS count_reach_fta_last_60_d,
+	CAST(count_reach_fta_last_90_d AS INT) AS count_reach_fta_last_90_d,
+	CAST(count_submguidelines_last_30_d AS INT) AS count_submguidelines_last_30_d,
+	CAST(email_received_all AS BOOL) AS email_received_all,
+	CAST(etoc_received_all AS BOOL) AS etoc_received_all,
+	CAST(journal_awareness_1 AS BOOL) AS journal_awareness_1,
+	CAST(list_journals_etocs_last_180_d AS STRING) AS list_journals_etocs_last_180_d,
+	CAST(list_journals_submissions_alltime AS STRING) AS list_journals_submissions_alltime,
+	CAST(online_marketing_engagement AS BOOL) AS online_marketing_engagement,
+	CAST(welcome_onboarding_retargeting_internal_display AS BOOL) AS welcome_onboarding_retargeting_internal_display,
+ --RECENT COLUMNS ADDED 
+   CAST(anonymous_id AS STRING) AS anonymous_id,
+   CAST(cep_id AS STRING) AS cep_id,
+   CAST(email AS STRING) AS email,
+   CAST(email_address AS STRING) AS email_address,
+   CAST(explicit_user_choice AS STRING) AS explicit_user_choice,
+   CAST(first_name AS STRING) AS first_name,
+   CAST(ga_client_id AS STRING) AS ga_client_id,
+   CAST(has_received_email AS STRING) AS has_received_email,
+   CAST(is_book_author_communications_opted_in AS STRING) AS is_book_author_communications_opted_in,
+   CAST(is_editorial_board_members_communications_opted_in AS STRING) AS is_editorial_board_members_communications_opted_in,
+   CAST(is_global_subscribed AS STRING) AS is_global_subscribed,
+   CAST(is_legitimate_interest_author_opted_in AS STRING) AS is_legitimate_interest_author_opted_in,
+   CAST(is_webshop_buyer_communications_opted_in AS STRING) AS is_webshop_buyer_communications_opted_in,
+   
+
+CAST(last_name AS STRING) AS last_name,
+CAST(list_journals_allpageviews_30_d AS STRING) AS list_journals_allpageviews_30_d,
+CAST(newsletters AS STRING) AS newsletters,
+CAST(orcid AS STRING) AS orcid,
+CAST(permutive_id AS STRING) AS permutive_id,
+CAST(researcher_id AS STRING) AS researcher_id,
+CAST(sap_outbound_id AS STRING) AS sap_outbound_id,
+CAST(sn_journal_submitters AS STRING) AS sn_journal_submitters,
+CAST(third_party_prom AS STRING) AS third_party_prom,
+CAST(marketing_optin_mpc AS STRING) AS marketing_optin_mpc,
+CAST(japa_all AS STRING) AS japa_all,
+CAST(marketing_opt_in_not_mpc AS STRING) AS marketing_opt_in_not_mpc,
+CAST(is_editor_referral_opted_in AS BOOL) AS is_editor_referral_opted_in,
+
+
+  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
+  left join `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
+  on cleaned.canonical_segment_id = flags.canonical_segment_id
+  where cleaned.flag_column = 1
+    );
+  
+[0m14:12:55.235078 [debug] [Thread-2 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:a68c47dd-fbba-43f6-b6cd-7c101f243ced&page=queryresults
+[0m14:13:08.912630 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60848EDB0>]}
+[0m14:13:08.913500 [info ] [Thread-2 (]: 12 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_presentation.audience_builder_big  [[32mCREATE TABLE (135.9m rows, 41.7 GiB processed)[0m in 14.44s]
+[0m14:13:08.914739 [debug] [Thread-2 (]: Finished running node model.analytics_dbt.audience_builder_big
+[0m14:13:08.915633 [debug] [Thread-7 (]: Began running node model.analytics_dbt.audience_builder_optin
+[0m14:13:08.916582 [debug] [Thread-6 (]: Began running node model.analytics_dbt.audience_builder_big_history
+[0m14:13:08.917728 [debug] [Thread-5 (]: Began running node model.analytics_dbt.audience_builder_researcher_home
+[0m14:13:08.916149 [info ] [Thread-7 (]: 14 of 15 START sql table model dev_audience_explorer_analytics_dbt_presentation.audience_builder_optin  [RUN]
+[0m14:13:08.917318 [info ] [Thread-6 (]: 13 of 15 START sql incremental model dev_audience_explorer_analytics_dbt_presentation.audience_builder_big_history  [RUN]
+[0m14:13:08.919833 [debug] [Thread-7 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_submissions, now model.analytics_dbt.audience_builder_optin)
+[0m14:13:08.920729 [debug] [Thread-6 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_lifetime_aggregations, now model.analytics_dbt.audience_builder_big_history)
+[0m14:13:08.918529 [info ] [Thread-5 (]: 15 of 15 START sql table model dev_audience_explorer_analytics_dbt_presentation.audience_builder_researcher_home  [RUN]
+[0m14:13:08.921772 [debug] [Thread-7 (]: Began compiling node model.analytics_dbt.audience_builder_optin
+[0m14:13:08.922450 [debug] [Thread-6 (]: Began compiling node model.analytics_dbt.audience_builder_big_history
+[0m14:13:08.923049 [debug] [Thread-5 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_df_audience_explorer_base, now model.analytics_dbt.audience_builder_researcher_home)
+[0m14:13:08.928098 [debug] [Thread-7 (]: Writing injected SQL for node "model.analytics_dbt.audience_builder_optin"
+[0m14:13:08.933642 [debug] [Thread-6 (]: Writing injected SQL for node "model.analytics_dbt.audience_builder_big_history"
+[0m14:13:08.934583 [debug] [Thread-5 (]: Began compiling node model.analytics_dbt.audience_builder_researcher_home
+[0m14:13:08.940737 [debug] [Thread-5 (]: Writing injected SQL for node "model.analytics_dbt.audience_builder_researcher_home"
+[0m14:13:08.942917 [debug] [Thread-7 (]: Began executing node model.analytics_dbt.audience_builder_optin
+[0m14:13:08.943651 [debug] [Thread-6 (]: Began executing node model.analytics_dbt.audience_builder_big_history
+[0m14:13:08.945973 [debug] [Thread-7 (]: Opening a new connection, currently in state closed
+[0m14:13:08.958385 [debug] [Thread-6 (]: On model.analytics_dbt.audience_builder_big_history: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.audience_builder_big_history"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history__dbt_tmp`
+      
+    partition by timestamp_trunc(ingestion_timestamp, day)
+    
+
+    
+    OPTIONS(
+      description="""""",
+    
+      expiration_timestamp=TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 12 hour)
+    )
+    as (
+      
+
+with new_data as (
+	select distinct 
+	  canonical_segment_id 	  
+	  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+),
+
+change_detection as (
+  select
+    canonical_segment_id
+    from new_data
+    
+	    
+	  except distinct
+	  select
+	    canonical_segment_id
+	    from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history`
+	    
+)
+
+select
+  canonical_segment_id,
+  current_timestamp() as ingestion_timestamp
+  from change_detection
+    );
+  
+[0m14:13:08.959988 [debug] [Thread-6 (]: Opening a new connection, currently in state closed
+[0m14:13:08.961605 [debug] [Thread-5 (]: Began executing node model.analytics_dbt.audience_builder_researcher_home
+[0m14:13:08.964184 [debug] [Thread-5 (]: Opening a new connection, currently in state closed
+[0m14:13:09.259036 [debug] [Thread-5 (]: Writing runtime sql for node "model.analytics_dbt.audience_builder_researcher_home"
+[0m14:13:09.264251 [debug] [Thread-5 (]: On model.analytics_dbt.audience_builder_researcher_home: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.audience_builder_researcher_home"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_researcher_home`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
+
+SELECT user_researcher_home,
+count_researcherhome_last_180_d,
+author_group_global,
+author_group_global_detailed,
+cep_id_flag,
+list_journals_submission_opened_last_90_d,
+list_keywords_dois_last_60_d,
+list_doi_last_60_d,
+list_journals_submguide_about_last_60_d,
+list_journals_read_last_60_d,
+list_doi_last_90_d,
+sn_journal_authors,
+sn_journal_submitter,
+list_journals_read_last_30_d,
+count_about_last_90_days,
+count_research_integrity_last_180_d,
+list_journals_submguide_about_last_30_d,
+list_doi_last_180_d,
+the_source_pages_visitors,
+has_recent_online_behaviour,
+count_doi_last_180_d,
+count_els_last_60_d,
+count_oa_content_online_last_60_d,
+count_submguidelines_last_90_days,
+anonymous_id_flag,
+sap_outbound_id_flag,
+last_name_flag,
+email_flag,
+researcher_id_flag,
+orcid_flag,
+ga_client_id_flag,
+first_name_flag,
+snid_flag,
+persona,
+country,
+top_publisher,
+total_amt_5yr_author_group,
+years_active,
+loyalty_group,
+avg_if,
+most_recent_pub,
+h_index,
+percent_oa,
+oa_articles,
+change_over_py_sn_loyalty,
+main_f2,
+mkt_pref_opt_in,
+subjects,
+advertising_opt_in,
+institution_name,
+role,
+canonical_segment_id
+FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+WHERE user_researcher_home is true
+    );
+  
+[0m14:13:09.306336 [debug] [Thread-7 (]: Writing runtime sql for node "model.analytics_dbt.audience_builder_optin"
+[0m14:13:09.309357 [debug] [Thread-7 (]: On model.analytics_dbt.audience_builder_optin: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.audience_builder_optin"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_optin`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
+
+select
+  *
+  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+  where advertising_opt_in
+    );
+  
+[0m14:13:09.519293 [debug] [Thread-6 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:f191914a-80ac-4f77-a574-3c38799d0e8e&page=queryresults
+[0m14:13:09.622217 [debug] [Thread-7 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:1a768335-9841-41d8-bb44-7593d876e16e&page=queryresults
+[0m14:13:09.784807 [debug] [Thread-5 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:9a5dc76a-b545-4d40-bd97-ed110dd92079&page=queryresults
+[0m14:13:14.164894 [debug] [Thread-7 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60848E7B0>]}
+[0m14:13:14.165785 [info ] [Thread-7 (]: 14 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_presentation.audience_builder_optin  [[32mCREATE TABLE (1.1m rows, 35.9 GiB processed)[0m in 5.25s]
+[0m14:13:14.167264 [debug] [Thread-7 (]: Finished running node model.analytics_dbt.audience_builder_optin
+[0m14:13:17.435931 [debug] [Thread-6 (]: 
+    In `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history`:
+        Schema changed: False
+        Source columns not in target: []
+        Target columns not in source: []
+        New column types: []
+  
+[0m14:13:17.437698 [debug] [Thread-6 (]: Writing runtime sql for node "model.analytics_dbt.audience_builder_big_history"
+[0m14:13:17.443841 [debug] [Thread-6 (]: On model.analytics_dbt.audience_builder_big_history: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "poc", "node_id": "model.analytics_dbt.audience_builder_big_history"} */
+-- back compat for old kwarg name
+  
+  
+        
+    
+
+    
+
+    merge into `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history` as DBT_INTERNAL_DEST
+        using (
+        select
+        * from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history__dbt_tmp`
+        ) as DBT_INTERNAL_SOURCE
+        on (FALSE)
+
+    
+
+    when not matched then insert
+        (`canonical_segment_id`, `ingestion_timestamp`)
+    values
+        (`canonical_segment_id`, `ingestion_timestamp`)
+
+
+    
+[0m14:13:17.845574 [debug] [Thread-6 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:cf69e6ba-5493-4b32-a5db-b895b266439d&page=queryresults
+[0m14:13:21.766122 [debug] [Thread-6 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60802A150>]}
+[0m14:13:21.766885 [info ] [Thread-6 (]: 13 of 15 OK created sql incremental model dev_audience_explorer_analytics_dbt_presentation.audience_builder_big_history  [[32mMERGE (270.9k rows, 10.6 MiB processed)[0m in 12.85s]
+[0m14:13:21.767934 [debug] [Thread-6 (]: Finished running node model.analytics_dbt.audience_builder_big_history
+[0m14:13:24.366408 [debug] [Thread-5 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'baef8158-bbde-4738-b5d5-7951bef439a5', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60802B0B0>]}
+[0m14:13:24.367580 [info ] [Thread-5 (]: 15 of 15 OK created sql table model dev_audience_explorer_analytics_dbt_presentation.audience_builder_researcher_home  [[32mCREATE TABLE (578.3k rows, 28.8 GiB processed)[0m in 15.44s]
+[0m14:13:24.369018 [debug] [Thread-5 (]: Finished running node model.analytics_dbt.audience_builder_researcher_home
+[0m14:13:24.372581 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m14:13:24.373274 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m14:13:24.373568 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189' was properly closed.
+[0m14:13:24.373831 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189' was properly closed.
+[0m14:13:24.374063 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189' was properly closed.
+[0m14:13:24.374477 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189_dev_audience_explorer_analytics_dbt_staging' was properly closed.
+[0m14:13:24.374972 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189_dev_audience_explorer_analytics_dbt_raw' was properly closed.
+[0m14:13:24.375392 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189_snapshots' was properly closed.
+[0m14:13:24.375759 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189_dev_audience_explorer_analytics_dbt_presentation' was properly closed.
+[0m14:13:24.376102 [debug] [MainThread]: Connection 'model.analytics_dbt.stg_df_audience_explorer_base_2' was properly closed.
+[0m14:13:24.376525 [debug] [MainThread]: Connection 'model.analytics_dbt.audience_builder_big' was properly closed.
+[0m14:13:24.376865 [debug] [MainThread]: Connection 'model.analytics_dbt.stg_df_audience_explorer_cleaned' was properly closed.
+[0m14:13:24.377213 [debug] [MainThread]: Connection 'model.analytics_dbt.stg_df_audience_explorer_id_flags' was properly closed.
+[0m14:13:24.377540 [debug] [MainThread]: Connection 'model.analytics_dbt.audience_builder_big_history' was properly closed.
+[0m14:13:24.377859 [debug] [MainThread]: Connection 'model.analytics_dbt.audience_builder_researcher_home' was properly closed.
+[0m14:13:24.378197 [debug] [MainThread]: Connection 'model.analytics_dbt.audience_builder_optin' was properly closed.
+[0m14:13:24.378518 [debug] [MainThread]: Connection 'model.analytics_dbt.stg_df_nested_columns_joined' was properly closed.
+[0m14:13:24.379026 [info ] [MainThread]: 
+[0m14:13:24.379994 [info ] [MainThread]: Finished running 2 incremental models, 13 table models in 0 hours 2 minutes and 56.35 seconds (176.35s).
+[0m14:13:24.383117 [debug] [MainThread]: Command end result
+[0m14:13:24.416504 [debug] [MainThread]: Wrote artifact WritableManifest to C:\analytics_engineering_dbt\audience_explorer_dbt\target\manifest.json
+[0m14:13:24.419619 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\analytics_engineering_dbt\audience_explorer_dbt\target\semantic_manifest.json
+[0m14:13:24.435112 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\analytics_engineering_dbt\audience_explorer_dbt\target\run_results.json
+[0m14:13:24.435853 [info ] [MainThread]: 
+[0m14:13:24.436720 [info ] [MainThread]: [32mCompleted successfully[0m
+[0m14:13:24.437509 [info ] [MainThread]: 
+[0m14:13:24.438230 [info ] [MainThread]: Done. PASS=15 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=15
+[0m14:13:24.439999 [debug] [MainThread]: Command `dbt run` succeeded at 14:13:24.439759 after 185.20 seconds
+[0m14:13:24.440760 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D60826F6B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D65B8C89B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D608365B50>]}
+[0m14:13:24.441199 [debug] [MainThread]: Flushing usage events
+[0m14:13:24.972293 [debug] [MainThread]: An error was encountered while trying to flush usage events
