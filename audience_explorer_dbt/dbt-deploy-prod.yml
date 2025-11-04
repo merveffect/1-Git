@@ -1,4 +1,4 @@
-project_id: "dat-analytics-eng-ec869189"
+project_id: "snproject-cbb9ca25"
 location: europe-west1
 runner_service_account: prod-analytics-dbt-runner@snproject-cbb9ca25.iam.gserviceaccount.com
 invoker_service_account: prod-analytics-dbt-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
