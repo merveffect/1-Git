@@ -1,5 +1,5 @@
 variable project_id {
-  default = "dat-analytics-eng-ec869189"
+  default = "snproject-cbb9ca25"
 }
 
 variable "region" {
@@ -71,3 +71,8 @@ variable "service_accounts" {
   }
 }
 
+variable "teams_webhook_url" {
+  description = "Teams webhook url for concourse pipeline alerts"
+  type        = string
+  default     = "https://prod-84.westeurope.logic.azure.com:443/workflows/3874c734e9ca46ca9e8339ae9df2af0c/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NTbSPvDToEw6h9apdS98K0j446FQCxesU0hu76_AFK8"
+}
