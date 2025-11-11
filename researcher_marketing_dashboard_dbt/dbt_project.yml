@@ -14,15 +14,30 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
-
+models:
+  +persist_docs:
+    relation: true
+    columns: true
   rmdb_dbt:
-    raw:
-      +materialized: table  # default materialization
-    staging:
-      +materialized: table
-    presentation:
-      +materialized: table
+    +tags: rmdb-dbt
 
+    raw:
+      +schema: "rmdb_dbt_raw"
+      +materialized: table
+      +tags:
+       - raw
+    staging:
+      +schema: "rmdb_dbt_staging"
+      +materialized: table
+      +tags:
+        - staging
+    presentation:
+      +schema: "rmdb_dbt_presentation"
+      +materialized: table
+      +tags:
+        - presentation
+
+ 
 
 vars:
   # backfill_start_date: '2025-01-01'
@@ -32,41 +47,6 @@ vars:
 
 
 
-#models:
-  +persist_docs:
-    relation: true
-    columns: true
-  dbt:
-    +full_refresh: false
-    +tags: rmdb-dbt
-
-    raw:
-      +schema: "rmdb_dbt_raw"
-      +materialized: table
-      +tags:
-       - raw
-    staging:
-#      +schema: "rmdb_dbt_staging"
-#      +materialized: table
-#      +tags:
-#        - staging
-#    presentation:
-#      +schema: "rmdb_dbt_presentation"
-#      +materialized: table
-#      +tags:
-# #        - presentation
-# models:
-#   +persist_docs:
-#     relation: true
-#     columns: true
-#   rmdb_dbt:
-#     +tags: rmdb-dbt
-
-#     raw:
-#       +schema: "rmdb_dbt_raw"
-#       +materialized: table
-#       +tags:
-#         - raw
 
 
 
