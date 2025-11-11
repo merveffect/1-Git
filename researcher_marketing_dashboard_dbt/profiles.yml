@@ -1,5 +1,5 @@
 rmdb_dbt:
-  target: prod
+  target: dev
   outputs:
     dev:  # gcp environment
       type: bigquery
