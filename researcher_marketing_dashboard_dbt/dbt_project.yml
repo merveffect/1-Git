@@ -14,10 +14,6 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
-models:
-  +persist_docs:
-    relation: true
-    columns: true
 
   rmdb_dbt:
     raw:
@@ -37,19 +33,19 @@ vars:
 
 
 #models:
-#  +persist_docs:
-#    relation: true
-#    columns: true
-#  dbt:
-#    +full_refresh: false
-#    +tags: rmdb-dbt
-#
-#    raw:
-#      +schema: "rmdb_dbt_raw"
-#      +materialized: table
-#      +tags:
-#        - raw
-#    staging:
+  +persist_docs:
+    relation: true
+    columns: true
+  dbt:
+    +full_refresh: false
+    +tags: rmdb-dbt
+
+    raw:
+      +schema: "rmdb_dbt_raw"
+      +materialized: table
+      +tags:
+       - raw
+    staging:
 #      +schema: "rmdb_dbt_staging"
 #      +materialized: table
 #      +tags:
