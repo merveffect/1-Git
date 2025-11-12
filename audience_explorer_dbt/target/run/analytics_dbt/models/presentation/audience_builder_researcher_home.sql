@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_researcher_home`
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_researcher_home`
       
     
     
@@ -66,7 +66,7 @@ advertising_opt_in,
 institution_name,
 role,
 canonical_segment_id
-FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
 WHERE user_researcher_home is true
     );
   
