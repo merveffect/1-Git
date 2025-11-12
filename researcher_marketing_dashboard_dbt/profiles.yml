@@ -5,7 +5,7 @@ rmdb_dbt:
       type: bigquery
       method: oauth # can use a SA as authentication too
       project: snproject-cbb9ca25
-      dataset: dbt_dev_ga4_ria_researcher_report # You can also use "schema" here
+      dataset: dev # You can also use "schema" here
       threads: 8
       job_execution_timeout_seconds: 6000
       #timeout_seconds: 6000
@@ -18,7 +18,7 @@ rmdb_dbt:
       type: bigquery
       method: oauth #can use a SA as authentication too
       project: snproject-cbb9ca25
-      dataset: dbt_prod_ga4_ria_researcher_report # You can also use "schema" here
+      dataset: prod # You can also use "schema" here
       threads: 8
       timeout_seconds: 6000
       location: EU # Optional, one of US or EU

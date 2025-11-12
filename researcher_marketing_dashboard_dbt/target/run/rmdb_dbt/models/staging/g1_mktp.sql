@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_mktp`
+    create or replace table `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`g1_mktp`
       
     partition by date
     cluster by campaign, sub_channels, medium, Data_Source_type
@@ -43,7 +43,7 @@ WITH
     `snproject-cbb9ca25`.`RM_adspend`.`rm_adspend_static`
    
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
   GROUP BY
     date,

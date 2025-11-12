@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j2`
+    create or replace table `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`j2`
       
     partition by date
     
@@ -58,10 +58,10 @@ WITH
     SUM(ejp_submission_complete) AS ejp_submission_complete,
     SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts
   FROM
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_ga`
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`j1_ga`
     
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
   GROUP BY
     date,
@@ -93,10 +93,10 @@ WITH
     isoalphatwo AS cost_isoalphatwo,
     world_region AS cost_world_region
   FROM
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j1_mktp`
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`j1_mktp`
     
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
   GROUP BY
     cost_date,

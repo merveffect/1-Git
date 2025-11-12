@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j5`
+    create or replace table `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`j5`
       
     partition by date
     
@@ -19,14 +19,14 @@ WITH
   SELECT
     *
   FROM
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j3` AS a
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`j3` AS a
   LEFT JOIN
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`oatype` AS b
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`oatype` AS b
   ON
     a.journal_id = b.journalkey
     
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
     ),
   aggregrations AS (

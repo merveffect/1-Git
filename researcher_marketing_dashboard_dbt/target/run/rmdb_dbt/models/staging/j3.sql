@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j3`
+    create or replace table `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`j3`
       
     partition by date
     
@@ -19,10 +19,10 @@ WITH
   SELECT
     *
   FROM
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j2`
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`j2`
     
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
     ),
   countries AS (
