@@ -10,5 +10,5 @@ dbt_target: dev
 
 jobs:
   - name: rmdb-dbt-dev
-    schedule: 0-59/5 * * * *
+    schedule: 0 7 * * *
   
