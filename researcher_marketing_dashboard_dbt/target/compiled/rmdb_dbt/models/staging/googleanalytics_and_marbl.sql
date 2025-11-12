@@ -9,11 +9,11 @@ WITH
     TRIM(SPLIT(Session_source__medium___GA4__Google_Analytics, '/')[SAFE_OFFSET(0)]) AS SOURCE,
     TRIM(SPLIT(Session_source__medium___GA4__Google_Analytics, '/')[SAFE_OFFSET(1)]) AS medium
   FROM
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`journal_mapping`
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`journal_mapping`
     
    
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
   ),
   
@@ -33,7 +33,7 @@ WITH
     `snproject-cbb9ca25`.`ga4_ria_researcher_report`.`BooksMarketing`
     
   WHERE CAST(SubmitDate AS date) BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
   GROUP BY
     campaign,

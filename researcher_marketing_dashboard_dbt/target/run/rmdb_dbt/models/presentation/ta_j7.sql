@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`ta_j7`
+    create or replace table `snproject-cbb9ca25`.`dev_rmdb_dbt_presentation`.`ta_j7`
       
     partition by date
     cluster by journal_id, country, oatype, researchER_marketing_activity
@@ -25,14 +25,14 @@ SELECT
 END
   AS traffic_type_ta
 FROM
-  `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j7` a
+  `snproject-cbb9ca25`.`dev_rmdb_dbt_presentation`.`j7` a
 LEFT JOIN
   `snproject-cbb9ca25`.`ga4_ria_researcher_report`.`transformative_agreements_sheet` b
 ON
   a.journal_id = b.journal_id
   
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
     );
   

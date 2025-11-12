@@ -7,7 +7,7 @@ WITH j7_table AS (
     distinct journal_id,
     journal_title
   FROM
-   `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j7`
+   `snproject-cbb9ca25`.`dev_rmdb_dbt_presentation`.`j7`
 ),
 
 submissions AS (
