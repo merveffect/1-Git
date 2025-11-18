@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j7`
+    create or replace table `snproject-cbb9ca25`.`dev_rmdb_dbt_presentation`.`j7`
       
     partition by date
     cluster by clean_campaign, country, sub_channels
@@ -18,7 +18,7 @@
 SELECT
   *
 FROM
-  `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j5` a
+  `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`j5` a
 LEFT JOIN (
   SELECT
     DISTINCT * EXCEPT(channels_categories,
@@ -31,7 +31,7 @@ ON
   
   
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
     );
   

@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_ga`
+    create or replace table `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`g1_ga`
       
     partition by date
     
@@ -25,11 +25,11 @@ SELECT
   LOWER(ad_content) AS ad_content,
   LOWER(google_ad_network) AS google_ad_network_b
 FROM
-  `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`googleanalytics_and_marbl`
+  `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`googleanalytics_and_marbl`
   
   
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
 
 

@@ -2,7 +2,7 @@
   
     
 
-    create or replace table `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`oatype`
+    create or replace table `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`oatype`
       
     
     

@@ -15,11 +15,11 @@ WITH
     research_marketing_activity,
     SUM(sessions) AS sessions
   FROM
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`j7`
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_presentation`.`j7`
      
     
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
 
   GROUP BY
@@ -48,7 +48,7 @@ WITH
     `snproject-cbb9ca25`.`cookie_consent_data`.`marketing_view`
     
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
   GROUP BY
     1,
