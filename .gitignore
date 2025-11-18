@@ -10,3 +10,4 @@ infra/.terraform/
 # OS
 .DS_Store
 .idea
+dbt/.user.yml

@@ -1,0 +1,15 @@
+version: 2
+
+sources:      
+  - name: RM_adspend
+    database: snproject-cbb9ca25
+    schema: RM_adspend
+    tables:
+      - name: rm_adspend_static
+  - name: ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: ria_researcher_report
+    tables: 
+      - name: regions
+        
+  
