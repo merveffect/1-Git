@@ -7376,3 +7376,2380 @@ dbt_common.exceptions.connection.ConnectionError: External connection exception 
 [0m10:34:18.690500 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000011B947C96A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000011B947C97B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000011B9479F850>]}
 [0m10:34:18.691844 [debug] [MainThread]: Flushing usage events
 [0m10:34:19.376702 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:09:02.037848 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000250C4C601A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000250C6C6FED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000250C6C6FB10>]}
+
+
+============================== 10:09:02.066257 | bfb4c08a-0660-4cfd-8a09-f99f54fc363c ==============================
+[0m10:09:02.066257 [info ] [MainThread]: Running with dbt=1.10.5
+[0m10:09:02.072829 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'version_check': 'True', 'log_path': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt\\logs', 'profiles_dir': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt', 'fail_fast': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'log_format': 'default', 'introspect': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'invocation_command': 'dbt run', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m10:09:20.910883 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'bfb4c08a-0660-4cfd-8a09-f99f54fc363c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000250C4FBB6F0>]}
+[0m10:09:21.092543 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'bfb4c08a-0660-4cfd-8a09-f99f54fc363c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000250EE6A7240>]}
+[0m10:09:21.094857 [info ] [MainThread]: Registered adapter: bigquery=1.10.0
+[0m10:09:23.899473 [error] [MainThread]: Encountered an error:
+Compilation Error
+  dbt found 1 package(s) specified in packages.yml, but only 0 package(s) installed in dbt_packages. Run "dbt deps" to install package dependencies.
+[0m10:09:23.905578 [debug] [MainThread]: Command `dbt run` failed at 10:09:23.905068 after 23.04 seconds
+[0m10:09:23.906689 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000250EE74CA50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000250EE74CE50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000250C5A497C0>]}
+[0m10:09:23.907757 [debug] [MainThread]: Flushing usage events
+[0m10:09:24.640378 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m11:23:21.154345 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000022BA66501A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000022BA8663ED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000022BA8663B10>]}
+
+
+============================== 11:23:21.168151 | d02e3ef6-b686-40dd-8b97-f153eec6bd4b ==============================
+[0m11:23:21.168151 [info ] [MainThread]: Running with dbt=1.10.5
+[0m11:23:21.169395 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt', 'fail_fast': 'False', 'version_check': 'True', 'log_path': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt\\logs', 'warn_error': 'None', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'invocation_command': 'dbt deps', 'static_parser': 'True', 'introspect': 'True', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m11:23:21.487123 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'd02e3ef6-b686-40dd-8b97-f153eec6bd4b', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000022BA69AB6F0>]}
+[0m11:23:21.588482 [debug] [MainThread]: Set downloads directory='C:\Users\ykw8828\AppData\Local\Temp\dbt-downloads-j4fdsbo2'
+[0m11:23:21.589291 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m11:23:21.969734 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m11:23:21.971001 [debug] [MainThread]: Retrying external call. Attempt: 0 Max attempts: 5
+[0m11:23:22.973718 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m11:23:23.083388 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m11:23:23.084387 [debug] [MainThread]: Retrying external call. Attempt: 1 Max attempts: 5
+[0m11:23:24.085303 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m11:23:24.206372 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m11:23:24.206911 [debug] [MainThread]: Retrying external call. Attempt: 2 Max attempts: 5
+[0m11:23:25.207881 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m11:23:25.325860 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m11:23:25.327190 [debug] [MainThread]: Retrying external call. Attempt: 3 Max attempts: 5
+[0m11:23:26.328054 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m11:23:26.547266 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m11:23:26.548217 [debug] [MainThread]: Retrying external call. Attempt: 4 Max attempts: 5
+[0m11:23:27.549428 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m11:23:27.822543 [error] [MainThread]: Encountered an error:
+External connection exception occurred: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m11:23:27.883821 [error] [MainThread]: Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\requires.py", line 178, in wrapper
+    result, success = func(*args, **kwargs)
+                      ~~~~^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\requires.py", line 128, in wrapper
+    return func(*args, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\requires.py", line 254, in wrapper
+    return func(*args, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\requires.py", line 303, in wrapper
+    return func(*args, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\main.py", line 461, in deps
+    results = task.run()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\task\deps.py", line 247, in run
+    lock_defined_deps = resolve_lock_packages(packages_lock_config)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\deps\resolver.py", line 147, in resolve_lock_packages
+    resolved = final.resolved()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\deps\resolver.py", line 95, in resolved
+    return [p.resolved() for p in self.packages.values()]
+            ~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\deps\registry.py", line 98, in resolved
+    self._check_in_index()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\deps\registry.py", line 75, in _check_in_index
+    index = registry.index_cached()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\utils\utils.py", line 127, in __call__
+    value = self.func(*args)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 189, in index
+    return connection_exception_retry(get_index_fn, 5)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 36, in connection_exception_retry
+    return connection_exception_retry(fn, max_attempts, attempt + 1)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 36, in connection_exception_retry
+    return connection_exception_retry(fn, max_attempts, attempt + 1)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 36, in connection_exception_retry
+    return connection_exception_retry(fn, max_attempts, attempt + 1)
+  [Previous line repeated 2 more times]
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 38, in connection_exception_retry
+    raise ConnectionError("External connection exception occurred: " + str(exc))
+dbt_common.exceptions.connection.ConnectionError: External connection exception occurred: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+[0m11:23:27.897361 [debug] [MainThread]: Command `dbt deps` failed at 11:23:27.896868 after 7.09 seconds
+[0m11:23:27.898318 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000022BA890D8C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000022BA890D9D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000022BA889BA50>]}
+[0m11:23:27.899101 [debug] [MainThread]: Flushing usage events
+[0m11:23:28.547071 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m11:24:40.012781 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B166401A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B1864BED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B1864BB10>]}
+
+
+============================== 11:24:40.018607 | 9170bf94-befd-40a6-9708-dc4e1ec010ce ==============================
+[0m11:24:40.018607 [info ] [MainThread]: Running with dbt=1.10.5
+[0m11:24:40.019632 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'fail_fast': 'False', 'log_path': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt\\logs', 'profiles_dir': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True', 'invocation_command': 'dbt deps', 'static_parser': 'True', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m11:24:40.247601 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '9170bf94-befd-40a6-9708-dc4e1ec010ce', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B1699B6F0>]}
+[0m11:24:40.291541 [debug] [MainThread]: Set downloads directory='C:\Users\ykw8828\AppData\Local\Temp\dbt-downloads-7l1fyrdh'
+[0m11:24:40.292425 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m11:24:40.431735 [debug] [MainThread]: Response from registry index: GET https://hub.getdbt.com/api/v1/index.json 200
+[0m11:24:40.432691 [debug] [MainThread]: Making package registry request: GET https://hub.getdbt.com/api/v1/dbt-labs/dbt_utils.json
+[0m11:24:40.482604 [debug] [MainThread]: Response from registry: GET https://hub.getdbt.com/api/v1/dbt-labs/dbt_utils.json 200
+[0m11:24:40.486615 [info ] [MainThread]: Installing dbt-labs/dbt_utils
+[0m11:24:41.129773 [info ] [MainThread]: Installed from version 1.3.1
+[0m11:24:41.131190 [info ] [MainThread]: Updated version available: 1.3.2
+[0m11:24:41.132138 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'package', 'label': '9170bf94-befd-40a6-9708-dc4e1ec010ce', 'property_': 'install', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B1757A140>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B175797B0>]}
+[0m11:24:41.132944 [info ] [MainThread]: 
+[0m11:24:41.133924 [info ] [MainThread]: Updates available for packages: ['dbt-labs/dbt_utils']                 
+Update your versions in packages.yml, then run dbt deps
+[0m11:24:41.137894 [debug] [MainThread]: Command `dbt deps` succeeded at 11:24:41.137576 after 1.35 seconds
+[0m11:24:41.138620 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B18899A50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B174FFF20>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023B1885F3E0>]}
+[0m11:24:41.139352 [debug] [MainThread]: Flushing usage events
+[0m11:24:41.622336 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m11:25:10.767125 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA20C601A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA22C63ED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA22C63B10>]}
+
+
+============================== 11:25:10.777789 | bf254482-ed75-4457-a5b0-1f915ce1448b ==============================
+[0m11:25:10.777789 [info ] [MainThread]: Running with dbt=1.10.5
+[0m11:25:10.779408 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt', 'debug': 'False', 'version_check': 'True', 'log_path': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt\\logs', 'fail_fast': 'False', 'warn_error': 'None', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'invocation_command': 'dbt deps', 'log_format': 'default', 'introspect': 'True', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m11:25:11.169815 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'bf254482-ed75-4457-a5b0-1f915ce1448b', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA20FBB6F0>]}
+[0m11:25:11.232820 [debug] [MainThread]: Set downloads directory='C:\Users\ykw8828\AppData\Local\Temp\dbt-downloads-jp7v_7bk'
+[0m11:25:11.234370 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m11:25:11.304278 [debug] [MainThread]: Response from registry index: GET https://hub.getdbt.com/api/v1/index.json 200
+[0m11:25:11.306257 [debug] [MainThread]: Making package registry request: GET https://hub.getdbt.com/api/v1/dbt-labs/dbt_utils.json
+[0m11:25:11.344050 [debug] [MainThread]: Response from registry: GET https://hub.getdbt.com/api/v1/dbt-labs/dbt_utils.json 200
+[0m11:25:11.369899 [info ] [MainThread]: Updating lock file in file path: C:\analytics_engineering_dbt\audience_explorer_dbt/package-lock.yml
+[0m11:25:11.523190 [debug] [MainThread]: Set downloads directory='C:\Users\ykw8828\AppData\Local\Temp\dbt-downloads-7f3a5418'
+[0m11:25:11.532701 [info ] [MainThread]: Installing dbt-labs/dbt_utils
+[0m11:25:12.259424 [info ] [MainThread]: Installed from version 1.3.2
+[0m11:25:12.261081 [info ] [MainThread]: Up to date!
+[0m11:25:12.262543 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'package', 'label': 'bf254482-ed75-4457-a5b0-1f915ce1448b', 'property_': 'install', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA21B9A140>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA21B997B0>]}
+[0m11:25:12.268608 [debug] [MainThread]: Command `dbt deps` succeeded at 11:25:12.268027 after 1.94 seconds
+[0m11:25:12.269815 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA22EB9A50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA21B1FF20>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002AA22E786E0>]}
+[0m11:25:12.271109 [debug] [MainThread]: Flushing usage events
+[0m11:25:12.718035 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m11:25:21.006535 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002722A1F01A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002722C1FFED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002722C1FFB10>]}
+
+
+============================== 11:25:21.014994 | de1140e3-1ef3-4f20-9d42-77d1e6ab132c ==============================
+[0m11:25:21.014994 [info ] [MainThread]: Running with dbt=1.10.5
+[0m11:25:21.016535 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt', 'fail_fast': 'False', 'version_check': 'True', 'log_path': 'C:\\analytics_engineering_dbt\\audience_explorer_dbt\\logs', 'warn_error': 'None', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'log_format': 'default', 'static_parser': 'True', 'invocation_command': 'dbt run', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m11:25:30.917657 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002722A54B6F0>]}
+[0m11:25:31.073370 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027253C27240>]}
+[0m11:25:31.075126 [info ] [MainThread]: Registered adapter: bigquery=1.10.0
+[0m11:25:33.013203 [debug] [MainThread]: checksum: fa4c2685620973c5adba0a491aa9c06e8cf48c9113a5280b45b6efa706ae8f4b, vars: {}, profile: , target: , version: 1.10.5
+[0m11:25:33.247264 [info ] [MainThread]: Unable to do partial parsing because a project config has changed
+[0m11:25:33.248639 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000272542A4E50>]}
+[0m11:25:35.670557 [info ] [MainThread]: Included columns: []
+[0m11:25:36.753126 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002725437EF30>]}
+[0m11:25:36.938266 [debug] [MainThread]: Wrote artifact WritableManifest to C:\analytics_engineering_dbt\audience_explorer_dbt\target\manifest.json
+[0m11:25:36.946493 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\analytics_engineering_dbt\audience_explorer_dbt\target\semantic_manifest.json
+[0m11:25:36.999615 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027253D54050>]}
+[0m11:25:37.000591 [info ] [MainThread]: Found 16 models, 4 data tests, 4 sources, 614 macros, 1 unit test
+[0m11:25:37.001880 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000272540FD160>]}
+[0m11:25:37.008197 [info ] [MainThread]: 
+[0m11:25:37.009518 [info ] [MainThread]: Concurrency: 8 threads (target='prod')
+[0m11:25:37.010403 [info ] [MainThread]: 
+[0m11:25:37.011595 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m11:25:37.022161 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189'
+[0m11:25:37.024025 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m11:25:37.025360 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189'
+[0m11:25:37.027295 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m11:25:37.028611 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189'
+[0m11:25:37.029692 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m11:25:45.765086 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189_prod_audience_explorer_analytics_dbt_raw'
+[0m11:25:45.766720 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m11:25:45.768136 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189_prod_audience_explorer_analytics_dbt_staging'
+[0m11:25:45.770178 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m11:25:45.772644 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_dat-analytics-eng-ec869189_prod_audience_explorer_analytics_dbt_presentation'
+[0m11:25:45.775874 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m11:25:46.083450 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000272544DC590>]}
+[0m11:25:46.084615 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m11:25:46.100978 [debug] [Thread-1 (]: Began running node model.analytics_dbt.raw_information_schema_columns
+[0m11:25:46.101942 [debug] [Thread-2 (]: Began running node model.analytics_dbt.raw_user_traits
+[0m11:25:46.102807 [debug] [Thread-3 (]: Began running node model.analytics_dbt.stg_user_traits_column_names
+[0m11:25:46.104684 [info ] [Thread-1 (]: 1 of 16 START sql table model prod_audience_explorer_analytics_dbt_raw.raw_information_schema_columns  [RUN]
+[0m11:25:46.106251 [info ] [Thread-2 (]: 2 of 16 START sql table model prod_audience_explorer_analytics_dbt_raw.raw_user_traits  [RUN]
+[0m11:25:46.110586 [debug] [Thread-1 (]: Acquiring new bigquery connection 'model.analytics_dbt.raw_information_schema_columns'
+[0m11:25:46.112469 [debug] [Thread-2 (]: Acquiring new bigquery connection 'model.analytics_dbt.raw_user_traits'
+[0m11:25:46.108780 [info ] [Thread-3 (]: 3 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_user_traits_column_names  [RUN]
+[0m11:25:46.114326 [debug] [Thread-1 (]: Began compiling node model.analytics_dbt.raw_information_schema_columns
+[0m11:25:46.115804 [debug] [Thread-2 (]: Began compiling node model.analytics_dbt.raw_user_traits
+[0m11:25:46.117468 [debug] [Thread-3 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_user_traits_column_names'
+[0m11:25:46.139709 [debug] [Thread-1 (]: Writing injected SQL for node "model.analytics_dbt.raw_information_schema_columns"
+[0m11:25:46.140989 [debug] [Thread-3 (]: Began compiling node model.analytics_dbt.stg_user_traits_column_names
+[0m11:25:46.149014 [debug] [Thread-2 (]: Writing injected SQL for node "model.analytics_dbt.raw_user_traits"
+[0m11:25:46.159522 [debug] [Thread-3 (]: Writing injected SQL for node "model.analytics_dbt.stg_user_traits_column_names"
+[0m11:25:46.168354 [debug] [Thread-3 (]: Began executing node model.analytics_dbt.stg_user_traits_column_names
+[0m11:25:46.179791 [debug] [Thread-1 (]: Began executing node model.analytics_dbt.raw_information_schema_columns
+[0m11:25:46.242507 [debug] [Thread-1 (]: Opening a new connection, currently in state init
+[0m11:25:46.243747 [debug] [Thread-2 (]: Began executing node model.analytics_dbt.raw_user_traits
+[0m11:25:46.255555 [debug] [Thread-3 (]: Opening a new connection, currently in state init
+[0m11:25:46.264971 [debug] [Thread-2 (]: Opening a new connection, currently in state init
+[0m11:25:46.535173 [debug] [Thread-3 (]: Writing runtime sql for node "model.analytics_dbt.stg_user_traits_column_names"
+[0m11:25:46.539416 [debug] [Thread-2 (]: Writing runtime sql for node "model.analytics_dbt.raw_user_traits"
+[0m11:25:46.542791 [debug] [Thread-1 (]: Writing runtime sql for node "model.analytics_dbt.raw_information_schema_columns"
+[0m11:25:46.546946 [debug] [Thread-2 (]: On model.analytics_dbt.raw_user_traits: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.raw_user_traits"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_user_traits`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      select
+  *
+  from `cdp-data-55497fbb`.`cdp_profile_sync`.`user_traits`
+    );
+  
+[0m11:25:46.548452 [debug] [Thread-1 (]: On model.analytics_dbt.raw_information_schema_columns: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.raw_information_schema_columns"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_information_schema_columns`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      select
+  column_name
+  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`INFORMATION_SCHEMA.COLUMNS`
+  where table_name = 'stg_df_audience_explorer_cleaned'
+    );
+  
+[0m11:25:46.549808 [debug] [Thread-3 (]: On model.analytics_dbt.stg_user_traits_column_names: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_user_traits_column_names"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
+
+select
+name as column_names
+from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`user_traits_spreadsheet`
+where lower(status) = '✅ keep'
+    );
+  
+[0m11:25:46.978356 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:1bbff0d7-3819-4770-85ac-edd2660b48d6&page=queryresults
+[0m11:25:47.079184 [debug] [Thread-3 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:6e01205a-ee11-4eb2-b414-de62b1b3849d&page=queryresults
+[0m11:25:47.083964 [debug] [Thread-2 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:30a5eb63-3252-4ed6-9f11-096628cb9351&page=queryresults
+[0m11:25:49.159244 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000272546D38B0>]}
+[0m11:25:49.160761 [info ] [Thread-1 (]: 1 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_raw.raw_information_schema_columns  [[32mCREATE TABLE (118.0 rows, 10.0 MiB processed)[0m in 3.05s]
+[0m11:25:49.162219 [debug] [Thread-1 (]: Finished running node model.analytics_dbt.raw_information_schema_columns
+[0m11:25:49.784408 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002725466ED50>]}
+[0m11:25:49.785948 [info ] [Thread-3 (]: 3 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_user_traits_column_names  [[32mCREATE TABLE (111.0 rows, 21.5 KiB processed)[0m in 3.67s]
+[0m11:25:49.787707 [debug] [Thread-3 (]: Finished running node model.analytics_dbt.stg_user_traits_column_names
+[0m11:25:49.789196 [debug] [Thread-4 (]: Began running node model.analytics_dbt.stg_user_traits_column_names_history
+[0m11:25:49.790301 [info ] [Thread-4 (]: 4 of 16 START sql incremental model prod_audience_explorer_analytics_dbt_staging.stg_user_traits_column_names_history  [RUN]
+[0m11:25:49.791864 [debug] [Thread-4 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_user_traits_column_names_history'
+[0m11:25:49.792767 [debug] [Thread-4 (]: Began compiling node model.analytics_dbt.stg_user_traits_column_names_history
+[0m11:25:49.803650 [debug] [Thread-4 (]: Writing injected SQL for node "model.analytics_dbt.stg_user_traits_column_names_history"
+[0m11:25:49.807257 [debug] [Thread-4 (]: Began executing node model.analytics_dbt.stg_user_traits_column_names_history
+[0m11:25:49.906338 [debug] [Thread-4 (]: On model.analytics_dbt.stg_user_traits_column_names_history: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_user_traits_column_names_history"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history__dbt_tmp`
+      
+    partition by timestamp_trunc(ingestion_timestamp, day)
+    
+
+    
+    OPTIONS(
+      description="""""",
+    
+      expiration_timestamp=TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 12 hour)
+    )
+    as (
+      
+
+with new_data as (
+	select distinct 
+	  column_names	  
+	  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+),
+
+change_detection as (
+  select
+    column_names
+    from new_data
+    
+	    
+	  except distinct
+	  select
+	    column_names
+	    from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history`
+	    
+)
+
+select
+  column_names,
+  current_timestamp() as ingestion_timestamp
+  from change_detection
+    );
+  
+[0m11:25:49.907170 [debug] [Thread-4 (]: Opening a new connection, currently in state init
+[0m11:25:50.373042 [debug] [Thread-4 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:3ee39090-acfa-4433-89f3-4fe9cae3e30b&page=queryresults
+[0m11:25:52.856924 [debug] [Thread-4 (]: 
+    In `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history`:
+        Schema changed: False
+        Source columns not in target: []
+        Target columns not in source: []
+        New column types: []
+  
+[0m11:25:52.922071 [debug] [Thread-4 (]: Writing runtime sql for node "model.analytics_dbt.stg_user_traits_column_names_history"
+[0m11:25:52.929314 [debug] [Thread-4 (]: On model.analytics_dbt.stg_user_traits_column_names_history: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_user_traits_column_names_history"} */
+-- back compat for old kwarg name
+  
+  
+        
+    
+
+    
+
+    merge into `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history` as DBT_INTERNAL_DEST
+        using (
+        select
+        * from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names_history__dbt_tmp`
+        ) as DBT_INTERNAL_SOURCE
+        on (FALSE)
+
+    
+
+    when not matched then insert
+        (`column_names`, `ingestion_timestamp`)
+    values
+        (`column_names`, `ingestion_timestamp`)
+
+
+    
+[0m11:25:53.362289 [debug] [Thread-4 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:4f317f53-282d-49c0-858f-45a3742b5e8f&page=queryresults
+[0m11:25:55.171208 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000272546608D0>]}
+[0m11:25:55.172686 [info ] [Thread-4 (]: 4 of 16 OK created sql incremental model prod_audience_explorer_analytics_dbt_staging.stg_user_traits_column_names_history  [[32mMERGE (0.0 rows, 0 processed)[0m in 5.38s]
+[0m11:25:55.174697 [debug] [Thread-4 (]: Finished running node model.analytics_dbt.stg_user_traits_column_names_history
+[0m11:26:29.049083 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254974F30>]}
+[0m11:26:29.051200 [info ] [Thread-2 (]: 2 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_raw.raw_user_traits  [[32mCREATE TABLE (2.1b rows, 375.6 GiB processed)[0m in 42.94s]
+[0m11:26:29.052934 [debug] [Thread-2 (]: Finished running node model.analytics_dbt.raw_user_traits
+[0m11:26:29.054701 [debug] [Thread-5 (]: Began running node model.analytics_dbt.stg_df_audience_explorer_base
+[0m11:26:29.055292 [debug] [Thread-6 (]: Began running node model.analytics_dbt.stg_lifetime_aggregations
+[0m11:26:29.055865 [debug] [Thread-8 (]: Began running node model.analytics_dbt.stg_submissions
+[0m11:26:29.057481 [debug] [Thread-7 (]: Began running node model.analytics_dbt.stg_raw_user_traits_columns
+[0m11:26:29.056813 [info ] [Thread-5 (]: 5 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_base  [RUN]
+[0m11:26:29.058720 [info ] [Thread-6 (]: 6 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_lifetime_aggregations  [RUN]
+[0m11:26:29.059960 [info ] [Thread-8 (]: 8 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_submissions  [RUN]
+[0m11:26:29.062579 [debug] [Thread-5 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_df_audience_explorer_base'
+[0m11:26:29.063862 [debug] [Thread-6 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_lifetime_aggregations'
+[0m11:26:29.061147 [info ] [Thread-7 (]: 7 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_raw_user_traits_columns  [RUN]
+[0m11:26:29.064969 [debug] [Thread-8 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_submissions'
+[0m11:26:29.065808 [debug] [Thread-5 (]: Began compiling node model.analytics_dbt.stg_df_audience_explorer_base
+[0m11:26:29.066599 [debug] [Thread-6 (]: Began compiling node model.analytics_dbt.stg_lifetime_aggregations
+[0m11:26:29.067557 [debug] [Thread-7 (]: Acquiring new bigquery connection 'model.analytics_dbt.stg_raw_user_traits_columns'
+[0m11:26:29.068308 [debug] [Thread-8 (]: Began compiling node model.analytics_dbt.stg_submissions
+[0m11:26:29.088200 [debug] [Thread-5 (]: On model.analytics_dbt.stg_df_audience_explorer_base: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_df_audience_explorer_base"} */
+
+      select CONCAT("'",
+              STRING_AGG(DISTINCT column_names, "','"),
+              "'" 
+             ) as column_names from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+    
+[0m11:26:29.093815 [debug] [Thread-6 (]: Writing injected SQL for node "model.analytics_dbt.stg_lifetime_aggregations"
+[0m11:26:29.095305 [debug] [Thread-7 (]: Began compiling node model.analytics_dbt.stg_raw_user_traits_columns
+[0m11:26:29.102416 [debug] [Thread-8 (]: Writing injected SQL for node "model.analytics_dbt.stg_submissions"
+[0m11:26:29.103713 [debug] [Thread-5 (]: Opening a new connection, currently in state init
+[0m11:26:29.111032 [debug] [Thread-7 (]: Writing injected SQL for node "model.analytics_dbt.stg_raw_user_traits_columns"
+[0m11:26:29.114689 [debug] [Thread-6 (]: Began executing node model.analytics_dbt.stg_lifetime_aggregations
+[0m11:26:29.119102 [debug] [Thread-6 (]: Opening a new connection, currently in state init
+[0m11:26:29.120165 [debug] [Thread-8 (]: Began executing node model.analytics_dbt.stg_submissions
+[0m11:26:29.128642 [debug] [Thread-8 (]: Opening a new connection, currently in state init
+[0m11:26:29.131785 [debug] [Thread-7 (]: Began executing node model.analytics_dbt.stg_raw_user_traits_columns
+[0m11:26:29.137059 [debug] [Thread-7 (]: Opening a new connection, currently in state init
+[0m11:26:29.337902 [debug] [Thread-7 (]: Writing runtime sql for node "model.analytics_dbt.stg_raw_user_traits_columns"
+[0m11:26:29.344560 [debug] [Thread-7 (]: On model.analytics_dbt.stg_raw_user_traits_columns: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_raw_user_traits_columns"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_raw_user_traits_columns`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      -- it is used in connected sheets Audience Explorer Big Columns (not part of the pipeline)
+select 
+distinct name 
+from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_user_traits`
+    );
+  
+[0m11:26:29.366632 [debug] [Thread-6 (]: Writing runtime sql for node "model.analytics_dbt.stg_lifetime_aggregations"
+[0m11:26:29.371570 [debug] [Thread-6 (]: On model.analytics_dbt.stg_lifetime_aggregations: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_lifetime_aggregations"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_lifetime_aggregations`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      WITH src AS (
+  SELECT
+    t.*,
+    SAFE.PARSE_JSON(value) AS j
+  FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_user_traits` AS t
+  WHERE name = 'lifetime_aggregations'
+),
+
+payload AS (
+  SELECT
+    s.* EXCEPT(j),
+    CASE
+      WHEN JSON_VALUE(s.j, '$.all_imprints') IS NOT NULL
+           AND SAFE.PARSE_JSON(JSON_VALUE(s.j, '$.all_imprints')) IS NOT NULL
+        THEN SAFE.PARSE_JSON(JSON_VALUE(s.j, '$.all_imprints'))
+      WHEN JSON_QUERY(s.j, '$.all_imprints') IS NOT NULL
+        THEN SAFE.PARSE_JSON(TO_JSON_STRING(JSON_QUERY(s.j, '$.all_imprints')))
+      ELSE NULL
+    END AS ai
+  FROM src AS s
+)
+SELECT
+  p.canonical_segment_id,
+
+  CAST(JSON_VALUE(p.ai, '$.total_accepts')        AS INT64) AS total_accepts,
+  CAST(JSON_VALUE(p.ai, '$.total_rejects')        AS INT64) AS total_rejects,
+  CAST(JSON_VALUE(p.ai, '$.total_oa_submissions') AS INT64) AS total_oa_submissions,
+  CAST(JSON_VALUE(p.ai, '$.total_submissions')    AS INT64) AS total_submissions
+FROM payload p
+    );
+  
+[0m11:26:29.376886 [debug] [Thread-8 (]: Writing runtime sql for node "model.analytics_dbt.stg_submissions"
+[0m11:26:29.381148 [debug] [Thread-8 (]: On model.analytics_dbt.stg_submissions: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_submissions"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_submissions`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      SELECT
+  t.canonical_segment_id,
+  ARRAY(
+    SELECT AS STRUCT
+      JSON_VALUE(item, '$.imprint')       AS imprint,
+      JSON_VALUE(item, '$.journal_id')    AS journal_id,
+      JSON_VALUE(item, '$.journal_title') AS journal_title,
+      SAFE_CAST(JSON_VALUE(item, '$.submission_timestamp') AS TIMESTAMP) AS submission_timestamp
+    FROM UNNEST(JSON_EXTRACT_ARRAY(t.value, '$')) AS item
+    ORDER BY SAFE_CAST(JSON_VALUE(item, '$.submission_timestamp') AS TIMESTAMP) DESC
+  ) AS submissions
+FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_user_traits` AS t
+WHERE t.name = 'submissions'
+    );
+  
+[0m11:26:29.622500 [debug] [Thread-5 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:7c53bd01-76a5-4268-a58b-5db61e3765c1&page=queryresults
+[0m11:26:29.682605 [debug] [Thread-8 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:df23ee59-b727-4258-ab25-3b9aa1960b29&page=queryresults
+[0m11:26:29.723308 [debug] [Thread-6 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:a3f1e3ea-d6e4-46b3-b5a1-9dc91c06127d&page=queryresults
+[0m11:26:29.765699 [debug] [Thread-7 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:24f999d6-40cf-443a-9559-ee8450a5811a&page=queryresults
+[0m11:26:30.129326 [debug] [Thread-5 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_audience_explorer_base"
+[0m11:26:30.132300 [debug] [Thread-5 (]: Began executing node model.analytics_dbt.stg_df_audience_explorer_base
+[0m11:26:30.316768 [debug] [Thread-5 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_audience_explorer_base"
+[0m11:26:30.323533 [debug] [Thread-5 (]: On model.analytics_dbt.stg_df_audience_explorer_base: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_df_audience_explorer_base"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      -- depends_on: `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+
+
+
+select * from
+  (select
+    canonical_segment_id,
+    name,
+    value
+       
+    from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_user_traits`
+  )
+  Pivot(max(value) for name in ('count_els_last_60_d','sn_fan_one_time_author','welcome_onboarding_retargeting_internal_display','is_editorial_board_members_communications_opted_in','count_reach_fta_last_90_d','loyalty_group','sn_opportunity_occasional_author','list_journals_allpageviews_30_d','user_researcher_home','is_legitimate_interest_author_opted_in','subjects','power_author_21_publications','count_about_last_30_d','role','main_f2','sn_journal_authors_legitimate_interest','email_address','braze_received_all','anonymous_id','permutive_id','is_webshop_buyer_communications_opted_in','sn_opportunity_regular_author','is_global_subscribed','japa_all','occasional_author_2_10_publications','count_reach_fta_last_60_d','third_party_prom','sn_journal_authors','mkt_pref_opt_in','list_doi_last_180_d','not_sn_one_time_author','institution_name','list_journals_etocs_last_180_d','has_received_email','count_reach_fta_last_180_d','sn_journal_authors_monthly','list_journals_submguide_about_last_60_d','sn_fan_power_author','list_keywords_dois_last_60_d','count_oa_content_online_last_60_d','last_name','journal_nurture_eligible_canvas_1','regular_author_11_20_publications','sn_opportunity_power_author','not_sn_occasional_author','list_journals_submission_opened_last_90_d','b_2_c_marketing_contacts_monthly','list_journals_read_last_60_d','marketing_optin_mpc','top_publisher','advertising_opt_in','chatpgt_users','country','not_sn_regular_author','sn_positive_power_author','total_amt_5yr_author_group','email_received_all','the_source_pages_visitors','count_researcherhome_last_180_d','sn_positive_occasional_author','count_doi_last_180_d','count_about_last_90_days','sn_journal_submitters','key_contributor','one_time_author_1_publication','ga_client_id','years_active','count_research_integrity_last_180_d','list_journal_etocs_last_180_d','sn_positive_regular_author','list_journals_submissions_alltime','has_recent_online_behaviour','count_submguidelines_last_90_days','list_journals_submguide_about_last_30_d','sn_fan_regular_author','list_doi_last_60_d','journal_nurture_oa_interest_eligible_canvas_2','sn_journal_submitter','count_submguidelines_last_30_d','first_name','marketing_opt_in_not_mpc','etoc_received_all','author_group_global_detailed','oa_articles','avg_if','online_marketing_engagement','list_doi_last_90_d','sn_fan_occasional_author','last_time_online','snid','change_over_py_sn_loyalty','is_editor_referral_opted_in','journal_awareness_1','explicit_user_choice','newsletters','email','author_group_global','cep_id','orcid','h_index','persona','is_book_author_communications_opted_in','list_journals_read_last_30_d','count_article_readership_last_60_d','sap_outbound_id','percent_oa','most_recent_pub','not_sn_power_author','sn_journal_legitimate_interest_monthly','b_2_c_marketing_contacts','researcher_id' ))
+    );
+  
+[0m11:26:30.752590 [debug] [Thread-5 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:9bfed805-2250-471a-b248-f588b7032bae&page=queryresults
+[0m11:26:32.699087 [debug] [Thread-7 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A815B0>]}
+[0m11:26:32.701563 [info ] [Thread-7 (]: 7 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_raw_user_traits_columns  [[32mCREATE TABLE (251.0 rows, 45.7 GiB processed)[0m in 3.63s]
+[0m11:26:32.703749 [debug] [Thread-7 (]: Finished running node model.analytics_dbt.stg_raw_user_traits_columns
+[0m11:26:33.864848 [debug] [Thread-8 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A80170>]}
+[0m11:26:33.866569 [info ] [Thread-8 (]: 8 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_submissions  [[32mCREATE TABLE (27.1m rows, 165.9 GiB processed)[0m in 4.80s]
+[0m11:26:33.869793 [debug] [Thread-8 (]: Finished running node model.analytics_dbt.stg_submissions
+[0m11:26:34.889672 [debug] [Thread-6 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A80C50>]}
+[0m11:26:34.891318 [info ] [Thread-6 (]: 6 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_lifetime_aggregations  [[32mCREATE TABLE (18.9m rows, 165.9 GiB processed)[0m in 5.83s]
+[0m11:26:34.892896 [debug] [Thread-6 (]: Finished running node model.analytics_dbt.stg_lifetime_aggregations
+[0m11:27:08.883268 [debug] [Thread-5 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A83950>]}
+[0m11:27:08.884545 [info ] [Thread-5 (]: 5 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_base  [[32mCREATE TABLE (155.0m rows, 165.9 GiB processed)[0m in 39.82s]
+[0m11:27:08.886323 [debug] [Thread-5 (]: Finished running node model.analytics_dbt.stg_df_audience_explorer_base
+[0m11:27:08.887768 [debug] [Thread-1 (]: Began running node model.analytics_dbt.stg_df_nested_columns_joined
+[0m11:27:08.888854 [info ] [Thread-1 (]: 9 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_nested_columns_joined  [RUN]
+[0m11:27:08.890134 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.raw_information_schema_columns, now model.analytics_dbt.stg_df_nested_columns_joined)
+[0m11:27:08.890802 [debug] [Thread-1 (]: Began compiling node model.analytics_dbt.stg_df_nested_columns_joined
+[0m11:27:08.896457 [debug] [Thread-1 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_nested_columns_joined"
+[0m11:27:08.901663 [debug] [Thread-1 (]: Began executing node model.analytics_dbt.stg_df_nested_columns_joined
+[0m11:27:08.905970 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m11:27:09.139885 [debug] [Thread-1 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_nested_columns_joined"
+[0m11:27:09.145397 [debug] [Thread-1 (]: On model.analytics_dbt.stg_df_nested_columns_joined: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_df_nested_columns_joined"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_nested_columns_joined`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      WITH base AS (
+    SELECT *
+    FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base`
+),
+subs AS (
+    SELECT * 
+    FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_submissions`
+),
+life AS (
+    SELECT * 
+    FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_lifetime_aggregations`
+)
+
+SELECT
+    base.*,
+    subs.* EXCEPT(canonical_segment_id),
+    life.* EXCEPT(canonical_segment_id)
+FROM base
+LEFT JOIN subs USING (canonical_segment_id)
+LEFT JOIN life USING (canonical_segment_id)
+    );
+  
+[0m11:27:09.533723 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:6d164364-2c06-4340-9650-b8b5403fd049&page=queryresults
+[0m11:27:25.980815 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A815B0>]}
+[0m11:27:25.983552 [info ] [Thread-1 (]: 9 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_nested_columns_joined  [[32mCREATE TABLE (155.0m rows, 40.4 GiB processed)[0m in 17.09s]
+[0m11:27:25.986000 [debug] [Thread-1 (]: Finished running node model.analytics_dbt.stg_df_nested_columns_joined
+[0m11:27:25.988110 [debug] [Thread-3 (]: Began running node model.analytics_dbt.stg_df_audience_explorer_base_2
+[0m11:27:25.989614 [info ] [Thread-3 (]: 10 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_base_2  [RUN]
+[0m11:27:25.991506 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_user_traits_column_names, now model.analytics_dbt.stg_df_audience_explorer_base_2)
+[0m11:27:25.992701 [debug] [Thread-3 (]: Began compiling node model.analytics_dbt.stg_df_audience_explorer_base_2
+[0m11:27:26.010850 [debug] [Thread-3 (]: On model.analytics_dbt.stg_df_audience_explorer_base_2: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_df_audience_explorer_base_2"} */
+select
+                column_names as value
+
+            from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_user_traits_column_names`
+
+            
+
+            group by column_names
+            order by count(*) desc
+
+            
+
+        
+[0m11:27:26.012480 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m11:27:26.448123 [debug] [Thread-3 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:65733eff-120a-4088-9d9b-f1d610f88a0d&page=queryresults
+[0m11:27:26.864042 [info ] [Thread-3 (]: Included columns: ['count_els_last_60_d', 'sn_fan_one_time_author', 'welcome_onboarding_retargeting_internal_display', 'is_editorial_board_members_communications_opted_in', 'count_reach_fta_last_90_d', 'loyalty_group', 'sn_opportunity_occasional_author', 'list_journals_allpageviews_30_d', 'user_researcher_home', 'is_legitimate_interest_author_opted_in', 'subjects', 'power_author_21_publications', 'count_about_last_30_d', 'role', 'main_f2', 'sn_journal_authors_legitimate_interest', 'email_address', 'braze_received_all', 'is_webshop_buyer_communications_opted_in', 'sn_opportunity_regular_author', 'is_global_subscribed', 'japa_all', 'occasional_author_2_10_publications', 'count_reach_fta_last_60_d', 'third_party_prom', 'sn_journal_authors', 'mkt_pref_opt_in', 'list_doi_last_180_d', 'not_sn_one_time_author', 'institution_name', 'list_journals_etocs_last_180_d', 'has_received_email', 'count_reach_fta_last_180_d', 'sn_journal_authors_monthly', 'list_journals_submguide_about_last_60_d', 'sn_fan_power_author', 'list_keywords_dois_last_60_d', 'count_oa_content_online_last_60_d', 'journal_nurture_eligible_canvas_1', 'regular_author_11_20_publications', 'sn_opportunity_power_author', 'not_sn_occasional_author', 'list_journals_submission_opened_last_90_d', 'b_2_c_marketing_contacts_monthly', 'list_journals_read_last_60_d', 'marketing_optin_mpc', 'top_publisher', 'advertising_opt_in', 'chatpgt_users', 'country', 'not_sn_regular_author', 'sn_positive_power_author', 'total_amt_5yr_author_group', 'email_received_all', 'the_source_pages_visitors', 'count_researcherhome_last_180_d', 'sn_positive_occasional_author', 'count_doi_last_180_d', 'count_about_last_90_days', 'sn_journal_submitters', 'key_contributor', 'one_time_author_1_publication', 'years_active', 'count_research_integrity_last_180_d', 'list_journal_etocs_last_180_d', 'sn_positive_regular_author', 'list_journals_submissions_alltime', 'has_recent_online_behaviour', 'count_submguidelines_last_90_days', 'list_journals_submguide_about_last_30_d', 'sn_fan_regular_author', 'list_doi_last_60_d', 'journal_nurture_oa_interest_eligible_canvas_2', 'sn_journal_submitter', 'count_submguidelines_last_30_d', 'marketing_opt_in_not_mpc', 'etoc_received_all', 'author_group_global_detailed', 'oa_articles', 'avg_if', 'online_marketing_engagement', 'list_doi_last_90_d', 'sn_fan_occasional_author', 'last_time_online', 'change_over_py_sn_loyalty', 'is_editor_referral_opted_in', 'journal_awareness_1', 'explicit_user_choice', 'newsletters', 'author_group_global', 'cep_id', 'h_index', 'persona', 'is_book_author_communications_opted_in', 'list_journals_read_last_30_d', 'count_article_readership_last_60_d', 'percent_oa', 'most_recent_pub', 'not_sn_power_author', 'sn_journal_legitimate_interest_monthly', 'b_2_c_marketing_contacts']
+[0m11:27:26.866200 [debug] [Thread-3 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_audience_explorer_base_2"
+[0m11:27:26.868278 [debug] [Thread-3 (]: Began executing node model.analytics_dbt.stg_df_audience_explorer_base_2
+[0m11:27:27.015378 [debug] [Thread-3 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_audience_explorer_base_2"
+[0m11:27:27.019421 [debug] [Thread-3 (]: On model.analytics_dbt.stg_df_audience_explorer_base_2: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_df_audience_explorer_base_2"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      -- depends_on: `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_user_traits`
+
+
+
+
+
+
+
+
+WITH base AS (
+  SELECT * FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_nested_columns_joined`
+
+)
+
+
+SELECT *, 
+       CASE 
+        WHEN count_els_last_60_d IS NULL AND sn_fan_one_time_author IS NULL AND welcome_onboarding_retargeting_internal_display IS NULL AND is_editorial_board_members_communications_opted_in IS NULL AND count_reach_fta_last_90_d IS NULL AND loyalty_group IS NULL AND sn_opportunity_occasional_author IS NULL AND list_journals_allpageviews_30_d IS NULL AND user_researcher_home IS NULL AND is_legitimate_interest_author_opted_in IS NULL AND subjects IS NULL AND power_author_21_publications IS NULL AND count_about_last_30_d IS NULL AND role IS NULL AND main_f2 IS NULL AND sn_journal_authors_legitimate_interest IS NULL AND email_address IS NULL AND braze_received_all IS NULL AND is_webshop_buyer_communications_opted_in IS NULL AND sn_opportunity_regular_author IS NULL AND is_global_subscribed IS NULL AND japa_all IS NULL AND occasional_author_2_10_publications IS NULL AND count_reach_fta_last_60_d IS NULL AND third_party_prom IS NULL AND sn_journal_authors IS NULL AND mkt_pref_opt_in IS NULL AND list_doi_last_180_d IS NULL AND not_sn_one_time_author IS NULL AND institution_name IS NULL AND list_journals_etocs_last_180_d IS NULL AND has_received_email IS NULL AND count_reach_fta_last_180_d IS NULL AND sn_journal_authors_monthly IS NULL AND list_journals_submguide_about_last_60_d IS NULL AND sn_fan_power_author IS NULL AND list_keywords_dois_last_60_d IS NULL AND count_oa_content_online_last_60_d IS NULL AND journal_nurture_eligible_canvas_1 IS NULL AND regular_author_11_20_publications IS NULL AND sn_opportunity_power_author IS NULL AND not_sn_occasional_author IS NULL AND list_journals_submission_opened_last_90_d IS NULL AND b_2_c_marketing_contacts_monthly IS NULL AND list_journals_read_last_60_d IS NULL AND marketing_optin_mpc IS NULL AND top_publisher IS NULL AND advertising_opt_in IS NULL AND chatpgt_users IS NULL AND country IS NULL AND not_sn_regular_author IS NULL AND sn_positive_power_author IS NULL AND total_amt_5yr_author_group IS NULL AND email_received_all IS NULL AND the_source_pages_visitors IS NULL AND count_researcherhome_last_180_d IS NULL AND sn_positive_occasional_author IS NULL AND count_doi_last_180_d IS NULL AND count_about_last_90_days IS NULL AND sn_journal_submitters IS NULL AND key_contributor IS NULL AND one_time_author_1_publication IS NULL AND years_active IS NULL AND count_research_integrity_last_180_d IS NULL AND list_journal_etocs_last_180_d IS NULL AND sn_positive_regular_author IS NULL AND list_journals_submissions_alltime IS NULL AND has_recent_online_behaviour IS NULL AND count_submguidelines_last_90_days IS NULL AND list_journals_submguide_about_last_30_d IS NULL AND sn_fan_regular_author IS NULL AND list_doi_last_60_d IS NULL AND journal_nurture_oa_interest_eligible_canvas_2 IS NULL AND sn_journal_submitter IS NULL AND count_submguidelines_last_30_d IS NULL AND marketing_opt_in_not_mpc IS NULL AND etoc_received_all IS NULL AND author_group_global_detailed IS NULL AND oa_articles IS NULL AND avg_if IS NULL AND online_marketing_engagement IS NULL AND list_doi_last_90_d IS NULL AND sn_fan_occasional_author IS NULL AND last_time_online IS NULL AND change_over_py_sn_loyalty IS NULL AND is_editor_referral_opted_in IS NULL AND journal_awareness_1 IS NULL AND explicit_user_choice IS NULL AND newsletters IS NULL AND author_group_global IS NULL AND cep_id IS NULL AND h_index IS NULL AND persona IS NULL AND is_book_author_communications_opted_in IS NULL AND list_journals_read_last_30_d IS NULL AND count_article_readership_last_60_d IS NULL AND percent_oa IS NULL AND most_recent_pub IS NULL AND not_sn_power_author IS NULL AND sn_journal_legitimate_interest_monthly IS NULL AND b_2_c_marketing_contacts IS NULL THEN 0 
+        ELSE 1 
+        END AS flag_column 
+FROM base
+    );
+  
+[0m11:27:27.276243 [debug] [Thread-3 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:7f31f6c4-d6d8-4047-8c3e-81c56fb4fc0d&page=queryresults
+[0m11:27:39.041633 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A82210>]}
+[0m11:27:39.043482 [info ] [Thread-3 (]: 10 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_base_2  [[32mCREATE TABLE (155.0m rows, 39.0 GiB processed)[0m in 13.05s]
+[0m11:27:39.045265 [debug] [Thread-3 (]: Finished running node model.analytics_dbt.stg_df_audience_explorer_base_2
+[0m11:27:39.046671 [debug] [Thread-2 (]: Began running node model.analytics_dbt.stg_df_audience_explorer_id_flags
+[0m11:27:39.047471 [debug] [Thread-4 (]: Began running node model.analytics_dbt.stg_df_audience_explorer_cleaned
+[0m11:27:39.048637 [info ] [Thread-2 (]: 12 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_id_flags  [RUN]
+[0m11:27:39.051154 [debug] [Thread-2 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.raw_user_traits, now model.analytics_dbt.stg_df_audience_explorer_id_flags)
+[0m11:27:39.049737 [info ] [Thread-4 (]: 11 of 16 START sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_cleaned  [RUN]
+[0m11:27:39.052314 [debug] [Thread-2 (]: Began compiling node model.analytics_dbt.stg_df_audience_explorer_id_flags
+[0m11:27:39.053169 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_user_traits_column_names_history, now model.analytics_dbt.stg_df_audience_explorer_cleaned)
+[0m11:27:39.060733 [debug] [Thread-2 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_audience_explorer_id_flags"
+[0m11:27:39.061860 [debug] [Thread-4 (]: Began compiling node model.analytics_dbt.stg_df_audience_explorer_cleaned
+[0m11:27:39.067592 [debug] [Thread-4 (]: Writing injected SQL for node "model.analytics_dbt.stg_df_audience_explorer_cleaned"
+[0m11:27:39.070807 [debug] [Thread-2 (]: Began executing node model.analytics_dbt.stg_df_audience_explorer_id_flags
+[0m11:27:39.075442 [debug] [Thread-2 (]: Opening a new connection, currently in state closed
+[0m11:27:39.076525 [debug] [Thread-4 (]: Began executing node model.analytics_dbt.stg_df_audience_explorer_cleaned
+[0m11:27:39.081847 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m11:27:39.326532 [debug] [Thread-2 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_audience_explorer_id_flags"
+[0m11:27:39.330960 [debug] [Thread-2 (]: On model.analytics_dbt.stg_df_audience_explorer_id_flags: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_df_audience_explorer_id_flags"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      select
+canonical_segment_id,
+ (email IS NOT NULL) AS email_flag,
+  (anonymous_id IS NOT NULL) AS anonymous_id_flag,
+  (sap_outbound_id IS NOT NULL) AS sap_outbound_id_flag,
+  (last_name IS NOT NULL) AS last_name_flag,
+  (snid IS NOT NULL) AS snid_flag,
+  (researcher_id IS NOT NULL) AS researcher_id_flag,
+  (orcid IS NOT NULL) AS orcid_flag,
+  (ga_client_id IS NOT NULL) AS ga_client_id_flag,
+  (first_name IS NOT NULL) AS first_name_flag,
+  (permutive_id IS NOT NULL) AS permutive_id_flag,
+  (cep_id IS NOT NULL) AS cep_id_flag,
+  
+  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
+    );
+  
+[0m11:27:39.338074 [debug] [Thread-4 (]: Writing runtime sql for node "model.analytics_dbt.stg_df_audience_explorer_cleaned"
+[0m11:27:39.341757 [debug] [Thread-4 (]: On model.analytics_dbt.stg_df_audience_explorer_cleaned: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.stg_df_audience_explorer_cleaned"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
+
+SELECT
+
+  * EXCEPT(advertising_opt_in, mkt_pref_opt_in, subjects, list_keywords_dois_last_60_d),
+
+
+  NULLIF(advertising_opt_in, 'null') AS advertising_opt_in,
+  NULLIF(mkt_pref_opt_in, 'null') AS mkt_pref_opt_in,
+  NULLIF(subjects, '[]') AS subjects,
+
+
+  REPLACE(
+    REPLACE(
+      REPLACE(
+        REPLACE(list_keywords_dois_last_60_d, '[', ''),
+        ']', ''
+      ),
+      '\"', ''
+    ),
+    '"', ''
+  ) AS list_keywords_dois_last_60_d
+
+FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_base_2`
+    );
+  
+[0m11:27:39.642262 [debug] [Thread-2 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:a1934775-469b-4d35-bd93-d7a8ff8c87af&page=queryresults
+[0m11:27:39.683782 [debug] [Thread-4 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:a8e23e3a-6d65-4e9d-bad9-0663a417cbac&page=queryresults
+[0m11:27:44.539709 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A81D30>]}
+[0m11:27:44.541154 [info ] [Thread-2 (]: 12 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_id_flags  [[32mCREATE TABLE (155.0m rows, 9.0 GiB processed)[0m in 5.49s]
+[0m11:27:44.543287 [debug] [Thread-2 (]: Finished running node model.analytics_dbt.stg_df_audience_explorer_id_flags
+[0m11:27:52.367726 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A800B0>]}
+[0m11:27:52.369186 [info ] [Thread-4 (]: 11 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_staging.stg_df_audience_explorer_cleaned  [[32mCREATE TABLE (155.0m rows, 40.2 GiB processed)[0m in 13.31s]
+[0m11:27:52.371269 [debug] [Thread-4 (]: Finished running node model.analytics_dbt.stg_df_audience_explorer_cleaned
+[0m11:27:52.372914 [debug] [Thread-7 (]: Began running node model.analytics_dbt.audience_builder_big
+[0m11:27:52.374016 [info ] [Thread-7 (]: 13 of 16 START sql table model prod_audience_explorer_analytics_dbt_presentation.audience_builder_big  [RUN]
+[0m11:27:52.375647 [debug] [Thread-7 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_raw_user_traits_columns, now model.analytics_dbt.audience_builder_big)
+[0m11:27:52.376557 [debug] [Thread-7 (]: Began compiling node model.analytics_dbt.audience_builder_big
+[0m11:27:52.385421 [debug] [Thread-7 (]: Writing injected SQL for node "model.analytics_dbt.audience_builder_big"
+[0m11:27:52.392212 [debug] [Thread-7 (]: Began executing node model.analytics_dbt.audience_builder_big
+[0m11:27:52.398604 [debug] [Thread-7 (]: Opening a new connection, currently in state closed
+[0m11:27:52.577623 [debug] [Thread-7 (]: Writing runtime sql for node "model.analytics_dbt.audience_builder_big"
+[0m11:27:52.589317 [debug] [Thread-7 (]: On model.analytics_dbt.audience_builder_big: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.audience_builder_big"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+      
+    
+    
+
+    
+    OPTIONS(
+      description="""This model includes a comprehensive set of features for audience segmentation and analysis."""
+    )
+    as (
+      select 
+	cleaned.canonical_segment_id, 
+	True as all_audiences,
+	CAST(snid as STRING) as snid,
+	CAST(role AS STRING ) AS role,
+	CAST(institution_name AS STRING ) AS institution_name,
+	CAST(advertising_opt_in AS BOOL ) AS advertising_opt_in,
+	CAST(subjects AS STRING ) AS subjects,
+	CAST(mkt_pref_opt_in AS BOOL ) AS mkt_pref_opt_in,
+	CAST(main_f2 AS STRING ) AS main_f2,
+	CAST(change_over_py_sn_loyalty AS STRING ) AS change_over_py_sn_loyalty,
+	CAST(oa_articles AS INT ) AS oa_articles,
+	CAST(percent_oa AS NUMERIC ) AS percent_oa,
+	CAST(h_index AS INT ) AS h_index,
+	CAST(most_recent_pub AS DATE ) AS most_recent_pub,
+	CAST(avg_if AS NUMERIC ) AS avg_if,
+	CAST(loyalty_group AS STRING ) AS loyalty_group,
+	CAST(years_active AS INT ) AS years_active,
+	CAST(total_amt_5yr_author_group AS STRING ) AS total_amt_5yr_author_group,
+	CAST(top_publisher AS STRING ) AS top_publisher,
+	CAST(country AS STRING ) AS country,
+	CAST(persona AS STRING ) AS persona,
+	CAST(snid_flag AS BOOL ) AS snid_flag,
+	CAST(first_name_flag AS BOOL ) AS first_name_flag,
+	CAST(ga_client_id_flag AS BOOL ) AS ga_client_id_flag,
+	CAST(orcid_flag AS BOOL ) AS orcid_flag,
+	CAST(researcher_id_flag AS BOOL ) AS researcher_id_flag,
+	CAST(email_flag AS BOOL ) AS email_flag,
+	CAST(last_name_flag AS BOOL ) AS last_name_flag,
+	CAST(sap_outbound_id_flag AS BOOL ) AS sap_outbound_id_flag,
+	CAST(anonymous_id_flag AS BOOL ) AS anonymous_id_flag,
+	CAST(flag_column AS BOOL ) AS flag_column,
+	CAST(permutive_id_flag AS BOOL ) AS permutive_id_flag,
+	CAST(count_submguidelines_last_90_days AS INT ) AS count_submguidelines_last_90_days,
+	CAST(count_oa_content_online_last_60_d AS INT ) AS count_oa_content_online_last_60_d,
+	CAST(count_els_last_60_d AS INT ) AS count_els_last_60_d,
+	CAST(count_doi_last_180_d AS INT ) AS count_doi_last_180_d,
+	CAST(has_recent_online_behaviour AS INT ) AS has_recent_online_behaviour,
+	CAST(the_source_pages_visitors AS BOOL ) AS the_source_pages_visitors,
+	CAST(list_doi_last_180_d AS STRING ) AS list_doi_last_180_d,
+	CAST(list_journals_submguide_about_last_30_d AS STRING ) AS list_journals_submguide_about_last_30_d,
+	CAST(count_research_integrity_last_180_d AS INT ) AS count_research_integrity_last_180_d,
+	CAST(count_about_last_90_days AS INT ) AS count_about_last_90_days,
+	CAST(list_journals_read_last_30_d AS STRING ) AS list_journals_read_last_30_d,
+	CAST(sn_journal_submitter AS INT ) AS sn_journal_submitter,
+	CAST(sn_journal_authors AS INT ) AS sn_journal_authors,
+	CAST(list_doi_last_90_d as STRING) as list_doi_last_90_d,
+	CAST(list_journals_read_last_60_d as STRING) as list_journals_read_last_60_d,
+	CAST(list_journals_submguide_about_last_60_d as STRING) as list_journals_submguide_about_last_60_d,
+	CAST(list_doi_last_60_d as STRING) as list_doi_last_60_d,
+	CAST(list_keywords_dois_last_60_d as STRING) as list_keywords_dois_last_60_d,
+	CAST(list_journals_submission_opened_last_90_d as STRING) as list_journals_submission_opened_last_90_d,
+	CAST(occasional_author_2_10_publications as BOOL) as occasional_author_2_10_publications,
+	CAST(one_time_author_1_publication as BOOL) as one_time_author_1_publication,
+	CAST(regular_author_11_20_publications as BOOL) as regular_author_11_20_publications,
+	CAST(power_author_21_publications as BOOL) as power_author_21_publications,
+	CAST(cep_id_flag as BOOL) as cep_id_flag,
+	CAST(author_group_global_detailed as STRING) as author_group_global_detailed,
+	CAST(author_group_global as STRING) as author_group_global,
+	CAST(count_researcherhome_last_180_d as INT) as count_researcherhome_last_180_d,
+	CAST(user_researcher_home as BOOL) as user_researcher_home,
+	CAST(not_sn_occasional_author AS BOOL) AS not_sn_occasional_author,
+	CAST(not_sn_one_time_author AS BOOL) AS not_sn_one_time_author,
+	CAST(not_sn_power_author AS BOOL) AS not_sn_power_author,
+	CAST(not_sn_regular_author AS BOOL) AS not_sn_regular_author,
+	CAST(sn_fan_occasional_author AS BOOL) AS sn_fan_occasional_author,
+	CAST(sn_fan_one_time_author AS BOOL) AS sn_fan_one_time_author,
+	CAST(sn_fan_power_author AS BOOL) AS sn_fan_power_author,
+	CAST(sn_fan_regular_author AS BOOL) AS sn_fan_regular_author,
+	CAST(sn_opportunity_occasional_author AS BOOL) AS sn_opportunity_occasional_author,
+	CAST(sn_opportunity_power_author AS BOOL) AS sn_opportunity_power_author,
+	CAST(sn_opportunity_regular_author AS BOOL) AS sn_opportunity_regular_author,
+	CAST(sn_positive_occasional_author AS BOOL) AS sn_positive_occasional_author,
+	CAST(sn_positive_power_author AS BOOL) AS sn_positive_power_author,
+	CAST(sn_positive_regular_author AS BOOL) AS sn_positive_regular_author,
+	CAST(submissions[SAFE_OFFSET(0)].imprint AS STRING)               AS last_submission_imprint,
+	CAST(submissions[SAFE_OFFSET(0)].journal_id AS STRING)            AS last_submission_journal_id,
+	CAST(submissions[SAFE_OFFSET(0)].journal_title AS STRING)         AS last_submission_journal_title,
+	CAST(submissions[SAFE_OFFSET(0)].submission_timestamp AS TIMESTAMP) AS last_submission_timestamp,	
+	CAST(total_accepts AS INT) AS lifetime_aggregations_accepts,
+    CAST(total_rejects AS INT) AS lifetime_aggregations_rejects,
+    CAST(total_oa_submissions AS INT) AS lifetime_aggregations_oa_submissions,
+    CAST(total_submissions AS INT) AS lifetime_aggregations_submissions,
+	--recently added columns
+	CAST(braze_received_all AS BOOL) AS braze_received_all,
+	CAST(chatpgt_users AS BOOL) AS chatpgt_users,
+	CAST(count_about_last_30_d AS INT) AS count_about_last_30_d,
+	CAST(count_article_readership_last_60_d AS INT) AS count_article_readership_last_60_d,
+	CAST(count_reach_fta_last_180_d AS INT) AS count_reach_fta_last_180_d,
+	CAST(count_reach_fta_last_60_d AS INT) AS count_reach_fta_last_60_d,
+	CAST(count_reach_fta_last_90_d AS INT) AS count_reach_fta_last_90_d,
+	CAST(count_submguidelines_last_30_d AS INT) AS count_submguidelines_last_30_d,
+	CAST(email_received_all AS BOOL) AS email_received_all,
+	CAST(etoc_received_all AS BOOL) AS etoc_received_all,
+	CAST(journal_awareness_1 AS BOOL) AS journal_awareness_1,
+	CAST(list_journals_etocs_last_180_d AS STRING) AS list_journals_etocs_last_180_d,
+	CAST(list_journals_submissions_alltime AS STRING) AS list_journals_submissions_alltime,
+	CAST(online_marketing_engagement AS BOOL) AS online_marketing_engagement,
+	CAST(welcome_onboarding_retargeting_internal_display AS BOOL) AS welcome_onboarding_retargeting_internal_display,
+ --RECENT COLUMNS ADDED 
+   CAST(last_time_online AS STRING) AS last_time_online,
+   CAST(anonymous_id AS STRING) AS anonymous_id,
+   CAST(cep_id AS STRING) AS cep_id,
+   CAST(email AS STRING) AS email,
+   CAST(email_address AS STRING) AS email_address,
+   CAST(explicit_user_choice AS STRING) AS explicit_user_choice,
+   CAST(first_name AS STRING) AS first_name,
+   CAST(ga_client_id AS STRING) AS ga_client_id,
+   CAST(has_received_email AS STRING) AS has_received_email,
+   CAST(is_book_author_communications_opted_in AS STRING) AS is_book_author_communications_opted_in,
+   CAST(is_editorial_board_members_communications_opted_in AS STRING) AS is_editorial_board_members_communications_opted_in,
+   CAST(is_global_subscribed AS STRING) AS is_global_subscribed,
+   CAST(is_legitimate_interest_author_opted_in AS STRING) AS is_legitimate_interest_author_opted_in,
+   CAST(is_webshop_buyer_communications_opted_in AS STRING) AS is_webshop_buyer_communications_opted_in,
+   
+
+CAST(last_name AS STRING) AS last_name,
+CAST(list_journals_allpageviews_30_d AS STRING) AS list_journals_allpageviews_30_d,
+CAST(newsletters AS STRING) AS newsletters,
+CAST(orcid AS STRING) AS orcid,
+CAST(permutive_id AS STRING) AS permutive_id,
+CAST(researcher_id AS STRING) AS researcher_id,
+CAST(sap_outbound_id AS STRING) AS sap_outbound_id,
+CAST(sn_journal_submitters AS STRING) AS sn_journal_submitters,
+CAST(third_party_prom AS STRING) AS third_party_prom,
+CAST(marketing_optin_mpc AS STRING) AS marketing_optin_mpc,
+CAST(japa_all AS STRING) AS japa_all,
+CAST(marketing_opt_in_not_mpc AS STRING) AS marketing_opt_in_not_mpc,
+CAST(is_editor_referral_opted_in AS BOOL) AS is_editor_referral_opted_in,
+
+--11/10/2025
+CAST(b_2_c_marketing_contacts AS STRING) AS b_2_c_marketing_contacts,
+--CAST(3rd_party_communication_opt_in_monthly AS STRING) AS 3rd_party_communication_opt_in_monthly,
+CAST(key_contributor AS STRING) AS key_contributor,
+--CAST(3rd_party_promotion_monthly AS STRING) AS 3rd_party_promotion_monthly,
+CAST(sn_journal_authors_monthly AS STRING) AS sn_journal_authors_monthly,
+CAST(journal_nurture_oa_interest_eligible_canvas_2 AS STRING) AS journal_nurture_oa_interest_eligible_canvas_2,
+CAST(b_2_c_marketing_contacts_monthly AS STRING) AS b_2_c_marketing_contacts_monthly,
+--CAST(3rd_party_communication_opt_in AS STRING) AS 3rd_party_communication_opt_in,
+CAST(sn_journal_legitimate_interest_monthly AS STRING) AS sn_journal_legitimate_interest_monthly,
+--CAST(3rd_party_promotion AS STRING) AS 3rd_party_promotion,
+CAST(journal_nurture_eligible_canvas_1 AS STRING) AS journal_nurture_eligible_canvas_1,
+CAST(sn_journal_authors_legitimate_interest AS STRING) AS sn_journal_authors_legitimate_interest
+
+
+  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
+  left join `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
+  on cleaned.canonical_segment_id = flags.canonical_segment_id
+  where cleaned.flag_column = 1
+    );
+  
+[0m11:27:52.967586 [debug] [Thread-7 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:f47dd029-0541-4408-9e77-fb2267c95756&page=queryresults
+[0m11:28:05.231866 [debug] [Thread-7 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254329F70>]}
+[0m11:28:05.232779 [info ] [Thread-7 (]: 13 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_presentation.audience_builder_big  [[32mCREATE TABLE (139.5m rows, 45.2 GiB processed)[0m in 12.86s]
+[0m11:28:05.233842 [debug] [Thread-7 (]: Finished running node model.analytics_dbt.audience_builder_big
+[0m11:28:05.234691 [debug] [Thread-6 (]: Began running node model.analytics_dbt.audience_builder_optin
+[0m11:28:05.235178 [debug] [Thread-5 (]: Began running node model.analytics_dbt.audience_builder_researcher_home
+[0m11:28:05.235795 [debug] [Thread-8 (]: Began running node model.analytics_dbt.audience_builder_big_history
+[0m11:28:05.236659 [info ] [Thread-6 (]: 15 of 16 START sql table model prod_audience_explorer_analytics_dbt_presentation.audience_builder_optin  [RUN]
+[0m11:28:05.237464 [info ] [Thread-5 (]: 16 of 16 START sql table model prod_audience_explorer_analytics_dbt_presentation.audience_builder_researcher_home  [RUN]
+[0m11:28:05.239956 [debug] [Thread-6 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_lifetime_aggregations, now model.analytics_dbt.audience_builder_optin)
+[0m11:28:05.238811 [info ] [Thread-8 (]: 14 of 16 START sql incremental model prod_audience_explorer_analytics_dbt_presentation.audience_builder_big_history  [RUN]
+[0m11:28:05.241140 [debug] [Thread-5 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_df_audience_explorer_base, now model.analytics_dbt.audience_builder_researcher_home)
+[0m11:28:05.242072 [debug] [Thread-6 (]: Began compiling node model.analytics_dbt.audience_builder_optin
+[0m11:28:05.243092 [debug] [Thread-8 (]: Re-using an available connection from the pool (formerly model.analytics_dbt.stg_submissions, now model.analytics_dbt.audience_builder_big_history)
+[0m11:28:05.243775 [debug] [Thread-5 (]: Began compiling node model.analytics_dbt.audience_builder_researcher_home
+[0m11:28:05.248044 [debug] [Thread-6 (]: Writing injected SQL for node "model.analytics_dbt.audience_builder_optin"
+[0m11:28:05.248841 [debug] [Thread-8 (]: Began compiling node model.analytics_dbt.audience_builder_big_history
+[0m11:28:05.253118 [debug] [Thread-5 (]: Writing injected SQL for node "model.analytics_dbt.audience_builder_researcher_home"
+[0m11:28:05.259719 [debug] [Thread-8 (]: Writing injected SQL for node "model.analytics_dbt.audience_builder_big_history"
+[0m11:28:05.261769 [debug] [Thread-6 (]: Began executing node model.analytics_dbt.audience_builder_optin
+[0m11:28:05.265764 [debug] [Thread-6 (]: Opening a new connection, currently in state closed
+[0m11:28:05.267976 [debug] [Thread-8 (]: Began executing node model.analytics_dbt.audience_builder_big_history
+[0m11:28:05.268629 [debug] [Thread-5 (]: Began executing node model.analytics_dbt.audience_builder_researcher_home
+[0m11:28:05.275744 [debug] [Thread-8 (]: On model.analytics_dbt.audience_builder_big_history: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.audience_builder_big_history"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history__dbt_tmp`
+      
+    partition by timestamp_trunc(ingestion_timestamp, day)
+    
+
+    
+    OPTIONS(
+      description="""""",
+    
+      expiration_timestamp=TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 12 hour)
+    )
+    as (
+      
+
+with new_data as (
+	select distinct 
+	  canonical_segment_id 	  
+	  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+),
+
+change_detection as (
+  select
+    canonical_segment_id
+    from new_data
+    
+	    
+	  except distinct
+	  select
+	    canonical_segment_id
+	    from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history`
+	    
+)
+
+select
+  canonical_segment_id,
+  current_timestamp() as ingestion_timestamp
+  from change_detection
+    );
+  
+[0m11:28:05.280418 [debug] [Thread-5 (]: Opening a new connection, currently in state closed
+[0m11:28:05.281513 [debug] [Thread-8 (]: Opening a new connection, currently in state closed
+[0m11:28:05.487951 [debug] [Thread-6 (]: Writing runtime sql for node "model.analytics_dbt.audience_builder_optin"
+[0m11:28:05.494820 [debug] [Thread-6 (]: On model.analytics_dbt.audience_builder_optin: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.audience_builder_optin"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_optin`
+      
+    
+    
+
+    
+    OPTIONS(
+      description="""This model includes features related to audience opt-in status."""
+    )
+    as (
+      
+
+select
+  *
+  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+  where advertising_opt_in
+    );
+  
+[0m11:28:05.520120 [debug] [Thread-5 (]: Writing runtime sql for node "model.analytics_dbt.audience_builder_researcher_home"
+[0m11:28:05.523692 [debug] [Thread-5 (]: On model.analytics_dbt.audience_builder_researcher_home: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.audience_builder_researcher_home"} */
+
+  
+    
+
+    create or replace table `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_researcher_home`
+      
+    
+    
+
+    
+    OPTIONS(
+      description=""""""
+    )
+    as (
+      
+
+SELECT user_researcher_home,
+count_researcherhome_last_180_d,
+author_group_global,
+author_group_global_detailed,
+cep_id_flag,
+list_journals_submission_opened_last_90_d,
+list_keywords_dois_last_60_d,
+list_doi_last_60_d,
+list_journals_submguide_about_last_60_d,
+list_journals_read_last_60_d,
+list_doi_last_90_d,
+sn_journal_authors,
+sn_journal_submitter,
+list_journals_read_last_30_d,
+count_about_last_90_days,
+count_research_integrity_last_180_d,
+list_journals_submguide_about_last_30_d,
+list_doi_last_180_d,
+the_source_pages_visitors,
+has_recent_online_behaviour,
+count_doi_last_180_d,
+count_els_last_60_d,
+count_oa_content_online_last_60_d,
+count_submguidelines_last_90_days,
+anonymous_id_flag,
+sap_outbound_id_flag,
+last_name_flag,
+email_flag,
+researcher_id_flag,
+orcid_flag,
+ga_client_id_flag,
+first_name_flag,
+snid_flag,
+persona,
+country,
+top_publisher,
+total_amt_5yr_author_group,
+years_active,
+loyalty_group,
+avg_if,
+most_recent_pub,
+h_index,
+percent_oa,
+oa_articles,
+change_over_py_sn_loyalty,
+main_f2,
+mkt_pref_opt_in,
+subjects,
+advertising_opt_in,
+institution_name,
+role,
+canonical_segment_id
+FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+WHERE user_researcher_home is true
+    );
+  
+[0m11:28:05.689860 [debug] [Thread-8 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:995a75b5-4e19-4797-be25-d5588d2261cf&page=queryresults
+[0m11:28:05.837163 [debug] [Thread-6 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:a36347bb-db2e-4200-bfc0-518575a1e609&page=queryresults
+[0m11:28:05.852476 [debug] [Thread-5 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:99c1c019-8ecd-4471-bbd0-815d16b3ad49&page=queryresults
+[0m11:28:10.225378 [debug] [Thread-6 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A81550>]}
+[0m11:28:10.227581 [info ] [Thread-6 (]: 15 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_presentation.audience_builder_optin  [[32mCREATE TABLE (1.1m rows, 39.5 GiB processed)[0m in 4.99s]
+[0m11:28:10.231140 [debug] [Thread-6 (]: Finished running node model.analytics_dbt.audience_builder_optin
+[0m11:28:14.993686 [debug] [Thread-8 (]: 
+    In `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history`:
+        Schema changed: False
+        Source columns not in target: []
+        Target columns not in source: []
+        New column types: []
+  
+[0m11:28:14.997318 [debug] [Thread-8 (]: Writing runtime sql for node "model.analytics_dbt.audience_builder_big_history"
+[0m11:28:15.005982 [debug] [Thread-8 (]: On model.analytics_dbt.audience_builder_big_history: /* {"app": "dbt", "dbt_version": "1.10.5", "profile_name": "analytics_dbt", "target_name": "prod", "node_id": "model.analytics_dbt.audience_builder_big_history"} */
+-- back compat for old kwarg name
+  
+  
+        
+    
+
+    
+
+    merge into `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history` as DBT_INTERNAL_DEST
+        using (
+        select
+        * from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history__dbt_tmp`
+        ) as DBT_INTERNAL_SOURCE
+        on (FALSE)
+
+    
+
+    when not matched then insert
+        (`canonical_segment_id`, `ingestion_timestamp`)
+    values
+        (`canonical_segment_id`, `ingestion_timestamp`)
+
+
+    
+[0m11:28:15.390011 [debug] [Thread-8 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=dat-analytics-eng-ec869189&j=bq:EU:5944b4cf-4bd3-4e9e-8a1a-3511e8f3599c&page=queryresults
+[0m11:28:16.111126 [debug] [Thread-5 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A81010>]}
+[0m11:28:16.113631 [info ] [Thread-5 (]: 16 of 16 OK created sql table model prod_audience_explorer_analytics_dbt_presentation.audience_builder_researcher_home  [[32mCREATE TABLE (609.4k rows, 29.3 GiB processed)[0m in 10.87s]
+[0m11:28:16.116560 [debug] [Thread-5 (]: Finished running node model.analytics_dbt.audience_builder_researcher_home
+[0m11:28:18.657379 [debug] [Thread-8 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'de1140e3-1ef3-4f20-9d42-77d1e6ab132c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254A80DD0>]}
+[0m11:28:18.659565 [info ] [Thread-8 (]: 14 of 16 OK created sql incremental model prod_audience_explorer_analytics_dbt_presentation.audience_builder_big_history  [[32mMERGE (747.7k rows, 29.2 MiB processed)[0m in 13.41s]
+[0m11:28:18.662729 [debug] [Thread-8 (]: Finished running node model.analytics_dbt.audience_builder_big_history
+[0m11:28:18.669832 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m11:28:18.672230 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m11:28:18.673459 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189' was properly closed.
+[0m11:28:18.674374 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189' was properly closed.
+[0m11:28:18.675237 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189' was properly closed.
+[0m11:28:18.676015 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189_prod_audience_explorer_analytics_dbt_raw' was properly closed.
+[0m11:28:18.676792 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189_prod_audience_explorer_analytics_dbt_staging' was properly closed.
+[0m11:28:18.677615 [debug] [MainThread]: Connection 'list_dat-analytics-eng-ec869189_prod_audience_explorer_analytics_dbt_presentation' was properly closed.
+[0m11:28:18.678974 [debug] [MainThread]: Connection 'model.analytics_dbt.stg_df_nested_columns_joined' was properly closed.
+[0m11:28:18.680420 [debug] [MainThread]: Connection 'model.analytics_dbt.stg_df_audience_explorer_id_flags' was properly closed.
+[0m11:28:18.681608 [debug] [MainThread]: Connection 'model.analytics_dbt.stg_df_audience_explorer_base_2' was properly closed.
+[0m11:28:18.682980 [debug] [MainThread]: Connection 'model.analytics_dbt.stg_df_audience_explorer_cleaned' was properly closed.
+[0m11:28:18.684002 [debug] [MainThread]: Connection 'model.analytics_dbt.audience_builder_researcher_home' was properly closed.
+[0m11:28:18.684954 [debug] [MainThread]: Connection 'model.analytics_dbt.audience_builder_optin' was properly closed.
+[0m11:28:18.685830 [debug] [MainThread]: Connection 'model.analytics_dbt.audience_builder_big_history' was properly closed.
+[0m11:28:18.686707 [debug] [MainThread]: Connection 'model.analytics_dbt.audience_builder_big' was properly closed.
+[0m11:28:18.687880 [info ] [MainThread]: 
+[0m11:28:18.689631 [info ] [MainThread]: Finished running 2 incremental models, 14 table models in 0 hours 2 minutes and 41.68 seconds (161.68s).
+[0m11:28:18.700216 [debug] [MainThread]: Command end result
+[0m11:28:18.799443 [debug] [MainThread]: Wrote artifact WritableManifest to C:\analytics_engineering_dbt\audience_explorer_dbt\target\manifest.json
+[0m11:28:18.807170 [debug] [MainThread]: Wrote artifact SemanticManifest to C:\analytics_engineering_dbt\audience_explorer_dbt\target\semantic_manifest.json
+[0m11:28:18.834806 [debug] [MainThread]: Wrote artifact RunExecutionResult to C:\analytics_engineering_dbt\audience_explorer_dbt\target\run_results.json
+[0m11:28:18.836251 [info ] [MainThread]: 
+[0m11:28:18.837971 [info ] [MainThread]: [32mCompleted successfully[0m
+[0m11:28:18.839335 [info ] [MainThread]: 
+[0m11:28:18.840632 [info ] [MainThread]: Done. PASS=16 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=16
+[0m11:28:18.843871 [debug] [MainThread]: Command `dbt run` succeeded at 11:28:18.843311 after 178.22 seconds
+[0m11:28:18.845590 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000272548EFD70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027227C7EF30>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027254B0C6B0>]}
+[0m11:28:18.847234 [debug] [MainThread]: Flushing usage events
+[0m11:28:19.451368 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:29:35.722338 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000024195F7C050>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002419801FED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002419801FC50>]}
+
+
+============================== 12:29:35.728506 | f6958dbc-9a15-4a76-a652-90a64d4f4c5b ==============================
+[0m12:29:35.728506 [info ] [MainThread]: Running with dbt=1.10.5
+[0m12:29:35.729689 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'c:\\analytics_engineering_dbt\\audience_explorer_dbt', 'debug': 'False', 'warn_error': 'None', 'log_path': 'c:\\analytics_engineering_dbt\\audience_explorer_dbt\\logs', 'fail_fast': 'False', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'None', 'quiet': 'False', 'no_print': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True', 'static_parser': 'True', 'invocation_command': 'dbt ', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m12:29:35.912986 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'f6958dbc-9a15-4a76-a652-90a64d4f4c5b', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002419635F5C0>]}
+[0m12:29:36.091357 [debug] [MainThread]: Set downloads directory='C:\Users\ykw8828\AppData\Local\Temp\dbt-downloads-q0j7tcr3'
+[0m12:29:36.092231 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m12:29:36.251966 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m12:29:36.252563 [debug] [MainThread]: Retrying external call. Attempt: 0 Max attempts: 5
+[0m12:29:37.253610 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m12:29:37.404660 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m12:29:37.405902 [debug] [MainThread]: Retrying external call. Attempt: 1 Max attempts: 5
+[0m12:29:38.407083 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m12:29:38.554784 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m12:29:38.555905 [debug] [MainThread]: Retrying external call. Attempt: 2 Max attempts: 5
+[0m12:29:39.557377 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m12:29:39.789634 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m12:29:39.790666 [debug] [MainThread]: Retrying external call. Attempt: 3 Max attempts: 5
+[0m12:29:40.791578 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m12:29:41.108731 [debug] [MainThread]: External call exception: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m12:29:41.110874 [debug] [MainThread]: Retrying external call. Attempt: 4 Max attempts: 5
+[0m12:29:42.112538 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m12:29:42.271126 [error] [MainThread]: Encountered an error:
+External connection exception occurred: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+[0m12:29:42.330399 [error] [MainThread]: Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ykw8828\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 22, in connection_exception_retry
+    return fn()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 168, in _get_index
+    resp = requests.get(url, timeout=30)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\requests\adapters.py", line 698, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\requires.py", line 178, in wrapper
+    result, success = func(*args, **kwargs)
+                      ~~~~^^^^^^^^^^^^^^^^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\requires.py", line 128, in wrapper
+    return func(*args, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\requires.py", line 254, in wrapper
+    return func(*args, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\requires.py", line 303, in wrapper
+    return func(*args, **kwargs)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\cli\main.py", line 461, in deps
+    results = task.run()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\task\deps.py", line 247, in run
+    lock_defined_deps = resolve_lock_packages(packages_lock_config)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\deps\resolver.py", line 147, in resolve_lock_packages
+    resolved = final.resolved()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\deps\resolver.py", line 95, in resolved
+    return [p.resolved() for p in self.packages.values()]
+            ~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\deps\registry.py", line 98, in resolved
+    self._check_in_index()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\deps\registry.py", line 75, in _check_in_index
+    index = registry.index_cached()
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\utils\utils.py", line 127, in __call__
+    value = self.func(*args)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt\clients\registry.py", line 189, in index
+    return connection_exception_retry(get_index_fn, 5)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 36, in connection_exception_retry
+    return connection_exception_retry(fn, max_attempts, attempt + 1)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 36, in connection_exception_retry
+    return connection_exception_retry(fn, max_attempts, attempt + 1)
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 36, in connection_exception_retry
+    return connection_exception_retry(fn, max_attempts, attempt + 1)
+  [Previous line repeated 2 more times]
+  File "C:\analytics_engineering_dbt\dbt-env\Lib\site-packages\dbt_common\utils\connection.py", line 38, in connection_exception_retry
+    raise ConnectionError("External connection exception occurred: " + str(exc))
+dbt_common.exceptions.connection.ConnectionError: External connection exception occurred: HTTPSConnectionPool(host='hub.getdbt.com', port=443): Max retries exceeded with url: /api/v1/index.json (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)')))
+
+[0m12:29:42.339442 [debug] [MainThread]: Command `cli deps` failed at 12:29:42.339009 after 6.91 seconds
+[0m12:29:42.340569 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000241983258C0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000241983259D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000024198263850>]}
+[0m12:29:42.341579 [debug] [MainThread]: Flushing usage events
+[0m12:29:42.473712 [debug] [MainThread]: An error was encountered while trying to flush usage events

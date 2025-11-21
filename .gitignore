@@ -10,3 +10,11 @@ infra/.terraform/
 # OS
 .DS_Store
 .idea
+
+
+# Virtual environments
+dbt-env/
+venv/
+.env/
+*.pyc
+__pycache__/
