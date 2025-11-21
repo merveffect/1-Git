@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 [0m15:38:38.376301 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001A0FCC501A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001A0FDC93ED0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001A0FDC93B10>]}
 
 
@@ -805,3 +806,5 @@ Runtime Error
 [0m10:05:21.459550 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023F16ED3100>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023F180244D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000023F16ED89E0>]}
 [0m10:05:21.460281 [debug] [MainThread]: Flushing usage events
 [0m10:05:22.263051 [debug] [MainThread]: An error was encountered while trying to flush usage events
+=======
+>>>>>>> 71233e002ac8f7aa0a922fd1fd8c6cc43f3a83ec

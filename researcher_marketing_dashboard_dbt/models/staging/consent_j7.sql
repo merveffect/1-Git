@@ -58,7 +58,7 @@ WITH
     LOWER(utm_campaign) AS utm_campaign,
     LOWER(utm_source) AS utm_source,
     LOWER(utm_medium) AS utm_medium,
-    marmind_channels AS consent_channels,
+    sub_channels AS consent_channels,
     page_location,
     event_name,
     consent_context,

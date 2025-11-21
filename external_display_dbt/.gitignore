@@ -1,0 +1,14 @@
+.user.yml
+
+# dbt artefacts
+target/
+dbt_packages/
+dbt/logs/
+
+# terraform state crap
+infra/.terraform/
+*.terraform*
+
+# OS
+.DS_Store
+.idea
