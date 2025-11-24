@@ -3,6 +3,9 @@ target/
 dbt_packages/
 dbt/logs/
 logs/
+dbt.logs
+.log
+
 
 # terraform state crap
 infra/.terraform/
