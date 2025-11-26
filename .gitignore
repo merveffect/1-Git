@@ -2,9 +2,6 @@
 target/
 dbt_packages/
 dbt/logs/
-logs/
-dbt.logs
-.log
 **/logs/*
 
 

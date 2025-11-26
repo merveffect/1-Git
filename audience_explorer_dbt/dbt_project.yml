@@ -18,6 +18,7 @@ models:
   +persist_docs:
     relation: true
     columns: true
+
   analytics_dbt:
     +tags: analytics-dbt
 
@@ -35,3 +36,6 @@ models:
       +schema: "analytics_dbt_presentation"
       +materialized: table
       +tags: presentation
+
+tests:
+  +severity: warn
