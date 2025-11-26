@@ -1,5 +1,6 @@
 {{ config(
     materialized = "incremental",
+    tags= ["daily", "ta_j7"],
     partition_by = {"field": "date"},
     cluster_by = ["journal_id", "country", "oatype", "researchER_marketing_activity"]
  )}} 
@@ -17,20 +18,24 @@ END
 FROM
   {{ref('j7')}} a
 LEFT JOIN
-  {{source('dbt_dev_ga4_ria_researcher_report','transformative_agreements_sheet')}} b
+  {{source('ga4_ria_researcher_report','transformative_agreements_sheet')}} b
 ON
   a.journal_id = b.journal_id
-   {% if is_incremental() %}
+  {% if is_incremental() %}
+  {% set backfill_start = var("backfill_start_date", none) %}
+  {% set backfill_end = var("backfill_end_date", none) %}
   WHERE date BETWEEN 
-        COALESCE(
-          DATE('{{ var("backfill_start_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
-        AND
-        COALESCE(
-          DATE('{{ var("backfill_end_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
+    {% if backfill_start %}
+      DATE('{{ backfill_start }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+    AND
+    {% if backfill_end %}
+      DATE('{{ backfill_end }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
 {% else %}
   WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
                   AND DATE('{{ var("end_date", "2025-12-31") }}')

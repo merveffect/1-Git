@@ -1,6 +1,7 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"}
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
 )}}
 
 WITH
@@ -16,17 +17,21 @@ SELECT
 FROM
   {{ref("googleanalytics_and_marbl")}}
   
-   {% if is_incremental() %}
+  {% if is_incremental() %}
+  {% set backfill_start = var("backfill_start_date", none) %}
+  {% set backfill_end = var("backfill_end_date", none) %}
   WHERE date BETWEEN 
-        COALESCE(
-          DATE('{{ var("backfill_start_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
-        AND
-        COALESCE(
-          DATE('{{ var("backfill_end_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
+    {% if backfill_start %}
+      DATE('{{ backfill_start }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+    AND
+    {% if backfill_end %}
+      DATE('{{ backfill_end }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
 {% else %}
   WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
@@ -42,7 +47,7 @@ SELECT
   LOWER(adnetwork) AS adnetwork,
   sub_channels
 FROM
-  {{source('dbt_dev_ga4_ria_researcher_report','channel_groupings')}} ),
+  {{source('ga4_ria_researcher_report','channel_groupings')}} ),
   -- Step 3: Join and aggregate metrics
   aggregated_metrics AS (
 SELECT
@@ -155,8 +160,7 @@ GROUP BY
   17,
   18,
   19,
-  20,
-  21 ),
+  20 ),
   -- Step 4: Calculate combined KPIs and enrich with derived fields
   final_output AS (
 SELECT

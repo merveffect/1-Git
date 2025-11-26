@@ -1,11 +1,6 @@
 team: dat-analytics-engineering
 pipeline: infra
-notifications:
-  failure:
-  - teams: ((teams.defaultd9aabe7c608b4fe1957c0739cb0dfe.22.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8eabd5183ab24f2a9b5bdadd8c2a4cf2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zj69VBLjnSFc9B2Im7LHooq5Hi53SfBWWJROGwlWpHI))
 
-  - slack: ((vault "dat-analytics-engineering/teams#DBT_WEBHOOK"))
-    message: "❌ Pipeline failed"
 
 feature_toggles:
   - update-pipeline
@@ -13,7 +8,7 @@ feature_toggles:
 
 triggers:
   - type: git
-    branch: dev 
+    branch: main 
     uri: git@github.com:springernature/analytics_engineering_dbt.git
     watched_paths:
       - infra

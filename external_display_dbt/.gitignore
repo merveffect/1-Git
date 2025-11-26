@@ -1,0 +1,31 @@
+# Ignore all dbt artifact folders inside all subfolders
+**/logs/
+**/target/
+**/dbt_packages/
+
+# Ignore all log files everywhere
+**/*.log
+
+# Ignore Python env files
+**/dbt-env/
+**/venv/
+.env/
+
+# Ignore node modules anywhere
+**/node_modules/
+
+# Ignore package lock files inside nested dbt projects
+**/package-lock.yml
+
+# Ignore nested packages.yml if you don't want to commit them
+**/packages.yml
+
+# VSCode
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Ignore user-specific dbt profile files
+**/.user.yml

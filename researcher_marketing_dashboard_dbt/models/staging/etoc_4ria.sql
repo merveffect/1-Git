@@ -1,7 +1,8 @@
 {{ config(
     materialized = "incremental",
     partition_by = {"field": "etoc_date"},
-    incremental_strategy = "insert_overwrite"
+    incremental_strategy = "insert_overwrite",
+    tags= ["daily", "etocs"]
 ) }}
 
 WITH main AS (
@@ -18,17 +19,31 @@ WITH main AS (
 )
 
 SELECT
-    time_firstseen AS etoc_date,
-    journal_id,
-    journal_title,
-    COUNT(DISTINCT rcpt_to) AS num_etoc_signups
-FROM main
+  time_firstseen AS etoc_date,
+  journal_id,
+  journal_title,
+  COUNT(DISTINCT(rcpt_to)) AS num_etoc_signups
+FROM
+  main
+
 {% if is_incremental() %}
-    WHERE DATE(time_firstseen) BETWEEN
-          COALESCE(DATE('{{ var("backfill_start_date", "") }}'), DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY))
-      AND COALESCE(DATE('{{ var("backfill_end_date", "") }}'), CURRENT_DATE())
+  WHERE DATE(time_firstseen) BETWEEN 
+    {% if backfill_start %}
+      DATE('{{ backfill_start }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)
+    {% endif %}
+    AND
+    {% if backfill_end %}
+      DATE('{{ backfill_end }}')
+    {% else %}
+      CURRENT_DATE()
+    {% endif %}
 {% else %}
-    WHERE DATE(time_firstseen) BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                            AND DATE('{{ var("end_date", "2025-12-31") }}')
+  WHERE DATE(time_firstseen) BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
+                  AND DATE('{{ var("end_date", "2025-12-31") }}')
 {% endif %}
-GROUP BY 1,2,3
+GROUP BY
+  1,
+  2,
+  3

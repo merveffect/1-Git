@@ -7,27 +7,27 @@ sources:
     tables:
       - name: googleanalytics
   
-  - name: dbt_dev_ga4_ria_researcher_report
+  - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
-    schema: dbt_dev_ga4_ria_researcher_report
+    schema: ga4_ria_researcher_report
     tables:
       - name: countries
 
-  - name: dbt_dev_ga4_ria_researcher_report
+  - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
-    schema: dbt_dev_ga4_ria_researcher_report
+    schema: ga4_ria_researcher_report
     tables:
       - name: optins_sheet    
 
-  - name: zz_content_hub
+  - name: xx_jflow
     database: snproject52c6e272
-    schema: zz_content_hub
+    schema: xx_jflow
     tables:
-      - name: jflow_journals
+      - name: jflow
 
-  - name: dbt_dev_ga4_ria_researcher_report
+  - name: ria_researcher_report
     database: snproject-cbb9ca25
-    schema: dbt_dev_ga4_ria_researcher_report
+    schema: ria_researcher_report
     tables:
       - name: journalids
 
@@ -37,21 +37,21 @@ sources:
     tables:
       - name: marmind_data
 
-  - name: dbt_dev_ga4_ria_researcher_report
+  - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
-    schema: dbt_dev_ga4_ria_researcher_report
+    schema: ga4_ria_researcher_report
     tables:
       - name: regions
 
-  - name: dbt_dev_ga4_ria_researcher_report
+  - name: ria_researcher_report
     database: snproject-cbb9ca25
-    schema: dbt_dev_ga4_ria_researcher_report
+    schema: ria_researcher_report
     tables:
       - name: team_codes
 
-  - name: dbt_dev_ga4_ria_researcher_report
+  - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
-    schema: dbt_dev_ga4_ria_researcher_report
+    schema: ga4_ria_researcher_report
     tables:
       - name: transformative_agreements_sheet
 
@@ -61,15 +61,15 @@ sources:
     tables:
       - name: BooksMarketing
   
-  - name: dbt_dev_ga4_ria_researcher_report
+  - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
-    schema: dbt_dev_ga4_ria_researcher_report
+    schema: ga4_ria_researcher_report
     tables:
       - name: channel_groupings
 
-  - name: dbt_dev_ga4_ria_researcher_report
+  - name: e2e_b2c_researcher_dev
     database: snproject-cbb9ca25
-    schema: dbt_dev_ga4_ria_researcher_report
+    schema: e2e_b2c_researcher_dev
     tables:
       - name: journal_table
   

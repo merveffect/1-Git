@@ -9,13 +9,11 @@ feature_toggles:
 triggers:
   - type: git
     uri: git@github.com:springernature/analytics_engineering_dbt.git
-    branch: dev
+    branch: main
     watched_paths:
-      - dbt
-
+      - audience_explorer_dbt
 
 tasks:
-
   - type: run
     name: deploy-dev
     script: \sndbt deploy --verbose

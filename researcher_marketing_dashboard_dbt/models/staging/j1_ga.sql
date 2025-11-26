@@ -1,6 +1,8 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"}
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
+
  )}}
 
 WITH
@@ -11,16 +13,20 @@ WITH
   FROM
     {{ref('g1_ga')}}
      {% if is_incremental() %}
+  {% set backfill_start = var("backfill_start_date", none) %}
+  {% set backfill_end = var("backfill_end_date", none) %}
   WHERE date BETWEEN 
-        COALESCE(
-          DATE('{{ var("backfill_start_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
-        AND
-        COALESCE(
-          DATE('{{ var("backfill_end_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
+    {% if backfill_start %}
+      DATE('{{ backfill_start }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+    AND
+    {% if backfill_end %}
+      DATE('{{ backfill_end }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
 {% else %}
   WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
@@ -32,7 +38,7 @@ WITH
     LOWER(isoalphatwo) AS isoalphatwo,
     LOWER(world_region) AS world_region
   FROM
-    {{source('dbt_dev_ga4_ria_researcher_report','regions')}} ),
+    {{source('ga4_ria_researcher_report','regions')}} ),
   joined_data AS (
   SELECT
     *
@@ -123,8 +129,7 @@ WITH
     18,
     19,
     20,
-    21,
-    22)
+    21)
     --final table
 SELECT
   *

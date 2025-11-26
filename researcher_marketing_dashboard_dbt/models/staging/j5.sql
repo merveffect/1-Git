@@ -1,6 +1,8 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"}
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
+
  )}}
 
 WITH
@@ -14,16 +16,20 @@ WITH
   ON
     a.journal_id = b.journalkey
     {% if is_incremental() %}
+  {% set backfill_start = var("backfill_start_date", none) %}
+  {% set backfill_end = var("backfill_end_date", none) %}
   WHERE date BETWEEN 
-        COALESCE(
-          DATE('{{ var("backfill_start_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
-        AND
-        COALESCE(
-          DATE('{{ var("backfill_end_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
+    {% if backfill_start %}
+      DATE('{{ backfill_start }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+    AND
+    {% if backfill_end %}
+      DATE('{{ backfill_end }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
 {% else %}
   WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
@@ -318,7 +324,7 @@ END
   AS researchER_marketing_activity,
   -- research_marketing: boolean dimension, splitting between RM and not RM traffic; RM traffic here includes e.g. eCom or B2B campaigns
   CASE
-    WHEN REGEXP_CONTAINS(clean_campaign, '(acgo|acpg|apsr|bepl|conr|corp|edbm|hscr|hssr|humr|lscr|medr|mlsr|mpsr|newb|pere|reof|sscr)') OR team_code IN ( SELECT code FROM {{source('dbt_dev_ga4_ria_researcher_report','team_codes')}}) OR REGEXP_CONTAINS(clean_campaign, '(aexs|bbkk|bcps|bmcf|bmcs|bsch|bslb|bsng|bsph|bsps|bsss|cmtl|jftt|jjpn|jrpc|mkef|ncom|ngmt|njpn|npjs|nrcb|nrcc|nrcp|nrrj|rsdt|sbps|scdt|snaj|spsn|srbm|srcl|srcs|srep|srhs|srlf|srmt|stnl|ddcn|none1|anima|award|brcon|bpdmr|cuspb|cusev|evlst|focal|focus|forsc|immrs|infog|innov|insit|postr|spotl|video|wbcas|outlk|outln|nafrc|nitly|iview|nindx|ncafe|natcf|bdjjb|bdjjl|bdjmp|jrnls|sproa|sprin|natoa|najrn|discv|scirp|oajrn|oaagr|books|gbook|obook|tbook|sbook|ncars|b2bgn)') THEN TRUE
+    WHEN REGEXP_CONTAINS(clean_campaign, '(acgo|acpg|apsr|bepl|conr|corp|edbm|hscr|hssr|humr|lscr|medr|mlsr|mpsr|newb|pere|reof|sscr)') OR team_code IN ( SELECT code FROM {{source('ria_researcher_report','team_codes')}}) OR REGEXP_CONTAINS(clean_campaign, '(aexs|bbkk|bcps|bmcf|bmcs|bsch|bslb|bsng|bsph|bsps|bsss|cmtl|jftt|jjpn|jrpc|mkef|ncom|ngmt|njpn|npjs|nrcb|nrcc|nrcp|nrrj|rsdt|sbps|scdt|snaj|spsn|srbm|srcl|srcs|srep|srhs|srlf|srmt|stnl|ddcn|none1|anima|award|brcon|bpdmr|cuspb|cusev|evlst|focal|focus|forsc|immrs|infog|innov|insit|postr|spotl|video|wbcas|outlk|outln|nafrc|nitly|iview|nindx|ncafe|natcf|bdjjb|bdjjl|bdjmp|jrnls|sproa|sprin|natoa|najrn|discv|scirp|oajrn|oaagr|books|gbook|obook|tbook|sbook|ncars|b2bgn)') THEN TRUE
     ELSE FALSE
 END
   AS research_marketing_activity,

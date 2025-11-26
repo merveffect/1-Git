@@ -1,6 +1,8 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"}
+    partition_by = {"field": "date"},
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
+
  )}}
 
 WITH
@@ -9,17 +11,21 @@ WITH
     *
   FROM
     {{ref('j2')}}
-     {% if is_incremental() %}
+    {% if is_incremental() %}
+  {% set backfill_start = var("backfill_start_date", none) %}
+  {% set backfill_end = var("backfill_end_date", none) %}
   WHERE date BETWEEN 
-        COALESCE(
-          DATE('{{ var("backfill_start_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
-        AND
-        COALESCE(
-          DATE('{{ var("backfill_end_date", "") }}') ,
-          DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-        )
+    {% if backfill_start %}
+      DATE('{{ backfill_start }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+    AND
+    {% if backfill_end %}
+      DATE('{{ backfill_end }}')
+    {% else %}
+      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
 {% else %}
   WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
@@ -30,7 +36,7 @@ WITH
     DISTINCT LOWER(isoalphatwo) AS country_isoalphatwo,
     country
   FROM
-    {{source('dbt_dev_ga4_ria_researcher_report','countries')}} ),
+    {{source('ga4_ria_researcher_report','countries')}} ),
   joined_data AS (
   SELECT
     *
@@ -132,7 +138,7 @@ WITH
 SELECT
   *,
   CASE
-    WHEN REGEXP_CONTAINS(product_code,'(discv|hybrd|jrnls|najrn|natoa|oajrn|pf001|pf002|pf018|pf023|pf030|pf032|scirp|sproa|sprin)') OR product_code IN ( SELECT CAST(journal_id AS string) FROM {{source('dbt_dev_ga4_ria_researcher_report','journalids')}} WHERE journal_id IS NOT NULL) THEN '1. journals'
+    WHEN REGEXP_CONTAINS(product_code,'(discv|hybrd|jrnls|najrn|natoa|oajrn|pf001|pf002|pf018|pf023|pf030|pf032|scirp|sproa|sprin)') OR product_code IN ( SELECT CAST(journal_id AS string) FROM {{source('ria_researcher_report','journalids')}} WHERE journal_id IS NOT NULL) THEN '1. journals'
     WHEN REGEXP_CONTAINS(product_code,'[0-9]{5}') THEN '1. journals'
     WHEN REGEXP_CONTAINS(product_code,'(books|mrefw|obook|pf006|pf007|pf008|pf009|pf010|pf014|pf021|pf027|print|sbook|tbook|gbook)') THEN '2. books'
     WHEN product_code IS NOT NULL THEN "3. mixed"

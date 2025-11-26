@@ -30,7 +30,7 @@ jobs:
         HALFPIPE_DOMAIN: halfpipe.io
         HALFPIPE_FILE_PATH: .halfpipe.io.yml
         HALFPIPE_PROJECT: halfpipe-io
-        PIPELINE_NAME: rmdb_dbt-dev
+        PIPELINE_NAME: rmdb_dbt
       platform: linux
       run:
         dir: git/researcher_marketing_dashboard_dbt
@@ -208,7 +208,7 @@ resources:
 - check_every: 10m0s
   name: git
   source:
-    branch: dev
+    branch: main
     paths:
     - researcher_marketing_dashboard_dbt
     private_key: ((halfpipe-github.private_key))
@@ -220,6 +220,6 @@ resources:
     bucket: ((halfpipe-semver.bucket))
     driver: gcs
     json_key: ((halfpipe-semver.private_key))
-    key: dat-analytics-engineering-rmdb_dbt-dev
+    key: dat-analytics-engineering-rmdb_dbt
   type: semver
 

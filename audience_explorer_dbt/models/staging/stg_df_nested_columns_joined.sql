@@ -1,5 +1,5 @@
 WITH base AS (
-    SELECT * EXCEPT(submissions)
+    SELECT *
     FROM {{ ref('stg_df_audience_explorer_base') }}
 ),
 subs AS (
