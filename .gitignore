@@ -5,6 +5,7 @@ dbt/logs/
 logs/
 dbt.logs
 .log
+**/logs/*
 
 
 # terraform state crap
