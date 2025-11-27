@@ -140,8 +140,34 @@ CAST(b_2_c_marketing_contacts_monthly AS STRING) AS b_2_c_marketing_contacts_mon
 CAST(sn_journal_legitimate_interest_monthly AS STRING) AS sn_journal_legitimate_interest_monthly,
 --CAST(3rd_party_promotion AS STRING) AS 3rd_party_promotion,
 CAST(journal_nurture_eligible_canvas_1 AS STRING) AS journal_nurture_eligible_canvas_1,
-CAST(sn_journal_authors_legitimate_interest AS STRING) AS sn_journal_authors_legitimate_interest
+CAST(sn_journal_authors_legitimate_interest AS STRING) AS sn_journal_authors_legitimate_interest,
 
+
+--recently added on 27/11/2025
+CAST(advertising_3rd_platfoms_opt_in_monthly AS BOOL) AS advertising_3rd_platfoms_opt_in_monthly,
+CAST(advertising_3rd_platforms_opt_in AS BOOL) AS advertising_3rd_platforms_opt_in,
+CAST(advertising_3rd_platforms_unsubscribe_monthly AS BOOL) AS advertising_3rd_platforms_unsubscribe_monthly,
+CAST(b_2_c_contacts_unsubscribe_monthly AS BOOL) AS b_2_c_contacts_unsubscribe_monthly,
+CAST(exclusion_journal_nurture AS BOOL) AS exclusion_journal_nurture,
+CAST(exclusion_journal_nurture_test_tom AS BOOL) AS exclusion_journal_nurture_test_tom,
+CAST(global_list_unsubscribe_monthly AS BOOL) AS global_list_unsubscribe_monthly,
+CAST(interested_journal_ids AS STRING) AS interested_journal_ids,
+CAST(interested_journal_ids_none_of AS STRING) AS interested_journal_ids_none_of,
+CAST(interested_journal_ids_none_of2 AS STRING) AS interested_journal_ids_none_of2,
+CAST(journal_nurture_eligible_canvas_1_test_readership AS BOOL) AS journal_nurture_eligible_canvas_1_test_readership,
+CAST(journal_publications AS STRING) AS journal_publications,
+CAST(marketing_consent_opt_out_monthly AS BOOL) AS marketing_consent_opt_out_monthly,
+CAST(prodrec_dn_test_35ery_g18lgk_eg_ch_jw_qdgg_pt_wrx_o AS FLOAT64) AS prodrec_dn_test_35ery_g18lgk_eg_ch_jw_qdgg_pt_wrx_o,
+CAST(prodrec_dn_test_product_audience AS BOOL) AS prodrec_dn_test_product_audience,
+CAST(sn_journal_author_unsubscribe_monthly AS BOOL) AS sn_journal_author_unsubscribe_monthly,
+CAST(test_journal_nurture AS BOOL) AS test_journal_nurture,
+CAST(third_party_promotion AS BOOL) AS third_party_promotion,
+CAST(third_party_promotion_monthly AS BOOL) AS third_party_promotion_monthly,
+CAST(third_party_promotion_unsubscribe_monthly AS BOOL) AS third_party_promotion_unsubscribe_monthly,
+CAST(total_comp_persona_group_2970_2971 AS BOOL) AS total_comp_persona_group_2970_2971,
+CAST(total_medr_persona_group_2879_2977_2992 AS BOOL) AS total_medr_persona_group_2879_2977_2992,
+CAST(exclusion_journal_nurture_context AS STRING) AS exclusion_journal_nurture_context,
+CAST(exclusion_journal_nurture_test_tom_context AS STRING) AS exclusion_journal_nurture_test_tom_context
 
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
