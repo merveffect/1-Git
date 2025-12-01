@@ -1,5 +1,5 @@
 {{ config(
-    materialized = "incremental",
+    materialized = "table",
     partition_by = {"field": "status_date"},
     tags= ["daily", "ta_j7"]
  )}}
