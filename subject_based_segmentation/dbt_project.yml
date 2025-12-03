@@ -27,10 +27,6 @@ models:
     presentation:
        +schema: "presentation"
        +materialized: table
-    models:
-      permutive_inferred_subjects:
-       +schema: "permutive_sn_dev"
-       +database: "poc-gbq"
-       +materialized: table
+
 
 
