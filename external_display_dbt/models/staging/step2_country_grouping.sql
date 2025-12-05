@@ -38,7 +38,7 @@ FROM
   (SELECT * EXCEPT(country),
   regexp_replace(lower(country), '&(.)', 'and ') as country
 
-  FROM FROM {{ref('step1_channel_grouping')}} where source = "facebook") AS main
+  FROM {{ref('step1_channel_grouping')}} where source = "facebook") AS main
 
   LEFT JOIN
 

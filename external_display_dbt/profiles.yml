@@ -1,7 +1,7 @@
 external_display_dbt:
   outputs:
     dev:
-      dataset: dev
+      dataset: dev_external_display_dbt
       job_execution_timeout_seconds: 300
       job_retries: 1
       location: EU
