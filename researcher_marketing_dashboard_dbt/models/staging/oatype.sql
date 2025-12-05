@@ -1,5 +1,5 @@
 {{ config(
-    materialized = "incremental",
+    materialized = "table",
     tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
 
  )}}

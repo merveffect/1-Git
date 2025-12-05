@@ -1,0 +1,32 @@
+name: 'subject_based_segmentation'
+version: '1.0.0'
+
+profile: 'subject_based_segmentation'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  subject_based_segmentation:
+    raw:
+      +schema: "raw"
+      +materialized: table
+
+    staging:
+      +schema: "staging"
+      +materialized: table
+
+    presentation:
+       +schema: "presentation"
+       +materialized: table
+
+
+

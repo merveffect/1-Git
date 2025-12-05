@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: stg_df_audience_explorer_base
+    description: "Staging model for pivoting user traits data into a wide format"
+    columns:
+      - name: canonical_segment_id
+        tests:
+         - not_null:
+             severity: error
+         - unique:
+             severity: error
+
+  - name: stg_df_nested_columns_joined
+    description: "Staging model for joining nested columns data"
+    columns:
+      - name: canonical_segment_id
+        tests:
+         - not_null:
+             severity: error
+         - unique:
+             severity: error

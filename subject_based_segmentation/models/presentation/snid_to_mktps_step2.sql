@@ -1,0 +1,47 @@
+
+-- STEP 2: Aggregate and extract top 3 marketing preferences per SNID
+WITH final_cte AS (
+  SELECT
+    snid,
+    STRING_AGG(DISTINCT CAST(journal_id AS STRING)) AS all_journal_ids,
+    STRING_AGG(DISTINCT snt_code) AS all_snt_codes,
+    STRING_AGG(DISTINCT snt_label) AS all_snt_labels,
+    STRING_AGG(DISTINCT marketing_preference_id, ',') AS all_marketing_ids,
+    STRING_AGG(DISTINCT marketing_preference, ';') AS all_marketing_preferences
+  FROM {{ ref('snid_to_mktps_step1') }}
+  GROUP BY snid
+),
+
+ranked_cte AS (
+  SELECT
+    snid,
+    marketing_preference_id,
+    marketing_preference,
+    COUNT(*) AS freq,
+    ROW_NUMBER() OVER(PARTITION BY snid ORDER BY COUNT(*) DESC) AS rn
+  FROM {{ ref('snid_to_mktps_step1') }}
+  WHERE marketing_preference IS NOT NULL
+  GROUP BY snid, marketing_preference_id, marketing_preference
+)
+
+SELECT
+  f.snid,
+  f.all_journal_ids,
+  f.all_snt_codes,
+  f.all_snt_labels,
+  f.all_marketing_ids,
+  f.all_marketing_preferences,
+  STRING_AGG(r.marketing_preference_id, ';') AS top_3_marketing_pref_ids,
+  STRING_AGG(r.marketing_preference, ';') AS top_3_marketing_prefs
+FROM final_cte f
+LEFT JOIN ranked_cte r
+  ON f.snid = r.snid AND r.rn <= 3
+GROUP BY
+  f.snid,
+  f.all_journal_ids,
+  f.all_snt_codes,
+  f.all_snt_labels,
+  f.all_marketing_ids,
+  f.all_marketing_preferences
+ORDER BY f.snid
+
