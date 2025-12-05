@@ -7,10 +7,10 @@ WITH
     * EXCEPT(country),
     REGEXP_REPLACE(LOWER(country), '&(.)', 'and ') AS country
   FROM
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_mktp`
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`g1_mktp`
     
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
     AND SOURCE = "facebook" ),
   facebook_regions AS (
@@ -24,10 +24,10 @@ WITH
     * EXCEPT(country),
     REGEXP_REPLACE(LOWER(country), '&(.)', 'and ') AS country
   FROM
-    `snproject-cbb9ca25`.`dbt_dev_ga4_ria_researcher_report`.`g1_mktp`
+    `snproject-cbb9ca25`.`dev_rmdb_dbt_staging`.`g1_mktp`
      
   WHERE date BETWEEN DATE('2024-01-01')
-                  AND DATE('2025-11-01')
+                  AND DATE('2025-11-09')
 
     AND SOURCE != "facebook" ),
   non_facebook_regions AS (

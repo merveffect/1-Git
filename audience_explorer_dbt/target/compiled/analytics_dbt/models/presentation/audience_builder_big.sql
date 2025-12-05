@@ -74,9 +74,9 @@ select
 	CAST(sn_positive_power_author AS BOOL) AS sn_positive_power_author,
 	CAST(sn_positive_regular_author AS BOOL) AS sn_positive_regular_author,
 	CAST(submissions[SAFE_OFFSET(0)].imprint AS STRING)               AS last_submission_imprint,
-	CAST(submissions[SAFE_OFFSET(0)].journal_id AS STRING)            AS journal_id,
-	CAST(submissions[SAFE_OFFSET(0)].journal_title AS STRING)         AS journal_title,
-	CAST(submissions[SAFE_OFFSET(0)].submission_timestamp AS TIMESTAMP) AS submission_timestamp,	
+	CAST(submissions[SAFE_OFFSET(0)].journal_id AS STRING)            AS last_submission_journal_id,
+	CAST(submissions[SAFE_OFFSET(0)].journal_title AS STRING)         AS last_submission_journal_title,
+	CAST(submissions[SAFE_OFFSET(0)].submission_timestamp AS TIMESTAMP) AS last_submission_timestamp,	
 	CAST(total_accepts AS INT) AS lifetime_aggregations_accepts,
     CAST(total_rejects AS INT) AS lifetime_aggregations_rejects,
     CAST(total_oa_submissions AS INT) AS lifetime_aggregations_oa_submissions,
@@ -98,6 +98,7 @@ select
 	CAST(online_marketing_engagement AS BOOL) AS online_marketing_engagement,
 	CAST(welcome_onboarding_retargeting_internal_display AS BOOL) AS welcome_onboarding_retargeting_internal_display,
  --RECENT COLUMNS ADDED 
+   CAST(last_time_online AS STRING) AS last_time_online,
    CAST(anonymous_id AS STRING) AS anonymous_id,
    CAST(cep_id AS STRING) AS cep_id,
    CAST(email AS STRING) AS email,
@@ -127,8 +128,22 @@ CAST(japa_all AS STRING) AS japa_all,
 CAST(marketing_opt_in_not_mpc AS STRING) AS marketing_opt_in_not_mpc,
 CAST(is_editor_referral_opted_in AS BOOL) AS is_editor_referral_opted_in,
 
+--11/10/2025
+CAST(b_2_c_marketing_contacts AS STRING) AS b_2_c_marketing_contacts,
+--CAST(3rd_party_communication_opt_in_monthly AS STRING) AS 3rd_party_communication_opt_in_monthly,
+CAST(key_contributor AS STRING) AS key_contributor,
+--CAST(3rd_party_promotion_monthly AS STRING) AS 3rd_party_promotion_monthly,
+CAST(sn_journal_authors_monthly AS STRING) AS sn_journal_authors_monthly,
+CAST(journal_nurture_oa_interest_eligible_canvas_2 AS STRING) AS journal_nurture_oa_interest_eligible_canvas_2,
+CAST(b_2_c_marketing_contacts_monthly AS STRING) AS b_2_c_marketing_contacts_monthly,
+--CAST(3rd_party_communication_opt_in AS STRING) AS 3rd_party_communication_opt_in,
+CAST(sn_journal_legitimate_interest_monthly AS STRING) AS sn_journal_legitimate_interest_monthly,
+--CAST(3rd_party_promotion AS STRING) AS 3rd_party_promotion,
+CAST(journal_nurture_eligible_canvas_1 AS STRING) AS journal_nurture_eligible_canvas_1,
+CAST(sn_journal_authors_legitimate_interest AS STRING) AS sn_journal_authors_legitimate_interest
 
-  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
-  left join `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
+
+  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_cleaned` cleaned
+  left join `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_staging`.`stg_df_audience_explorer_id_flags` flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id
   where cleaned.flag_column = 1

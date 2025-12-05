@@ -2,7 +2,7 @@ WITH src AS (
   SELECT
     t.*,
     SAFE.PARSE_JSON(value) AS j
-  FROM `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_raw`.`raw_user_traits` AS t
+  FROM `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_raw`.`raw_user_traits` AS t
   WHERE name = 'lifetime_aggregations'
 ),
 

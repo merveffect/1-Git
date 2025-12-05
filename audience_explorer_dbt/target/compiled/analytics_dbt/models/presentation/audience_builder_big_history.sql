@@ -3,7 +3,7 @@
 with new_data as (
 	select distinct 
 	  canonical_segment_id 	  
-	  from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
+	  from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big`
 ),
 
 change_detection as (
@@ -15,7 +15,7 @@ change_detection as (
 	  except distinct
 	  select
 	    canonical_segment_id
-	    from `dat-analytics-eng-ec869189`.`dev_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history`
+	    from `dat-analytics-eng-ec869189`.`prod_audience_explorer_analytics_dbt_presentation`.`audience_builder_big_history`
 	    
 )
 
