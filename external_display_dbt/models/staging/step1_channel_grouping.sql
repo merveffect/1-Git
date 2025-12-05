@@ -1,5 +1,5 @@
 {{ config(
-    materialized = "incremental",
+    materialized = "table",
     partition_by = {"field": "date"},
     
  )}}
