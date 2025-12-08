@@ -167,7 +167,15 @@ CAST(third_party_promotion_unsubscribe_monthly AS BOOL) AS third_party_promotion
 CAST(total_comp_persona_group_2970_2971 AS BOOL) AS total_comp_persona_group_2970_2971,
 CAST(total_medr_persona_group_2879_2977_2992 AS BOOL) AS total_medr_persona_group_2879_2977_2992,
 CAST(exclusion_journal_nurture_context AS STRING) AS exclusion_journal_nurture_context,
-CAST(exclusion_journal_nurture_test_tom_context AS STRING) AS exclusion_journal_nurture_test_tom_context
+CAST(exclusion_journal_nurture_test_tom_context AS STRING) AS exclusion_journal_nurture_test_tom_context,
+
+--2/12/2025 added columns
+CAST(rg_engagement_cross_channel AS BOOL) AS rg_engagement_cross_channel,
+CAST(list_article_title_from_readership AS STRING) AS list_article_title_from_readership,
+CAST(list_article_title_from_view AS STRING) AS list_article_title_from_view,
+CAST(last_date_book_interest AS TIMESTAMP) AS last_date_book_interest
+
+
 
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
