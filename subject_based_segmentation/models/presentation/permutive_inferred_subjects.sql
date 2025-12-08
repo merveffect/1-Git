@@ -1,3 +1,10 @@
+{{ config(
+    database = "poc-gbq",
+    schema = "permutive_sn_dev",
+    alias = "permutive_inferred_subjects",
+    schema_suffix = None
+) }}
+
 
 WITH optin_snids AS (
     SELECT DISTINCT
