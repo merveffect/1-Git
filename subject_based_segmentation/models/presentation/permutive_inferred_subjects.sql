@@ -1,6 +1,6 @@
 {{ config(
     alias = "permutive_inferred_subjects",
-    tags = 'poc'
+    tags = ["poc"]
 ) }}
 
 
