@@ -3,13 +3,13 @@
     tags = ["poc"]
 ) }}
 
-
 WITH optin_snids AS (
     SELECT DISTINCT
         snid
     FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
     WHERE snid IS NOT NULL
 ),
+
 
 subject_source AS (
     SELECT
@@ -20,7 +20,7 @@ subject_source AS (
       AND top_3_marketing_pref_ids IS NOT NULL
 ),
 
--- 🔥 Burada ID’lerin başına "isnt" prefix'i ekliyoruz
+
 prefixed AS (
     SELECT
         snid,
