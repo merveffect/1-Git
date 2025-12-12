@@ -73,12 +73,6 @@ sources:
     tables:
       - name: journal_table
   
-  - name: prod_joint_submissions_core
-    database: datasn-submissions-55677263
-    schema: prod_joint_submissions_core
-    tables:
-      - name: journals
-
   - name: cookie_consent_data
     database: snproject-cbb9ca25
     schema: cookie_consent_data
