@@ -8,7 +8,7 @@ sources:
     description: "Raw event data exported daily from Google Analytics 4 (date-sharded tables)."
     tables:
       - name: events #
-        identifier: events_ 
+        identifier: events_*
         loaded_at_field: event_timestamp
         
   # Source 2: Reference/Lookup Table (Used in the int_tablethree_2025 join)
