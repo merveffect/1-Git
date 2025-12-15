@@ -1,10 +1,10 @@
 project_id: "snproject-cbb9ca25"
 location: europe-west1
+
+runner_service_account: dev-analytics-dbt-runner@snproject-cbb9ca25.iam.gserviceaccount.com
+invoker_service_account: dev-analytics-dbt-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
 # invoker_service_account: ae-researcher-dashboard-df@snproject-cbb9ca25.iam.gserviceaccount.com
 # runner_service_account: ae-researcher-dashboard-df@snproject-cbb9ca25.iam.gserviceaccount.com
-runner_service_account: ae-researcher-dashboard-df@snproject-cbb9ca25.iam.gserviceaccount.com
-# runner_service_account: ae-researcher-dashboard-df@snproject-cbb9ca25.iam.gserviceaccount.com
-invoker_service_account: ae-researcher-dashboard-df@snproject-cbb9ca25.iam.gserviceaccount.com
 teams_webhook_url: https://springernature.webhook.office.com/webhookb2/f9b9be4c-f11b-491d-94ed-527bdd97fb6a@d9aabe7c-608b-4fe1-957c-0739cb0dfe22/IncomingWebhook/341d2a4367a94b9ca66db8b1f0bb139d/27126adb-be10-44e9-8cca-201830372ef0/V2L-RDj6-kGy_dx1TnI-FNZsqZSscwJuaKAAfUR4cvyjI1
 dbt_target: dev
 
