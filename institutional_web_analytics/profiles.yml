@@ -12,5 +12,3 @@ institutional_web_analytics:
       job_execution_timeout_seconds: 6000 
       job_retries: 1
       impersonate_service_account: dev-analytics-dbt-runner@snproject-cbb9ca25.iam.gserviceaccount.com
-
-      

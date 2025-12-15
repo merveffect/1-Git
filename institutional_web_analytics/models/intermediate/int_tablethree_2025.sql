@@ -26,7 +26,7 @@ joined_and_enriched AS (
         B.SF_Peer_Group
         
     FROM 
-        {{ ref('int_flat_March') }} RAW
+        {{ ref('int_flat_march') }} RAW
         
     LEFT JOIN
         reference_table B
