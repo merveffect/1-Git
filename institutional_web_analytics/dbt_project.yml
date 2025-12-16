@@ -1,0 +1,59 @@
+# Name your project! 
+name: 'institutional_web_analytics'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'institutional_web_analytics'
+
+# These configurations specify where dbt should look for different types of files.
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets: 
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+models:
+  # The project name acts as the root key for all model configurations.
+  institutional_web_analytics:
+    
+    # 1. Staging models (e.g., models/staging/...)
+    staging:
+      # Default materialization for ALL models in the staging directory
+      +materialized: view
+      
+      # Configuration for the subdirectory models/staging/ga4/
+      # Only use this if you have a separate GA4 subdirectory under staging.
+      ga4: 
+        +materialized: incremental
+    
+    # 2. Intermediate models (e.g., models/intermediate/...)
+    intermediate:
+      # Default materialization for ALL models in the intermediate directory
+      +materialized: view
+      
+      # Configuration for the subdirectory models/intermediate/ga4/
+      ga4:
+        +materialized: incremental
+    
+    # 3. Marts models (e.g., models/marts/...)
+    marts:
+      # Default materialization for ALL models in the marts directory
+      +materialized: table
+      
+      # Configuration for the subdirectory models/marts/analytics/
+      analytics:
+        +materialized: incremental
+
+# Custom variable configuration
+vars:
+  # Set your target dataset/schema
+  target_dataset: 'Institutional_analysisGA4_EU'
