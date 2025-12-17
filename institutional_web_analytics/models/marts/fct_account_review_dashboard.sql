@@ -1,7 +1,12 @@
 {{ config(
     materialized = 'table',
     schema = 'Institutional_analysisGA4_EU',
-    tags = ['monthly_run', 'dashboard']
+    partition_by={
+        "field": "event_month", 
+        "data_type": "date"
+    },
+    
+    cluster_by=['bpid', 'Institution'] 
 ) }}
 
 WITH source_data AS (
