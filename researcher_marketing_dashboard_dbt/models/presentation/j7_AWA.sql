@@ -25,13 +25,13 @@ main_group,
 portfolio,
 imprint,
 workspace_category,
-Sessions,
-journal_engagement,
-research_article_readership,
-cost,
 research_marketing_activity,
-pi_reach_fta,
-search_volume
+sum(Sessions) as sessions,
+sum(journal_engagement) as journal_engagement,
+sum(research_article_readership) as research_article_readership,
+sum(cost) as cost,
+sum(pi_reach_fta) as pi_reach_fta,
+sum(search_volume) as search_volume
 from 
 {{ref('j7')}}
 
@@ -54,3 +54,27 @@ from
   WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
 {% endif %}
+
+
+group by 
+
+date,
+campaign,
+clean_campaign,
+main_channels,
+sub_channels,
+country,
+product_code,
+goal_code,
+campaign_code,
+geo_code,
+journal_title,
+oatype,
+journal_id,
+business_model,
+main_discipline,
+main_group,
+portfolio,
+imprint,
+workspace_category,
+research_marketing_activity

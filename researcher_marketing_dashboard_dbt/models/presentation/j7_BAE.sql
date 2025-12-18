@@ -18,15 +18,15 @@ SELECT
   main_group,
   portfolio,
   imprint,
-  Sessions,
-  search_volume,
-  reach_b2c_blog_page,
-  source_readership,
-  cost,
-  clicks,
-  impressions,
   research_marketing_activity,
-  workspace_category
+  workspace_category,
+  sum(clicks) as clicks,
+  sum(impressions) as impressions,
+  sum(Sessions) as Sessions,
+  sum(search_volume) as search_volume,
+  sum(reach_b2c_blog_page) as reach_b2c_blog_page ,
+  sum(source_readership) as source_readership ,
+  sum(cost) as cost
   FROM
 {{ref('j7')}}
 
@@ -49,3 +49,19 @@ SELECT
   WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
 {% endif %}
+
+group by 
+  date,
+  campaign,
+  clean_campaign,
+  main_channels,
+  sub_channels,
+  country,
+  goal_code,
+  geo_code,
+  main_discipline,
+  main_group,
+  portfolio,
+  imprint,
+  research_marketing_activity,
+  workspace_category

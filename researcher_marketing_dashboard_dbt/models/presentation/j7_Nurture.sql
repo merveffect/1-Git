@@ -20,20 +20,21 @@ SELECT
   main_group,
   portfolio,
   imprint,
-  Sessions,
-  ELS,
-  snapp_submission_complete,
-  snapp_submission_start,
-  kpi_submit_click,
-  kpi_reach_submission_guideline_pages,
-  kpi_reach_about_pages,
-  journal_engagement,
-  ejp_submission_start,
-  ejp_submission_complete,
-  cost,
+  workspace_category,
   researchER_marketing_activity,
   research_marketing_activity,
-  workspace_category
+  SUM(Sessions) AS Sessions,
+  SUM(ELS) AS ELS,
+  SUM(snapp_submission_complete) AS snapp_submission_complete,
+  SUM(snapp_submission_start) AS snapp_submission_start,
+  SUM(kpi_submit_click) AS kpi_submit_click,
+  SUM(kpi_reach_submission_guideline_pages) AS kpi_reach_submission_guideline_pages,
+  SUM(kpi_reach_about_pages) AS kpi_reach_about_pages,
+  SUM(journal_engagement) AS journal_engagement,
+  SUM(ejp_submission_start) AS ejp_submission_start,
+  SUM(ejp_submission_complete) AS ejp_submission_complete,
+  SUM(cost) AS cost
+
 FROM
 {{ref('j7')}}
 
@@ -57,4 +58,22 @@ FROM
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
 {% endif %}
 
+group by 
+date,
+  campaign,
+  clean_campaign,
+  main_channels,
+  sub_channels,
+  country,
+  world_region,
+  goal_code,
+  oatype,
+  journal_id,
+  business_model,
+  main_group,
+  portfolio,
+  imprint,
+  workspace_category,
+  researchER_marketing_activity,
+  research_marketing_activity
 
