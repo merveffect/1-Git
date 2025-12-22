@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  # Source 1: Google Analytics 4 Exports (The main input stream)
+  - name: ga4_exports
+    database: snproject1d3c9a0a
+    schema: analytics_290402450
+    description: "Raw event data exported daily from Google Analytics 4 (date-sharded tables)."
+    tables:
+      - name: events #
+        identifier: events_*
+        loaded_at_field: event_timestamp
+        
+  # Source 2: Reference/Lookup Table (Used in the int_tablethree_2025 join)
+  - name: reference_data
+    database: snproject-cbb9ca25 
+    schema: Institutional_analysisGA4_EU 
+    description: "Contains mapping data between BP_ID and Salesforce IDs."
+    tables:
+      - name: bpid_sfid_new 
