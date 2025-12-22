@@ -1,0 +1,42 @@
+version: 2
+
+sources:
+  - name: rm_bc_client_fulfillment_reporting
+    database: sn-commprod-reports-37009337
+    schema: rm_bc_client_fulfillment_reporting
+    description: >
+      Google Analytics source tables used by the Collections Pipeline.
+      Event date (evt_date) is expected to be present daily.
+
+    tables:
+      - name: bc_all_ga4_base_pageview_data
+        identifier: "bc_all_ga4_base pageview_data"
+        description: GA4 pageview-level metrics aggregated per page and event date.
+        loaded_at_field: evt_date
+        freshness:
+          warn_after: {count: 26, period: hour}
+          error_after: {count: 30, period: hour}
+
+      - name: bc_all_ga4_base_event_data
+        identifier: "bc_all_ga4_base event_data"
+        description: GA4 event-level metrics aggregated per page and event date.
+        loaded_at_field: evt_date
+        freshness:
+          warn_after: {count: 26, period: hour}
+          error_after: {count: 30, period: hour}
+
+      - name: bc_all_ga4_user_logs
+        description: GA4 user-level logs used for Collections Pipeline.
+        loaded_at_field: evt_date
+        freshness:
+          warn_after: {count: 26, period: hour}
+          error_after: {count: 30, period: hour}
+
+      - name: gsheet_wf_metadata_view_version
+        identifier: "gsheet_wf_metadata_view_version"
+        description: Google Sheets metadata for collections and page mapping.
+
+      - name: bc_workfront_collections_pipeline_raw
+        description: Raw Workfront project metadata for Collections Pipeline.
+
+
