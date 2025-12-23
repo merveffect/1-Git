@@ -6,7 +6,7 @@ teams_webhook_url: https://springernature.webhook.office.com/webhookb2/f9b9be4c-
 dbt_target: prod
 
 jobs:
-  - name: client_fulfillment_reporting-dbt-prod
+  - name: client_fulfillment_reporting_prod
     schedule: 0 4 * * *
 
 
