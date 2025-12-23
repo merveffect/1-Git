@@ -14,3 +14,7 @@ FROM (
     AND LOWER(TRIM(col)) NOT IN ('false', 'null', '')
 )
 GROUP BY page_path
+
+
+
+
