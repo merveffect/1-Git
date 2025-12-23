@@ -11,7 +11,7 @@ triggers:
     uri: git@github.com:springernature/analytics_engineering_dbt.git
     branch: main
     watched_paths:
-      - client_fulfillment_reporting_dbt
+      - client_fulfillment_reporting
  
  
 tasks:

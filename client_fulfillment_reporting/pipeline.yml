@@ -1,3 +1,4 @@
+# Generated using halfpipe cli version 3.186.0 from file client_fulfillment_reporting\.halfpipe.io.yml for team dat-analytics-engineering
 jobs:
 - build_log_retention:
     minimum_succeeded_builds: 1
@@ -32,7 +33,7 @@ jobs:
         PIPELINE_NAME: client_fulfillment_reporting_dbt
       platform: linux
       run:
-        dir: git/client_fulfillment_reporting_dbt
+        dir: git/client_fulfillment_reporting
         path: update-pipeline
     task: update
     timeout: 15m
@@ -118,7 +119,7 @@ jobs:
           if [ $EXIT_STATUS != 0 ] ; then
             exit 1
           fi
-        dir: git/client_fulfillment_reporting_dbt
+        dir: git/client_fulfillment_reporting
         path: /bin/sh
     task: deploy-dev
     timeout: 1h
@@ -198,7 +199,7 @@ jobs:
           if [ $EXIT_STATUS != 0 ] ; then
             exit 1
           fi
-        dir: git/client_fulfillment_reporting_dbt
+        dir: git/client_fulfillment_reporting
         path: /bin/sh
     task: deploy-prod
     timeout: 1h
@@ -209,7 +210,7 @@ resources:
   source:
     branch: main
     paths:
-    - client_fulfillment_reporting_dbt
+    - client_fulfillment_reporting
     private_key: ((halfpipe-github.private_key))
     uri: git@github.com:springernature/analytics_engineering_dbt.git
   type: git
