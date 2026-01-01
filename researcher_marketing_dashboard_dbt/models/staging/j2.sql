@@ -24,6 +24,7 @@ WITH
     isoalphatwo,
     world_region,
     imprint,
+    ad_content,
     SUM(kpi_marbl_leads) AS kpi_marbl_leads,
     SUM(Sessions) AS Sessions,
     SUM(ga4_reach_books_publishing_guidelines) AS pi_publishing_guidelines,
@@ -85,7 +86,8 @@ WITH
     portfolio,
     isoalphatwo,
     world_region,
-    imprint ),
+    imprint,
+    ad_content ),
   cost AS (
   SELECT
     SUM(cost) AS cost,
@@ -189,6 +191,7 @@ WITH
     isoalphatwo,
     world_region,
     imprint,
+    ad_content,
     SUM(cost) AS cost,
     SUM(kpi_marbl_leads) AS kpi_marbl_leads,
     SUM(Sessions) AS Sessions,
@@ -234,7 +237,8 @@ WITH
     portfolio,
     isoalphatwo,
     world_region,
-    imprint ),
+    imprint,
+    ad_content ),
   sort_rows AS (
   SELECT
     *,

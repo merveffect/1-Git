@@ -129,7 +129,8 @@ WITH
     18,
     19,
     20,
-    21)
+    21,
+    22)
     --final table
 SELECT
   *

@@ -61,9 +61,9 @@ sources:
     tables:
       - name: BooksMarketing
   
-  - name: ga4_ria_researcher_report
-    database: snproject-cbb9ca25
-    schema: ga4_ria_researcher_report
+  - name: ae_metadata
+    database: dat-analytics-eng-ec869189
+    schema: ae_metadata
     tables:
       - name: channel_groupings
 
