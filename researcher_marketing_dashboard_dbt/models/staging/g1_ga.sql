@@ -47,7 +47,7 @@ SELECT
   LOWER(adnetwork) AS adnetwork,
   sub_channels
 FROM
-  {{source('ga4_ria_researcher_report','channel_groupings')}} ),
+  {{source('ae_metadata','channel_groupings')}} ),
   -- Step 3: Join and aggregate metrics
   aggregated_metrics AS (
 SELECT
