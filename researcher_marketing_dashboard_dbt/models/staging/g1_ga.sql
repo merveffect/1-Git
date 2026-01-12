@@ -9,7 +9,7 @@ WITH
   base_data AS (
 SELECT
   * EXCEPT(SOURCE,
-    medium),
+    medium,ad_content),
   LOWER(SOURCE) AS SOURCE,
   LOWER(medium) AS medium,
   LOWER(ad_content) AS ad_content,
@@ -47,12 +47,11 @@ SELECT
   LOWER(adnetwork) AS adnetwork,
   sub_channels
 FROM
-  {{source('ga4_ria_researcher_report','channel_groupings')}} ),
+  {{source('ae_metadata','channel_groupings')}} ),
   -- Step 3: Join and aggregate metrics
   aggregated_metrics AS (
 SELECT
   a.* EXCEPT(google_ad_network_b,
-    ad_content,
     Sessions___GA4_event_based__Google_Analytics,
     ga4_click_submit_manuscript,
     ga4_reach_fta,
@@ -160,7 +159,8 @@ GROUP BY
   17,
   18,
   19,
-  20 ),
+  20,
+  21 ),
   -- Step 4: Calculate combined KPIs and enrich with derived fields
   final_output AS (
 SELECT

@@ -74,6 +74,7 @@ WITH
     portfolio,
     imprint,
     journal_imprint,
+    ad_content,
     -- summing metrics from rows of different non-sensical journal title values which are all consolidated to "journal title not set";
     -- sum(kpi_about_and_submission_guidelines) as kpi_about_and_submission_guidelines,
     SUM(kpi_marbl_leads) AS kpi_marbl_leads,
@@ -137,7 +138,8 @@ WITH
     main_discipline,
     main_group,
     portfolio,
-    imprint ),
+    imprint,
+    ad_content ),
   transformations AS (
   SELECT
     * EXCEPT ( kpi_marbl_leads,

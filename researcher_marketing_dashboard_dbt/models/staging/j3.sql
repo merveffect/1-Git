@@ -64,6 +64,7 @@ WITH
     main_group,
     portfolio,
     imprint,
+    ad_content,
     kpi_marbl_leads,
     Sessions,
     pi_publishing_guidelines,
