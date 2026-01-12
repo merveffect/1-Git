@@ -173,7 +173,7 @@ CAST(exclusion_journal_nurture_test_tom_context AS STRING) AS exclusion_journal_
 CAST(rg_engagement_cross_channel AS BOOL) AS rg_engagement_cross_channel,
 CAST(list_article_title_from_readership AS STRING) AS list_article_title_from_readership,
 CAST(list_article_title_from_view AS STRING) AS list_article_title_from_view,
-CAST(last_date_book_interest AS TIMESTAMP) AS last_date_book_interest
+CAST(last_date_book_interest AS TIMESTAMP) AS last_date_book_interest,
 
 --12/12/2025 added columns
 CAST(the_source_newsletter_subscribers AS BOOL ) AS the_source_newsletter_subscribers,
