@@ -1,3 +1,34 @@
+{{ config(
+    materialized='incremental',
+    incremental_strategy='insert_overwrite',
+    partition_by={"field": "evt_date", "data_type": "date"},
+    cluster_by=["page_path"]
+) }}
+
+WITH a AS (
+  SELECT *
+  FROM {{ ref('stg_collections_ga_events') }}
+  {% if is_incremental() %}
+    WHERE evt_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+  {% endif %}
+),
+
+b AS (
+  SELECT *
+  FROM {{ ref('stg_collections_ga_pageview') }}
+  {% if is_incremental() %}
+    WHERE evt_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+  {% endif %}
+),
+
+c AS (
+  SELECT *
+  FROM {{ ref('stg_collections_ga_users') }}
+  {% if is_incremental() %}
+    WHERE evt_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+  {% endif %}
+)
+
 SELECT
   COALESCE(a.evt_date, b.evt_date, c.evt_date) AS evt_date,
   COALESCE(a.page_path, b.page_path, c.page_path) AS page_path,
@@ -6,8 +37,10 @@ SELECT
   a.event_data,
   b.pageview_data,
   c.user_data,
+
   -- GA4 → Collection matching
-g.ga_collection_ids,
+  g.ga_collection_ids,
+
   -- Collection / article metadata
   d.collection_title AS collection_name,
   d.full_article_url,
@@ -22,10 +55,10 @@ g.ga_collection_ids,
   e.date_range_start AS wf_date_range_start,
   e.collection_title AS wf_collection_title
 
-FROM {{ ref('stg_collections_ga_events') }} AS a
-FULL JOIN {{ ref('stg_collections_ga_pageview') }} AS b
+FROM a
+FULL JOIN b
   USING (evt_date, page_path)
-FULL JOIN {{ ref('stg_collections_ga_users') }} AS c
+FULL JOIN c
   USING (evt_date, page_path)
 
 /* Sheet enrichment */
@@ -43,7 +76,4 @@ LEFT JOIN {{ ref('raw_workfront_metadata') }} AS e
 WHERE
   d.page_path IS NOT NULL
   OR e.collection_id IS NOT NULL
-
-
-
 
