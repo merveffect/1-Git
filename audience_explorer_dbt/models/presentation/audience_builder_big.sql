@@ -175,6 +175,13 @@ CAST(list_article_title_from_readership AS STRING) AS list_article_title_from_re
 CAST(list_article_title_from_view AS STRING) AS list_article_title_from_view,
 CAST(last_date_book_interest AS TIMESTAMP) AS last_date_book_interest
 
+--12/12/2025 added columns
+CAST(the_source_newsletter_subscribers AS BOOL ) AS the_source_newsletter_subscribers,
+CAST(journal_awareness_active AS BOOL ) AS journal_awareness_active,
+CAST(journal_awareness_low_active AS BOOL ) AS journal_awareness_low_active,
+CAST(the_source_newsletter_monthly AS BOOL ) AS the_source_newsletter_monthly,
+CAST(reading_interest_60_d AS BOOL ) AS reading_interest_60_d
+
 
 
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
