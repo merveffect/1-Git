@@ -1,0 +1,143 @@
+version: 2
+
+#j7_AWA uniqueness test
+models:
+
+  - name: j7_AWA
+    description: >
+      Presentation-layer model.
+      Combination of all the dimensions should be an unique row.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - campaign
+            - clean_campaign
+            - main_channels
+            - sub_channels
+            - country
+            - product_code
+            - goal_code
+            - campaign_code
+            - geo_code
+            - journal_title
+            - oatype
+            - journal_id
+            - business_model
+            - main_discipline
+            - main_group
+            - portfolio
+            - imprint
+            - workspace_category
+            - research_marketing_activity
+
+    columns:
+      - name: date
+        description: event date
+        data_type: date
+        tests:
+          - not_null
+
+# j7_BAE test
+  - name: j7_BAE
+    description: >
+      Presentation-layer model.
+      Grain is defined by the full combination of reporting dimensions.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - campaign
+            - clean_campaign
+            - main_channels
+            - sub_channels
+            - country
+            - goal_code
+            - geo_code
+            - main_discipline
+            - main_group
+            - portfolio
+            - imprint
+            - research_marketing_activity
+            - workspace_category
+
+    columns:
+      - name: date
+        data_type: date
+        tests:
+          - not_null
+
+
+#j7_Nurture uniqueness test
+
+  - name: j7_Nurture
+    description: >
+      Presentation-layer model.
+      Grain is defined by the full combination of reporting dimensions.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - campaign
+            - clean_campaign
+            - main_channels
+            - sub_channels
+            - country
+            - world_region
+            - goal_code
+            - oatype
+            - journal_id
+            - business_model
+            - main_group
+            - portfolio
+            - imprint
+            - workspace_category
+            - researchER_marketing_activity
+            - research_marketing_activity
+
+    columns:
+      - name: date
+        description: Event date
+        data_type: date
+        tests:
+          - not_null
+
+#j7_SRF uniqueness test
+  - name: j7_SRF
+    description: >
+      Presentation-layer model.
+      Grain is defined by the full combination of reporting dimensions.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - campaign
+            - clean_campaign
+            - main_channels
+            - sub_channels
+            - country
+            - world_region
+            - product_code
+            - goal_code
+            - journal_id
+            - journal_title
+            - business_model
+            - main_discipline
+            - main_group
+            - portfolio
+            - imprint
+            - journal_imprint
+            - research_marketing_activity
+            - workspace_category
+            - primary_campaign_goal
+
+    columns:
+      - name: date
+        description: Event date
+        data_type: date
+        tests:
+          - not_null
