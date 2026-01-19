@@ -56,25 +56,4 @@ from
 {% endif %}
 
 
-group by 
-
-date,
-campaign,
-clean_campaign,
-main_channels,
-sub_channels,
-country,
-product_code,
-goal_code,
-campaign_code,
-geo_code,
-journal_title,
-oatype,
-journal_id,
-business_model,
-main_discipline,
-main_group,
-portfolio,
-imprint,
-workspace_category,
-research_marketing_activity
+group by ALL
