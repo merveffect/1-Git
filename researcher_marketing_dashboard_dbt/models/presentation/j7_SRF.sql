@@ -64,25 +64,4 @@ FROM
                   AND DATE('{{ var("end_date", "2025-12-31") }}')
 {% endif %}
 
-group by 
-
-  date,
-  campaign,
-  clean_campaign,
-  main_channels,
-  sub_channels,
-  country,
-  world_region,
-  product_code,
-  goal_code,
-  journal_id,
-  journal_title,
-  business_model,
-  main_discipline,
-  main_group,
-  portfolio,
-  imprint,
-  journal_imprint,
-  research_marketing_activity,
-  workspace_category,
-  primary_campaign_goal
+group by ALL

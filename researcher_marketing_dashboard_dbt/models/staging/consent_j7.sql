@@ -59,7 +59,7 @@ WITH
     LOWER(utm_source) AS utm_source,
     LOWER(utm_medium) AS utm_medium,
     sub_channels AS consent_channels,
-    page_location,
+    main_domain,
     event_name,
     consent_context,
     SUM(freq_events) AS freq_events
@@ -102,7 +102,7 @@ WITH
     c.utm_source,
     c.utm_medium,
     c.consent_channels,
-    c.page_location,
+    c.main_domain,
     c.event_name,
     c.freq_events,
     c.consent_context
@@ -115,7 +115,7 @@ WITH
     AND m.campaign = c.utm_campaign
     AND m.source = c.utm_source
     AND m.medium = c.utm_medium
-    AND m.imprint = c.page_location )
+    AND m.imprint = c.main_domain )
     -- Final output with consent-specific aggregations
 SELECT
   date,
@@ -133,7 +133,7 @@ SELECT
   utm_source,
   utm_medium,
   consent_channels,
-  page_location,
+  main_domain,
   SUM(CASE
       WHEN event_name = 'banner_visible' THEN freq_events
       ELSE 0
@@ -196,5 +196,5 @@ GROUP BY
   utm_source,
   utm_medium,
   consent_channels,
-  page_location,
+  main_domain,
   Sessions
