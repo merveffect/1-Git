@@ -26,23 +26,12 @@ SELECT
 FROM
   main
 
-{% if is_incremental() %}
-  WHERE DATE(time_firstseen) BETWEEN 
-    {% if backfill_start %}
-      DATE('{{ backfill_start }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)
-    {% endif %}
-    AND
-    {% if backfill_end %}
-      DATE('{{ backfill_end }}')
-    {% else %}
-      CURRENT_DATE()
-    {% endif %}
-{% else %}
-  WHERE DATE(time_firstseen) BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                  AND DATE('{{ var("end_date", "2025-12-31") }}')
-{% endif %}
+{{ incremental_date_filter(
+    'DATE(time_firstseen)',
+    lookback_days=3,
+    include_today=true
+) }}
+
 GROUP BY
   1,
   2,

@@ -1,7 +1,8 @@
 
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"},
+    incremental_strategy="insert_overwrite",
+    partition_by = {"field": "date","data_type": "date"},
     tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
 
  )}}
@@ -52,42 +53,10 @@ WITH
     SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts
   FROM
     {{ref('j1_ga')}}
-    {% if is_incremental() %}
-  {% set backfill_start = var("backfill_start_date", none) %}
-  {% set backfill_end = var("backfill_end_date", none) %}
-  WHERE date BETWEEN 
-    {% if backfill_start %}
-      DATE('{{ backfill_start }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-    AND
-    {% if backfill_end %}
-      DATE('{{ backfill_end }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-{% else %}
-  WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                  AND DATE('{{ var("end_date", "2025-12-31") }}')
-{% endif %}
-  GROUP BY
-    date,
-    campaign,
-    SOURCE,
-    medium,
-    sub_channels,
-    main_channels,
-    journal_title,
-    journal_id,
-    business_model,
-    main_discipline,
-    main_group,
-    portfolio,
-    isoalphatwo,
-    world_region,
-    imprint,
-    ad_content ),
+   
+    {{ incremental_date_filter('date') }}
+
+  GROUP BY ALL ),
   cost AS (
   SELECT
     SUM(cost) AS cost,
@@ -103,34 +72,11 @@ WITH
     world_region AS cost_world_region
   FROM
     {{ref('j1_mktp')}}
-    {% if is_incremental() %}
-  {% set backfill_start = var("backfill_start_date", none) %}
-  {% set backfill_end = var("backfill_end_date", none) %}
-  WHERE date BETWEEN 
-    {% if backfill_start %}
-      DATE('{{ backfill_start }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-    AND
-    {% if backfill_end %}
-      DATE('{{ backfill_end }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-{% else %}
-  WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                  AND DATE('{{ var("end_date", "2025-12-31") }}')
-{% endif %}
-  GROUP BY
-    cost_date,
-    cost_campaign,
-    cost_source,
-    cost_medium,
-    cost_sub_channels,
-    cost_main_channels,
-    cost_isoalphatwo,
-    cost_world_region ),
+    
+    {{ incremental_date_filter('date') }}
+
+
+  GROUP BY ALL ),
   joined_data AS (
   SELECT
     *
@@ -222,23 +168,7 @@ WITH
     SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts
   FROM
     exclude_columns
-  GROUP BY
-    date,
-    campaign,
-    SOURCE,
-    medium,
-    main_channels,
-    sub_channels,
-    journal_title,
-    journal_id,
-    business_model,
-    main_discipline,
-    main_group,
-    portfolio,
-    isoalphatwo,
-    world_region,
-    imprint,
-    ad_content ),
+  GROUP BY ALL),
   sort_rows AS (
   SELECT
     *,
