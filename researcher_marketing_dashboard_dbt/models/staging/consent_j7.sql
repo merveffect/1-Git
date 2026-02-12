@@ -1,6 +1,7 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"},
+    incremental_strategy="insert_overwrite",
+    partition_by = {"field": "date", "data_type": "date"},
     tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
  )}}
 
@@ -19,38 +20,11 @@ WITH
     research_marketing_activity,
     SUM(sessions) AS sessions
   FROM
-    {{ref("j7")}}
-     
-    {% if is_incremental() %}
-  {% set backfill_start = var("backfill_start_date", none) %}
-  {% set backfill_end = var("backfill_end_date", none) %}
-  WHERE date BETWEEN 
-    {% if backfill_start %}
-      DATE('{{ backfill_start }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-    AND
-    {% if backfill_end %}
-      DATE('{{ backfill_end }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-{% else %}
-  WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                  AND DATE('{{ var("end_date", "2025-12-31") }}')
-{% endif %}
+    {{ref("j7")}}  
+    
+    {{ incremental_date_filter('date') }}
 
-  GROUP BY
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9 ),
+  GROUP BY ALL ),
   consent_events AS (
   -- Consent events aggregated by type
   SELECT
@@ -65,34 +39,10 @@ WITH
     SUM(freq_events) AS freq_events
   FROM
     {{source('cookie_consent_data',"marketing_view")}}
-    {% if is_incremental() %}
-  {% set backfill_start = var("backfill_start_date", none) %}
-  {% set backfill_end = var("backfill_end_date", none) %}
-  WHERE date BETWEEN 
-    {% if backfill_start %}
-      DATE('{{ backfill_start }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-    AND
-    {% if backfill_end %}
-      DATE('{{ backfill_end }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-{% else %}
-  WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                  AND DATE('{{ var("end_date", "2025-12-31") }}')
-{% endif %}
-  GROUP BY
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8 ),
+   
+   {{ incremental_date_filter('date') }}
+
+  GROUP BY ALL ),
   aggregations AS (
   -- Join GA4 and consent data
   SELECT
@@ -181,20 +131,4 @@ SELECT
     ) AS total_reject_non_essential_cookies_preference_dialogue
 FROM
   aggregations
-GROUP BY
-  date,
-  campaign,
-  SOURCE,
-  medium,
-  main_channels,
-  sub_channels,
-  imprint,
-  researchER_marketing_activity,
-  research_marketing_activity,
-  consent_date,
-  utm_campaign,
-  utm_source,
-  utm_medium,
-  consent_channels,
-  main_domain,
-  Sessions
+GROUP BY ALL

@@ -1,6 +1,7 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"},
+    incremental_strategy="insert_overwrite",
+    partition_by = {"field": "date","data_type": "date"},
     tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"]
 
  )}}
@@ -13,25 +14,9 @@ WITH
     REGEXP_REPLACE(LOWER(country), '&(.)', 'and ') AS country
   FROM
     {{ref('g1_mktp')}}
-    {% if is_incremental() %}
-  {% set backfill_start = var("backfill_start_date", none) %}
-  {% set backfill_end = var("backfill_end_date", none) %}
-  WHERE date BETWEEN 
-    {% if backfill_start %}
-      DATE('{{ backfill_start }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-    AND
-    {% if backfill_end %}
-      DATE('{{ backfill_end }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-{% else %}
-  WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                  AND DATE('{{ var("end_date", "2025-12-31") }}')
-{% endif %}
+    
+    {{ incremental_date_filter('date') }}
+
     AND SOURCE = "facebook" ),
   facebook_regions AS (
   SELECT
@@ -45,25 +30,8 @@ WITH
     REGEXP_REPLACE(LOWER(country), '&(.)', 'and ') AS country
   FROM
     {{ref('g1_mktp')}}
-     {% if is_incremental() %}
-  {% set backfill_start = var("backfill_start_date", none) %}
-  {% set backfill_end = var("backfill_end_date", none) %}
-  WHERE date BETWEEN 
-    {% if backfill_start %}
-      DATE('{{ backfill_start }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-    AND
-    {% if backfill_end %}
-      DATE('{{ backfill_end }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-{% else %}
-  WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                  AND DATE('{{ var("end_date", "2025-12-31") }}')
-{% endif %}
+    {{ incremental_date_filter('date') }}
+
     AND SOURCE != "facebook" ),
   non_facebook_regions AS (
   SELECT
@@ -98,15 +66,4 @@ FROM ( (
       facebook_regions
     ON
       facebook.country = isoalphatwo ))
-GROUP BY
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11
+GROUP BY ALL

@@ -1,6 +1,7 @@
 {{ config(
     materialized = "incremental",
-    partition_by = {"field": "date"},
+    incremental_strategy="insert_overwrite",
+    partition_by = {"field": "date", "data_type": "date"},
     tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"],
     cluster_by = ["campaign", "sub_channels", "medium", "Data_Source_type"]
  )}}
@@ -22,7 +23,8 @@ WITH
       Data_Source_id,
       account_ID,
       CampaignID,
-      Data_Origin_Identifier),
+      Data_Origin_Identifier,
+      conversion_value_google_ads),
     LOWER(SOURCE) AS SOURCE,
     LOWER(medium) AS medium,
     LOWER(Network_with_search_partners__AdWords) AS google_ad_network,
@@ -32,33 +34,12 @@ WITH
     SUM(impressions) AS impressions
   FROM
     {{source('RM_adspend','rm_adspend_static')}}
-   {% if is_incremental() %}
-  {% set backfill_start = var("backfill_start_date", none) %}
-  {% set backfill_end = var("backfill_end_date", none) %}
-  WHERE date BETWEEN 
-    {% if backfill_start %}
-      DATE('{{ backfill_start }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-    AND
-    {% if backfill_end %}
-      DATE('{{ backfill_end }}')
-    {% else %}
-      DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
-    {% endif %}
-{% else %}
-  WHERE date BETWEEN DATE('{{ var("start_date", "2024-01-01") }}')
-                  AND DATE('{{ var("end_date", "2025-12-31") }}')
-{% endif %}
-  GROUP BY
-    date,
-    SOURCE,
-    medium,
-    google_ad_network,
-    country,
-    campaign,
-    Data_Source_type ),
+   
+    {{ incremental_date_filter('date') }}
+
+
+
+  GROUP BY ALL ),
   transformations AS (
   SELECT
     *,

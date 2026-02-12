@@ -2,6 +2,7 @@ select
 	cleaned.canonical_segment_id, 
 	True as all_audiences,
 	CAST(snid as STRING) as snid,
+	CAST(user_id AS STRING ) AS user_id,
 	CAST(role AS STRING ) AS role,
 	CAST(institution_name AS STRING ) AS institution_name,
 	CAST(advertising_opt_in AS BOOL ) AS advertising_opt_in,
@@ -180,9 +181,34 @@ CAST(the_source_newsletter_subscribers AS BOOL ) AS the_source_newsletter_subscr
 CAST(journal_awareness_active AS BOOL ) AS journal_awareness_active,
 CAST(journal_awareness_low_active AS BOOL ) AS journal_awareness_low_active,
 CAST(the_source_newsletter_monthly AS BOOL ) AS the_source_newsletter_monthly,
-CAST(reading_interest_60_d AS BOOL ) AS reading_interest_60_d
+CAST(reading_interest_60_d AS BOOL ) AS reading_interest_60_d,
 
+--11/02/2025 added columns
+CAST(journal_awareness_low_active_eligible_canvas_1 AS BOOL) AS journal_awareness_low_active_eligible_canvas_1,
+CAST(journal_awareness_active_eligible_canvas_2 AS BOOL) AS journal_awareness_active_eligible_canvas_2,
+CAST(springer_plus_visitors AS BOOL) AS springer_plus_visitors,
+CAST(etoc_journal_id AS STRING) AS etoc_journal_id,
+CAST(accepted_journal_authors AS BOOL) AS accepted_journal_authors,
+CAST(snt_inferred AS STRING) AS snt_inferred,
+CAST(linked_books_nurture_hierarchy_1 AS BOOL) AS linked_books_nurture_hierarchy_1,
+CAST(linked_books_nurture_hierarchy_2 AS BOOL) AS linked_books_nurture_hierarchy_2,
+CAST(linked_books_nurture_hierarchy_api AS BOOL) AS linked_books_nurture_hierarchy_api,
+CAST(sn_book_authors_unsubscribe_monthly AS BOOL) AS sn_book_authors_unsubscribe_monthly,
+CAST(sn_book_authors_legitimate_interest AS BOOL) AS sn_book_authors_legitimate_interest,
+CAST(sn_book_authors_monthly AS BOOL) AS sn_book_authors_monthly,
+CAST(test_sn_30_jan AS INT64) AS test_sn_30_jan,
+CAST(the_source_unsubscribe_monthly AS BOOL) AS the_source_unsubscribe_monthly,
 
+CAST(most_recent_chapter_date AS TIMESTAMP) AS most_recent_chapter_date,
+CAST( n_total_chapters AS INT) AS n_total_chapters,
+CAST(current_sn_ebm_journals AS STRING) AS current_sn_ebm_journals,
+CAST(most_recent_sn_chapter_date AS TIMESTAMP) AS most_recent_sn_chapter_date,
+CAST(most_recent_book_date AS TIMESTAMP) AS most_recent_book_date,
+CAST(n_total_books AS INT) AS n_total_books,
+	CAST(n_number_total_books AS INT) AS n_number_total_books,
+CAST(n_sn_total_chapters AS INT) AS n_sn_total_chapters,
+CAST(most_recent_sn_book_date AS TIMESTAMP) AS most_recent_sn_book_date,
+CAST(n_sn_total_books AS INT) AS n_sn_total_books
 
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
