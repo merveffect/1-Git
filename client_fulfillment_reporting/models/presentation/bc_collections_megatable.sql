@@ -25,3 +25,6 @@ INNER JOIN {{ref('stg_gsheet_wf_metadata')}} AS d
   USING (page_path)
 LEFT JOIN {{ref('raw_workfront_metadata')}} AS e
   USING (collection_id)
+
+
+

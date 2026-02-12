@@ -1,0 +1,26 @@
+version: 2
+
+sources:      
+  - name: b2b_e2e_report
+    database: snproject-cbb9ca25
+    schema: b2b_e2e_report
+    tables:
+      - name: b2b_ga4_test_static
+  
+  - name: hex_final_tables
+    database: snproject-cbb9ca25
+    schema: hex_final_tables
+    tables:
+      - name: b2b_naming_conventions_dict
+
+  - name: hex_final_tables
+    database: snproject-cbb9ca25
+    schema: hex_final_tables
+    tables:
+      - name: b2b_webpages_map_full  
+
+  - name: ae_metadata
+    database: dat-analytics-eng-ec869189
+    schema: ae_metadata
+    tables:
+      - name: channel_groupings 
