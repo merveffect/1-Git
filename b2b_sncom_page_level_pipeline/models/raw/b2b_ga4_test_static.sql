@@ -18,7 +18,6 @@ select * from
     {% if is_incremental() %}
         WHERE event_date = DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
     {% else %}
-        -- Full refresh: 2 gün öncesine kadar tüm veri
         WHERE event_date <= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
     {% endif %}
 {% endif %}

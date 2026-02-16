@@ -106,7 +106,6 @@ regexp_extract(lower(ga4.session_campaign),r'[A-z]{4}_[A-z0-9]{5}_[A-z0-9]{4}_(.
     {% if is_incremental() %}
         WHERE ga4.event_date = DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
     {% else %}
-        -- Full refresh: 2 gün öncesine kadar tüm veri
         WHERE ga4.event_date <= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
     {% endif %}
 {% endif %}
