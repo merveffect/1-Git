@@ -85,6 +85,7 @@ regexp_extract(lower(ga4.session_campaign),r'([A-z]{4})_[A-z0-9]{5}_[A-z0-9]{4}_
     (extract(year from ga4.event_date) <= 2025 AND ac.version = 'dict') OR 
     (extract(year from ga4.event_date) >= 2026 AND ac.version = 'v2')
   )
+LEFT JOIN
   {{ref('goal_codes')}} gc
 ON
 regexp_extract(lower(ga4.session_campaign),r'[A-z]{4}_[A-z0-9]{5}_([A-z0-9]{4})_.._[A-z0-9]{4}_[A-z0-9\-]{5}.*')=lower(gc.g_code)
