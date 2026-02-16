@@ -1,18 +1,76 @@
 version: 2
 
 models:
-  
+  # ==========================================
+  # RAW LAYER
+  # ==========================================
+
+  - name: b2b_ga4_test_static
+    description: "Raw GA4 event data from BigQuery source with incremental load strategy. Partitioned by event_date."
+    columns:
+      - name: event_date
+        description: "Date of the GA4 event (partition key)"
+        tests:
+          - not_null
+      - name: event_year
+        description: "Year extracted from event_date"
+      - name: event_month
+        description: "Month extracted from event_date"
+      - name: event_name
+        description: "GA4 event type (page_view, session_start, form_submit, etc.)"
+      - name: event_count
+        description: "Count of events in the session"
+      - name: key_events
+        description: "Count of key conversion events"
+      - name: session_id
+        description: "Unique identifier for the session"
+      - name: user_pseudo_id
+        description: "Unique identifier for the user (GA4 client ID)"
+      - name: event_timestamp
+        description: "Unix timestamp of when the event occurred"
+      - name: page_location
+        description: "Full URL of the page where event occurred"
+      - name: page_title
+        description: "Title of the page"
+      - name: link_text
+        description: "Text of the clicked link"
+      - name: session_source
+        description: "Traffic source (e.g., google, direct, bing)"
+      - name: session_medium
+        description: "Marketing medium (e.g., organic, cpc, referral)"
+      - name: session_campaign
+        description: "Campaign name from UTM parameters"
+      - name: session_manual_ad_content
+        description: "Ad content from utm_content parameter"
+      - name: session_google_ads_ad_network_type
+        description: "Google Ads network type (Search, Display, etc.)"
+      - name: country
+        description: "User country"
+      - name: samples_read_rate
+        description: "Rate of sample reads"
+
   - name: naming_conventions
     description: "Combined naming conventions dictionary with version tracking. Uses 'dict' version for 2025 and earlier, 'v2' for 2026+."
     columns:
       - name: code_type
         description: "Type of code (audience, product, goal, geography)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['audience', 'product', 'goal', 'geography']
       - name: code
         description: "Campaign code identifier"
+        tests:
+          - not_null
+          - unique
       - name: description
         description: "Human-readable description of the code"
       - name: version
         description: "Dictionary version: 'dict' for ≤2025, 'v2' for 2026+"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['dict', 'v2']
 
   - name: b2b_webpages_map_full
     description: "URL pattern mapping for page categorization and funnel stage assignment"
