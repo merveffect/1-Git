@@ -1,4 +1,4 @@
-# Generated using halfpipe cli version 3.186.0 from file b2b_sncom_page_level_pipeline\.halfpipe.io.yml for team dat-analytics-engineering
+# Generated using halfpipe cli version 3.190.0 from file b2b_sncom_page_level_pipeline\.halfpipe.io.yml for team dat-analytics-engineering
 jobs:
 - build_log_retention:
     minimum_succeeded_builds: 1
