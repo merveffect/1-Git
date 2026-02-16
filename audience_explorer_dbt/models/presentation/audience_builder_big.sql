@@ -205,7 +205,6 @@ CAST(current_sn_ebm_journals AS STRING) AS current_sn_ebm_journals,
 CAST(most_recent_sn_chapter_date AS TIMESTAMP) AS most_recent_sn_chapter_date,
 CAST(most_recent_book_date AS TIMESTAMP) AS most_recent_book_date,
 CAST(n_total_books AS INT) AS n_total_books,
-	CAST(n_number_total_books AS INT) AS n_number_total_books,
 CAST(n_sn_total_chapters AS INT) AS n_sn_total_chapters,
 CAST(most_recent_sn_book_date AS TIMESTAMP) AS most_recent_sn_book_date,
 CAST(n_sn_total_books AS INT) AS n_sn_total_books
