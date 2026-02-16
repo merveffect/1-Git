@@ -1,3 +1,16 @@
+{{
+    config(
+        materialized='incremental',
+        incremental_strategy='insert_overwrite',
+        partition_by={
+            "field": "event_date",
+            "data_type": "date",
+            "granularity": "day"
+        },
+        tags=['staging', 'incremental']
+    )
+}}
+
 SELECT
     a.*,
     COALESCE(b.sub_channels,
@@ -38,3 +51,12 @@ SELECT
     AND a.session_medium = LOWER(b.medium)
     AND (a.session_google_ads_ad_network_type IS NULL
       OR a.session_google_ads_ad_network_type = LOWER(b.adnetwork) )
+
+{% if execute %}
+    {% if is_incremental() %}
+        WHERE a.event_date = DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% else %}
+        -- Full refresh: 2 gün öncesine kadar tüm veri
+        WHERE a.event_date <= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+{% endif %}

@@ -1,3 +1,17 @@
+{{
+    config(
+        materialized='incremental',
+        incremental_strategy='insert_overwrite',
+        partition_by={
+            "field": "event_date",
+            "data_type": "date",
+            "granularity": "day"
+        },
+        cluster_by=['event_date', 'session_source', 'session_medium'],
+        tags=['staging', 'incremental']
+    )
+}}
+
 SELECT
     fb2b.* EXCEPT(session_source, session_medium, session_manual_ad_content, session_google_ads_ad_network_type),
     LOWER(fb2b.session_source) AS session_source,
@@ -16,3 +30,12 @@ SELECT
     {{ref('b2b_webpages_map_full')}} map
   ON
     fb2b.page_location LIKE map.url
+
+{% if execute %}
+    {% if is_incremental() %}
+        WHERE fb2b.event_date = DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% else %}
+        -- Full refresh: 2 gün öncesine kadar tüm veri
+        WHERE fb2b.event_date <= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+{% endif %}

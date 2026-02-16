@@ -1,3 +1,16 @@
+{{
+    config(
+        materialized='incremental',
+        incremental_strategy='insert_overwrite',
+        partition_by={
+            "field": "event_date",
+            "data_type": "date",
+            "granularity": "day"
+        },
+        tags=['presentation', 'incremental']
+    )
+}}
+
 SELECT
   ga4.* EXCEPT(event_name),
   event_name as event_type,
@@ -59,15 +72,40 @@ FROM
 LEFT JOIN
   {{ref('product_codes')}} pc
 ON
- regexp_extract(lower(ga4.session_campaign),r'[A-z]{4}_([A-z0-9]{5})_[A-z0-9]{4}_.._[A-z0-9]{4}_[A-z0-9\-]{5}.*') =lower(pc.p_code)
+ regexp_extract(lower(ga4.session_campaign),r'[A-z]{4}_([A-z0-9]{5})_[A-z0-9]{4}_.._[A-z0-9]{4}_[A-z0-9\-]{5}.*') = lower(pc.p_code)
+  AND (
+    (extract(year from ga4.event_date) <= 2025 AND pc.version = 'dict') OR 
+    (extract(year from ga4.event_date) >= 2026 AND pc.version = 'v2')
+  )
 LEFT JOIN
   {{ref('audience_codes')}} ac
 ON
-regexp_extract(lower(ga4.session_campaign),r'([A-z]{4})_[A-z0-9]{5}_[A-z0-9]{4}_.._[A-z0-9]{4}_[A-z0-9\-]{5}.*')=lower(ac.a_code)LEFT JOIN
+regexp_extract(lower(ga4.session_campaign),r'([A-z]{4})_[A-z0-9]{5}_[A-z0-9]{4}_.._[A-z0-9]{4}_[A-z0-9\-]{5}.*')=lower(ac.a_code)
+  AND (
+    (extract(year from ga4.event_date) <= 2025 AND ac.version = 'dict') OR 
+    (extract(year from ga4.event_date) >= 2026 AND ac.version = 'v2')
+  )
   {{ref('goal_codes')}} gc
 ON
 regexp_extract(lower(ga4.session_campaign),r'[A-z]{4}_[A-z0-9]{5}_([A-z0-9]{4})_.._[A-z0-9]{4}_[A-z0-9\-]{5}.*')=lower(gc.g_code)
+  AND (
+    (extract(year from ga4.event_date) <= 2025 AND gc.version = 'dict') OR 
+    (extract(year from ga4.event_date) >= 2026 AND gc.version = 'v2')
+  )
 LEFT JOIN
   {{ref('geo_codes')}}  gec
 ON
 regexp_extract(lower(ga4.session_campaign),r'[A-z]{4}_[A-z0-9]{5}_[A-z0-9]{4}_(..)_[A-z0-9]{4}_[A-z0-9\-]{5}.*')=lower(gec.ge_code)
+  AND (
+    (extract(year from ga4.event_date) <= 2025 AND gec.version = 'dict') OR 
+    (extract(year from ga4.event_date) >= 2026 AND gec.version = 'v2')
+  )
+
+{% if execute %}
+    {% if is_incremental() %}
+        WHERE ga4.event_date = DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% else %}
+        -- Full refresh: 2 gün öncesine kadar tüm veri
+        WHERE ga4.event_date <= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+{% endif %}

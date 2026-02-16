@@ -1,5 +1,7 @@
 SELECT
-    DISTINCT code AS g_code
+    DISTINCT code AS g_code,
+    CURRENT_DATE() AS event_date,
+    version
   FROM
     {{ref('naming_conventions')}} g
   WHERE

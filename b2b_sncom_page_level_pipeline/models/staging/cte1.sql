@@ -1,3 +1,17 @@
+{{
+    config(
+        materialized='incremental',
+        incremental_strategy='insert_overwrite',
+        partition_by={
+            "field": "event_date",
+            "data_type": "date",
+            "granularity": "day"
+        },
+        cluster_by=['event_date', 'session_source', 'page_location'],
+        tags=['staging', 'incremental']
+    )
+}}
+
 SELECT
     cte0.* EXCEPT(sn_area, page_region, funnel_stage, first_level_grouping,second_level_grouping),
     CASE
@@ -29,6 +43,15 @@ SELECT
     WHEN page_location LIKE '%go.springernature.com%' AND REGEXP_CONTAINS(page_location,'.*(books|pf010|pf006|pf007|pf008|pf009|pf031|pf027|pf015|pf016).*') THEN 'eBooks'
     WHEN page_location LIKE '%go.springernature.com%' AND REGEXP_CONTAINS(page_location,'.*(journals|pf018|pf023|pf026|pf029|pf030|pf032|pf002|pf001|jrn).*') THEN 'Journals'
     ELSE second_level_grouping
-    END AS second_level_grouping,
+    END AS second_level_grouping
   FROM
   {{ref('cte0')}} cte0
+
+{% if execute %}
+    {% if is_incremental() %}
+        WHERE cte0.event_date = DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% else %}
+        -- Full refresh: 2 gün öncesine kadar tüm veri
+        WHERE cte0.event_date <= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+    {% endif %}
+{% endif %}
