@@ -1,0 +1,233 @@
+version: 2
+
+models:
+  
+  - name: naming_conventions
+    description: "Combined naming conventions dictionary with version tracking. Uses 'dict' version for 2025 and earlier, 'v2' for 2026+."
+    columns:
+      - name: code_type
+        description: "Type of code (audience, product, goal, geography)"
+      - name: code
+        description: "Campaign code identifier"
+      - name: description
+        description: "Human-readable description of the code"
+      - name: version
+        description: "Dictionary version: 'dict' for ≤2025, 'v2' for 2026+"
+
+  - name: b2b_webpages_map_full
+    description: "URL pattern mapping for page categorization and funnel stage assignment"
+    columns:
+      - name: second_level_grouping
+        description: "Secondary page categorization"
+      - name: first_level_grouping
+        description: "Primary page categorization"
+      - name: sn_area
+        description: "SpringerNature business area"
+      - name: region
+        description: "Geographic region for the content"
+      - name: page_type
+        description: "Type of page (static page, landing page, etc.)"
+      - name: url
+        description: "URL pattern to match against page_location"
+      - name: hostname
+        description: "Host domain name"
+      - name: funnel_stage
+        description: "Funnel stage (Awareness, Evaluation, etc.)"
+
+  - name: channel_groupings
+    description: "Channel classification rules for source/medium/ad network combinations"
+    columns:
+      - name: source
+        description: "Traffic source"
+      - name: medium
+        description: "Marketing medium"
+      - name: adnetwork
+        description: "Ad network type (for Google Ads)"
+      - name: sub_channels
+        description: "Classified sub-channel name"
+      - name: main_channels
+        description: "High-level channel grouping (sea, paid social, email, external display, internal display, affiliate, seo, other channels)"
+      - name: ga4_console_grouping
+        description: "Channel grouping for GA4 console compatibility"
+
+  # ==========================================
+  # STAGING LAYER
+  # ==========================================
+
+  - name: cte0
+    description: "First staging transformation: lowercases session fields, joins webpage mapping, splits URL path"
+    columns:
+      - name: event_date
+        description: "Event date (partition key)"
+      - name: session_source
+        description: "Lowercased traffic source"
+      - name: session_medium
+        description: "Lowercased marketing medium"
+      - name: session_manual_ad_content
+        description: "Lowercased ad content"
+      - name: session_google_ads_ad_network_type
+        description: "Lowercased Google Ads network type"
+      - name: sn_area
+        description: "Business area from webpage mapping"
+      - name: funnel_stage
+        description: "Funnel stage from webpage mapping"
+      - name: first_level_grouping
+        description: "Primary page category"
+      - name: second_level_grouping
+        description: "Secondary page category"
+      - name: page_region
+        description: "Page region from mapping"
+      - name: parts
+        description: "URL path split into array elements"
+
+  - name: cte1
+    description: "Second staging transformation: HubSpot landing page categorization and funnel stage overrides"
+    columns:
+      - name: event_date
+        description: "Event date (partition key)"
+      - name: sn_area
+        description: "Business area with HubSpot overrides applied"
+      - name: page_region
+        description: "Page region with HubSpot overrides (Global for HubSpot pages)"
+      - name: funnel_stage
+        description: "Funnel stage based on HubSpot URL patterns (int1, ups1, awa1, etc.)"
+      - name: first_level_grouping
+        description: "First-level grouping (HubSpot Landing for HS pages)"
+      - name: second_level_grouping
+        description: "Product type derived from HubSpot URL (Databases, eBooks, Journals)"
+
+  - name: core
+    description: "Third staging transformation: extracts last 2 URL path segments for pattern matching"
+    columns:
+      - name: event_date
+        description: "Event date (partition key)"
+      - name: regex_end
+        description: "Last 2 segments of URL path concatenated (e.g., 'path/page.html')"
+
+  - name: final_cte_channel_mapping
+    description: "Channel and sub-channel attribution with AI SEO detection and custom classification rules"
+    columns:
+      - name: event_date
+        description: "Event date (partition key)"
+      - name: sub_channels
+        description: "Detailed sub-channel attribution (ai seo, traditional seo, google - sea, google - external display, etc.)"
+      - name: session_source
+        description: "Traffic source"
+      - name: session_medium
+        description: "Marketing medium"
+      - name: session_campaign
+        description: "Campaign name"
+
+  - name: audience_codes
+    description: "Audience code lookup with version and date for temporal JOIN filtering"
+    columns:
+      - name: a_code
+        description: "Audience code (4 characters)"
+      - name: event_date
+        description: "Current date for JOIN compatibility"
+      - name: version
+        description: "Dictionary version ('dict' or 'v2')"
+
+  - name: geo_codes
+    description: "Geography code lookup with version and date for temporal JOIN filtering"
+    columns:
+      - name: ge_code
+        description: "Geography code (2 characters)"
+      - name: event_date
+        description: "Current date for JOIN compatibility"
+      - name: version
+        description: "Dictionary version ('dict' or 'v2')"
+
+  - name: product_codes
+    description: "Product code lookup with version and date for temporal JOIN filtering"
+    columns:
+      - name: p_code
+        description: "Product code (5 characters)"
+      - name: event_date
+        description: "Current date for JOIN compatibility"
+      - name: version
+        description: "Dictionary version ('dict' or 'v2')"
+
+  - name: goal_codes
+    description: "Goal code lookup with version and date for temporal JOIN filtering"
+    columns:
+      - name: g_code
+        description: "Goal code (4 characters)"
+      - name: event_date
+        description: "Current date for JOIN compatibility"
+      - name: version
+        description: "Dictionary version ('dict' or 'v2')"
+
+  # ==========================================
+  # PRESENTATION LAYER
+  # ==========================================
+
+  - name: b2b_ga4_final
+    description: "Final denormalized table with all enrichments: channel attribution, campaign code decoding, and event categorization. Incremental with 2-day lookback."
+    columns:
+      - name: event_date
+        description: "Event date (partition key)"
+      - name: event_year
+        description: "Year extracted from event_date"
+      - name: event_month
+        description: "Month extracted from event_date"
+      - name: event_type
+        description: "Renamed from event_name for clarity"
+      - name: event_name
+        description: "Formatted event name with business context (e.g., 'SN.com | Journals | Page View')"
+      - name: event_count
+        description: "Count of events in the session"
+      - name: key_events
+        description: "Count of key conversion events"
+      - name: event_timestamp
+        description: "Unix timestamp of the event"
+      - name: user_pseudo_id
+        description: "GA4 client ID"
+      - name: session_id
+        description: "Session identifier"
+      - name: page_location
+        description: "Full page URL"
+      - name: page_title
+        description: "Page title"
+      - name: link_text
+        description: "Text of the clicked link"
+      - name: country
+        description: "User country"
+      - name: session_source
+        description: "Traffic source"
+      - name: session_medium
+        description: "Marketing medium"
+      - name: session_manual_ad_content
+        description: "Ad content from utm_content parameter"
+      - name: session_google_ads_ad_network_type
+        description: "Google Ads network type (Search, Display, etc.)"
+      - name: session_campaign
+        description: "Campaign name"
+      - name: campaign_products
+        description: "Decoded product code from campaign (p_code)"
+      - name: campaign_audience
+        description: "Decoded audience code from campaign (a_code)"
+      - name: campaign_goals
+        description: "Decoded goal code from campaign (g_code)"
+      - name: campaign_geo
+        description: "Decoded geography code from campaign (ge_code)"
+      - name: samples_read_rate
+        description: "Rate of sample reads"
+      - name: main_channels
+        description: "High-level channel grouping (sea, paid social, email, external display, internal display, affiliate, seo, other channels)"
+      - name: sub_channels
+        description: "Detailed sub-channel attribution (ai seo, traditional seo, google - sea, etocs, etc.)"
+      - name: session_campaign_grouped
+        description: "Campaign grouping ((b2b campaigns), (other campaigns), or pass-through values)"
+      - name: sn_area
+        description: "SpringerNature business area"
+      - name: funnel_stage
+        description: "Marketing funnel stage"
+      - name: first_level_grouping
+        description: "Primary page content category"
+      - name: second_level_grouping
+        description: "Secondary page content category (product type)"
+      - name: page_region
+        description: "Geographic region of content"
+      - name: regex_end
+        description: "Last 2 URL path segments for advanced filtering"
