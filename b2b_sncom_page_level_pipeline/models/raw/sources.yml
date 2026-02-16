@@ -12,12 +12,8 @@ sources:
     schema: hex_final_tables
     tables:
       - name: b2b_naming_conventions_dict
-
-  - name: hex_final_tables
-    database: snproject-cbb9ca25
-    schema: hex_final_tables
-    tables:
       - name: b2b_webpages_map_full  
+      - name: b2b_naming_conventions_dict_v2
 
   - name: ae_metadata
     database: dat-analytics-eng-ec869189
