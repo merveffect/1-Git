@@ -17,13 +17,26 @@ WITH
     {{ incremental_date_filter('date') }}
 
     ),
+  
   regions AS (
   SELECT
-    DISTINCT REGEXP_REPLACE(LOWER(country), '&(.)', 'and ') AS regions_country,
-    LOWER(isoalphatwo) AS isoalphatwo,
-    LOWER(world_region) AS world_region
-  FROM
-    {{source('ga4_ria_researcher_report','regions')}} ),
+    regions_country,
+    isoalphatwo,
+    world_region
+  FROM (
+    SELECT
+      REGEXP_REPLACE(LOWER(country), '&(.)', 'and ') AS regions_country,
+      LOWER(isoalphatwo) AS isoalphatwo,
+      LOWER(world_region) AS world_region,
+      ROW_NUMBER() OVER (
+        PARTITION BY REGEXP_REPLACE(LOWER(country), '&(.)', 'and ')
+        ORDER BY isoalphatwo  -- for unique country details, if multiple entries exist for a country, we take the first one based on alphabetical order of isoalphatwo
+      ) AS rn
+    FROM {{source('ga4_ria_researcher_report','regions')}}
+  )
+  WHERE rn = 1
+),
+
   joined_data AS (
   SELECT
     *
