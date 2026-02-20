@@ -1,0 +1,40 @@
+name: 'data_enrichment'
+version: '1.0.0'
+
+profile: 'data_enrichment'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "ae_packages"
+
+models:
+  +persist_docs:
+    relation: true
+    columns: true
+
+  data_enrichment:
+    +tags: data-enrichment-dbt
+
+    raw:
+      +schema: "data_enrichment_raw"
+      +materialized: table
+      +tags: raw
+
+    staging:
+      +schema: "data_enrichment_staging"
+      +materialized: table
+      +tags: staging
+
+    presentation:
+      +schema: "data_enrichment_presentation"
+      +materialized: table
+      +tags: presentation
+
+

@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: prod_audience_explorer_analytics_dbt_presentation
+    database: dat-analytics-eng-ec869189
+    schema: prod_audience_explorer_analytics_dbt_presentation
+    tables:
+      - name: audience_builder_big
+
+  - name: prod_joint_submissions_core
+    database: datasn-submissions-55677263
+    schema: prod_joint_submissions_core
+    tables:
+      - name: authors
+
+  - name: data_enrichment
+    database: dat-analytics-eng-ec869189
+    schema: data_enrichment
+    tables:
+      - name: institution_ror_mapping_table
+
+  - name: core_researcher_profiles
+    database: aceproducts-143febd8
+    schema: core_researcher_profiles
+    tables:
+      - name: researcher_profiles_out
