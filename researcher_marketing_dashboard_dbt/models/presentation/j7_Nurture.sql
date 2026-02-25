@@ -10,6 +10,7 @@ SELECT
   date,
   campaign,
   clean_campaign,
+  campaign_code,
   main_channels,
   sub_channels,
   country,
