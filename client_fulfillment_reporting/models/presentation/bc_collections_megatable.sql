@@ -1,6 +1,14 @@
--- Combine everything into one table with COALESCE
 SELECT
   COALESCE(a.evt_date, b.evt_date, c.evt_date) AS evt_date,
+{{ config(
+materialized='table',
+partition_by={
+"field": "evt_date",
+"data_type": "date",
+"granularity": "day"
+},
+cluster_by=["page_path"]
+) }}
   COALESCE(a.page_path, b.page_path, c.page_path) AS page_path,
   a.event_data,
   b.pageview_data,
