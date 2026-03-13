@@ -21,6 +21,10 @@ export const getRunHistory = (configId: number) =>
   api.get(`/runs/monitor/${configId}`).then(r => r.data)
 export const getModelLineage = (modelName: string) =>
   api.get(`/dbt/models/${modelName}/lineage`).then(r => r.data)
+export const getDbtRunHistory = (limit = 100) =>
+  api.get('/dbt/history', { params: { limit } }).then(r => r.data)
+export const getDbtSnapshotResults = (snapshotId: number) =>
+  api.get(`/dbt/history/${snapshotId}/results`).then(r => r.data)
 export const getAllRuns = (limit = 200) =>
   api.get(`/runs/all`, { params: { limit } }).then(r => r.data)
 export const getAllMonitorHistory = (tableId: number) =>

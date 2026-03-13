@@ -55,3 +55,25 @@ class SchemaSnapshot(Base):
     snapshot_json = Column(Text)
     is_baseline = Column(Boolean, default=False)
     created_at = Column(DateTime)
+
+class DbtRunSnapshot(Base):
+    """One row per dbt run detected by the file watcher."""
+    __tablename__ = "dbt_run_snapshots"
+    id = Column(Integer, primary_key=True)
+    # When dbt itself ran (from run_results.json metadata.generated_at)
+    run_at = Column(DateTime, nullable=False)
+    # When our watcher noticed the file changed
+    detected_at = Column(DateTime, nullable=False)
+    # Total elapsed time reported by dbt
+    elapsed_time = Column(Float)
+    # Counts by resource type + status
+    models_pass  = Column(Integer, default=0)
+    models_fail  = Column(Integer, default=0)
+    models_error = Column(Integer, default=0)
+    models_skip  = Column(Integer, default=0)
+    tests_pass   = Column(Integer, default=0)
+    tests_fail   = Column(Integer, default=0)
+    tests_error  = Column(Integer, default=0)
+    tests_warn   = Column(Integer, default=0)
+    # Full results JSON for drill-down
+    results_json = Column(Text)

@@ -124,5 +124,7 @@ def start_scheduler(db: Session):
     configs = db.query(MonitorConfig).filter(MonitorConfig.is_enabled == True).all()
     for config in configs:
         schedule_monitor(config.id, config.schedule_minutes or 60)
+    from services.dbt_watcher import start_watcher
+    start_watcher(scheduler)
     if not scheduler.running:
         scheduler.start()

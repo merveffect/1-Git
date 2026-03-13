@@ -195,3 +195,54 @@ def import_dbt_models(db: Session = Depends(get_db)):
                 schedule_monitor(cfg.id, cfg.schedule_minutes)
 
     return {"imported": len(added), "skipped": len(skipped), "models": added}
+
+
+# ---------------------------------------------------------------------------
+# Run history (file watcher snapshots)
+# ---------------------------------------------------------------------------
+
+@router.get("/history")
+def get_dbt_run_history(limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Returns all dbt run snapshots ordered newest first.
+    Each entry represents one dbt run detected by the file watcher.
+    """
+    from models.monitor import DbtRunSnapshot
+    rows = (
+        db.query(DbtRunSnapshot)
+        .order_by(DbtRunSnapshot.run_at.desc())
+        .limit(limit)
+        .all()
+    )
+    return [
+        {
+            "id": r.id,
+            "run_at": r.run_at.isoformat() if r.run_at else None,
+            "detected_at": r.detected_at.isoformat() if r.detected_at else None,
+            "elapsed_time": r.elapsed_time,
+            "models": {
+                "pass":  r.models_pass,
+                "fail":  r.models_fail,
+                "error": r.models_error,
+                "skip":  r.models_skip,
+            },
+            "tests": {
+                "pass":  r.tests_pass,
+                "fail":  r.tests_fail,
+                "error": r.tests_error,
+                "warn":  r.tests_warn,
+            },
+        }
+        for r in rows
+    ]
+
+
+@router.get("/history/{snapshot_id}/results")
+def get_snapshot_results(snapshot_id: int, db: Session = Depends(get_db)):
+    """Full per-node results for a specific dbt run snapshot (for drill-down)."""
+    from models.monitor import DbtRunSnapshot
+    row = db.query(DbtRunSnapshot).filter(DbtRunSnapshot.id == snapshot_id).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Snapshot not found")
+    results = json.loads(row.results_json or "[]")
+    return {"run_at": row.run_at.isoformat(), "results": results}
