@@ -12,6 +12,8 @@ export const getTableMonitors = (tableId: number) =>
 export const runTableNow = (tableId: number) => api.post(`/tables/${tableId}/run-now`).then(r => r.data)
 export const updateMonitorConfig = (configId: number, data: Record<string, unknown>) =>
   api.patch(`/monitors/${configId}`, data).then(r => r.data)
+export const suggestKeyColumns = (configId: number) =>
+  api.get(`/monitors/${configId}/suggest-keys`).then(r => r.data)
 export const getAlerts = (params?: { acknowledged?: boolean; limit?: number }) =>
   api.get<Alert[]>('/alerts/', { params }).then(r => r.data)
 export const acknowledgeAlert = (alertId: number) =>

@@ -133,7 +133,7 @@ export default function TableDetailPage() {
         <h2 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Current Status</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {monitors.map(m => (
-            <MonitorCard key={m.config.id} monitor={m} />
+            <MonitorCard key={m.config.id} monitor={m} tableId={id} />
           ))}
         </div>
       </div>
