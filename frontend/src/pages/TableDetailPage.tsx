@@ -1,12 +1,83 @@
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { getTableMonitors, runTableNow, getRunHistory } from '../api/client'
+import { getTableMonitors, runTableNow, getAllMonitorHistory } from '../api/client'
 import MonitorCard from '../components/MonitorCard'
 import VolumeChart from '../components/VolumeChart'
 import { useTables } from '../hooks/useMonitors'
-import { Play, ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Play, ArrowLeft, Clock, BarChart2, AlertTriangle, Copy, GitBranch, FlaskConical } from 'lucide-react'
 import { useState } from 'react'
+
+const MONITOR_LABELS: Record<string, string> = {
+  freshness: 'Freshness History',
+  volume: 'Volume History',
+  null_rate: 'Null Rate History',
+  duplicate: 'Duplicate Rate History',
+  schema_drift: 'Schema Drift History',
+  dbt_tests: 'dbt Test History',
+}
+
+const MONITOR_ICONS: Record<string, JSX.Element> = {
+  freshness: <Clock size={14} />,
+  volume: <BarChart2 size={14} />,
+  null_rate: <AlertTriangle size={14} />,
+  duplicate: <Copy size={14} />,
+  schema_drift: <GitBranch size={14} />,
+  dbt_tests: <FlaskConical size={14} />,
+}
+
+const STATUS_COLOR: Record<string, string> = {
+  pass: 'bg-green-500',
+  warning: 'bg-yellow-400',
+  fail: 'bg-red-500',
+  error: 'bg-gray-500',
+}
+
+interface RunEntry {
+  status: string
+  completed_at: string | null
+  value: number | null
+  message: string | null
+}
+
+function MonitorHistoryRow({ type, runs }: { type: string; runs: RunEntry[] }) {
+  if (!runs || runs.length === 0) return null
+  return (
+    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-gray-400">{MONITOR_ICONS[type]}</span>
+        <h3 className="text-sm font-medium text-gray-300">{MONITOR_LABELS[type] || type}</h3>
+        <span className="ml-auto text-xs text-gray-600">{runs.length} runs</span>
+      </div>
+
+      {/* Dot timeline */}
+      <div className="flex items-center gap-1.5 flex-wrap mb-3">
+        {[...runs].reverse().map((run, i) => (
+          <div key={i} className="relative group">
+            <div className={`w-4 h-4 rounded-full ${STATUS_COLOR[run.status] || 'bg-gray-700'} cursor-default`} />
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden group-hover:block bg-gray-800 border border-gray-700 text-xs text-gray-200 rounded-lg px-2 py-1.5 whitespace-nowrap shadow-xl pointer-events-none min-w-max">
+              <p className="font-medium">{run.completed_at ? new Date(run.completed_at).toLocaleString() : '—'}</p>
+              {run.message && <p className="text-gray-400 mt-0.5">{run.message}</p>}
+              {run.value != null && <p className="text-gray-400">Value: {typeof run.value === 'number' ? run.value.toLocaleString() : run.value}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Value chart for numeric monitors */}
+      {(type === 'volume' || type === 'freshness') && runs.some(r => r.value != null) && (
+        <VolumeChart
+          data={runs
+            .filter(r => r.value != null && r.completed_at)
+            .map(r => ({
+              date: new Date(r.completed_at!).toLocaleDateString(),
+              value: r.value as number,
+              status: r.status,
+            }))}
+        />
+      )}
+    </div>
+  )
+}
 
 export default function TableDetailPage() {
   const { tableId } = useParams<{ tableId: string }>()
@@ -15,38 +86,30 @@ export default function TableDetailPage() {
   const [running, setRunning] = useState(false)
   const { data: tables = [] } = useTables()
   const table = tables.find(t => t.id === id)
+
   const { data: monitors = [] } = useQuery({
     queryKey: ['table-monitors', id],
     queryFn: () => getTableMonitors(id),
     refetchInterval: 15000,
   })
 
-  const volumeMonitor = monitors.find(m => m.config.monitor_type === 'volume')
-  const { data: volumeHistory = [] } = useQuery({
-    queryKey: ['run-history', volumeMonitor?.config.id],
-    queryFn: () => getRunHistory(volumeMonitor!.config.id),
-    enabled: !!volumeMonitor,
+  const { data: allHistory = {} } = useQuery<Record<string, RunEntry[]>>({
+    queryKey: ['all-monitor-history', id],
+    queryFn: () => getAllMonitorHistory(id),
+    refetchInterval: 30000,
   })
-
-  const volumeChartData = volumeHistory
-    .filter((r: { result_json: string | null; completed_at: string | null }) => r.result_json)
-    .map((r: { result_json: string; completed_at: string; status: string }) => {
-      try {
-        const parsed = JSON.parse(r.result_json)
-        return { date: r.completed_at ? new Date(r.completed_at).toLocaleDateString() : '', value: parsed.value || 0, status: r.status }
-      } catch { return null }
-    })
-    .filter(Boolean)
-    .reverse()
 
   const handleRunNow = async () => {
     setRunning(true)
     await runTableNow(id)
     setTimeout(() => {
       qc.invalidateQueries({ queryKey: ['table-monitors', id] })
+      qc.invalidateQueries({ queryKey: ['all-monitor-history', id] })
       setRunning(false)
     }, 3000)
   }
+
+  const monitorTypesWithHistory = Object.keys(allHistory).filter(t => allHistory[t]?.length > 0)
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -64,16 +127,31 @@ export default function TableDetailPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        {monitors.map(m => (
-          <MonitorCard key={m.config.id} monitor={m} />
-        ))}
+      {/* Current status cards */}
+      <div>
+        <h2 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Current Status</h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {monitors.map(m => (
+            <MonitorCard key={m.config.id} monitor={m} />
+          ))}
+        </div>
       </div>
 
-      {volumeChartData.length > 0 && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-          <h3 className="text-sm font-medium text-gray-300 mb-4">Volume History</h3>
-          <VolumeChart data={volumeChartData} />
+      {/* Per-monitor history */}
+      {monitorTypesWithHistory.length > 0 && (
+        <div>
+          <h2 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Run History</h2>
+          <div className="space-y-4">
+            {monitorTypesWithHistory.map(type => (
+              <MonitorHistoryRow key={type} type={type} runs={allHistory[type]} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {monitorTypesWithHistory.length === 0 && monitors.length > 0 && (
+        <div className="text-center py-8 text-gray-600 text-sm">
+          No run history yet — click <strong className="text-gray-400">Run Now</strong> to trigger the first check.
         </div>
       )}
     </div>

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTables, useDashboard } from '../hooks/useMonitors'
 import { useAlerts } from '../hooks/useAlerts'
+import { useQuery } from '@tanstack/react-query'
+import { getTablesWithStatus } from '../api/client'
 import AddTableModal from '../components/AddTableModal'
 import StatusBadge from '../components/StatusBadge'
 import AlertFeed from '../components/AlertFeed'
@@ -12,6 +14,14 @@ export default function DashboardPage() {
   const { data: tables = [], isLoading } = useTables()
   const { data: stats } = useDashboard()
   const { data: alerts = [] } = useAlerts({ acknowledged: false, limit: 10 })
+  const { data: tablesWithStatus = [] } = useQuery({
+    queryKey: ['tables-with-status'],
+    queryFn: getTablesWithStatus,
+    refetchInterval: 30000,
+  })
+  const statusMap: Record<number, string> = Object.fromEntries(
+    tablesWithStatus.map((t: { id: number; status: string }) => [t.id, t.status])
+  )
 
   const statCards = [
     { label: 'Monitored Tables', value: stats?.total_tables ?? 0, color: 'text-white' },
@@ -63,7 +73,7 @@ export default function DashboardPage() {
                     </p>
                     <p className="text-xs text-gray-500">{table.project_id}</p>
                   </div>
-                  <StatusBadge status="pass" />
+                  <StatusBadge status={statusMap[table.id] || 'no_data'} />
                 </Link>
               ))}
             </div>

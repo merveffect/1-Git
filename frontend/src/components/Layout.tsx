@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Bell, Database, Settings } from 'lucide-react'
+import { LayoutDashboard, Bell, Database, Settings, History } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { getDashboardStats } from '../api/client'
 
@@ -10,6 +10,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/history', icon: History, label: 'History' },
     { to: '/alerts', icon: Bell, label: 'Alerts', badge: stats?.unacknowledged_alerts },
     { to: '/settings', icon: Settings, label: 'Settings' },
   ]

@@ -19,6 +19,12 @@ export const acknowledgeAlert = (alertId: number) =>
 export const getDashboardStats = () => api.get<DashboardStats>('/dashboard').then(r => r.data)
 export const getRunHistory = (configId: number) =>
   api.get(`/runs/monitor/${configId}`).then(r => r.data)
+export const getAllRuns = (limit = 200) =>
+  api.get(`/runs/all`, { params: { limit } }).then(r => r.data)
+export const getAllMonitorHistory = (tableId: number) =>
+  api.get(`/runs/table/${tableId}/all-monitors`).then(r => r.data)
+export const getTablesWithStatus = () =>
+  api.get('/tables/with-status').then(r => r.data)
 export const listBqDatasets = (project: string) =>
   api.get<{ datasets: string[] }>('/tables/bq/datasets', { params: { project } }).then(r => r.data)
 export const listBqTables = (project: string, dataset: string) =>

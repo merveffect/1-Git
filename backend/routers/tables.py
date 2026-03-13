@@ -14,6 +14,41 @@ router = APIRouter(prefix="/api/tables", tags=["tables"])
 def list_tables(db: Session = Depends(get_db)):
     return db.query(MonitoredTable).filter(MonitoredTable.is_active == True).all()
 
+@router.get("/with-status")
+def list_tables_with_status(db: Session = Depends(get_db)):
+    """Returns tables with their actual current health status derived from last monitor runs."""
+    from models.monitor import MonitorRun
+    tables = db.query(MonitoredTable).filter(MonitoredTable.is_active == True).all()
+    result = []
+    status_priority = {"fail": 3, "error": 2, "warning": 1, "pass": 0}
+    for table in tables:
+        configs = db.query(MonitorConfig).filter(
+            MonitorConfig.table_id == table.id,
+            MonitorConfig.is_enabled == True
+        ).all()
+        worst = "no_data"
+        last_checked = None
+        for cfg in configs:
+            run = db.query(MonitorRun).filter(
+                MonitorRun.monitor_config_id == cfg.id,
+                MonitorRun.completed_at != None
+            ).order_by(MonitorRun.completed_at.desc()).first()
+            if run:
+                if worst == "no_data" or status_priority.get(run.status, -1) > status_priority.get(worst, -1):
+                    worst = run.status
+                if last_checked is None or run.completed_at > last_checked:
+                    last_checked = run.completed_at
+        result.append({
+            "id": table.id,
+            "project_id": table.project_id,
+            "dataset_id": table.dataset_id,
+            "table_id": table.table_id,
+            "display_name": table.display_name,
+            "status": worst,
+            "last_checked": last_checked.isoformat() if last_checked else None,
+        })
+    return result
+
 @router.post("/", response_model=MonitoredTableResponse)
 def add_table(body: MonitoredTableCreate, db: Session = Depends(get_db)):
     table = MonitoredTable(
