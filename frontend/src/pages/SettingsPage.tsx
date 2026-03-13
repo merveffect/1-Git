@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-import { CheckCircle, AlertCircle, Download, FolderOpen } from 'lucide-react'
+import { CheckCircle, AlertCircle, Download, FolderOpen, X } from 'lucide-react'
 
 const api = axios.create({ baseURL: '/api' })
 
@@ -16,6 +16,7 @@ export default function SettingsPage() {
   const qc = useQueryClient()
   const [dbtPath, setDbtPath] = useState('')
   const [saving, setSaving] = useState(false)
+  const [clearing, setClearing] = useState(false)
   const [importing, setImporting] = useState(false)
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
@@ -24,19 +25,42 @@ export default function SettingsPage() {
     queryFn: () => api.get('/dbt/status').then(r => r.data),
   })
 
+  // Pre-populate input with current path so user can edit it directly
+  useEffect(() => {
+    if (status?.project_path && !dbtPath) {
+      setDbtPath(status.project_path)
+    }
+  }, [status?.project_path])
+
   const savePath = async () => {
     if (!dbtPath.trim()) return
     setSaving(true)
     setMsg(null)
     try {
       await api.post('/dbt/settings', { dbt_project_path: dbtPath.trim() })
-      setMsg({ type: 'ok', text: 'dbt project path saved. Restart the backend to fully apply.' })
+      setMsg({ type: 'ok', text: 'Path saved. Restart the backend for it to take effect.' })
       refetch()
     } catch (e: unknown) {
       const err = e as { response?: { data?: { detail?: string } } }
       setMsg({ type: 'err', text: err.response?.data?.detail || 'Failed to save' })
     } finally {
       setSaving(false)
+    }
+  }
+
+  const clearPath = async () => {
+    setClearing(true)
+    setMsg(null)
+    try {
+      await api.post('/dbt/settings/clear')
+      setDbtPath('')
+      setMsg({ type: 'ok', text: 'dbt path cleared. Restart the backend to apply.' })
+      refetch()
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { detail?: string } } }
+      setMsg({ type: 'err', text: err.response?.data?.detail || 'Failed to clear' })
+    } finally {
+      setClearing(false)
     }
   }
 
@@ -104,7 +128,7 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <button
             onClick={savePath}
             disabled={saving || !dbtPath.trim()}
@@ -121,6 +145,17 @@ export default function SettingsPage() {
             >
               <Download size={14} />
               {importing ? 'Importing...' : `Import ${status.model_count} Models`}
+            </button>
+          )}
+
+          {status?.configured && (
+            <button
+              onClick={clearPath}
+              disabled={clearing}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm rounded-lg font-medium disabled:opacity-40"
+            >
+              <X size={14} />
+              {clearing ? 'Clearing...' : 'Clear Path'}
             </button>
           )}
         </div>

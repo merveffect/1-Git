@@ -69,6 +69,24 @@ def update_dbt_path(body: dict):
     return {"ok": True, "project_path": path}
 
 
+@router.post("/settings/clear")
+def clear_dbt_path():
+    """Remove the dbt project path from settings and .env."""
+    settings.dbt_project_path = None
+
+    env_path = ".env"
+    try:
+        with open(env_path) as f:
+            lines = f.readlines()
+        lines = [l for l in lines if not l.startswith("DBT_PROJECT_PATH=")]
+        with open(env_path, "w") as f:
+            f.writelines(lines)
+    except FileNotFoundError:
+        pass
+
+    return {"ok": True}
+
+
 @router.get("/models")
 def list_models():
     if not dbt_reader.is_configured():
