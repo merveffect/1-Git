@@ -4,10 +4,13 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from database import engine, Base, SessionLocal
 from routers import monitors, runs, alerts, tables, dbt
 from services.scheduler import start_scheduler
 import logging
+import os
 
 logging.basicConfig(level=logging.INFO)
 
@@ -67,3 +70,12 @@ def on_startup():
         start_scheduler(db)
     finally:
         db.close()
+
+# Serve React frontend in production (after `npm run build`)
+_frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+if os.path.isdir(_frontend_dist):
+    app.mount("/assets", StaticFiles(directory=os.path.join(_frontend_dist, "assets")), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_frontend(full_path: str):
+        return FileResponse(os.path.join(_frontend_dist, "index.html"))

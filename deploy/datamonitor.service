@@ -1,0 +1,20 @@
+[Unit]
+Description=DataMonitor — Pipeline Monitoring API
+After=network.target
+
+[Service]
+Type=simple
+User=datamonitor
+WorkingDirectory=/opt/datamonitor/backend
+EnvironmentFile=/opt/datamonitor/backend/.env
+ExecStart=/opt/datamonitor/backend/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=datamonitor
+
+[Install]
+WantedBy=multi-user.target
