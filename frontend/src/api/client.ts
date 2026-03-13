@@ -19,6 +19,8 @@ export const acknowledgeAlert = (alertId: number) =>
 export const getDashboardStats = () => api.get<DashboardStats>('/dashboard').then(r => r.data)
 export const getRunHistory = (configId: number) =>
   api.get(`/runs/monitor/${configId}`).then(r => r.data)
+export const getModelLineage = (modelName: string) =>
+  api.get(`/dbt/models/${modelName}/lineage`).then(r => r.data)
 export const getAllRuns = (limit = 200) =>
   api.get(`/runs/all`, { params: { limit } }).then(r => r.data)
 export const getAllMonitorHistory = (tableId: number) =>
