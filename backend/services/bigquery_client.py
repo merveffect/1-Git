@@ -17,27 +17,20 @@ class BigQueryClient:
         return [dict(row) for row in results]
 
     def get_table_metadata(self, project: str, dataset: str, table: str) -> dict:
-        """Get table metadata from INFORMATION_SCHEMA - free, no bytes billed"""
-        query = f"""
-        SELECT last_modified_time, row_count, size_bytes
-        FROM `{project}.{dataset}`.INFORMATION_SCHEMA.TABLE_STORAGE_BY_PROJECT
-        WHERE project_id = '{project}' AND dataset_id = '{dataset}' AND table_id = '{table}'
+        """
+        Get table metadata using the BQ client API — region-agnostic, no bytes billed.
+        Returns last_modified_time (datetime), row_count (int), size_bytes (int).
         """
         try:
-            rows = self.run_query(query)
-            return rows[0] if rows else {}
+            table_ref = self.client.get_table(f"{project}.{dataset}.{table}")
+            return {
+                "last_modified_time": table_ref.modified,   # datetime with tz
+                "row_count": table_ref.num_rows,
+                "size_bytes": table_ref.num_bytes,
+            }
         except Exception as e:
-            # Fallback to TABLE_STORAGE
-            query2 = f"""
-            SELECT last_modified_time, row_count, size_bytes
-            FROM `region-us`.INFORMATION_SCHEMA.TABLE_STORAGE
-            WHERE project_id = '{project}' AND dataset_id = '{dataset}' AND table_id = '{table}'
-            """
-            try:
-                rows = self.run_query(query2)
-                return rows[0] if rows else {}
-            except:
-                return {}
+            logger.error(f"get_table_metadata failed for {project}.{dataset}.{table}: {e}")
+            return {}
 
     def get_table_schema(self, project: str, dataset: str, table: str) -> list[dict]:
         """Get column schema - free metadata query"""
