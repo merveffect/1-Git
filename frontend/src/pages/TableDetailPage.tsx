@@ -64,18 +64,19 @@ function MonitorHistoryRow({ type, runs }: { type: string; runs: RunEntry[] }) {
         ))}
       </div>
 
-      {/* Value chart for numeric monitors */}
-      {(type === 'volume' || type === 'freshness') && runs.some(r => r.value != null) && (
-        <VolumeChart
-          data={runs
-            .filter(r => r.value != null && r.completed_at)
-            .map(r => ({
-              date: new Date(r.completed_at!).toLocaleDateString(),
-              value: r.value as number,
-              status: r.status,
-            }))}
-        />
-      )}
+      {/* Value chart for numeric monitors — one point per day (latest run) */}
+      {(type === 'volume' || type === 'freshness') && runs.some(r => r.value != null) && (() => {
+        // Deduplicate: keep only the latest run per calendar day
+        const byDay = new Map<string, { date: string; value: number; status: string }>()
+        for (const r of runs) {
+          if (r.value == null || !r.completed_at) continue
+          const day = new Date(r.completed_at).toLocaleDateString()
+          // runs are sorted asc, so later ones overwrite earlier ones for the same day
+          byDay.set(day, { date: day, value: r.value as number, status: r.status })
+        }
+        const chartData = Array.from(byDay.values())
+        return chartData.length > 0 ? <VolumeChart data={chartData} /> : null
+      })()}
     </div>
   )
 }

@@ -80,16 +80,19 @@ export default function DuplicateConfigModal({ monitor, tableId, onClose }: Prop
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-5">
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
 
-        {/* Header */}
-        <div className="flex items-center justify-between">
+        {/* Sticky header */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-800 flex-shrink-0">
           <div>
             <h2 className="text-lg font-semibold text-white">Configure Duplicate Check</h2>
             <p className="text-xs text-gray-500 mt-0.5">Select columns that together form a unique row key</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white"><X size={20} /></button>
         </div>
+
+        {/* Scrollable body */}
+        <div className="overflow-y-auto flex-1 px-6 py-4 space-y-5">
 
         {/* Auto-detect section */}
         <div className="bg-gray-800 rounded-xl p-4 space-y-3">
@@ -199,8 +202,10 @@ export default function DuplicateConfigModal({ monitor, tableId, onClose }: Prop
           </details>
         )}
 
-        {/* Actions */}
-        <div className="flex gap-3 pt-1">
+        </div>{/* end scrollable body */}
+
+        {/* Sticky footer */}
+        <div className="flex gap-3 px-6 py-4 border-t border-gray-800 flex-shrink-0">
           <button onClick={onClose} className="flex-1 px-4 py-2 border border-gray-700 rounded-lg text-sm text-gray-300 hover:bg-gray-800">
             Cancel
           </button>
