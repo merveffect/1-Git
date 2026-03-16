@@ -150,6 +150,24 @@ def get_update_history(table_id: int, limit: int = 60, db: Session = Depends(get
     ]
 
 
+@router.get("/{table_id}/partition-history")
+def get_partition_history(table_id: int, db: Session = Depends(get_db)):
+    """Returns per-partition row counts from BQ INFORMATION_SCHEMA.PARTITIONS."""
+    table = db.query(MonitoredTable).filter(MonitoredTable.id == table_id).first()
+    if not table:
+        raise HTTPException(status_code=404)
+    rows = bq_client.get_partition_history(table.project_id, table.dataset_id, table.table_id)
+    result = []
+    for r in rows:
+        lmt = r.get("last_modified_time")
+        result.append({
+            "partition_id": str(r.get("partition_id", "")),
+            "total_rows": r.get("total_rows"),
+            "last_modified_time": lmt.isoformat() if hasattr(lmt, "isoformat") else (str(lmt) if lmt else None),
+        })
+    return result
+
+
 @router.get("/bq/datasets")
 def list_bq_datasets(project: str):
     try:

@@ -100,4 +100,29 @@ class BigQueryClient:
 
         return "TABLESAMPLE SYSTEM (10 PERCENT)"
 
+    def get_partition_history(self, project: str, dataset: str, table: str, limit: int = 180) -> list[dict]:
+        """
+        Returns per-partition row counts from INFORMATION_SCHEMA.PARTITIONS.
+        Each row has partition_id (YYYYMMDD or similar), total_rows, last_modified_time.
+        Returns [] for non-partitioned tables or on error.
+        """
+        try:
+            query = f"""
+            SELECT
+              partition_id,
+              total_rows,
+              last_modified_time
+            FROM `{project}.{dataset}.INFORMATION_SCHEMA.PARTITIONS`
+            WHERE table_name = '{table}'
+              AND partition_id NOT IN ('__NULL__', '__UNPARTITIONED__')
+              AND partition_id IS NOT NULL
+            ORDER BY partition_id ASC
+            LIMIT {limit}
+            """
+            rows = self.run_query(query)
+            return rows or []
+        except Exception as e:
+            logger.warning(f"get_partition_history failed for {project}.{dataset}.{table}: {e}")
+            return []
+
 bq_client = BigQueryClient()
