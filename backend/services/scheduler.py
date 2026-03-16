@@ -145,5 +145,7 @@ def start_scheduler(db: Session):
     start_watcher(scheduler)
     from services.table_refresh_watcher import start_table_refresh_watcher
     start_table_refresh_watcher(scheduler)
+    from services.github_sync import start_github_sync_watcher
+    start_github_sync_watcher(scheduler)
     if not scheduler.running:
         scheduler.start()

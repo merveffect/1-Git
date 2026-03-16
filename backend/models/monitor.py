@@ -67,6 +67,19 @@ class SchemaSnapshot(Base):
     is_baseline = Column(Boolean, default=False)
     created_at = Column(DateTime)
 
+class DbtGithubRepo(Base):
+    """A GitHub repo containing one or more dbt projects."""
+    __tablename__ = "dbt_github_repos"
+    id           = Column(Integer, primary_key=True)
+    repo_url     = Column(String, nullable=False)   # https://github.com/org/repo
+    branch       = Column(String, default="main")
+    local_path   = Column(String, nullable=False)   # cloned path on disk
+    last_synced_at = Column(DateTime)
+    sync_status  = Column(String, default="pending")  # pending, syncing, ok, error
+    sync_error   = Column(Text)
+    created_at   = Column(DateTime)
+
+
 class DbtRunSnapshot(Base):
     """One row per dbt run detected by the file watcher."""
     __tablename__ = "dbt_run_snapshots"

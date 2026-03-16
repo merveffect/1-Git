@@ -273,6 +273,121 @@ def import_dbt_models(body: dict = {}, db: Session = Depends(get_db)):
 # Run history (file watcher snapshots)
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# GitHub repo management
+# ---------------------------------------------------------------------------
+
+@router.get("/github/repos")
+def list_github_repos(db: Session = Depends(get_db)):
+    from models.monitor import DbtGithubRepo
+    from services.github_sync import find_dbt_projects
+    repos = db.query(DbtGithubRepo).order_by(DbtGithubRepo.created_at).all()
+    result = []
+    for r in repos:
+        projects = []
+        if r.sync_status == "ok" and r.local_path:
+            try:
+                projects = find_dbt_projects(r.local_path)
+            except Exception:
+                pass
+        result.append({
+            "id": r.id,
+            "repo_url": r.repo_url,
+            "branch": r.branch,
+            "local_path": r.local_path,
+            "sync_status": r.sync_status,
+            "sync_error": r.sync_error,
+            "last_synced_at": r.last_synced_at.isoformat() if r.last_synced_at else None,
+            "project_count": len(projects),
+            "projects": projects,
+        })
+    return result
+
+
+@router.post("/github/repos")
+def add_github_repo(body: dict, db: Session = Depends(get_db)):
+    from models.monitor import DbtGithubRepo
+    from services.github_sync import _safe_dirname, sync_repo
+    from datetime import datetime
+
+    repo_url = (body.get("repo_url") or "").strip().rstrip("/")
+    branch   = (body.get("branch") or "main").strip()
+    if not repo_url:
+        raise HTTPException(status_code=400, detail="repo_url is required")
+
+    existing = db.query(DbtGithubRepo).filter(DbtGithubRepo.repo_url == repo_url).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="This repo is already configured")
+
+    local_path = str((__import__("pathlib").Path("./dbt_repos") / _safe_dirname(repo_url)).resolve())
+
+    repo = DbtGithubRepo(
+        repo_url=repo_url,
+        branch=branch,
+        local_path=local_path,
+        sync_status="pending",
+        created_at=datetime.utcnow(),
+    )
+    db.add(repo)
+    db.commit()
+    db.refresh(repo)
+
+    # Kick off initial clone in a background thread so the API responds fast
+    import threading
+    threading.Thread(target=sync_repo, args=(repo.id,), daemon=True).start()
+
+    return {"id": repo.id, "status": "cloning", "local_path": local_path}
+
+
+@router.post("/github/repos/{repo_id}/sync")
+def sync_github_repo(repo_id: int):
+    from services.github_sync import sync_repo
+    import threading
+    threading.Thread(target=sync_repo, args=(repo_id,), daemon=True).start()
+    return {"ok": True, "status": "syncing"}
+
+
+@router.delete("/github/repos/{repo_id}")
+def remove_github_repo(repo_id: int, db: Session = Depends(get_db)):
+    from models.monitor import DbtGithubRepo
+    repo = db.query(DbtGithubRepo).filter(DbtGithubRepo.id == repo_id).first()
+    if not repo:
+        raise HTTPException(status_code=404)
+    db.delete(repo)
+    db.commit()
+    return {"ok": True}
+
+
+@router.get("/github/token-configured")
+def github_token_status():
+    """Check if a GitHub token is set (without revealing it)."""
+    return {"configured": bool(settings.github_token)}
+
+
+@router.post("/github/token")
+def set_github_token(body: dict):
+    """Save a GitHub Personal Access Token to .env."""
+    token = (body.get("token") or "").strip()
+    settings.github_token = token or None
+
+    env_path = ".env"
+    try:
+        with open(env_path) as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        lines = []
+
+    lines = [l for l in lines if not l.startswith("GITHUB_TOKEN=")]
+    if token:
+        lines.append(f"GITHUB_TOKEN={token}\n")
+    with open(env_path, "w") as f:
+        f.writelines(lines)
+
+    return {"ok": True}
+
+
+# ---------------------------------------------------------------------------
+
 @router.get("/history")
 def get_dbt_run_history(limit: int = 100, db: Session = Depends(get_db)):
     """

@@ -21,6 +21,18 @@ export const acknowledgeAlert = (alertId: number) =>
 export const getDashboardStats = () => api.get<DashboardStats>('/dashboard').then(r => r.data)
 export const getRunHistory = (configId: number) =>
   api.get(`/runs/monitor/${configId}`).then(r => r.data)
+export const listGithubRepos = () =>
+  api.get('/dbt/github/repos').then(r => r.data)
+export const addGithubRepo = (data: { repo_url: string; branch: string }) =>
+  api.post('/dbt/github/repos', data).then(r => r.data)
+export const syncGithubRepo = (id: number) =>
+  api.post(`/dbt/github/repos/${id}/sync`).then(r => r.data)
+export const removeGithubRepo = (id: number) =>
+  api.delete(`/dbt/github/repos/${id}`).then(r => r.data)
+export const setGithubToken = (token: string) =>
+  api.post('/dbt/github/token', { token }).then(r => r.data)
+export const getGithubTokenStatus = () =>
+  api.get('/dbt/github/token-configured').then(r => r.data)
 export const addDbtPath = (path: string) =>
   api.post('/dbt/settings', { dbt_project_path: path }).then(r => r.data)
 export const removeDbtPath = (path: string) =>

@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def _get_all_paths() -> list[str]:
-    """Returns deduplicated list of all configured dbt project root paths."""
+    """Returns deduplicated list of all configured dbt project root paths.
+    Sources: DBT_PROJECT_PATHS env, legacy DBT_PROJECT_PATH env, synced GitHub repos."""
     seen: set[str] = set()
     paths: list[str] = []
 
@@ -36,11 +37,22 @@ def _get_all_paths() -> list[str]:
                 paths.append(p)
                 seen.add(p)
 
-    # Legacy single path — used when dbt_project_paths is not set
+    # Legacy single path
     if not paths and settings.dbt_project_path:
         p = settings.dbt_project_path.strip()
         if p and p not in seen:
             paths.append(p)
+            seen.add(p)
+
+    # Paths discovered from synced GitHub repos
+    try:
+        from services.github_sync import get_all_project_paths_from_repos
+        for p in get_all_project_paths_from_repos():
+            if p not in seen:
+                paths.append(p)
+                seen.add(p)
+    except Exception:
+        pass
 
     return paths
 

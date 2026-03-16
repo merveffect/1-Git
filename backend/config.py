@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     # Legacy: DBT_PROJECT_PATH=/path/project  (single path, still supported)
     dbt_project_path: Optional[str] = None   # legacy single path
     dbt_project_paths: Optional[str] = None  # comma-separated list (new)
+    # GitHub integration — Personal Access Token for private repos
+    github_token: Optional[str] = None
 
     class Config:
         env_file = ".env"
