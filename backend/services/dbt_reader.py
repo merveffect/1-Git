@@ -166,6 +166,40 @@ def get_model_lineage(model_unique_id: str) -> dict:
     }
 
 
+def get_model_tests_with_meta(model_name: str) -> list[dict]:
+    """
+    Returns all tests attached to a model, enriched with classification.
+    - section: "dbt"    for generic/schema tests (not_null, unique, accepted_values, etc.)
+    - section: "custom" for singular tests (no test_metadata in manifest)
+    """
+    manifest = _load("manifest.json")
+    if not manifest:
+        return []
+
+    nodes = manifest.get("nodes", {})
+    result = []
+    for uid, node in nodes.items():
+        if node.get("resource_type") not in ("test", "generic_test", "singular_test"):
+            continue
+        if model_name not in uid:
+            continue
+
+        test_meta = node.get("test_metadata", {})
+        test_type = test_meta.get("name") if test_meta else None
+        section = "dbt" if test_meta else "custom"
+
+        result.append({
+            "unique_id": uid,
+            "name": node.get("name", uid),
+            "test_type": test_type or "custom",
+            "column_name": node.get("column_name"),
+            "section": section,
+            "tags": node.get("tags", []),
+        })
+
+    return result
+
+
 def get_model_test_results(model_name: str) -> list[dict]:
     """
     Returns test results for a specific model, combining manifest test definitions

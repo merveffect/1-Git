@@ -118,6 +118,55 @@ def model_tests(model_name: str):
     return {"tests": dbt_reader.get_model_test_results(model_name)}
 
 
+@router.get("/models/{model_name}/test-history")
+def model_test_history(model_name: str, limit: int = 50, db: Session = Depends(get_db)):
+    """
+    Returns per-test historical pass/fail for a model.
+    Combines manifest test definitions with stored DbtRunSnapshot history.
+    """
+    if not dbt_reader.is_configured():
+        return {"configured": False, "tests": []}
+
+    tests = dbt_reader.get_model_tests_with_meta(model_name)
+    if not tests:
+        return {"configured": True, "tests": []}
+
+    from models.monitor import DbtRunSnapshot
+    snapshots = (
+        db.query(DbtRunSnapshot)
+        .order_by(DbtRunSnapshot.run_at.asc())
+        .limit(limit)
+        .all()
+    )
+
+    # Build per-snapshot result maps: unique_id -> status
+    snapshot_maps = []
+    for s in snapshots:
+        results = json.loads(s.results_json or "[]")
+        snapshot_maps.append({
+            "run_at": s.run_at.isoformat(),
+            "result_map": {r["unique_id"]: r.get("status") for r in results},
+        })
+
+    run_results = dbt_reader.get_last_run_results()
+    enriched = []
+    for t in tests:
+        history = [
+            {"run_at": snap["run_at"], "status": snap["result_map"][t["unique_id"]]}
+            for snap in snapshot_maps
+            if t["unique_id"] in snap["result_map"]
+        ]
+        latest = run_results.get(t["unique_id"], {})
+        enriched.append({
+            **t,
+            "latest_status": latest.get("status", "not_run"),
+            "failures": latest.get("failures"),
+            "history": history,
+        })
+
+    return {"configured": True, "tests": enriched}
+
+
 @router.post("/import")
 def import_dbt_models(db: Session = Depends(get_db)):
     """
