@@ -1,23 +1,35 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { addDbtPath, removeDbtPath, importDbtModels } from '../api/client'
+import {
+  CheckCircle, AlertCircle, Download, FolderOpen, Plus, Trash2, Package,
+} from 'lucide-react'
 import axios from 'axios'
-import { CheckCircle, AlertCircle, Download, FolderOpen, X } from 'lucide-react'
 
 const api = axios.create({ baseURL: '/api' })
+
+interface ProjectInfo {
+  path: string
+  target_exists: boolean
+  project_name: string | null
+  model_count: number
+  configured: boolean
+}
 
 interface DbtStatus {
   configured: boolean
   project_path: string | null
   project_name: string | null
   model_count: number
+  projects: ProjectInfo[]
 }
 
 export default function SettingsPage() {
   const qc = useQueryClient()
-  const [dbtPath, setDbtPath] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [clearing, setClearing] = useState(false)
-  const [importing, setImporting] = useState(false)
+  const [newPath, setNewPath] = useState('')
+  const [adding, setAdding] = useState(false)
+  const [importingPath, setImportingPath] = useState<string | null>(null)
+  const [removingPath, setRemovingPath] = useState<string | null>(null)
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   const { data: status, refetch } = useQuery<DbtStatus>({
@@ -25,58 +37,53 @@ export default function SettingsPage() {
     queryFn: () => api.get('/dbt/status').then(r => r.data),
   })
 
-  // Pre-populate input with current path so user can edit it directly
-  useEffect(() => {
-    if (status?.project_path && !dbtPath) {
-      setDbtPath(status.project_path)
-    }
-  }, [status?.project_path])
+  const projects: ProjectInfo[] = status?.projects ?? []
 
-  const savePath = async () => {
-    if (!dbtPath.trim()) return
-    setSaving(true)
-    setMsg(null)
+  const flash = (type: 'ok' | 'err', text: string) => {
+    setMsg({ type, text })
+    setTimeout(() => setMsg(null), 5000)
+  }
+
+  const handleAdd = async () => {
+    const path = newPath.trim()
+    if (!path) return
+    setAdding(true)
     try {
-      await api.post('/dbt/settings', { dbt_project_path: dbtPath.trim() })
-      setMsg({ type: 'ok', text: 'Path saved. Restart the backend for it to take effect.' })
+      await addDbtPath(path)
+      setNewPath('')
+      flash('ok', `Project added: ${path}`)
       refetch()
-    } catch (e: unknown) {
-      const err = e as { response?: { data?: { detail?: string } } }
-      setMsg({ type: 'err', text: err.response?.data?.detail || 'Failed to save' })
+    } catch (e: any) {
+      flash('err', e?.response?.data?.detail || 'Failed to add project')
     } finally {
-      setSaving(false)
+      setAdding(false)
     }
   }
 
-  const clearPath = async () => {
-    setClearing(true)
-    setMsg(null)
+  const handleImport = async (projectPath?: string) => {
+    setImportingPath(projectPath ?? '__all__')
     try {
-      await api.post('/dbt/settings/clear')
-      setDbtPath('')
-      setMsg({ type: 'ok', text: 'dbt path cleared. Restart the backend to apply.' })
-      refetch()
-    } catch (e: unknown) {
-      const err = e as { response?: { data?: { detail?: string } } }
-      setMsg({ type: 'err', text: err.response?.data?.detail || 'Failed to clear' })
-    } finally {
-      setClearing(false)
-    }
-  }
-
-  const importModels = async () => {
-    setImporting(true)
-    setMsg(null)
-    try {
-      const res = await api.post('/dbt/import')
-      setMsg({ type: 'ok', text: `Imported ${res.data.imported} models (${res.data.skipped} already existed)` })
+      const res = await importDbtModels(projectPath)
+      flash('ok', `Imported ${res.imported} model(s) — ${res.skipped} already existed`)
       qc.invalidateQueries({ queryKey: ['tables'] })
       qc.invalidateQueries({ queryKey: ['dashboard'] })
-    } catch (e: unknown) {
-      const err = e as { response?: { data?: { detail?: string } } }
-      setMsg({ type: 'err', text: err.response?.data?.detail || 'Import failed' })
+    } catch (e: any) {
+      flash('err', e?.response?.data?.detail || 'Import failed')
     } finally {
-      setImporting(false)
+      setImportingPath(null)
+    }
+  }
+
+  const handleRemove = async (path: string) => {
+    setRemovingPath(path)
+    try {
+      await removeDbtPath(path)
+      flash('ok', `Removed: ${path}`)
+      refetch()
+    } catch (e: any) {
+      flash('err', e?.response?.data?.detail || 'Failed to remove')
+    } finally {
+      setRemovingPath(null)
     }
   }
 
@@ -86,17 +93,18 @@ export default function SettingsPage() {
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-gray-500 text-sm mt-0.5">Configure your dbt project and monitoring defaults</p>
+        <p className="text-gray-500 text-sm mt-0.5">Configure dbt projects and monitoring</p>
       </div>
 
-      {/* dbt Integration */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4">
+      {/* dbt Projects */}
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-5">
         <div className="flex items-center gap-2">
           <FolderOpen className="text-orange-400" size={18} />
-          <h2 className="text-base font-semibold text-white">dbt Core Integration</h2>
+          <h2 className="text-base font-semibold text-white">dbt Core Projects</h2>
           {status?.configured ? (
             <span className="ml-auto flex items-center gap-1 text-xs text-green-400">
-              <CheckCircle size={13} /> Connected
+              <CheckCircle size={13} />
+              {projects.filter(p => p.configured).length} connected
             </span>
           ) : (
             <span className="ml-auto flex items-center gap-1 text-xs text-gray-500">
@@ -105,59 +113,112 @@ export default function SettingsPage() {
           )}
         </div>
 
-        {status?.configured && (
-          <div className="bg-gray-800 rounded-lg px-4 py-3 space-y-1 text-sm">
-            <p className="text-gray-400">Project: <span className="text-white font-medium">{status.project_name || '—'}</span></p>
-            <p className="text-gray-400">Path: <span className="text-gray-300 font-mono text-xs">{status.project_path}</span></p>
-            <p className="text-gray-400">Models in manifest: <span className="text-white font-medium">{status.model_count}</span></p>
+        {/* Configured project list */}
+        {projects.length > 0 && (
+          <div className="space-y-2">
+            {projects.map(proj => (
+              <div
+                key={proj.path}
+                className={`border rounded-xl p-4 space-y-2 ${
+                  proj.configured ? 'border-gray-700 bg-gray-800/50' : 'border-red-900/40 bg-red-950/10'
+                }`}
+              >
+                {/* Header */}
+                <div className="flex items-start gap-3">
+                  <Package
+                    size={15}
+                    className={proj.configured ? 'text-orange-400 mt-0.5 flex-shrink-0' : 'text-gray-600 mt-0.5 flex-shrink-0'}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium text-white truncate">
+                        {proj.project_name || proj.path.split('/').pop() || proj.path}
+                      </span>
+                      {proj.configured ? (
+                        <span className="text-[10px] text-green-400 flex items-center gap-0.5">
+                          <CheckCircle size={10} /> connected
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-red-400 flex items-center gap-0.5">
+                          <AlertCircle size={10} /> target/ not found
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-gray-500 font-mono truncate mt-0.5">{proj.path}</p>
+                    {proj.configured && (
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {proj.model_count} model{proj.model_count !== 1 ? 's' : ''} in manifest
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 flex-wrap pl-6">
+                  {proj.configured && (
+                    <button
+                      onClick={() => handleImport(proj.path)}
+                      disabled={importingPath === proj.path}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-700 hover:bg-orange-600 text-white text-xs rounded-lg font-medium disabled:opacity-40"
+                    >
+                      <Download size={12} />
+                      {importingPath === proj.path ? 'Importing...' : `Import ${proj.model_count} Models`}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleRemove(proj.path)}
+                    disabled={removingPath === proj.path}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs rounded-lg font-medium disabled:opacity-40"
+                  >
+                    <Trash2 size={12} />
+                    {removingPath === proj.path ? 'Removing...' : 'Remove'}
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
-        <div>
-          <label className="block text-xs text-gray-400 mb-1 font-medium">
-            dbt Project Path <span className="text-gray-600">(folder containing dbt_project.yml)</span>
-          </label>
-          <input
-            className={inputCls}
-            value={dbtPath}
-            onChange={e => setDbtPath(e.target.value)}
-            placeholder="/Users/you/your-dbt-project"
-          />
-          <p className="text-xs text-gray-600 mt-1">
-            You can also set <code className="text-gray-500">DBT_PROJECT_PATH</code> in <code className="text-gray-500">backend/.env</code>
-          </p>
-        </div>
-
-        <div className="flex gap-3 flex-wrap">
+        {/* Import all button (shown when >1 project) */}
+        {projects.filter(p => p.configured).length > 1 && (
           <button
-            onClick={savePath}
-            disabled={saving || !dbtPath.trim()}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg font-medium disabled:opacity-40"
+            onClick={() => handleImport()}
+            disabled={importingPath === '__all__'}
+            className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white text-sm rounded-lg font-medium disabled:opacity-40 w-full justify-center"
           >
-            {saving ? 'Saving...' : 'Save Path'}
+            <Download size={14} />
+            {importingPath === '__all__' ? 'Importing...' : 'Import All Projects'}
           </button>
+        )}
 
-          {status?.configured && (
+        {/* Add new project */}
+        <div className="border-t border-gray-800 pt-4 space-y-2">
+          <label className="block text-xs text-gray-400 font-medium">
+            Add dbt Project{' '}
+            <span className="text-gray-600 font-normal">(path to folder containing dbt_project.yml)</span>
+          </label>
+          <div className="flex gap-2">
+            <input
+              className={inputCls}
+              value={newPath}
+              onChange={e => setNewPath(e.target.value)}
+              placeholder="/Users/you/your-dbt-project"
+              onKeyDown={e => e.key === 'Enter' && handleAdd()}
+            />
             <button
-              onClick={importModels}
-              disabled={importing}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white text-sm rounded-lg font-medium disabled:opacity-40"
+              onClick={handleAdd}
+              disabled={adding || !newPath.trim()}
+              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg font-medium disabled:opacity-40 whitespace-nowrap"
             >
-              <Download size={14} />
-              {importing ? 'Importing...' : `Import ${status.model_count} Models`}
+              <Plus size={14} />
+              {adding ? 'Adding...' : 'Add'}
             </button>
-          )}
-
-          {status?.configured && (
-            <button
-              onClick={clearPath}
-              disabled={clearing}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm rounded-lg font-medium disabled:opacity-40"
-            >
-              <X size={14} />
-              {clearing ? 'Clearing...' : 'Clear Path'}
-            </button>
-          )}
+          </div>
+          <p className="text-xs text-gray-600">
+            You can also set{' '}
+            <code className="text-gray-500">DBT_PROJECT_PATHS=/path/1,/path/2</code>{' '}
+            in <code className="text-gray-500">backend/.env</code>
+          </p>
         </div>
 
         {msg && (
@@ -167,15 +228,30 @@ export default function SettingsPage() {
         )}
       </div>
 
-      {/* How-to note */}
+      {/* Setup instructions */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
         <h2 className="text-sm font-semibold text-white mb-3">Setup Instructions</h2>
         <ol className="space-y-2 text-sm text-gray-400 list-decimal list-inside">
-          <li>Install gcloud CLI: <a href="https://cloud.google.com/sdk/docs/install" target="_blank" className="text-blue-400 underline">cloud.google.com/sdk/docs/install</a></li>
-          <li>Authenticate: <code className="bg-gray-800 px-1.5 py-0.5 rounded text-gray-300 text-xs">gcloud auth application-default login</code></li>
-          <li>Set your dbt project path above and click Save</li>
-          <li>Click <strong className="text-white">Import Models</strong> to pull all dbt models into the monitor</li>
-          <li>Or use <strong className="text-white">Add Table</strong> on the dashboard to add individual tables</li>
+          <li>
+            Install gcloud CLI:{' '}
+            <a
+              href="https://cloud.google.com/sdk/docs/install"
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-400 underline"
+            >
+              cloud.google.com/sdk/docs/install
+            </a>
+          </li>
+          <li>
+            Authenticate:{' '}
+            <code className="bg-gray-800 px-1.5 py-0.5 rounded text-gray-300 text-xs">
+              gcloud auth application-default login
+            </code>
+          </li>
+          <li>Add each dbt project path above and click Add</li>
+          <li>Click <strong className="text-white">Import Models</strong> per project to pull models into the monitor</li>
+          <li>Or use <strong className="text-white">Add Table</strong> on the dashboard for individual BigQuery tables</li>
         </ol>
       </div>
     </div>

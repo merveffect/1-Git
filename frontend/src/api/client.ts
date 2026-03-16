@@ -21,6 +21,12 @@ export const acknowledgeAlert = (alertId: number) =>
 export const getDashboardStats = () => api.get<DashboardStats>('/dashboard').then(r => r.data)
 export const getRunHistory = (configId: number) =>
   api.get(`/runs/monitor/${configId}`).then(r => r.data)
+export const addDbtPath = (path: string) =>
+  api.post('/dbt/settings', { dbt_project_path: path }).then(r => r.data)
+export const removeDbtPath = (path: string) =>
+  api.post('/dbt/settings/remove', { dbt_project_path: path }).then(r => r.data)
+export const importDbtModels = (projectPath?: string) =>
+  api.post('/dbt/import', projectPath ? { project_path: projectPath } : {}).then(r => r.data)
 export const getDbtTestHistory = (modelName: string) =>
   api.get(`/dbt/models/${modelName}/test-history`).then(r => r.data)
 export const getModelLineage = (modelName: string) =>

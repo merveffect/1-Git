@@ -20,70 +20,87 @@ import json
 router = APIRouter(prefix="/api/dbt", tags=["dbt"])
 
 
-@router.get("/status")
-def dbt_status():
-    configured = dbt_reader.is_configured()
-    project_name = dbt_reader.get_project_name() if configured else None
-    models = dbt_reader.get_models() if configured else []
-    return {
-        "configured": configured,
-        "project_path": settings.dbt_project_path,
-        "project_name": project_name,
-        "model_count": len(models),
-    }
+def _read_env_paths() -> list[str]:
+    """Read current DBT_PROJECT_PATHS list from settings + .env."""
+    raw = settings.dbt_project_paths or ""
+    paths = [p.strip() for p in raw.split(",") if p.strip()]
+    # Also include legacy single path if present
+    if settings.dbt_project_path and settings.dbt_project_path.strip() not in paths:
+        paths.append(settings.dbt_project_path.strip())
+    return paths
 
 
-@router.post("/settings")
-def update_dbt_path(body: dict):
-    """
-    Update the dbt project path at runtime (persisted to .env not yet —
-    restart required for full effect, but reader picks it up immediately).
-    """
-    path = body.get("dbt_project_path", "").strip()
-    if not path:
-        raise HTTPException(status_code=400, detail="dbt_project_path is required")
-    settings.dbt_project_path = path
-
-    # Write to .env so it persists across restarts
+def _write_env_paths(paths: list[str]):
+    """Persist the paths list to .env as DBT_PROJECT_PATHS (and clear legacy key)."""
     env_path = ".env"
     lines = []
-    found = False
     try:
         with open(env_path) as f:
             lines = f.readlines()
     except FileNotFoundError:
         pass
 
-    new_line = f"DBT_PROJECT_PATH={path}\n"
-    for i, line in enumerate(lines):
-        if line.startswith("DBT_PROJECT_PATH="):
-            lines[i] = new_line
-            found = True
-            break
-    if not found:
-        lines.append(new_line)
+    # Remove legacy and new keys
+    lines = [l for l in lines if not l.startswith("DBT_PROJECT_PATH=") and not l.startswith("DBT_PROJECT_PATHS=")]
+
+    value = ",".join(paths)
+    if value:
+        lines.append(f"DBT_PROJECT_PATHS={value}\n")
 
     with open(env_path, "w") as f:
         f.writelines(lines)
 
-    return {"ok": True, "project_path": path}
+    # Update in-memory settings
+    settings.dbt_project_paths = value or None
+    settings.dbt_project_path = None  # clear legacy
+
+
+@router.get("/status")
+def dbt_status():
+    projects = dbt_reader.get_all_projects_info()
+    configured = any(p["configured"] for p in projects)
+    # Legacy fields for backward compat
+    first = next((p for p in projects if p["configured"]), None)
+    return {
+        "configured": configured,
+        "project_path": first["path"] if first else None,
+        "project_name": first["project_name"] if first else None,
+        "model_count": sum(p["model_count"] for p in projects),
+        "projects": projects,
+    }
+
+
+@router.post("/settings")
+def add_dbt_path(body: dict):
+    """Add a dbt project path to the list."""
+    path = body.get("dbt_project_path", "").strip()
+    if not path:
+        raise HTTPException(status_code=400, detail="dbt_project_path is required")
+
+    paths = _read_env_paths()
+    if path not in paths:
+        paths.append(path)
+    _write_env_paths(paths)
+    return {"ok": True, "paths": paths}
+
+
+@router.post("/settings/remove")
+def remove_dbt_path(body: dict):
+    """Remove a specific dbt project path from the list."""
+    path = body.get("dbt_project_path", "").strip()
+    if not path:
+        raise HTTPException(status_code=400, detail="dbt_project_path is required")
+
+    paths = _read_env_paths()
+    paths = [p for p in paths if p != path]
+    _write_env_paths(paths)
+    return {"ok": True, "paths": paths}
 
 
 @router.post("/settings/clear")
-def clear_dbt_path():
-    """Remove the dbt project path from settings and .env."""
-    settings.dbt_project_path = None
-
-    env_path = ".env"
-    try:
-        with open(env_path) as f:
-            lines = f.readlines()
-        lines = [l for l in lines if not l.startswith("DBT_PROJECT_PATH=")]
-        with open(env_path, "w") as f:
-            f.writelines(lines)
-    except FileNotFoundError:
-        pass
-
+def clear_all_dbt_paths():
+    """Remove all configured dbt project paths."""
+    _write_env_paths([])
     return {"ok": True}
 
 
@@ -168,17 +185,23 @@ def model_test_history(model_name: str, limit: int = 50, db: Session = Depends(g
 
 
 @router.post("/import")
-def import_dbt_models(db: Session = Depends(get_db)):
+def import_dbt_models(body: dict = {}, db: Session = Depends(get_db)):
     """
-    Import all dbt models from manifest.json as MonitoredTables.
-    Skips models already added. Auto-creates all 6 monitor types including dbt_tests.
+    Import dbt models as MonitoredTables.
+    Optional body: {"project_path": "/path/..."} to import from a specific project only.
+    Omit body (or project_path) to import from all configured projects.
     """
     if not dbt_reader.is_configured():
-        raise HTTPException(status_code=400, detail="DBT_PROJECT_PATH not set")
+        raise HTTPException(status_code=400, detail="No dbt projects configured")
 
-    models = dbt_reader.get_models()
+    filter_path = (body or {}).get("project_path")
+    all_models = dbt_reader.get_models()
+    models = [m for m in all_models if not filter_path or m.get("project_root") == filter_path]
+    if not models and filter_path:
+        raise HTTPException(status_code=404, detail=f"No models found for project: {filter_path}")
     if not models:
         raise HTTPException(status_code=404, detail="No models found in manifest.json")
+
 
     added = []
     skipped = []
