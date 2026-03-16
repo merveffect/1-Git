@@ -2,6 +2,16 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, Foreig
 from sqlalchemy.orm import relationship
 from database import Base
 
+
+class TableUpdateHistory(Base):
+    """One row per detected table refresh (last_modified_time changed in BQ)."""
+    __tablename__ = "table_update_history"
+    id = Column(Integer, primary_key=True)
+    table_id = Column(Integer, ForeignKey("monitored_tables.id"), nullable=False)
+    last_modified_time = Column(DateTime, nullable=False)
+    row_count = Column(Integer)
+    detected_at = Column(DateTime, nullable=False)
+
 class MonitoredTable(Base):
     __tablename__ = "monitored_tables"
     id = Column(Integer, primary_key=True)
@@ -22,6 +32,7 @@ class MonitorConfig(Base):
     is_enabled = Column(Boolean, default=True)
     config_json = Column(Text, default="{}")
     schedule_minutes = Column(Integer, default=60)
+    first_run_completed = Column(Boolean, default=False)
     table = relationship("MonitoredTable", back_populates="monitor_configs")
     runs = relationship("MonitorRun", back_populates="monitor_config")
 

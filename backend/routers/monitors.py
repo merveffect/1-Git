@@ -125,3 +125,51 @@ def suggest_key_columns(config_id: int, db: Session = Depends(get_db)):
         "best_guess": best_guess or [],
         "all_columns": all_columns,
     }
+
+
+@router.get("/{config_id}/null-rate-columns")
+def get_null_rate_columns(config_id: int, db: Session = Depends(get_db)):
+    cfg = db.query(MonitorConfig).filter(
+        MonitorConfig.id == config_id,
+        MonitorConfig.monitor_type == "null_rate"
+    ).first()
+    if not cfg:
+        raise HTTPException(status_code=404)
+
+    # Also get key columns from sibling duplicate monitor
+    dup_cfg = db.query(MonitorConfig).filter(
+        MonitorConfig.table_id == cfg.table_id,
+        MonitorConfig.monitor_type == "duplicate"
+    ).first()
+    key_cols = []
+    if dup_cfg:
+        try:
+            key_cols = json.loads(dup_cfg.config_json or "{}").get("key_columns", [])
+        except Exception:
+            pass
+
+    current_cfg = json.loads(cfg.config_json or "{}")
+    return {
+        "check_columns": current_cfg.get("check_columns", []),
+        "use_key_columns": current_cfg.get("use_key_columns", True),
+        "key_columns_from_duplicate": key_cols,
+        "all_columns": [],  # populated by frontend via schema endpoint
+    }
+
+
+@router.patch("/{config_id}/null-rate-columns")
+def update_null_rate_columns(config_id: int, body: dict, db: Session = Depends(get_db)):
+    cfg = db.query(MonitorConfig).filter(MonitorConfig.id == config_id).first()
+    if not cfg:
+        raise HTTPException(status_code=404)
+    current = json.loads(cfg.config_json or "{}")
+    if "check_columns" in body:
+        current["check_columns"] = body["check_columns"]
+    if "use_key_columns" in body:
+        current["use_key_columns"] = body["use_key_columns"]
+    cfg.config_json = json.dumps(current)
+    # reset first_run so it re-scans with new columns
+    cfg.first_run_completed = False
+    db.commit()
+    schedule_monitor(cfg.id, cfg.schedule_minutes)
+    return {"ok": True}

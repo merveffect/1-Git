@@ -4,6 +4,7 @@ import { getTableMonitors, runTableNow, getAllMonitorHistory } from '../api/clie
 import MonitorCard from '../components/MonitorCard'
 import VolumeChart from '../components/VolumeChart'
 import LineageGraph from '../components/LineageGraph'
+import UpdateTimeline from '../components/UpdateTimeline'
 import { useTables } from '../hooks/useMonitors'
 import { Play, ArrowLeft, Clock, BarChart2, AlertTriangle, Copy, GitBranch, FlaskConical } from 'lucide-react'
 import { useState } from 'react'
@@ -154,6 +155,16 @@ export default function TableDetailPage() {
       {monitorTypesWithHistory.length === 0 && monitors.length > 0 && (
         <div className="text-center py-8 text-gray-600 text-sm">
           No run history yet — click <strong className="text-gray-400">Run Now</strong> to trigger the first check.
+        </div>
+      )}
+
+      {/* Update history timeline */}
+      {table && (
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+          <h2 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">
+            Update History
+          </h2>
+          <UpdateTimeline tableId={id} />
         </div>
       )}
 

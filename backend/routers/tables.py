@@ -132,6 +132,24 @@ def run_table_now(table_id: int, db: Session = Depends(get_db)):
         run_monitor(cfg.id)
     return {"ok": True, "monitors_run": len(configs)}
 
+@router.get("/{table_id}/update-history")
+def get_update_history(table_id: int, limit: int = 60, db: Session = Depends(get_db)):
+    """Returns BQ metadata update events for timeline visualization."""
+    from models.monitor import TableUpdateHistory
+    rows = db.query(TableUpdateHistory).filter(
+        TableUpdateHistory.table_id == table_id
+    ).order_by(TableUpdateHistory.detected_at.asc()).limit(limit).all()
+    return [
+        {
+            "id": r.id,
+            "last_modified_time": r.last_modified_time.isoformat() if r.last_modified_time else None,
+            "row_count": r.row_count,
+            "detected_at": r.detected_at.isoformat() if r.detected_at else None,
+        }
+        for r in rows
+    ]
+
+
 @router.get("/bq/datasets")
 def list_bq_datasets(project: str):
     try:

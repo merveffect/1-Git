@@ -1,29 +1,54 @@
+"""
+NullRateMonitor — checks configured columns for nulls.
+- Default: checks key columns (passed from duplicate monitor config)
+- Additional columns configurable via check_columns in config
+- Binary result: FAIL if ANY null found, PASS otherwise
+- Partition-aware: first run uses full scan/TABLESAMPLE, subsequent runs filter to latest partition
+"""
 from monitors.base import BaseMonitor, CheckResult, CheckStatus
 from services.bigquery_client import bq_client
 
+
 class NullRateMonitor(BaseMonitor):
+    def __init__(self, project, dataset, table, config,
+                 key_columns_from_duplicate=None, is_first_run=True):
+        super().__init__(project, dataset, table, config)
+        self.key_cols = key_columns_from_duplicate or []
+        self.is_first_run = is_first_run
+
     def run(self) -> CheckResult:
-        threshold_pct = self.config.get("max_null_pct", 5.0)
-        is_partitioned = self.config.get("is_partitioned", False)
+        # Determine which columns to check
+        extra_cols = self.config.get("check_columns", [])
+        use_key_cols = self.config.get("use_key_columns", True)
+
+        check_cols = list(extra_cols)
+        if use_key_cols:
+            for c in self.key_cols:
+                if c not in check_cols:
+                    check_cols.append(c)
+
+        if not check_cols:
+            return CheckResult(
+                status=CheckStatus.WARNING,
+                message="No columns configured for null check. Set key columns in the Duplicates monitor.",
+                details={"check_columns": []},
+            )
 
         try:
-            columns = bq_client.get_table_schema(self.project, self.dataset, self.table)
-            if not columns:
-                return CheckResult(status=CheckStatus.ERROR, message="Could not retrieve schema")
+            sample_clause = bq_client.get_sample_clause(
+                self.project, self.dataset, self.table,
+                self.is_first_run, self.config
+            )
 
-            col_names = [c["column_name"] for c in columns]
-            null_checks = ",\n  ".join([
-                f"COUNTIF({col} IS NULL) / COUNT(*) * 100 AS `{col}_null_pct`"
-                for col in col_names
-            ])
-
-            if is_partitioned:
-                sample_clause = "WHERE DATE(_PARTITIONTIME) = DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)"
-            else:
-                sample_clause = "TABLESAMPLE SYSTEM (10 PERCENT)"
+            null_checks = ",\n  ".join(
+                f"COUNTIF(`{col}` IS NULL) AS `{col}_nulls`"
+                for col in check_cols
+            )
 
             query = f"""
-            SELECT {null_checks}, COUNT(*) AS sampled_rows
+            SELECT
+              {null_checks},
+              COUNT(*) AS total_rows
             FROM {self.full_table_id}
             {sample_clause}
             """
@@ -33,28 +58,36 @@ class NullRateMonitor(BaseMonitor):
                 return CheckResult(status=CheckStatus.ERROR, message="Query returned no results")
 
             row = rows[0]
-            sampled_rows = row.pop("sampled_rows", 0)
+            total = int(row.get("total_rows") or 0)
 
-            column_results = {}
             failing_cols = []
-            for key, val in row.items():
-                col_name = key.replace("_null_pct", "")
-                null_pct = float(val or 0)
-                column_results[col_name] = round(null_pct, 2)
-                if null_pct > threshold_pct:
-                    failing_cols.append(f"{col_name} ({null_pct:.1f}%)")
+            col_results = {}
+            for col in check_cols:
+                nulls = int(row.get(f"{col}_nulls") or 0)
+                col_results[col] = nulls
+                if nulls > 0:
+                    failing_cols.append(f"{col} ({nulls:,} nulls)")
+
+            scan_type = "full scan" if self.is_first_run else "latest partition"
 
             if failing_cols:
                 status = CheckStatus.FAIL
-                message = f"High null rates: {', '.join(failing_cols[:3])}"
+                message = f"Nulls found in: {', '.join(failing_cols[:3])}"
             else:
-                max_null = max(column_results.values()) if column_results else 0
                 status = CheckStatus.PASS
-                message = f"Null rates OK (max: {max_null:.1f}%, sampled {sampled_rows:,} rows)"
+                message = f"No nulls in {len(check_cols)} column(s) ({total:,} rows, {scan_type})"
 
             return CheckResult(
-                status=status, message=message, threshold=threshold_pct,
-                details={"columns": column_results, "sampled_rows": sampled_rows, "failing_columns": failing_cols}
+                status=status,
+                message=message,
+                value=len(failing_cols),
+                details={
+                    "columns_checked": check_cols,
+                    "column_null_counts": col_results,
+                    "failing_columns": failing_cols,
+                    "total_rows": total,
+                    "scan_type": scan_type,
+                },
             )
         except Exception as e:
             return CheckResult(status=CheckStatus.ERROR, message=str(e))

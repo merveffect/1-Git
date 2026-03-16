@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Optional
 
 from database import SessionLocal
-from models.monitor import DbtRunSnapshot
+from models.monitor import DbtRunSnapshot, MonitoredTable
 from services.dbt_reader import _target_dir
 
 logger = logging.getLogger(__name__)
@@ -108,6 +108,18 @@ def _parse_and_store(path: Path) -> bool:
         logger.info(f"dbt watcher: stored snapshot for run at {run_at} "
                     f"(models: {snapshot.models_pass} pass / {snapshot.models_fail} fail, "
                     f"tests: {snapshot.tests_pass} pass / {snapshot.tests_fail} fail)")
+
+        # After commit, trigger monitors for all active dbt-model tables
+        try:
+            from services.table_refresh_watcher import _trigger_monitors
+            db2 = SessionLocal()
+            tables = db2.query(MonitoredTable).filter(MonitoredTable.is_active == True).all()
+            db2.close()
+            for t in tables:
+                _trigger_monitors(t.id)
+        except Exception as e:
+            logger.warning(f"dbt_watcher: failed to trigger monitors: {e}")
+
         return True
     except Exception as e:
         logger.error(f"dbt watcher: DB error: {e}")

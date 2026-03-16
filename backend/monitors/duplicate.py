@@ -2,10 +2,13 @@ from monitors.base import BaseMonitor, CheckResult, CheckStatus
 from services.bigquery_client import bq_client
 
 class DuplicateMonitor(BaseMonitor):
+    def __init__(self, project, dataset, table, config, is_first_run=True, **kwargs):
+        super().__init__(project, dataset, table, config)
+        self.is_first_run = is_first_run
+
     def run(self) -> CheckResult:
         key_columns = self.config.get("key_columns", [])
         threshold_pct = self.config.get("max_duplicate_pct", 1.0)
-        is_partitioned = self.config.get("is_partitioned", False)
 
         if not key_columns:
             return CheckResult(status=CheckStatus.WARNING, message="No key columns configured for duplicate check")
@@ -13,10 +16,10 @@ class DuplicateMonitor(BaseMonitor):
         try:
             key_expr = "CONCAT(" + ", '|', ".join(f"CAST({col} AS STRING)" for col in key_columns) + ")"
 
-            if is_partitioned:
-                sample_clause = "WHERE DATE(_PARTITIONTIME) = DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)"
-            else:
-                sample_clause = "TABLESAMPLE SYSTEM (10 PERCENT)"
+            sample_clause = bq_client.get_sample_clause(
+                self.project, self.dataset, self.table,
+                self.is_first_run, self.config
+            )
 
             query = f"""
             SELECT

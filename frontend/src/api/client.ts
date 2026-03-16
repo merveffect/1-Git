@@ -37,3 +37,9 @@ export const listBqDatasets = (project: string) =>
   api.get<{ datasets: string[] }>('/tables/bq/datasets', { params: { project } }).then(r => r.data)
 export const listBqTables = (project: string, dataset: string) =>
   api.get<{ tables: string[] }>('/tables/bq/tables', { params: { project, dataset } }).then(r => r.data)
+export const getTableUpdateHistory = (tableId: number) =>
+  api.get(`/tables/${tableId}/update-history`).then(r => r.data)
+export const getNullRateColumns = (configId: number) =>
+  api.get(`/monitors/${configId}/null-rate-columns`).then(r => r.data)
+export const updateNullRateColumns = (configId: number, data: Record<string, unknown>) =>
+  api.patch(`/monitors/${configId}/null-rate-columns`, data).then(r => r.data)

@@ -45,15 +45,30 @@ def run_monitor(monitor_config_id: int):
         try:
             kwargs = {}
             if config.monitor_type == "volume":
-                # Get last 30 run values for Z-score
-                past_runs = db.query(MonitorRun).filter(
-                    MonitorRun.monitor_config_id == config.id,
-                    MonitorRun.status == "pass"
-                ).order_by(MonitorRun.completed_at.desc()).limit(30).all()
-                kwargs["historical_counts"] = [
-                    json.loads(r.result_json or "{}").get("value", 0) for r in past_runs if r.result_json
-                ]
-            elif config.monitor_type == "schema_drift":
+                from models.monitor import TableUpdateHistory
+                history = db.query(TableUpdateHistory).filter(
+                    TableUpdateHistory.table_id == config.table_id
+                ).order_by(TableUpdateHistory.detected_at.desc()).limit(60).all()
+                kwargs["historical_counts"] = [h.row_count for h in history if h.row_count is not None]
+                kwargs["is_first_run"] = not config.first_run_completed
+            elif config.monitor_type == "null_rate":
+                # get key columns from the duplicate monitor config for this table
+                dup_cfg = db.query(MonitorConfig).filter(
+                    MonitorConfig.table_id == config.table_id,
+                    MonitorConfig.monitor_type == "duplicate",
+                ).first()
+                key_cols = []
+                if dup_cfg:
+                    try:
+                        key_cols = json.loads(dup_cfg.config_json or "{}").get("key_columns", [])
+                    except Exception:
+                        pass
+                kwargs["key_columns_from_duplicate"] = key_cols
+                kwargs["is_first_run"] = not config.first_run_completed
+            elif config.monitor_type in ("duplicate", "schema_drift"):
+                kwargs["is_first_run"] = not config.first_run_completed
+
+            if config.monitor_type == "schema_drift":
                 snapshot = db.query(SchemaSnapshot).filter(
                     SchemaSnapshot.table_id == table.id,
                     SchemaSnapshot.is_baseline == True
@@ -96,6 +111,8 @@ def run_monitor(monitor_config_id: int):
                 )
                 db.add(alert)
 
+            if not config.first_run_completed:
+                config.first_run_completed = True
             db.commit()
             logger.info(f"Monitor {config.monitor_type} for {table.table_id}: {result.status}")
 
@@ -126,5 +143,7 @@ def start_scheduler(db: Session):
         schedule_monitor(config.id, config.schedule_minutes or 60)
     from services.dbt_watcher import start_watcher
     start_watcher(scheduler)
+    from services.table_refresh_watcher import start_table_refresh_watcher
+    start_table_refresh_watcher(scheduler)
     if not scheduler.running:
         scheduler.start()

@@ -49,4 +49,55 @@ class BigQueryClient:
         dataset_ref = self.client.dataset(dataset, project=project)
         return [t.table_id for t in self.client.list_tables(dataset_ref)]
 
+    def get_partition_info(self, project: str, dataset: str, table: str) -> dict:
+        """Returns partition field info from BQ table metadata."""
+        try:
+            tbl = self.client.get_table(f"{project}.{dataset}.{table}")
+            if tbl.time_partitioning:
+                return {
+                    "is_partitioned": True,
+                    "partition_type": "time",
+                    "partition_field": tbl.time_partitioning.field,  # None = _PARTITIONTIME
+                }
+            if tbl.range_partitioning:
+                return {
+                    "is_partitioned": True,
+                    "partition_type": "range",
+                    "partition_field": tbl.range_partitioning.field,
+                }
+        except Exception as e:
+            logger.warning(f"get_partition_info failed: {e}")
+        return {"is_partitioned": False, "partition_type": None, "partition_field": None}
+
+    def get_sample_clause(self, project: str, dataset: str, table: str,
+                          is_first_run: bool, config: dict) -> str:
+        """
+        Returns the appropriate filter/sample clause for a monitor query.
+        - First run: TABLESAMPLE SYSTEM (10 PERCENT)
+        - Partitioned table: filter to latest partition
+        - Non-partitioned with timestamp_column config: filter to last N hours
+        - Non-partitioned without: TABLESAMPLE SYSTEM (10 PERCENT)
+        """
+        if is_first_run:
+            return "TABLESAMPLE SYSTEM (10 PERCENT)"
+
+        info = self.get_partition_info(project, dataset, table)
+        full_id = f"`{project}.{dataset}.{table}`"
+
+        if info["is_partitioned"]:
+            field = info["partition_field"]
+            if info["partition_type"] == "range" and field:
+                return f"WHERE {field} = (SELECT MAX({field}) FROM {full_id})"
+            elif field:
+                return f"WHERE DATE({field}) = (SELECT MAX(DATE({field})) FROM {full_id})"
+            else:
+                return f"WHERE DATE(_PARTITIONTIME) = (SELECT MAX(DATE(_PARTITIONTIME)) FROM {full_id} WHERE _PARTITIONTIME IS NOT NULL)"
+
+        ts_col = config.get("timestamp_column")
+        schedule_hours = config.get("schedule_hours", 24)
+        if ts_col:
+            return f"WHERE CAST({ts_col} AS TIMESTAMP) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL {int(schedule_hours * 2)} HOUR)"
+
+        return "TABLESAMPLE SYSTEM (10 PERCENT)"
+
 bq_client = BigQueryClient()

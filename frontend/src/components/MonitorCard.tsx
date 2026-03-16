@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import StatusBadge from './StatusBadge'
 import DuplicateConfigModal from './DuplicateConfigModal'
+import NullRateConfigModal from './NullRateConfigModal'
 import { TableMonitorStatus } from '../types'
 import { Clock, BarChart2, AlertTriangle, Copy, GitBranch, FlaskConical, Settings2 } from 'lucide-react'
 
@@ -30,6 +31,7 @@ interface Props {
 export default function MonitorCard({ monitor, tableId }: Props) {
   const { config, last_run } = monitor
   const [showConfig, setShowConfig] = useState(false)
+  const [showNullConfig, setShowNullConfig] = useState(false)
   const status = last_run?.status || 'no_data'
 
   let message = 'No runs yet'
@@ -40,6 +42,10 @@ export default function MonitorCard({ monitor, tableId }: Props) {
   const isDuplicateUnconfigured =
     config.monitor_type === 'duplicate' &&
     !(JSON.parse(config.config_json || '{}').key_columns?.length)
+
+  const isNullRateUnconfigured =
+    config.monitor_type === 'null_rate' &&
+    !(JSON.parse(config.config_json || '{}').check_columns?.length)
 
   return (
     <>
@@ -57,6 +63,15 @@ export default function MonitorCard({ monitor, tableId }: Props) {
                 onClick={() => setShowConfig(true)}
                 className="text-gray-500 hover:text-gray-300 transition-colors"
                 title="Configure key columns"
+              >
+                <Settings2 size={14} />
+              </button>
+            )}
+            {config.monitor_type === 'null_rate' && (
+              <button
+                onClick={() => setShowNullConfig(true)}
+                className="text-gray-500 hover:text-gray-300 transition-colors"
+                title="Configure null check columns"
               >
                 <Settings2 size={14} />
               </button>
@@ -88,6 +103,14 @@ export default function MonitorCard({ monitor, tableId }: Props) {
           monitor={monitor}
           tableId={tableId}
           onClose={() => setShowConfig(false)}
+        />
+      )}
+
+      {showNullConfig && tableId && (
+        <NullRateConfigModal
+          monitor={monitor}
+          tableId={tableId}
+          onClose={() => setShowNullConfig(false)}
         />
       )}
     </>
