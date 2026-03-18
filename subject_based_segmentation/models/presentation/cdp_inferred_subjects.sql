@@ -2,7 +2,7 @@
 
 WITH deleted AS (
   SELECT snid
-  FROM {{ source('prod_mpc_dbt_raw', 'raw_snid_deletions') }}
+  FROM {{ source('prod_mpc_dbt_presentation', 'snid_deletions') }}
 ),
 
 base AS (
