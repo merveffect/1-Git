@@ -221,7 +221,12 @@ CAST(article_submission_last_180_d AS BOOL) AS article_submission_last_180_d,
 CAST(q2_1_rate_the_overall_publication_process AS STRING) AS q2_1_rate_the_overall_publication_process,
 CAST(survey_name AS STRING) AS survey_name,
 CAST(oa_status AS STRING) AS oa_status,
-CAST(q2_2_how_likely_are_you_to_submit_again AS STRING) AS q2_2_how_likely_are_you_to_submit_again
+
+--19/03/2026 added columns
+CAST(q2_2_how_likely_are_you_to_submit_again AS STRING) AS q2_2_how_likely_are_you_to_submit_again,
+CAST(journal_awareness_low_active_eligible_canvas_1_after_wo AS BOOL) AS journal_awareness_low_active_eligible_canvas_1_after_wo,
+CAST(user AS BOOL) AS user,
+CAST(scirep_repeat_visitors_and_submissions_opened AS BOOL) AS scirep_repeat_visitors_and_submissions_opened
   from {{ ref('stg_hashing_pii') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id
