@@ -225,7 +225,9 @@ CAST(oa_status AS STRING) AS oa_status,
 --19/03/2026 added columns
 CAST(q2_2_how_likely_are_you_to_submit_again AS STRING) AS q2_2_how_likely_are_you_to_submit_again,
 CAST(journal_awareness_low_active_eligible_canvas_1_after_wo AS BOOL) AS journal_awareness_low_active_eligible_canvas_1_after_wo,
-CAST(scirep_repeat_visitors_and_submissions_opened AS BOOL) AS scirep_repeat_visitors_and_submissions_opened
+CAST(scirep_repeat_visitors_and_submissions_opened AS BOOL) AS scirep_repeat_visitors_and_submissions_opened,
+CAST(list_ip_country AS STRING) AS list_ip_country,
+CAST(list_imprints_90_days AS STRING) AS list_imprints_90_days
   from {{ ref('stg_hashing_pii') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id
