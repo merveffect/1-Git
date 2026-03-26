@@ -227,7 +227,9 @@ CAST(q2_2_how_likely_are_you_to_submit_again AS STRING) AS q2_2_how_likely_are_y
 CAST(journal_awareness_low_active_eligible_canvas_1_after_wo AS BOOL) AS journal_awareness_low_active_eligible_canvas_1_after_wo,
 CAST(scirep_repeat_visitors_and_submissions_opened AS BOOL) AS scirep_repeat_visitors_and_submissions_opened,
 CAST(list_ip_country AS STRING) AS list_ip_country,
-CAST(list_imprints_90_days AS STRING) AS list_imprints_90_days
+CAST(list_imprints_90_days AS STRING) AS list_imprints_90_days,
+CAST(audience_check_optin AS BOOL) AS audience_check_optin,
+CAST(most_seen_ip_country AS STRING) AS most_seen_ip_country
 
 
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
