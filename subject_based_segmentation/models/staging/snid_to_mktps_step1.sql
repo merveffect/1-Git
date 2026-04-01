@@ -5,7 +5,7 @@ WITH cte_user_journals AS (
 
 
 cte_user_snt AS (
-  -- 🧠 ADIM 2: journal → S&T (discipline + label)
+  --  journal → S&T (discipline + label)
   SELECT
     uj.snid,
     uj.journal_id,
@@ -23,7 +23,7 @@ cte_user_snt AS (
 ),
 
 cte_snt_mktp AS (
-  -- 🎯 ADIM 3: S&T → Marketing Preference eşleşmesi
+  -- S&T → Marketing Preference eşleşmesi
   SELECT
     us.snid,
     us.journal_id,
@@ -39,11 +39,11 @@ cte_snt_mktp AS (
     ) AS marketing_preference
   FROM cte_user_snt us
 
-  -- 🔹 1️⃣ Doğrudan eşleşme (S&T kodu = Marketing Preference ID)
+  -- direct map
   LEFT JOIN {{source('subject_based_segmentation', 'SNTS-MKTPS_MAPPED_FINAL')}} direct_map
     ON us.snt_code = direct_map.marketing_preference_id
 
-  -- 🔹 2️⃣ Fallback eşleşme (S&T kodu level kolonlarında geçiyorsa)
+  -- fallback match
   LEFT JOIN {{source('subject_based_segmentation', 'SNTS-MKTPS_MAPPED_FINAL')}} fallback_map
     ON us.snt_code IN UNNEST(
       ARRAY_CONCAT(
