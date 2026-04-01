@@ -3,53 +3,73 @@ config(
     materialized='incremental',
     incremental_strategy='insert_overwrite',
     on_schema_change='append_new_columns',
-    description='Historical data for audience builder big with daily change detection and timestamps',
     partition_by={
-        'field': 'ingestion_timestamp', 
-        'data_type': 'timestamp', 
+        'field': 'ingestion_timestamp',
+        'data_type': 'timestamp',
         'granularity': 'day'
-    }
+    },
+    cluster_by=['canonical_segment_id']
 )
 }}
 
 with current_data as (
+
     select
-        *,
-        current_timestamp() as ingestion_timestamp
-    from {{ ref('audience_builder_big') }}
+        src.*,
+        current_timestamp() as ingestion_timestamp,
+        farm_fingerprint(to_json_string(struct(src.*))) as row_hash
+    from {{ ref('audience_builder_big') }} src
+
 ),
 
 {% if is_incremental() %}
 
--- Get the latest state for each segment from previous days
 last_state as (
-    select 
-        * except(rn)
+
+    select * except(rn)
     from (
         select
-            *,
-            row_number() over (partition by canonical_segment_id order by ingestion_timestamp desc) as rn
-        from {{ this }}
-        where ingestion_timestamp < date_trunc(current_date(), day)
+            t.*,
+            row_number() over (
+                partition by canonical_segment_id
+                order by ingestion_timestamp desc
+            ) as rn
+        from {{ this }} t
+        where date(ingestion_timestamp) < current_date()
     )
     where rn = 1
+
 ),
 
--- Find segments that are new or have changed
-changed_segments as (
+last_state_hashed as (
+
     select
-        current.*
-    from current_data current
-    left join last_state latest
-        on current.canonical_segment_id = latest.canonical_segment_id
-    where latest.canonical_segment_id is null
-        or (current.* except(ingestion_timestamp)) != (latest.* except(ingestion_timestamp))
+        ls.*,
+        farm_fingerprint(
+            to_json_string(
+                struct(ls.* except(ingestion_timestamp))
+            )
+        ) as row_hash
+    from last_state ls
+
+),
+
+changed_rows as (
+
+    select
+        c.* except(row_hash)
+    from current_data c
+    left join last_state_hashed l
+        on c.canonical_segment_id = l.canonical_segment_id
+    where l.canonical_segment_id is null
+       or c.row_hash != l.row_hash
+
 )
 
-select * from changed_segments
+select * from changed_rows
 
 {% else %}
 
-select * from current_data
+select * except(row_hash) from current_data
 
 {% endif %}
