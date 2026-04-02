@@ -17,7 +17,7 @@ with current_data as (
     select
         src.*,
         current_timestamp() as ingestion_timestamp,
-        farm_fingerprint(to_json_string(struct(src.*))) as row_hash
+        farm_fingerprint(to_json_string((select as struct src.*))) as row_hash
     from {{ ref('audience_builder_big') }} src
 
 ),
@@ -47,7 +47,7 @@ last_state_hashed as (
         ls.*,
         farm_fingerprint(
             to_json_string(
-                struct(ls.* except(ingestion_timestamp))
+                (select as struct ls.* except(ingestion_timestamp))
             )
         ) as row_hash
     from last_state ls
