@@ -37,4 +37,9 @@ models:
       +materialized: table
       +tags: presentation
 
+    intermediate:
+      +schema: "analytics_dbt_intermediate"
+      +materialized: table
+      +tags: intermediate
+
 
