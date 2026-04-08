@@ -8,7 +8,8 @@ config(
         'data_type': 'timestamp',
         'granularity': 'day'
     },
-    cluster_by=['canonical_segment_id']
+    cluster_by=['canonical_segment_id'],
+    tags=['daily', 'historical']
 )
 }}
 
