@@ -7,6 +7,11 @@ dbt_target: poc
 
 jobs:
   - name: analytics-dbt-dev
-    schedule: 0 8 * * *
+    schedule: 0 8 * * 1
+
+  - name: daily-incremental-run-dev
+    schedule: 0 9 * * *
+    select_criteria: +tag:daily
+
 
 
