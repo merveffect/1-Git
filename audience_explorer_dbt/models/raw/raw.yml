@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: raw_user_traits
+    description: "Raw model for user traits data sourced from the cdp_profile_sync database. This model serves as the foundational layer for all subsequent transformations and analyses related to user traits."
+    columns:
+      - name: canonical_segment_id
+        description: "Unique identifier for each canonical segment."
+        tests:
+         - not_null:
+             severity: error
