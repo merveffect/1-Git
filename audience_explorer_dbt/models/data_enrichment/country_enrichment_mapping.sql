@@ -1,5 +1,5 @@
 {{ config(
-    materialized='table',
+    materialized='incremental',
     tags=['enrichment', 'country_mapping'],
     description='Country mapping table with Tier 1: Original > Tier 2: TLD > Tier 3: ROR > Tier 4: IP hierarchy'
 ) }}

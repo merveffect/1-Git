@@ -37,9 +37,10 @@ models:
       +materialized: table
       +tags: presentation
 
-    intermediate:
-      +schema: "analytics_dbt_intermediate"
-      +materialized: table
-      +tags: intermediate
+    data_enrichment:
+       +schema: "analytics_dbt_data_enrichment"
+       +materialized: table
+       +tags: data-enrichment
+ 
 
 
