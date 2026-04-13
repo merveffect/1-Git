@@ -1,22 +1,30 @@
-SELECT
-  COALESCE(a.evt_date, b.evt_date, c.evt_date) AS evt_date,
 {{ config(
-materialized='table',
+materialized='incremental',
+incremental_strategy='insert_overwrite',
 partition_by={
 "field": "evt_date",
 "data_type": "date",
 "granularity": "day"
 },
-cluster_by=["page_path"]
+cluster_by=["page_path", "collection_id"]
 ) }}
+
+SELECT
+  COALESCE(a.evt_date, b.evt_date, c.evt_date) AS evt_date,
   COALESCE(a.page_path, b.page_path, c.page_path) AS page_path,
+  b.collection_id, -- exploded ids 
+
+-- Metrics
   a.event_data,
   b.pageview_data,
   c.user_data,
-  d.collection_id,
+
+-- Gsheet metadata
   d.collection_title AS collection_name,
   d.full_article_url,
   d.page_title,
+
+-- Workfront metadata
   e.workfront_project_id AS wf_project_id,
   e.workfront_project_name AS wf_project_name,
   e.page_url AS wf_page_url,
@@ -24,15 +32,29 @@ cluster_by=["page_path"]
   e.client_name AS wf_client_name,
   e.date_range_start AS wf_date_range_start,
   e.collection_title AS wf_collection_title
-FROM {{ref('stg_collections_ga_events')}} AS a
-FULL JOIN {{ref('stg_collections_ga_pageview')}} AS b
-  USING (evt_date, page_path)
-FULL JOIN {{ref('stg_collections_ga_users')}} AS c
-  USING (evt_date, page_path)
+
+ FROM {{ref('stg_collections_ga_pageview')}} AS b
+LEFT JOIN {{ref('stg_collections_ga_events')}} AS a
+
+ON b.evt_date = a.evt_date
+AND b.page_path = a.page_path
+LEFT JOIN {{ref('stg_collections_ga_users')}} AS c
+ON b.evt_date = c.evt_date
+AND b.page_path = c.page_path
+
 INNER JOIN {{ref('stg_gsheet_wf_metadata')}} AS d
-  USING (page_path)
+ON b.collection_id = d.collection_id
+
 LEFT JOIN {{ref('raw_workfront_metadata')}} AS e
-  USING (collection_id)
+ON b.collection_id = e.collection_id
 
 
-
+{% if is_incremental() %}
+    -- 1. Start: Look back 3 days from the current max date to catch late-arriving data/gaps
+    WHERE b.evt_date >= (
+        SELECT DATE_SUB(MAX(evt_date), INTERVAL 3 DAY) 
+        FROM {{ this }}
+    )
+    -- 2. End: Exclude the last 2 days (Today and Yesterday) to ensure data is fully processed in GA4
+    AND b.evt_date < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+  {% endif %}
