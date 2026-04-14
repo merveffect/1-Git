@@ -1,5 +1,13 @@
 {{ config(
     materialized='incremental',
+    incremental_strategy='merge',
+    unique_key='canonical_segment_id',
+    on_schema_change='append_new_columns',
+    partition_by={
+        'field': 'enrichment_timestamp',
+        'data_type': 'timestamp',
+        'granularity': 'day'
+    },
     tags=['enrichment', 'country_mapping'],
     description='Country mapping table with Tier 1: Original > Tier 2: TLD > Tier 3: ROR > Tier 4: IP hierarchy'
 ) }}
@@ -26,21 +34,35 @@ ror_data AS (
     WHERE domain IS NOT NULL
 ),
 
+new_ids AS (
+    -- Identify new canonical_segment_ids with mkt_pref_opt_in = TRUE (for incremental run) 
+    SELECT DISTINCT canonical_segment_id
+    FROM {{ ref('audience_builder_big') }}
+    WHERE mkt_pref_opt_in = TRUE
+
+    {% if is_incremental() %}
+    EXCEPT DISTINCT
+    SELECT canonical_segment_id
+    FROM {{ this }}
+    {% endif %}
+),
+
 base_audience AS (
     -- Source of Truth for IDs and existing traits
     SELECT
-        canonical_segment_id,
-        snid,
-        email,
-        orcid,
-        researcher_id,
-        country AS original_raw_country,
-        most_seen_ip_country,
+      src.canonical_segment_id,
+        src.snid,
+        src.email,
+        src.orcid,
+        src.researcher_id,
+        src.country AS original_raw_country,
+        src.most_seen_ip_country,
         -- Extract components for TLD and ROR mapping
-        SUBSTR(email, STRPOS(email, '@') + 1) AS email_domain,
-        REGEXP_EXTRACT(LOWER(email), r'(\.[a-z]{2,})$') AS extracted_tld
-    FROM {{ ref('audience_builder_big') }}
-    WHERE mkt_pref_opt_in = TRUE
+        SUBSTR(src.email, STRPOS(src.email, '@') + 1) AS email_domain,
+        REGEXP_EXTRACT(LOWER(src.email), r'(\.[a-z]{2,})$') AS extracted_tld
+    FROM {{ ref('audience_builder_big') }} src
+    INNER JOIN new_ids n ON src.canonical_segment_id = n.canonical_segment_id
+
 )
 
 SELECT
@@ -78,3 +100,5 @@ FROM base_audience b
 LEFT JOIN mapping_data m_tld ON b.extracted_tld = m_tld.generated_tld
 LEFT JOIN ror_data r ON b.email_domain = r.domain
 LEFT JOIN mapping_data m_ip ON UPPER(b.most_seen_ip_country) = m_ip.alpha_2_code
+
+
