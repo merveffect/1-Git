@@ -9,6 +9,7 @@ partition_by={
 cluster_by=["page_path", "collection_id"]
 ) }}
 
+
 SELECT
   COALESCE(a.evt_date, b.evt_date, c.evt_date) AS evt_date,
   COALESCE(a.page_path, b.page_path, c.page_path) AS page_path,
@@ -42,13 +43,15 @@ LEFT JOIN {{ref('stg_collections_ga_users')}} AS c
 ON b.evt_date = c.evt_date
 AND b.page_path = c.page_path
 
-INNER JOIN {{ref('stg_gsheet_wf_metadata')}} AS d
+LEFT JOIN {{ref('stg_gsheet_wf_metadata')}} AS d
 ON b.collection_id = d.collection_id
 AND b.page_path = d.page_path
 
 LEFT JOIN {{ref('raw_workfront_metadata')}} AS e
 ON b.collection_id = e.collection_id
 
+WHERE d.collection_id IS NOT NULL 
+OR e.collection_id IS NOT NULL
 
 {% if is_incremental() %}
     -- 1. Start: Look back 3 days from the current max date to catch late-arriving data/gaps
@@ -59,3 +62,4 @@ ON b.collection_id = e.collection_id
     -- 2. End: Exclude the last 2 days (Today and Yesterday) to ensure data is fully processed in GA4
     AND b.evt_date < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
   {% endif %}
+
