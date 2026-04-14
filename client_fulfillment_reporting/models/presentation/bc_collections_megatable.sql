@@ -44,7 +44,7 @@ AND b.page_path = c.page_path
 
 INNER JOIN {{ref('stg_gsheet_wf_metadata')}} AS d
 ON b.collection_id = d.collection_id
-AND b.page_path = d.page_url
+AND b.page_path = d.page_path
 
 LEFT JOIN {{ref('raw_workfront_metadata')}} AS e
 ON b.collection_id = e.collection_id
