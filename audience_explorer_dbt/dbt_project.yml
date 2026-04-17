@@ -37,10 +37,25 @@ models:
       +materialized: table
       +tags: presentation
 
-    data_enrichment:
-       +schema: "analytics_dbt_data_enrichment"
-       +materialized: table
-       +tags: data-enrichment
- 
+    country_data_enrichment:
+      +schema: "analytics_dbt_country_data_enrichment"
+      +materialized: table
+      +tags: data-enrichment
+      raw:
+        +schema: "country_data_enrichment_raw"
+        +materialized: table
+        +tags: data-enrichment-raw
+
+      staging:
+        +schema: "country_data_enrichment_staging"
+        +materialized: table
+        +tags: data-enrichment-staging
+
+      presentation:
+        +schema: "country_data_enrichment_presentation"
+        +materialized: table
+        +tags: data-enrichment-presentation
+
+        
 
 
