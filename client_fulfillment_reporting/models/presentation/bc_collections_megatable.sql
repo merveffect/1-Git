@@ -1,12 +1,12 @@
 {{ config(
-materialized='incremental',
-incremental_strategy='insert_overwrite',
-partition_by={
-"field": "evt_date",
-"data_type": "date",
-"granularity": "day"
-},
-cluster_by=["page_path", "collection_id"]
+  materialized='incremental',
+  incremental_strategy='insert_overwrite',
+  partition_by={
+    "field": "evt_date",
+    "data_type": "date",
+    "granularity": "day"
+    },
+  cluster_by=["page_path", "collection_id"]
 ) }}
 
 
@@ -50,16 +50,13 @@ AND b.page_path = d.page_path
 LEFT JOIN {{ref('raw_workfront_metadata')}} AS e
 ON b.collection_id = e.collection_id
 
-WHERE d.collection_id IS NOT NULL 
-OR e.collection_id IS NOT NULL
-
+WHERE (d.collection_id IS NOT NULL OR e.collection_id IS NOT NULL)
 {% if is_incremental() %}
     -- 1. Start: Look back 3 days from the current max date to catch late-arriving data/gaps
-    WHERE b.evt_date >= (
+    AND b.evt_date >= (
         SELECT DATE_SUB(MAX(evt_date), INTERVAL 3 DAY) 
         FROM {{ this }}
     )
     -- 2. End: Exclude the last 2 days (Today and Yesterday) to ensure data is fully processed in GA4
     AND b.evt_date < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
-  {% endif %}
-
+{% endif %}
