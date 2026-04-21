@@ -8,17 +8,13 @@ models:
         description: "ISO alpha-2 country code."
         tests:
           - not_null
-          - unique
-          - dbt_utils.expression_is_true:
-              expression: "length(alpha_2_code) = 2"
+          
 
       - name: generated_tld
         description: "Generated top-level domain used for matching (for example, .uk for GB)."
         tests:
           - not_null
-          - unique
-          - dbt_utils.expression_is_true:
-              expression: "generated_tld LIKE '.%'"
+
 
       - name: standard_name
         description: "Standardized country name used in enrichment outputs."

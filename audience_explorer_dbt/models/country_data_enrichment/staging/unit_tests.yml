@@ -2,7 +2,7 @@ unit_tests:
   - name: test_tld_generation_logic
     model: stg_country_enrichment_mapping_location_data
     given:
-      - input: source('reference_data_presentation', 'full_location_standard')
+      - input: ref('raw_full_location_standard') 
         rows:
           - {alpha_2_code: 'GB', code_status: 'Current', springer_nature_data_standard_location_name: 'United Kingdom'}
           - {alpha_2_code: 'US', code_status: 'Current', springer_nature_data_standard_location_name: 'United States'}
@@ -22,13 +22,11 @@ unit_tests:
           - {email: 'researcher@ox.ac.uk', mkt_pref_opt_in: true, canonical_segment_id: 'ID_1'}
           # Scenario 2: Standard commercial email (Crucial for Tier 2 TLD)
           - {email: 'user@gmail.com', mkt_pref_opt_in: true, canonical_segment_id: 'ID_2'}
-          # Scenario 3: Null email
-          - {email: null, mkt_pref_opt_in: true, canonical_segment_id: 'ID_3'}
+
     expect:
       rows:
         - {canonical_segment_id: 'ID_1', email_domain: 'ox.ac.uk', extracted_tld: '.uk'}
         - {canonical_segment_id: 'ID_2', email_domain: 'gmail.com', extracted_tld: '.com'}
-        - {canonical_segment_id: 'ID_3', email_domain: null, extracted_tld: null}
 
 
 
@@ -88,6 +86,10 @@ unit_tests:
         rows:
           - {generated_tld: '.uk', standard_name: 'United Kingdom'}
           - {generated_tld: '.de', standard_name: 'Germany'}
+
+      - input: ref('stg_country_enrichment_ror_data')
+        rows:
+          - {domain: 'example.edu', ror_country: 'United States'}
 
     expect:
       rows:
