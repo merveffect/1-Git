@@ -34,6 +34,9 @@ unit_tests:
 
   - name: test_enrichment_priority_logic
     model: stg_country_enrichment_matches
+    overrides:
+     macros:
+      is_incremental: false
     given:
       # Mocking the audience data with various combinations of original country, TLD, and ROR information to test enrichment priority logic
       - input: ref('stg_country_enrichment_tld_extract')
@@ -69,7 +72,10 @@ unit_tests:
 
 
   - name: test_is_enriched_logic
-    model: fct_country_enrichment_history
+    model: stg_country_enrichment_matches
+    overrides:
+     macros:
+      is_incremental: false
     given:
       - input: ref('stg_country_enrichment_tld_extract')
         rows:

@@ -58,7 +58,7 @@ CURRENT_TIMESTAMP() AS enrichment_timestamp,
 FROM source_determination
 ) 
 
-SELECT * FROM final_records AS final
+SELECT final.* FROM final_records AS final
 
 {% if is_incremental() %}
 -- Change detection with LEFT JOIN to existing records

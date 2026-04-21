@@ -5,5 +5,5 @@
             ELSE CONCAT('.', LOWER(alpha_2_code)) 
         END AS generated_tld,
         springer_nature_data_standard_location_name AS standard_name
-    FROM {{ref('full_location_standard') }}
+    FROM {{ref('raw_full_location_standard') }}
     WHERE code_status = 'Current'
