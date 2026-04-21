@@ -25,17 +25,4 @@ sources:
     tables: 
       - name: user_traits_spreadsheet
 
-  - name: reference_data_presentation
-    database: datasn-tools-live
-    schema: reference_data_presentation
-    tables:
-      - name: full_location_standard
-        description: "Full Location Standard table containing standardized location information for enrichment purposes."
-
-  - name: ror_mapping_raw_tables
-    database: dat-analytics-eng-ec869189
-    schema: ror_mapping_raw_tables
-    tables:
-      - name: ror_raw_final
-        description: "External ROR final table containing enriched organization information."
 
