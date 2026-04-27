@@ -229,7 +229,7 @@ CAST(scirep_repeat_visitors_and_submissions_opened AS BOOL) AS scirep_repeat_vis
 CAST(list_ip_country AS STRING) AS list_ip_country,
 CAST(list_imprints_90_days AS STRING) AS list_imprints_90_days,
 CAST(audience_check_optin AS BOOL) AS audience_check_optin,
-CAST(most_seen_ip_country AS STRING) AS most_seen_ip_country
+CAST(most_seen_ip_country AS STRING) AS most_seen_ip_country,
 
 -- 27/04/2026 added columns
 CAST(interested_journal_ids_90 AS STRING) AS interested_journal_ids_90,
