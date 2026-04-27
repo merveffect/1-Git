@@ -1,0 +1,48 @@
+name: 'b2b_sebs_transaction_level_pipeline_dbt'
+version: '1.0.0'
+
+profile: 'b2b_sebs_transaction_level_pipeline_dbt'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  +persist_docs:
+    relation: true
+    columns: true
+  b2b_sebs_transaction_level_pipeline_dbt:
+    +tags: 'b2b_sebs_transaction_level_pipeline'
+
+    raw:
+      +schema: "raw"
+      +materialized: table
+      +enabled: true
+      +tags:
+       - raw
+    staging:
+      +schema: "staging"
+      +materialized: table
+      +tags:
+        - staging
+    presentation:
+      +schema: "presentation"
+      +materialized: table
+      +tags:
+        - presentation
+
+ 
+
+
+
+
+
+
+
