@@ -8,6 +8,11 @@ dbt_target: poc
 jobs:
   - name: analytics-dbt-dev
     schedule: 0 8 * * 1
+    select_criteria: "tag:raw tag:staging tag:presentation"
+
+  - name: country-enrichment-dev
+    schedule: 0 8 * * 2
+    select_criteria: tag:country_enrichment
 
   - name: daily-incremental-run-dev
     schedule: 0 9 * * *

@@ -5,7 +5,7 @@
         'data_type': 'timestamp',
         'granularity': 'day'
     },
-    tags=['enrichment', 'country_history']
+    tags=['country_enrichment', 'country_history']
 ) }}
 
 WITH source_determination AS (

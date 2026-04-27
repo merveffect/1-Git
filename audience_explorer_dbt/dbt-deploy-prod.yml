@@ -8,6 +8,11 @@ dbt_target: prod
 jobs:
   - name: analytics-dbt-prod
     schedule: 0 8 * * 1
+    select_criteria: "tag:raw tag:staging tag:presentation"
+
+  - name: country-enrichment-prod
+    schedule: 0 8 * * 2
+    select_criteria: tag:country_enrichment
 
 
 
