@@ -1,0 +1,36 @@
+version: 2
+
+sources:      
+  - name: funnel_exports
+    database: snproject-cbb9ca25
+    schema: funnel_exports
+    tables:
+      - name: transactions_ga
+      - description: "Funnel export table containing transaction-level data"
+
+  - name: b2b_e2e_report
+    database: snproject-cbb9ca25
+    schema: b2b_e2e_report
+    tables:
+      - name: b2b_sebs_final_static
+        description: "Funnel export static table containing transaction-level data for B2B SEBS analytics pipeline."
+      - name: j1_mktp_b2b_final
+
+  - name: ae_metadata
+    database: dat-analytics-eng-ec869189
+    schema: ae_metadata
+    tables:
+      - name: channel_groupings
+        description: "Channel groupings table containing mapping of traffic source mediums to channel groupings for accurate channel attribution in analytics pipelines."
+
+
+  - name: reference_data_presentation
+    database: datasn-tools-live
+    schema: reference_data_presentation
+    tables:
+      - name: full_location_standard
+        description: "SN location table containing standardized country and region information"
+
+  
+
+

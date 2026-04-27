@@ -232,6 +232,11 @@ CAST(list_imprints_90_days AS STRING) AS list_imprints_90_days,
 --26/03/2026 added columns
 CAST(audience_check_optin AS BOOL) AS audience_check_optin,
 CAST(most_seen_ip_country AS STRING) AS most_seen_ip_country
+
+-- 27/04/2026 added columns
+CAST(interested_journal_ids_90 AS STRING) AS interested_journal_ids_90,
+CAST(head_of_faculty_proxy AS BOOL) AS head_of_faculty_proxy
+
   from {{ ref('stg_hashing_pii') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id

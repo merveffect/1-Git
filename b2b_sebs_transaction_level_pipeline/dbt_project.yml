@@ -1,7 +1,7 @@
-name: 'b2b_sebs_transaction_level_pipeline_dbt'
+name: 'b2b_sebs_transaction_level_pipeline'
 version: '1.0.0'
 
-profile: 'b2b_sebs_transaction_level_pipeline_dbt'
+profile: 'b2b_sebs_transaction_level_pipeline'
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -18,7 +18,7 @@ models:
   +persist_docs:
     relation: true
     columns: true
-  b2b_sebs_transaction_level_pipeline_dbt:
+  b2b_sebs_transaction_level_pipeline:
     +tags: 'b2b_sebs_transaction_level_pipeline'
 
     raw:

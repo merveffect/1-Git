@@ -1,15 +1,15 @@
 SELECT
-  SUM(cost) AS cost,
-  SUM(clicks) AS clicks,
-  SUM(impressions) AS impressions,
-  date AS cost_date,
-  campaign AS cost_campaign,
-  source AS cost_source,
-  medium AS cost_medium,
-  sub_channels AS cost_sub_channels,
-  main_channels AS cost_main_channels,
-  isoalphatwo AS cost_isoalphatwo,
-  world_region AS cost_world_region
+SUM(cost) AS cost,
+SUM(clicks) AS clicks,
+SUM(impressions) AS impressions,
+date AS cost_date,
+campaign AS cost_campaign,
+source AS cost_source,
+medium AS cost_medium,
+sub_channels AS cost_sub_channels,
+main_channels AS cost_main_channels,
+isoalphatwo AS cost_isoalphatwo,
+world_region AS cost_world_region
 FROM {{ ref('j1_mktp_b2b') }}
 WHERE date > '2024-04-01'
 -- FROM `snproject-cbb9ca25.ga4_ria_researcher_report.j1_mktp`

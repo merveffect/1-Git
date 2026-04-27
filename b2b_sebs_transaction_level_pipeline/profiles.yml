@@ -1,4 +1,4 @@
-b2b_sebs_transaction_level_pipeline_dbt:
+b2b_sebs_transaction_level_pipeline:
   target: dev
   outputs:
     dev:  # gcp environment
