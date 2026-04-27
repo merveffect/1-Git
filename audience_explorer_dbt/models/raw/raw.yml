@@ -9,3 +9,8 @@ models:
         tests:
          - not_null:
              severity: error
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - canonical_segment_id
+            - name
