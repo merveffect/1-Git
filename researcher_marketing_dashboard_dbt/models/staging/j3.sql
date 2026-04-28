@@ -75,6 +75,7 @@ WITH
     ejp_submission_start,
     ejp_submission_complete,
     nav_sign_up_for_alerts,
+    signup_etoc,
     cost,
     clicks,
     impressions
