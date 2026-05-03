@@ -5,6 +5,7 @@
     cluster_by = ["publisher_name", "publication_type", "pub_year"]
  )}}
 
+
 WITH
 doi_map AS (
   SELECT
