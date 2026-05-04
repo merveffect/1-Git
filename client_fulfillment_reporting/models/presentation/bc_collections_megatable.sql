@@ -13,7 +13,7 @@
 SELECT
   COALESCE(a.evt_date, b.evt_date, c.evt_date) AS evt_date,
   COALESCE(a.page_path, b.page_path, c.page_path) AS page_path,
-  d.collection_id,
+  b.collection_id, -- exploded ids 
 
 -- Metrics
   a.event_data,
@@ -34,13 +34,18 @@ SELECT
   e.date_range_start AS wf_date_range_start,
   e.collection_title AS wf_collection_title
 
-FROM {{ ref('stg_collections_ga_events') }} AS a
-FULL JOIN {{ ref('stg_collections_ga_pageview') }} AS b
-  USING (evt_date, page_path)
-FULL JOIN {{ ref('stg_collections_ga_users') }} AS c
-  USING (evt_date, page_path)
-INNER JOIN {{ ref('stg_gsheet_wf_metadata') }} AS d
-  USING (page_path)
+ FROM {{ref('stg_collections_ga_pageview')}} AS b
+LEFT JOIN {{ref('stg_collections_ga_events')}} AS a
+
+ON b.evt_date = a.evt_date
+AND b.page_path = a.page_path
+LEFT JOIN {{ref('stg_collections_ga_users')}} AS c
+ON b.evt_date = c.evt_date
+AND b.page_path = c.page_path
+
+LEFT JOIN {{ref('stg_gsheet_wf_metadata')}} AS d
+ON b.collection_id = d.collection_id
+AND b.page_path = d.page_path
 
 LEFT JOIN (
     SELECT *
@@ -51,14 +56,16 @@ LEFT JOIN (
             (NULLIF(TRIM(collection_title), '') IS NOT NULL AND collection_title != collection_id) DESC,
             (NULLIF(TRIM(collection_title), '') IS NOT NULL) DESC
     ) = 1
-      ) AS e ON d.collection_id = e.collection_id
+) AS e ON b.collection_id = e.collection_id
+
+WHERE (d.collection_id IS NOT NULL OR e.collection_id IS NOT NULL)
 
 {% if is_incremental() %}
     -- 1. Start: Look back 3 days from the current max date to catch late-arriving data/gaps
-        WHERE COALESCE(a.evt_date, b.evt_date, c.evt_date) >= (
+    AND b.evt_date >= (
         SELECT DATE_SUB(MAX(evt_date), INTERVAL 3 DAY) 
         FROM {{ this }}
     )
     -- 2. End: Exclude the last 2 days (Today and Yesterday) to ensure data is fully processed in GA4
-        AND COALESCE(a.evt_date, b.evt_date, c.evt_date) < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+    AND b.evt_date < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
 {% endif %}
