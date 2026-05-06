@@ -3,6 +3,7 @@
     tags= ["monthly"]
 )}}
 
+
 SELECT DISTINCT
   COALESCE(NULLIF(Item_DOI, ''), NULLIF(DOI, '')) AS Item_DOI, 
   Bk_eBook_ISBN,
