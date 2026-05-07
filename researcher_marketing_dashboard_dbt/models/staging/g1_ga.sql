@@ -162,7 +162,7 @@ SELECT
     WHEN sub_channels LIKE "%external display%" THEN "external display"
     WHEN sub_channels LIKE "%internal display%" THEN "internal display"
     WHEN sub_channels LIKE "%affiliate%" THEN "affiliate"
-    WHEN sub_channels IN ("ai seo", "traditional seo") THEN "seo"
+    WHEN sub_channels IN ("ai seo", "traditional seo","scholar seo") THEN "seo"
     ELSE "other channels"
 END
   AS main_channels,
