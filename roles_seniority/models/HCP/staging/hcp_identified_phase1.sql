@@ -6,7 +6,7 @@ WITH composite AS (
       (role_score * 0.50)
       + (org_score  * 0.30)
       + (dept_score * 0.20),
-    4) AS hcp_phase1_score
+    4) AS employment_score
   FROM {{ ref('hcp_orcid_employment_scored') }}
 ),
 
@@ -15,9 +15,42 @@ ranked AS (
     *,
     ROW_NUMBER() OVER (
       PARTITION BY snid
-      ORDER BY hcp_phase1_score DESC, full_start_date DESC NULLS LAST
+      ORDER BY
+        CASE WHEN full_end_date IS NULL THEN 0 ELSE 1 END ASC,
+        full_end_date DESC NULLS LAST,
+        full_start_date DESC NULLS LAST
     ) AS rn
   FROM composite
+),
+
+latest_education AS (
+  SELECT snid, education_score
+  FROM (
+    SELECT
+      snid,
+      education_score,
+      ROW_NUMBER() OVER (
+        PARTITION BY snid
+        ORDER BY
+          CASE WHEN full_end_date IS NULL THEN 0 ELSE 1 END ASC,
+          full_end_date DESC NULLS LAST,
+          full_start_date DESC NULLS LAST
+      ) AS rn
+    FROM {{ ref('hcp_education_scored') }}
+  )
+  WHERE rn = 1
+),
+
+final AS (
+  SELECT
+    r.*,
+    COALESCE(e.education_score, 0) AS education_score,
+    ROUND(LEAST(1.0,
+      r.employment_score + (COALESCE(e.education_score, 0) * 0.20)
+    ), 4) AS hcp_phase1_score
+  FROM ranked r
+  LEFT JOIN latest_education e ON r.snid = e.snid
+  WHERE r.rn = 1
 )
 
 SELECT
@@ -32,6 +65,8 @@ SELECT
   role_score,
   org_score,
   dept_score,
+  employment_score,
+  education_score,
   hcp_phase1_score,
   CASE
     WHEN hcp_phase1_score >= 0.60 THEN 'CONFIRMED_HCP_CANDIDATE'
@@ -39,6 +74,4 @@ SELECT
     ELSE                               'NON_HCP'
   END                  AS phase1_label,
   CURRENT_TIMESTAMP()  AS pipeline_run_ts
-
-FROM ranked
-WHERE rn = 1
+FROM final

@@ -7,9 +7,9 @@ SELECT
     WHEN 'PROBABLE_HCP'  THEN 'PROBABLE'
   END                   AS hcp_confidence_tier,
   final_label           AS phase_label,
-  combined_hcp_score    AS hcp_score,
+  combined_hcp_score       AS hcp_score,
   hcp_phase1_score,
-  cdp_behavioral_score,
+  hcp_subject_overlap_ratio,
   orcid_role,
   orcid_organisation,
   orcid_department,
