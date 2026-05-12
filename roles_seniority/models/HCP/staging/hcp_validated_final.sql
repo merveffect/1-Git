@@ -18,6 +18,7 @@ SELECT
   country_code,
   hcp_phase1_score,
   phase1_label,
+  hcp_bucket,
   hcp_label_matches,
   total_snt_labels,
   hcp_subject_overlap_ratio,

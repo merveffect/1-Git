@@ -10,6 +10,7 @@ SELECT
   combined_hcp_score       AS hcp_score,
   hcp_phase1_score,
   hcp_subject_overlap_ratio,
+  hcp_bucket,
   orcid_role,
   orcid_organisation,
   orcid_department,

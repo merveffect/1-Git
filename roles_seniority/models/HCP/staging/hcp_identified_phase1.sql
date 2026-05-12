@@ -68,6 +68,7 @@ SELECT
   employment_score,
   education_score,
   hcp_phase1_score,
+  hcp_bucket,
   CASE
     WHEN hcp_phase1_score >= 0.60 THEN 'CONFIRMED_HCP_CANDIDATE'
     WHEN hcp_phase1_score >= 0.30 THEN 'PROBABLE_HCP'

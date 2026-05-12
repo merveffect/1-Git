@@ -7,6 +7,7 @@ SELECT
   p1.country_code,
   p1.hcp_phase1_score,
   p1.phase1_label,
+  p1.hcp_bucket,
   COALESCE(sub.hcp_label_matches, 0) AS hcp_label_matches,
   COALESCE(sub.total_snt_labels, 0)  AS total_snt_labels,
   sub.all_snt_labels,

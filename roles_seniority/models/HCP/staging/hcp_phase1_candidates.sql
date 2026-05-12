@@ -8,6 +8,7 @@ SELECT
   orcid_department,
   country_code,
   hcp_phase1_score,
-  phase1_label
+  phase1_label,
+  hcp_bucket
 FROM {{ ref('hcp_identified_phase1') }}
 WHERE phase1_label IN ('CONFIRMED_HCP_CANDIDATE', 'PROBABLE_HCP')
