@@ -235,7 +235,12 @@ CAST(most_seen_ip_country AS STRING) AS most_seen_ip_country,
 
 -- 27/04/2026 added columns
 CAST(interested_journal_ids_90 AS STRING) AS interested_journal_ids_90,
-CAST(head_of_faculty_proxy AS BOOL) AS head_of_faculty_proxy
+CAST(head_of_faculty_proxy AS BOOL) AS head_of_faculty_proxy,
+
+-- 12/05/2026 added columns
+CAST(nature_careers_journey_eligible AS BOOL) AS nature_careers_journey_eligible,
+CAST(competitor_book_author_not_sn_yet AS BOOL) AS competitor_book_author_not_sn_yet,
+CAST(reentering_journal_nurture AS BOOL) AS reentering_journal_nurture
 
   from {{ ref('stg_hashing_pii') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
