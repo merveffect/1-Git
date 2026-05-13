@@ -7,7 +7,7 @@ dbt_target: prod
 
 jobs:
   - name: analytics-dbt-prod
-    schedule: 0 8 * * 1
+    schedule: 0 8 * * *
 
 
 
