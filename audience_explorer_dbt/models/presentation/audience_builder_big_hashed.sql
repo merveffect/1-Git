@@ -240,7 +240,14 @@ CAST(head_of_faculty_proxy AS BOOL) AS head_of_faculty_proxy,
 -- 12/05/2026 added columns
 CAST(nature_careers_journey_eligible AS BOOL) AS nature_careers_journey_eligible,
 CAST(competitor_book_author_not_sn_yet AS BOOL) AS competitor_book_author_not_sn_yet,
-CAST(reentering_journal_nurture AS BOOL) AS reentering_journal_nurture
+CAST(reentering_journal_nurture AS BOOL) AS reentering_journal_nurture,
+
+-- 13/05/2026 added columns
+CAST(nmo_completed_courses AS STRING) AS nmo_completed_courses,
+CAST(nmo_id AS STRING) AS nmo_id,
+CAST(nmo_region AS STRING) AS nmo_region,
+CAST(nmo_registered_courses AS STRING) AS nmo_registered_courses,
+CAST(nmo_user_license AS STRING) AS nmo_user_license
 
   from {{ ref('stg_hashing_pii') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
