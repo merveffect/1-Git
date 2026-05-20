@@ -10,7 +10,7 @@ sub_channels AS cost_sub_channels,
 main_channels AS cost_main_channels,
 isoalphatwo AS cost_isoalphatwo,
 world_region AS cost_world_region
-FROM {{ ref('j1_mktp_b2b') }}
+FROM {{ source('b2b_e2e_report', 'j1_mktp_b2b_final') }}
 WHERE date > '2024-04-01'
 -- FROM `snproject-cbb9ca25.ga4_ria_researcher_report.j1_mktp`
 -- WHERE date between DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY) and DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
