@@ -33,6 +33,11 @@ models:
         +materialized: table
         +tags: staging
 
+      intermediate:
+        +schema: "int_hcp"
+        +materialized: table
+        +tags: intermediate
+
       presentation:
         +schema: "presentation_hcp"
         +materialized: table
