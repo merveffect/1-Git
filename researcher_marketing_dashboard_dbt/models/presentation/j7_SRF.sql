@@ -27,6 +27,7 @@
   research_marketing_activity,
   workspace_category,
   primary_campaign_goal,
+  signup_etoc,
   SUM(Sessions) AS Sessions,
   SUM(EngagedSessions) AS EngagedSessions,
   SUM(ELS) AS ELS,
