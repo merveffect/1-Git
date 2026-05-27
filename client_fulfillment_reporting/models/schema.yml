@@ -1,0 +1,50 @@
+models:
+  - name: bc_collections_megatable
+    description: Final collections reporting table at (evt_date, page_path, collection_id) grain.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - evt_date
+            - page_path
+            - collection_id
+    columns:
+      - name: evt_date
+        tests:
+          - not_null
+      - name: page_path
+        tests:
+          - not_null
+      - name: collection_id
+        tests:
+          - not_null
+
+  - name: raw_bc_collections_article_google_sheets_metadata
+    description: Raw metadata from the BC collections article Google Sheet source.
+
+  - name: raw_ga4_base_event_data
+    description: Raw GA4 base event-level data for client fulfillment reporting.
+
+  - name: raw_ga4_base_pageview_data
+    description: Raw GA4 base pageview-level data for client fulfillment reporting.
+
+  - name: raw_ga4_user_logs
+    description: Raw GA4 user log data used as input for client fulfillment reporting models.
+
+  - name: raw_workfront_metadata
+    description: Workfront metadata table used for project details.
+    
+
+  - name: stg_collections_ga_events
+    description: Staging table that groups GA4 event-level metrics by page path and event date.
+
+  - name: stg_collections_ga_pageview
+    description: Staging table that groups GA4 pageview metrics by page path and event date.
+
+  - name: stg_collections_ga_users
+    description: Staging table that aggregates GA4 users by page path and event date.
+
+  - name: stg_ga4_exploded_collection_ids
+    description: Staging table that explodes semicolon-delimited collection IDs from GA4 pageview data into one row per collection ID.
+
+  - name: stg_gsheet_wf_metadata
+    description: Staging copy of Google Sheets Workfront metadata used by the collections pipeline.
