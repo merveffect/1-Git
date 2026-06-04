@@ -25,7 +25,7 @@ sources:
   - name: prod_subject_based_segmentation_presentation
     database: dat-analytics-eng-ec869189
     schema: prod_subject_based_segmentation_presentation
-    tables: 
+    tables:
       - name: snid_to_mktps_step2
         description: "Subject based segmentation final table containing subject information for researchers based on their publication history."
 

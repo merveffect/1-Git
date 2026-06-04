@@ -1,9 +1,6 @@
 select 
 snid, 
 role, 
-mkt_pref_opt_in,
-is_legitimate_interest_author_opted_in,
-advertising_opt_in,
 list_article_title_from_readership,
 list_article_title_from_view, 
 list_keywords_dois_last_60_d,

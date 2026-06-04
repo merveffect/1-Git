@@ -1,4 +1,8 @@
--- Combine Phase 1 candidate data with subject overlap metrics.
+{{ config(materialized='table') }}
+
+-- Combines Phase 1 ORCID score with Phase 2 behavioral score.
+-- combined_hcp_score = 0.70 × phase1_score + 0.30 × behavioral_score
+
 SELECT
   p1.snid,
   p1.orcid_role,
@@ -8,15 +12,11 @@ SELECT
   p1.hcp_phase1_score,
   p1.phase1_label,
   p1.hcp_bucket,
-  COALESCE(sub.hcp_label_matches, 0) AS hcp_label_matches,
-  COALESCE(sub.total_snt_labels, 0)  AS total_snt_labels,
-  sub.all_snt_labels,
-  ROUND(
-    SAFE_DIVIDE(
-      COALESCE(sub.hcp_label_matches, 0),
-      NULLIF(COALESCE(sub.total_snt_labels, 0), 0)
-    ), 4
-  ) AS hcp_subject_overlap_ratio
+  COALESCE(b.behavioral_score,      0) AS behavioral_score,
+  COALESCE(b.clinical_subject_flag, 0) AS clinical_subject_flag,
+  COALESCE(b.bmc_imprint_flag,      0) AS bmc_imprint_flag,
+  COALESCE(b.etoc_flag,             0) AS etoc_flag,
+  COALESCE(b.oa_articles_score,     0) AS oa_articles_score
 
 FROM {{ ref('hcp_phase1_candidates') }} p1
-LEFT JOIN {{ ref('hcp_candidate_subjects') }} sub ON p1.snid = sub.snid
+LEFT JOIN {{ ref('hcp_behavioral_score') }} b ON p1.snid = b.snid
