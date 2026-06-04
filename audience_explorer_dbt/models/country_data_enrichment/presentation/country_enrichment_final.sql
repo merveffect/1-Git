@@ -6,6 +6,7 @@
 WITH latest_records AS (
     SELECT 
         canonical_segment_id,
+        iso_code,
         calculated_country,
         enrichment_source,
         is_enriched,
@@ -20,15 +21,13 @@ WITH latest_records AS (
 SELECT
     -- 1. Enrichment data from history table (latest record per canonical_segment_id)
     latest.canonical_segment_id,
+    audience.snid,
+    audience.email,
+    latest.iso_code,
     latest.calculated_country AS country,
     latest.enrichment_source,
     latest.is_enriched,
-    latest.enrichment_timestamp AS last_enriched_at,
-
-    -- Attributes from audience_builder_big for reference 
-    audience.snid,
-    audience.email,
-    audience.country AS original_raw_cdp_country
+    latest.enrichment_timestamp AS last_enriched_at
 
 FROM latest_records AS latest
 INNER JOIN {{ ref('audience_builder_big') }} AS audience 
@@ -36,3 +35,4 @@ INNER JOIN {{ ref('audience_builder_big') }} AS audience
 
 -- 3. Market preference filter to ensure we only include relevant records in the final presentation layer
 WHERE audience.mkt_pref_opt_in = TRUE
+and enrichment_source != 'UNKNOWN' -- Exclude records where enrichment was attempted but no source could be determined

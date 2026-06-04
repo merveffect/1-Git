@@ -46,10 +46,12 @@ unit_tests:
 
       - input: ref('stg_country_enrichment_mapping_location_data')
         rows:
-          - {generated_tld: '.uk', standard_name: 'United Kingdom', alpha_2_code: 'UK'}
+          - {generated_tld: '.uk', standard_name: 'United Kingdom', alpha_2_code: 'GB'}
           - {generated_tld: '.fr', standard_name: 'France',         alpha_2_code: 'FR'}
           - {generated_tld: null,  standard_name: 'Japan',          alpha_2_code: 'JP'}
           - {generated_tld: null,  standard_name: 'Italy',          alpha_2_code: 'IT'}
+          # Germany row needed for ORIGINAL_DATA and ROR iso lookups
+          - {generated_tld: '.de', standard_name: 'Germany',        alpha_2_code: 'DE'}
 
       - input: ref('stg_country_enrichment_ror_data')
         rows:
@@ -58,14 +60,14 @@ unit_tests:
 
     expect:
       rows:
-        # USER_1: Has everything. ORIGINAL_DATA (Germany) must win.
-        - {canonical_segment_id: 'USER_1', calculated_country: 'Germany', enrichment_source: 'ORIGINAL_DATA', is_enriched: false}
-        # USER_2: No original. TLD (.fr -> France) must win.
-        - {canonical_segment_id: 'USER_2', calculated_country: 'France',  enrichment_source: 'TLD', is_enriched: true}
-        # USER_3: No original/TLD. ROR (lara.lender@whu.edu -> Germany) must win.
-        - {canonical_segment_id: 'USER_3', calculated_country: 'Germany', enrichment_source: 'ROR', is_enriched: true}
-        # USER_4: Only IP available. IP (it -> Italy) must win.
-        - {canonical_segment_id: 'USER_4', calculated_country: 'Italy',   enrichment_source: 'IP', is_enriched: true}
+        # USER_1: Has everything. ORIGINAL_DATA (Germany) must win. ISO: DE
+        - {canonical_segment_id: 'USER_1', calculated_country: 'Germany', enrichment_source: 'ORIGINAL_DATA', is_enriched: false, iso_code: 'DE'}
+        # USER_2: No original. TLD (.fr -> France) must win. ISO: FR
+        - {canonical_segment_id: 'USER_2', calculated_country: 'France',  enrichment_source: 'TLD', is_enriched: true, iso_code: 'FR'}
+        # USER_3: No original/TLD. ROR (lara.lender@whu.edu -> Germany) must win. ISO: DE
+        - {canonical_segment_id: 'USER_3', calculated_country: 'Germany', enrichment_source: 'ROR', is_enriched: true, iso_code: 'DE'}
+        # USER_4: Only IP available. IP (it -> Italy) must win. ISO: IT
+        - {canonical_segment_id: 'USER_4', calculated_country: 'Italy',   enrichment_source: 'IP', is_enriched: true, iso_code: 'IT'}
 
 
 
@@ -84,8 +86,8 @@ unit_tests:
       
       - input: ref('stg_country_enrichment_mapping_location_data')
         rows:
-          - {generated_tld: '.uk', standard_name: 'United Kingdom'}
-          - {generated_tld: '.de', standard_name: 'Germany'}
+          - {generated_tld: '.uk', standard_name: 'United Kingdom', alpha_2_code: 'GB'}
+          - {generated_tld: '.de', standard_name: 'Germany',        alpha_2_code: 'DE'}
 
       - input: ref('stg_country_enrichment_ror_data')
         rows:
@@ -93,8 +95,8 @@ unit_tests:
 
     expect:
       rows:
-        - {canonical_segment_id: 'ID_1', enrichment_source: 'TLD', is_enriched: true}
-        - {canonical_segment_id: 'ID_2', enrichment_source: 'ORIGINAL_DATA', is_enriched: false}
+        - {canonical_segment_id: 'ID_1', enrichment_source: 'TLD', is_enriched: true, iso_code: 'GB'}
+        - {canonical_segment_id: 'ID_2', enrichment_source: 'ORIGINAL_DATA', is_enriched: false, iso_code: 'DE'}
 
 
 

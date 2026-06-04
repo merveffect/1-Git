@@ -4,7 +4,7 @@
         'field': 'enrichment_timestamp',
         'data_type': 'timestamp',
         'granularity': 'day'
-    },
+        },
     tags=['country_enrichment', 'country_history']
 ) }}
 
@@ -15,8 +15,12 @@ WITH source_determination AS (
         country_enrichment_tld_extract.most_seen_ip_country,
 
         mapping_location_data.standard_name AS tld_country,
+        mapping_location_data.alpha_2_code AS tld_iso_code,
         ror_domains.ror_country AS ror_country,
         mapping_location_data_ip.standard_name AS ip_country,
+        mapping_location_data_ip.alpha_2_code AS ip_iso_code,
+        mapping_location_data_ror.alpha_2_code AS ror_iso_code,
+        mapping_location_data_original.alpha_2_code AS original_iso_code,
         
         CASE 
             WHEN country_enrichment_tld_extract.original_raw_cdp_country IS NOT NULL THEN 'ORIGINAL_DATA'
@@ -33,12 +37,24 @@ WITH source_determination AS (
         ON country_enrichment_tld_extract.email_domain = ror_domains.domain
     LEFT JOIN {{ ref('stg_country_enrichment_mapping_location_data') }} AS mapping_location_data_ip
         ON UPPER(country_enrichment_tld_extract.most_seen_ip_country) = mapping_location_data_ip.alpha_2_code
+    LEFT JOIN {{ ref('stg_country_enrichment_mapping_location_data') }} AS mapping_location_data_ror
+        ON UPPER(TRIM(ror_domains.ror_country)) = UPPER(TRIM(mapping_location_data_ror.standard_name))
+    LEFT JOIN {{ ref('stg_country_enrichment_mapping_location_data') }} AS mapping_location_data_original
+        ON UPPER(TRIM(country_enrichment_tld_extract.original_raw_cdp_country)) = UPPER(TRIM(mapping_location_data_original.standard_name))
 ),
 
 final_records AS (
 SELECT
 canonical_segment_id,
 enrichment_source,
+
+CASE
+    WHEN enrichment_source = 'ORIGINAL_DATA' THEN original_iso_code
+    WHEN enrichment_source = 'TLD' THEN tld_iso_code
+    WHEN enrichment_source = 'ROR' THEN ror_iso_code
+    WHEN enrichment_source = 'IP' THEN ip_iso_code
+    ELSE NULL
+END AS iso_code,
 
 CASE
     WHEN enrichment_source = 'ORIGINAL_DATA' THEN original_raw_cdp_country
@@ -73,8 +89,10 @@ SELECT final.* FROM final_records AS final
     last_record.canonical_segment_id IS NULL 
     OR 
     -- 2. If the record exists, only update if there's a change in calculated country or enrichment source
-    final.calculated_country != last_record.calculated_country
+        COALESCE(final.calculated_country, '__NULL__') != COALESCE(last_record.calculated_country, '__NULL__')
     OR 
-    final.enrichment_source != last_record.enrichment_source
+        COALESCE(final.enrichment_source, '__NULL__') != COALESCE(last_record.enrichment_source, '__NULL__')
+        OR
+        COALESCE(final.iso_code, '__NULL__') != COALESCE(last_record.iso_code, '__NULL__')
 {% endif %}
 

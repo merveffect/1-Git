@@ -78,6 +78,9 @@ models:
       - name: calculated_country
         description: "Final country value selected from the enrichment hierarchy."
 
+      - name: iso_code
+        description: "ISO alpha-2 code mapped per selected enrichment tier (ORIGINAL_DATA/TLD/ROR/IP)."
+
       - name: enrichment_timestamp
         description: "Timestamp when the enrichment record was generated."
         tests:
@@ -97,6 +100,9 @@ models:
 
       - name: country
         description: "Latest enriched country value."
+
+      - name: iso_code
+        description: "Latest enriched ISO alpha-2 country code."
 
       - name: enrichment_source
         description: "Source used for the latest country assignment."
