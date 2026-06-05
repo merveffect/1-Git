@@ -229,8 +229,29 @@ CAST(scirep_repeat_visitors_and_submissions_opened AS BOOL) AS scirep_repeat_vis
 CAST(list_ip_country AS STRING) AS list_ip_country,
 CAST(list_imprints_90_days AS STRING) AS list_imprints_90_days,
 CAST(audience_check_optin AS BOOL) AS audience_check_optin,
-CAST(most_seen_ip_country AS STRING) AS most_seen_ip_country
+CAST(most_seen_ip_country AS STRING) AS most_seen_ip_country,
 
+-- 27/04/2026 added columns
+CAST(interested_journal_ids_90 AS STRING) AS interested_journal_ids_90,
+CAST(head_of_faculty_proxy AS BOOL) AS head_of_faculty_proxy,
+
+-- 12/05/2026 added columns
+CAST(nature_careers_journey_eligible AS BOOL) AS nature_careers_journey_eligible,
+CAST(competitor_book_author_not_sn_yet AS BOOL) AS competitor_book_author_not_sn_yet,
+CAST(reentering_journal_nurture AS BOOL) AS reentering_journal_nurture,
+
+-- 13/05/2026 added columns
+CAST(nmo_completed_courses AS STRING) AS nmo_completed_courses,
+CAST(nmo_id AS STRING) AS nmo_id,
+CAST(nmo_region AS STRING) AS nmo_region,
+CAST(nmo_registered_courses AS STRING) AS nmo_registered_courses,
+CAST(nmo_user_license AS STRING) AS nmo_user_license,
+CAST(test_predict_churn AS FLOAT64) AS test_predict_churn,
+CAST(nature_master_class_user AS BOOL) AS nature_master_class_user,
+
+-- 01/06/2026 added columns
+CAST(braze_canvas_clicked_last_1000_days AS STRING) AS braze_canvas_clicked_last_1000_days,
+CAST(braze_campaigns_clicked_last_1000_days AS STRING) AS braze_campaigns_clicked_last_1000_days
 
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags

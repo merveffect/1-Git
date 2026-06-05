@@ -90,6 +90,8 @@ WITH
     SUM(ejp_submission_start) AS ejp_submission_start,
     SUM(ejp_submission_complete) AS ejp_submission_complete,
     SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts,
+    SUM(signup_etoc) AS signup_etoc,
+
     CASE
       WHEN SUM(impressions) = 0 THEN NULL
       ELSE SUM(clicks) / NULLIF(SUM(impressions), 0)
@@ -125,6 +127,7 @@ WITH
       ejp_submission_start,
       ejp_submission_complete,
       nav_sign_up_for_alerts,
+      signup_etoc,
       cost,
       clicks,
       impressions ),
@@ -253,6 +256,13 @@ WITH
       ELSE nav_sign_up_for_alerts
   END
     AS nav_sign_up_for_alerts,
+
+CASE
+      WHEN signup_etoc IS NULL THEN 0
+      ELSE signup_etoc
+  END
+    AS signup_etoc,
+
     CASE
       WHEN cost IS NULL THEN 0
       ELSE cost

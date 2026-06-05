@@ -7,12 +7,14 @@ dbt_target: prod
 
 jobs:
   - name: analytics-dbt-prod
+
     schedule: 0 8 * * 1
     select_criteria: "path:models/raw path:models/staging path:models/presentation"
 
   - name: country-enrichment-prod
     schedule: 0 8 * * 2
     select_criteria: path:models/country_data_enrichment
+
 
 
 

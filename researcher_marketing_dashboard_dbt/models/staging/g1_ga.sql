@@ -66,7 +66,8 @@ SELECT
     ga4_source_readership,
     ga4_ejp_submission_start,
     ga4_ejp_submission_complete,
-    ga4_nav_sign_up_for_alerts ),
+    ga4_nav_sign_up_for_alerts,
+    ga4_signup_etoc ),
   COALESCE(b.sub_channels,
     CASE
       WHEN REGEXP_CONTAINS(a.source, r"^(?:[^.]+\.)?(chatgpt|perplexity|claude|mistral|copilot|blackbox|felo|andisearch|komo|waldo|deepseek|scienceos|consensus|jasper|gemini\.google|chat\.openai|meta|search.jina)\.(?:ai|com|fyi|app)$") THEN "ai seo"
@@ -115,7 +116,8 @@ SELECT
   -- added below 4 new events in the pipeline after quarterly channel grouping changes
   SUM(IFNULL(ga4_ejp_submission_start,0)) AS ejp_submission_start,
   SUM(IFNULL(ga4_ejp_submission_complete,0)) AS ejp_submission_complete,
-  SUM(IFNULL(ga4_nav_sign_up_for_alerts,0)) AS nav_sign_up_for_alerts
+  SUM(IFNULL(ga4_nav_sign_up_for_alerts,0)) AS nav_sign_up_for_alerts,
+  SUM(IFNULL(ga4_signup_etoc,0)) AS signup_etoc
 FROM
   base_data a
 LEFT JOIN
@@ -160,7 +162,7 @@ SELECT
     WHEN sub_channels LIKE "%external display%" THEN "external display"
     WHEN sub_channels LIKE "%internal display%" THEN "internal display"
     WHEN sub_channels LIKE "%affiliate%" THEN "affiliate"
-    WHEN sub_channels IN ("ai seo", "traditional seo") THEN "seo"
+    WHEN sub_channels IN ("ai seo", "traditional seo","scholar seo") THEN "seo"
     ELSE "other channels"
 END
   AS main_channels,

@@ -7,12 +7,15 @@ dbt_target: poc
 
 jobs:
   - name: analytics-dbt-dev
+
     schedule: 0 8 * * 1
     select_criteria: "path:models/raw path:models/staging path:models/presentation"
 
   - name: country-enrichment-dev
     schedule: 0 8 * * 2
     select_criteria: path:models/country_data_enrichment
+    
+    schedule: 0 8 * * *
 
   - name: daily-incremental-run-dev
     schedule: 0 9 * * *

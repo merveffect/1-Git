@@ -1,0 +1,20 @@
+version: 2
+
+sources:      
+  - name: PROD_IFM_Usage_C51
+    database: usage-data-reporting
+    schema: PROD_IFM_Usage_C51
+    tables:
+      - name: tbl_mat_monthly
+
+  - name: data_analytics_eu
+    database: dimensions-ai
+    schema: data_analytics_eu
+    tables:
+      - name: publications
+
+  - name: data_analytics_eu
+    database: dimensions-ai
+    schema: data_analytics_eu
+    tables:
+      - name: grid

@@ -37,6 +37,7 @@ models:
       +materialized: table
       +tags: presentation
 
+
     country_data_enrichment:
       +schema: "analytics_dbt_country_data_enrichment"
       +materialized: table
@@ -57,5 +58,6 @@ models:
         +tags: country_enrichment_presentation
 
         
+
 
 

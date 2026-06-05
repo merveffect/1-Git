@@ -20,3 +20,48 @@ models:
              severity: error
          - unique:
              severity: error
+
+  - name: stg_df_audience_explorer_base_2
+    description: "Staging model for audience explorer base 2"
+    columns:
+      - name: flag_column
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+              quote: false
+
+  - name: stg_df_audience_explorer_cleaned
+    description: "Staging model for cleaning and standardizing audience explorer data"
+    columns:
+      - name: canonical_segment_id
+        tests:
+         - not_null:
+             severity: error
+         - unique:
+             severity: error
+        
+  - name: stg_df_audience_explorer_id_flags
+    description: "Staging model for creating flag columns based on audience explorer data"
+    columns:
+      - name: canonical_segment_id
+        tests:
+         - not_null:
+             severity: error
+         - unique:
+             severity: error
+      - name: email_flag
+        tests:
+          - accepted_values:
+              values: [true, false]
+              quote: false
+
+  - name: stg_lifetime_aggregations
+    description: "Staging model parsing lifetime aggregations JSON into numeric metrics"
+    columns:
+      - name: canonical_segment_id
+        tests:
+         - not_null:
+             severity: error
+         - unique:
+             severity: error
