@@ -1,0 +1,103 @@
+unit_tests:
+  - name: test_tld_generation_logic
+    model: stg_country_enrichment_mapping_location_data
+    given:
+      - input: ref('raw_full_location_standard') 
+        rows:
+          - {alpha_2_code: 'GB', code_status: 'Current', springer_nature_data_standard_location_name: 'United Kingdom'}
+          - {alpha_2_code: 'US', code_status: 'Current', springer_nature_data_standard_location_name: 'United States'}
+          - {alpha_2_code: 'DE', code_status: 'Deprecated', springer_nature_data_standard_location_name: 'Germany'}
+    expect:
+      rows:
+        - {alpha_2_code: 'GB', generated_tld: '.uk', standard_name: 'United Kingdom'}
+        - {alpha_2_code: 'US', generated_tld: '.us', standard_name: 'United States'}
+
+
+  - name: test_email_parsing_logic
+    model: stg_country_enrichment_tld_extract
+    given:
+      - input: ref('audience_builder_big')
+        rows:
+          # Scenario 1: Academic email (Crucial for Tier 3 ROR)
+          - {email: 'researcher@ox.ac.uk', mkt_pref_opt_in: true, canonical_segment_id: 'ID_1'}
+          # Scenario 2: Standard commercial email (Crucial for Tier 2 TLD)
+          - {email: 'user@gmail.com', mkt_pref_opt_in: true, canonical_segment_id: 'ID_2'}
+
+    expect:
+      rows:
+        - {canonical_segment_id: 'ID_1', email_domain: 'ox.ac.uk', extracted_tld: '.uk'}
+        - {canonical_segment_id: 'ID_2', email_domain: 'gmail.com', extracted_tld: '.com'}
+
+
+
+  - name: test_enrichment_priority_logic
+    model: stg_country_enrichment_matches
+    overrides:
+     macros:
+      is_incremental: false
+    given:
+      # Mocking the audience data with various combinations of original country, TLD, and ROR information to test enrichment priority logic
+      - input: ref('stg_country_enrichment_tld_extract')
+        rows:
+          - {canonical_segment_id: 'USER_1', original_raw_cdp_country: 'Germany', extracted_tld: '.uk', email_domain: 'ox.ac.uk', most_seen_ip_country: 'tr'}
+          - {canonical_segment_id: 'USER_2', original_raw_cdp_country: null,    extracted_tld: '.fr', email_domain: 'test.fr', most_seen_ip_country: 'us'}
+          - {canonical_segment_id: 'USER_3', original_raw_cdp_country: null,    extracted_tld: null,  email_domain: 'lara.lender@whu.edu', most_seen_ip_country: 'jp'}
+          - {canonical_segment_id: 'USER_4', original_raw_cdp_country: null,    extracted_tld: null,  email_domain: null,      most_seen_ip_country: 'it'}
+
+      - input: ref('stg_country_enrichment_mapping_location_data')
+        rows:
+          - {generated_tld: '.uk', standard_name: 'United Kingdom', alpha_2_code: 'GB'}
+          - {generated_tld: '.fr', standard_name: 'France',         alpha_2_code: 'FR'}
+          - {generated_tld: null,  standard_name: 'Japan',          alpha_2_code: 'JP'}
+          - {generated_tld: null,  standard_name: 'Italy',          alpha_2_code: 'IT'}
+          # Germany row needed for ORIGINAL_DATA and ROR iso lookups
+          - {generated_tld: '.de', standard_name: 'Germany',        alpha_2_code: 'DE'}
+
+      - input: ref('stg_country_enrichment_ror_data')
+        rows:
+          - {domain: 'ox.ac.uk', ror_country: 'United Kingdom'}
+          - {domain: 'lara.lender@whu.edu',  ror_country: 'Germany'}
+
+    expect:
+      rows:
+        # USER_1: Has everything. ORIGINAL_DATA (Germany) must win. ISO: DE
+        - {canonical_segment_id: 'USER_1', calculated_country: 'Germany', enrichment_source: 'ORIGINAL_DATA', is_enriched: false, iso_code: 'DE'}
+        # USER_2: No original. TLD (.fr -> France) must win. ISO: FR
+        - {canonical_segment_id: 'USER_2', calculated_country: 'France',  enrichment_source: 'TLD', is_enriched: true, iso_code: 'FR'}
+        # USER_3: No original/TLD. ROR (lara.lender@whu.edu -> Germany) must win. ISO: DE
+        - {canonical_segment_id: 'USER_3', calculated_country: 'Germany', enrichment_source: 'ROR', is_enriched: true, iso_code: 'DE'}
+        # USER_4: Only IP available. IP (it -> Italy) must win. ISO: IT
+        - {canonical_segment_id: 'USER_4', calculated_country: 'Italy',   enrichment_source: 'IP', is_enriched: true, iso_code: 'IT'}
+
+
+
+  - name: test_is_enriched_logic
+    model: stg_country_enrichment_matches
+    overrides:
+     macros:
+      is_incremental: false
+    given:
+      - input: ref('stg_country_enrichment_tld_extract')
+        rows:
+          # Enriched case with TLD match
+          - {canonical_segment_id: 'ID_1', original_raw_cdp_country: null, extracted_tld: '.uk'}
+          # Non-enriched case (Source ORIGINAL or UNKNOWN)
+          - {canonical_segment_id: 'ID_2', original_raw_cdp_country: 'Germany', extracted_tld: '.de'}
+      
+      - input: ref('stg_country_enrichment_mapping_location_data')
+        rows:
+          - {generated_tld: '.uk', standard_name: 'United Kingdom', alpha_2_code: 'GB'}
+          - {generated_tld: '.de', standard_name: 'Germany',        alpha_2_code: 'DE'}
+
+      - input: ref('stg_country_enrichment_ror_data')
+        rows:
+          - {domain: 'example.edu', ror_country: 'United States'}
+
+    expect:
+      rows:
+        - {canonical_segment_id: 'ID_1', enrichment_source: 'TLD', is_enriched: true, iso_code: 'GB'}
+        - {canonical_segment_id: 'ID_2', enrichment_source: 'ORIGINAL_DATA', is_enriched: false, iso_code: 'DE'}
+
+
+
+        
