@@ -33,3 +33,10 @@ sources:
       - name: ror_raw_final
         description: "External ROR final table containing enriched organization information."
 
+
+  - name: devykw8828_cdi_presentation
+    database: cdp-data-55497fbb
+    schema: devykw8828_cdi_presentation
+    tables:
+      - name: segment_known_users_with_email
+        description: "Table containing known user segments with associated email addresses."

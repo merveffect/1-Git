@@ -18,3 +18,17 @@ models:
        tests:
          - not_null
          - unique
+
+  - name: audience_builder_known_users
+    description: This model includes only records where both canonical segment ID and email match with known users source data.
+    columns:
+     - name: canonical_segment_id
+       description: The canonical segment identifier matched with known users source segment_id.
+       tests:
+         - unique
+         - not_null
+     - name: email
+       description: The email address matched between audience_builder_big and known users source.
+       tests:
+         - unique
+         - not_null
