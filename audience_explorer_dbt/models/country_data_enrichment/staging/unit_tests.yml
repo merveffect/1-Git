@@ -99,5 +99,28 @@ unit_tests:
         - {canonical_segment_id: 'ID_2', enrichment_source: 'ORIGINAL_DATA', is_enriched: false, iso_code: 'DE'}
 
 
+  - name: test_final_email_dedup_prioritizes_known_users
+    model: stg_country_enrichment_final_email_dedup
+    given:
+      - input: ref('stg_country_enrichment_matches')
+        rows:
+          - {canonical_segment_id: 'CID_A', iso_code: 'GB', calculated_country: 'United Kingdom', enrichment_source: 'TLD', is_enriched: true, enrichment_timestamp: '2026-06-09 10:00:00'}
+          - {canonical_segment_id: 'CID_B', iso_code: 'US', calculated_country: 'United States', enrichment_source: 'IP', is_enriched: true, enrichment_timestamp: '2026-06-09 10:00:00'}
+          - {canonical_segment_id: 'CID_C', iso_code: 'DE', calculated_country: 'Germany', enrichment_source: 'TLD', is_enriched: true, enrichment_timestamp: '2026-06-09 10:00:00'}
 
-        
+      - input: ref('audience_builder_big')
+        rows:
+          - {canonical_segment_id: 'CID_A', snid: 'S_A', email: 'dup@example.com', mkt_pref_opt_in: true}
+          - {canonical_segment_id: 'CID_B', snid: 'S_B', email: 'dup@example.com', mkt_pref_opt_in: true}
+          - {canonical_segment_id: 'CID_C', snid: 'S_C', email: 'single@example.com', mkt_pref_opt_in: true}
+
+      - input: ref('audience_builder_known_users')
+        rows:
+          - {canonical_segment_id: 'CID_B', email: 'dup@example.com'}
+
+    expect:
+      rows:
+        - {canonical_segment_id: 'CID_B', snid: 'S_B', email: 'dup@example.com', iso_code: 'US', country: 'United States', enrichment_source: 'IP', is_enriched: true, last_enriched_at: '2026-06-09 10:00:00'}
+        - {canonical_segment_id: 'CID_C', snid: 'S_C', email: 'single@example.com', iso_code: 'DE', country: 'Germany', enrichment_source: 'TLD', is_enriched: true, last_enriched_at: '2026-06-09 10:00:00'}
+
+
