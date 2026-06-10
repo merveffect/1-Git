@@ -21,7 +21,14 @@ models:
       - name: country
         description: "Enriched country value"
       - name: enrichment_source
-        description: "Source used to determine country (ORIGINAL_DATA, TLD, ROR, IP, or UNKNOWN)."
+        description: "Source used to determine country. Only TLD, ROR, or IP are present; ORIGINAL_DATA and UNKNOWN are filtered out in the WHERE clause."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TLD', 'ROR', 'IP']
+              config:
+                severity: error
+              
       - name: is_enriched
         description: "Boolean flag indicating whether country was enriched from a non-original source."
       - name: last_enriched_at
@@ -131,7 +138,13 @@ models:
         description: "Latest enriched ISO alpha-2 country code."
 
       - name: enrichment_source
-        description: "Source used for the latest country assignment."
+        description: "Source used for the latest country assignment. Only TLD, ROR, or IP are valid after deduplication and filtering."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TLD', 'ROR', 'IP']
+              config:
+                severity: error
 
       - name: is_enriched
         description: "Boolean flag indicating whether the record was enriched."
