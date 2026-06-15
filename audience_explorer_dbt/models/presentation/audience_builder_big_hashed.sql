@@ -254,7 +254,7 @@ CAST(nature_master_class_user AS BOOL) AS nature_master_class_user,
 
 -- 01/06/2026 added columns
 CAST(braze_canvas_clicked_last_1000_days AS STRING) AS braze_canvas_clicked_last_1000_days,
-CAST(braze_campaigns_clicked_last_1000_days AS STRING) AS braze_campaigns_clicked_last_1000_days
+CAST(braze_campaigns_clicked_last_1000_days AS STRING) AS braze_campaigns_clicked_last_1000_days,
 
 -- 15/06/2026 added columns
 CAST(gl_externaldiplay_young_journals AS BOOL) AS gl_externaldiplay_young_journals
