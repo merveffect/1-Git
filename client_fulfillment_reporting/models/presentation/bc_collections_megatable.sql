@@ -49,35 +49,59 @@ cid_matched AS (
   WHERE gs.collection_id IS NOT NULL OR wf.collection_id IS NOT NULL
 ),
 
--- (page_path, evt_date) where no GA4 collection_id matched at all
-unmatched AS (
-  SELECT DISTINCT pv.page_path, pv.evt_date
-  FROM pageview pv
-  LEFT JOIN cid_matched cm
-    ON pv.page_path = cm.page_path AND pv.evt_date = cm.evt_date
-  WHERE cm.page_path IS NULL
+-- (page_path, evt_date) pairs where at least one collection_id matched gsheet or workfront
+pages_with_match AS (
+  SELECT DISTINCT page_path, evt_date FROM cid_matched
 ),
 
--- Fallback: assign gsheet collection_id via page_path, re-aggregate pageview_data
+-- All (page_path, evt_date, collection_id) triples from GA4 that did NOT match gsheet or workfront
+all_unmatched AS (
+  SELECT DISTINCT pv.page_path, pv.evt_date, pv.collection_id
+  FROM pageview pv
+  LEFT JOIN cid_matched cm
+    ON pv.page_path = cm.page_path
+    AND pv.evt_date = cm.evt_date
+    AND pv.collection_id = cm.collection_id
+  WHERE cm.collection_id IS NULL
+),
+
+-- Fallback: for pages with ZERO matched collection_ids, assign gsheet collection_id via page_path
+-- and re-aggregate all pageview_data for that (page_path, evt_date) under the gsheet collection_id
 fallback AS (
   SELECT
     u.page_path,
     u.evt_date,
     gs.collection_id,
     pv_agg.pageview_data
-  FROM unmatched u
+  FROM (SELECT DISTINCT page_path, evt_date FROM all_unmatched) u
+  LEFT JOIN pages_with_match pm ON u.page_path = pm.page_path AND u.evt_date = pm.evt_date
   INNER JOIN gsheet gs ON u.page_path = gs.page_path
   INNER JOIN (
     SELECT page_path, evt_date, ARRAY_CONCAT_AGG(pageview_data) AS pageview_data
     FROM pageview
     GROUP BY page_path, evt_date
   ) pv_agg ON u.page_path = pv_agg.page_path AND u.evt_date = pv_agg.evt_date
+  WHERE pm.page_path IS NULL  -- only pages where NO collection_id matched at all
+),
+
+-- Unmatched collection_ids from pages that DO have other matched collection_ids
+-- These are preserved as-is with their own per-collection_id pageview_data
+partial_unmatched AS (
+  SELECT u.page_path, u.evt_date, u.collection_id, pv.pageview_data
+  FROM all_unmatched u
+  INNER JOIN pages_with_match pm ON u.page_path = pm.page_path AND u.evt_date = pm.evt_date
+  INNER JOIN pageview pv
+    ON u.page_path = pv.page_path
+    AND u.evt_date = pv.evt_date
+    AND u.collection_id = pv.collection_id
 ),
 
 scope AS (
   SELECT page_path, evt_date, collection_id, pageview_data FROM cid_matched
   UNION ALL
   SELECT page_path, evt_date, collection_id, pageview_data FROM fallback
+  UNION ALL
+  SELECT page_path, evt_date, collection_id, pageview_data FROM partial_unmatched
 )
 
 SELECT
