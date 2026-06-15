@@ -1,6 +1,39 @@
 version: 2
 
 models:
+  - name: stg_country_enrichment_final_email_dedup
+    description: "Staging model that resolves duplicate emails in country enrichment output by prioritizing canonical_segment_id matches found in audience_builder_known_users."
+    columns:
+      - name: canonical_segment_id
+        description: "Selected canonical segment identifier after duplicate-email resolution."
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "Deduplicated email in the pre-final enrichment dataset."
+        tests:
+          - not_null
+          - unique
+      - name: snid
+        description: "SNID from audience profile data"
+      - name: iso_code
+        description: "Enriched ISO alpha-2 country code"
+      - name: country
+        description: "Enriched country value"
+      - name: enrichment_source
+        description: "Source used to determine country. Only TLD, ROR, or IP are present; ORIGINAL_DATA and UNKNOWN are filtered out in the WHERE clause."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TLD', 'ROR', 'IP']
+              config:
+                severity: error
+              
+      - name: is_enriched
+        description: "Boolean flag indicating whether country was enriched from a non-original source."
+      - name: last_enriched_at
+        description: "Timestamp of the latest enrichment event used in selection."
+
   - name: stg_country_enrichment_mapping_location_data
     description: "Staging model mapping ISO alpha-2 country codes to generated TLDs and standardized country names."
     columns:
@@ -105,7 +138,13 @@ models:
         description: "Latest enriched ISO alpha-2 country code."
 
       - name: enrichment_source
-        description: "Source used for the latest country assignment."
+        description: "Source used for the latest country assignment. Only TLD, ROR, or IP are valid after deduplication and filtering."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TLD', 'ROR', 'IP']
+              config:
+                severity: error
 
       - name: is_enriched
         description: "Boolean flag indicating whether the record was enriched."
@@ -115,11 +154,12 @@ models:
 
       - name: snid
         description: "SNID from audience profile data."
+        tests:
+          - unique
 
       - name: email
         description: "Email from audience profile data."
-
-      - name: original_raw_cdp_country
-        description: "Original raw country value from audience data before enrichment."
+        tests:
+          - unique
 
  
