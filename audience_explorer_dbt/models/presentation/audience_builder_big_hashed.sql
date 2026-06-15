@@ -247,7 +247,6 @@ CAST(nmo_completed_courses AS STRING) AS nmo_completed_courses,
 CAST(nmo_id AS STRING) AS nmo_id,
 CAST(nmo_region AS STRING) AS nmo_region,
 CAST(nmo_registered_courses AS STRING) AS nmo_registered_courses,
-CAST(nmo_user_license AS STRING) AS nmo_user_license
 CAST(nmo_user_license AS STRING) AS nmo_user_license,
 
 CAST(test_predict_churn AS FLOAT64) AS test_predict_churn,
@@ -256,6 +255,10 @@ CAST(nature_master_class_user AS BOOL) AS nature_master_class_user,
 -- 01/06/2026 added columns
 CAST(braze_canvas_clicked_last_1000_days AS STRING) AS braze_canvas_clicked_last_1000_days,
 CAST(braze_campaigns_clicked_last_1000_days AS STRING) AS braze_campaigns_clicked_last_1000_days
+
+-- 15/06/2026 added columns
+CAST(gl_externaldiplay_young_journals AS BOOL) AS gl_externaldiplay_young_journals
+  
 
   from {{ ref('stg_hashing_pii') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
