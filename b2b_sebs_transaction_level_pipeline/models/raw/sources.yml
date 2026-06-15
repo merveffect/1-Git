@@ -6,7 +6,11 @@ sources:
     schema: funnel_exports
     tables:
       - name: transactions_ga
-      - description: "Funnel export table containing transaction-level data"
+        description: "Funnel export table containing transaction-level data"
+      - name: b2b_sebs_final
+        description: "Funnel export table containing transaction-level data for B2B SEBS analytics pipeline."
+
+
 
   - name: b2b_e2e_report
     database: snproject-cbb9ca25
@@ -31,6 +35,17 @@ sources:
       - name: full_location_standard
         description: "SN location table containing standardized country and region information"
 
-  
+  - name: ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: ria_researcher_report
+    tables:
+      - name: regions
+        description: "Table containing region information for RIA Researcher Report."
 
+  - name: ga4_ria_researcher_report
+    database: snproject-cbb9ca25
+    schema: ga4_ria_researcher_report
+    tables:
+      - name: countries
+        description: "Country mapping table containing isoalphatwo to country mappings."
 

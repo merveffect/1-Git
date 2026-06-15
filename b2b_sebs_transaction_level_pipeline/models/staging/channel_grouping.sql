@@ -1,7 +1,4 @@
-WITH channel_grouping /* 2. creating main channels and sub channels dimensions */
-AS
-(
-  SELECT *,
+ SELECT *,
   CASE
     WHEN sub_channels LIKE "%sea%" THEN "sea"
     WHEN sub_channels LIKE "%paid social%" THEN "paid social"
@@ -54,4 +51,4 @@ AS
     AND (a.ad_network IS NULL
       OR a.ad_network = LOWER(b.adnetwork))
   )
-)
+

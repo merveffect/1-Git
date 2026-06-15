@@ -1,6 +1,6 @@
 {{ config(store_failures = true) }}
 
-{% set start_date = "DATE '2024-01-01'" %}
+{% set start_date = "DATE '2025-01-01'" %}
 
 WITH j7_max_date AS (
     SELECT MAX(date) AS max_date
