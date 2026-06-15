@@ -1,35 +1,37 @@
 team: dat-analytics-engineering
-pipeline: roles_seniority
-notifications:
-  failure:
-    - teams: ((teams.workflow_url))
+pipeline: roles_and_seniority_dbt
+#notifications:
+#  failure:
+#    - teams: ((teams.workflow_url))
 feature_toggles:
   - update-pipeline
-
+ 
 triggers:
   - type: git
     uri: git@github.com:springernature/analytics_engineering_dbt.git
     branch: main
     watched_paths:
-      - roles_seniority
-
+      - roles_and_seniority
+ 
+ 
 tasks:
+ 
   - type: run
     name: deploy-dev
     script: \sndbt deploy --verbose
     docker:
       image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
     vars:
-      GCP_PROJECT: snproject-cbb9ca25
+      GCP_PROJECT: dat-analytics-engineering
       GCP_SERVICE_ACCOUNT_INFO: ((dev.dbt_deployer_service_account))
       SNDBT_CONFIG_FILE: dbt-deploy-dev.yml
-
+ 
   - type: run
     name: deploy-prod
     script: \sndbt deploy --verbose
     docker:
       image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
     vars:
-      GCP_PROJECT: snproject-cbb9ca25 
+      GCP_PROJECT: dat-analytics-engineering
       GCP_SERVICE_ACCOUNT_INFO: ((prod.dbt_deployer_service_account))
       SNDBT_CONFIG_FILE: dbt-deploy-prod.yml
