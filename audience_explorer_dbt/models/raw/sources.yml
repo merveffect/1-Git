@@ -21,7 +21,6 @@ sources:
       - name: user_traits_spreadsheet
 
 
-
   - name: prod_cdi_presentation
     database: braze-3f553fdf
     schema: prod_cdi_presentation
