@@ -38,6 +38,7 @@
   SUM(research_article_readership) AS research_article_readership,
   SUM(source_readership) AS source_readership,
   SUM(kpi_reach_about_pages) AS kpi_reach_about_pages,
+  SUM(signup_etoc) AS signup_etoc,
   SUM(cost) AS cost,
   SUM(clicks) AS clicks,
   SUM(impressions) AS impressions

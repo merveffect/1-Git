@@ -32,7 +32,7 @@ WITH
     {{ref('g1_mktp')}}
     {{ incremental_date_filter('date') }}
 
-    AND SOURCE != "facebook" ),
+    AND (SOURCE != "facebook" OR SOURCE IS NULL) ),
   non_facebook_regions AS (
   SELECT
     DISTINCT REGEXP_REPLACE(LOWER(country), '&(.)', 'and ') AS regions_country,

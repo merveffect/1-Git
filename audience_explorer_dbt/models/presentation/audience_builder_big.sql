@@ -207,9 +207,60 @@ CAST(most_recent_book_date AS TIMESTAMP) AS most_recent_book_date,
 CAST(n_total_books AS INT) AS n_total_books,
 CAST(n_sn_total_chapters AS INT) AS n_sn_total_chapters,
 CAST(most_recent_sn_book_date AS TIMESTAMP) AS most_recent_sn_book_date,
-CAST(n_sn_total_books AS INT) AS n_sn_total_books
+CAST(n_sn_total_books AS INT) AS n_sn_total_books,
 
+--17/03/2026 added columns
+CAST(open_access_type AS STRING) AS open_access_type,
+CAST(imprint AS STRING) AS imprint,
+CAST(journal_name AS STRING) AS journal_name,
+CAST(publisher AS STRING) AS publisher,
+CAST(journal_series AS STRING) AS journal_series,
+CAST(books_nurture_api AS BOOL) AS books_nurture_api,
+CAST(article_title AS STRING) AS article_title,
+CAST(article_submission_last_180_d AS BOOL) AS article_submission_last_180_d,
+CAST(q2_1_rate_the_overall_publication_process AS STRING) AS q2_1_rate_the_overall_publication_process,
+CAST(survey_name AS STRING) AS survey_name,
+CAST(oa_status AS STRING) AS oa_status,
+
+--19/03/2026 added columns
+CAST(q2_2_how_likely_are_you_to_submit_again AS STRING) AS q2_2_how_likely_are_you_to_submit_again,
+CAST(journal_awareness_low_active_eligible_canvas_1_after_wo AS BOOL) AS journal_awareness_low_active_eligible_canvas_1_after_wo,
+CAST(scirep_repeat_visitors_and_submissions_opened AS BOOL) AS scirep_repeat_visitors_and_submissions_opened,
+CAST(list_ip_country AS STRING) AS list_ip_country,
+CAST(list_imprints_90_days AS STRING) AS list_imprints_90_days,
+CAST(audience_check_optin AS BOOL) AS audience_check_optin,
+CAST(most_seen_ip_country AS STRING) AS most_seen_ip_country,
+
+-- 27/04/2026 added columns
+CAST(interested_journal_ids_90 AS STRING) AS interested_journal_ids_90,
+CAST(head_of_faculty_proxy AS BOOL) AS head_of_faculty_proxy,
+
+-- 12/05/2026 added columns
+CAST(nature_careers_journey_eligible AS BOOL) AS nature_careers_journey_eligible,
+CAST(competitor_book_author_not_sn_yet AS BOOL) AS competitor_book_author_not_sn_yet,
+CAST(reentering_journal_nurture AS BOOL) AS reentering_journal_nurture,
+
+
+-- 13/05/2026 added columns
+CAST(nmo_completed_courses AS STRING) AS nmo_completed_courses,
+CAST(nmo_id AS STRING) AS nmo_id,
+CAST(nmo_region AS STRING) AS nmo_region,
+CAST(nmo_registered_courses AS STRING) AS nmo_registered_courses,
+CAST(nmo_user_license AS STRING) AS nmo_user_license,
+CAST(test_predict_churn AS FLOAT64) AS test_predict_churn,
+CAST(nature_master_class_user AS BOOL) AS nature_master_class_user,
+
+-- 01/06/2026 added columns
+CAST(braze_canvas_clicked_last_1000_days AS STRING) AS braze_canvas_clicked_last_1000_days,
+CAST(braze_campaigns_clicked_last_1000_days AS STRING) AS braze_campaigns_clicked_last_1000_days,
+
+-- 15/06/2026 added columns
+CAST(gl_externaldiplay_young_journals AS BOOL) AS gl_externaldiplay_young_journals
+  
+  
   from {{ ref('stg_df_audience_explorer_cleaned') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id
   where cleaned.flag_column = 1
+
+ 

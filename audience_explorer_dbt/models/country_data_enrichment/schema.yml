@@ -1,0 +1,165 @@
+version: 2
+
+models:
+  - name: stg_country_enrichment_final_email_dedup
+    description: "Staging model that resolves duplicate emails in country enrichment output by prioritizing canonical_segment_id matches found in audience_builder_known_users."
+    columns:
+      - name: canonical_segment_id
+        description: "Selected canonical segment identifier after duplicate-email resolution."
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "Deduplicated email in the pre-final enrichment dataset."
+        tests:
+          - not_null
+          - unique
+      - name: snid
+        description: "SNID from audience profile data"
+      - name: iso_code
+        description: "Enriched ISO alpha-2 country code"
+      - name: country
+        description: "Enriched country value"
+      - name: enrichment_source
+        description: "Source used to determine country. Only TLD, ROR, or IP are present; ORIGINAL_DATA and UNKNOWN are filtered out in the WHERE clause."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TLD', 'ROR', 'IP']
+              config:
+                severity: error
+              
+      - name: is_enriched
+        description: "Boolean flag indicating whether country was enriched from a non-original source."
+      - name: last_enriched_at
+        description: "Timestamp of the latest enrichment event used in selection."
+
+  - name: stg_country_enrichment_mapping_location_data
+    description: "Staging model mapping ISO alpha-2 country codes to generated TLDs and standardized country names."
+    columns:
+      - name: alpha_2_code
+        description: "ISO alpha-2 country code."
+        tests:
+          - not_null
+          
+
+      - name: generated_tld
+        description: "Generated top-level domain used for matching (for example, .uk for GB)."
+        tests:
+          - not_null
+
+
+      - name: standard_name
+        description: "Standardized country name used in enrichment outputs."
+        tests:
+          - not_null
+
+  - name: stg_country_enrichment_ror_data
+    description: "Staging model for ROR domain-to-country mapping."
+    columns:
+      - name: domain
+        description: "Institutional email domain from ROR data."
+        tests:
+          - not_null
+          - unique
+      - name: ror_country
+        description: "Country name associated with the domain in ROR."
+        tests:
+          - not_null
+
+  - name: stg_country_enrichment_tld_extract
+    description: "Staging model extracting email domain and TLD matching keys from audience data."
+    columns:
+      - name: canonical_segment_id
+        description: "The primary unique identifier for the user segment."
+        tests:
+          - not_null
+          - unique
+
+      - name: email
+        description: "Email address used to derive matching fields."
+
+      - name: original_raw_cdp_country
+        description: "Original raw country value from the CDP source."
+
+      - name: most_seen_ip_country
+        description: "Upper-cased ISO 2-character country code derived from IP."
+
+      - name: email_domain
+        description: "Email domain extracted from email and used for ROR mapping."
+        tests:
+          - not_null:
+              config:
+                where: "email IS NOT NULL"
+
+      - name: extracted_tld
+        description: "Top-level domain extracted from email and used for TLD mapping."
+
+  - name: stg_country_enrichment_matches
+    description: "Incremental history model applying country enrichment hierarchy and tracking source and change history."
+    columns:
+      - name: canonical_segment_id
+        description: "Canonical segment identifier."
+        tests:
+          - not_null
+
+      - name: enrichment_source
+        description: "Source used to assign country (ORIGINAL_DATA, TLD, ROR, IP, or UNKNOWN)."
+        tests:
+          - not_null
+
+      - name: calculated_country
+        description: "Final country value selected from the enrichment hierarchy."
+
+      - name: iso_code
+        description: "ISO alpha-2 code mapped per selected enrichment tier (ORIGINAL_DATA/TLD/ROR/IP)."
+
+      - name: enrichment_timestamp
+        description: "Timestamp when the enrichment record was generated."
+        tests:
+          - not_null
+
+      - name: is_enriched
+        description: "Boolean flag indicating whether enrichment came from a non-original source."
+
+  - name: country_enrichment_final
+    description: "Presentation model containing the latest country enrichment result per canonical segment."
+    columns:
+      - name: canonical_segment_id
+        description: "Canonical segment identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: country
+        description: "Latest enriched country value."
+
+      - name: iso_code
+        description: "Latest enriched ISO alpha-2 country code."
+
+      - name: enrichment_source
+        description: "Source used for the latest country assignment. Only TLD, ROR, or IP are valid after deduplication and filtering."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TLD', 'ROR', 'IP']
+              config:
+                severity: error
+
+      - name: is_enriched
+        description: "Boolean flag indicating whether the record was enriched."
+
+      - name: last_enriched_at
+        description: "Timestamp of the latest enrichment event."
+
+      - name: snid
+        description: "SNID from audience profile data."
+        tests:
+          - unique
+
+      - name: email
+        description: "Email from audience profile data."
+        tests:
+          - unique
+
+ 

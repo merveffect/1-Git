@@ -1,5 +1,5 @@
 subject_based_segmentation:
-  target: prod
+  target: dev
   outputs:
     dev:  # gcp environment
       type: bigquery

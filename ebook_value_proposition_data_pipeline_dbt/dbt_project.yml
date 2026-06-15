@@ -1,0 +1,51 @@
+
+name: 'ebook_value_proposition_data_pipeline_dbt'
+version: '1.0.0'
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'ebook_value_proposition_data_pipeline_dbt'
+
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+models:
+  +persist_docs:
+    relation: true
+    columns: true
+
+# Configuring models
+  ebook_value_proposition_data_pipeline_dbt:
+
+    # 🔹 RAW LAYER (optional, only if you transform raw)
+    raw:
+      +schema: "evp_dbt_raw"
+      +materialized: table
+      +tags: ["raw"]
+
+    # 🔹 STAGING LAYER (source-aligned cleaning)
+    staging:
+      +schema: "evp_dbt_staging"
+      +materialized: table
+      +tags: ["staging"]
+
+    # 🔹 INTERMEDIATE LAYER (joins + logic)
+    intermediate:
+      +schema: "evp_dbt_intermediate"
+      +materialized: table
+      +tags: ["intermediate"]
+
+    # 🔹 MARTS (final business outputs)
+    presentation:
+      +schema: "evp_dbt_marts"
+      +materialized: table
+      +tags: ["presentation"]
+

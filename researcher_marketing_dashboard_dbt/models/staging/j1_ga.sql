@@ -74,7 +74,9 @@ WITH
       source_readership,
       ejp_submission_start,
       ejp_submission_complete,
-      nav_sign_up_for_alerts ),
+      nav_sign_up_for_alerts,
+      signup_etoc
+       ),
     SUM(kpi_marbl_leads) AS kpi_marbl_leads,
     SUM(Sessions) AS Sessions,
     SUM(ga4_reach_books_publishing_guidelines) AS ga4_reach_books_publishing_guidelines,
@@ -99,6 +101,7 @@ WITH
     SUM(ejp_submission_start) AS ejp_submission_start,
     SUM(ejp_submission_complete) AS ejp_submission_complete,
     SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts,
+    SUM(signup_etoc) AS signup_etoc,
     SUM(CASE
         WHEN main_channels = 'seo' THEN Sessions
         ELSE 0

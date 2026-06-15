@@ -20,13 +20,11 @@ sources:
     tables: 
       - name: SNTS-MKTPS_MAPPED_FINAL
 
-  - name: prod_mpc_dbt_raw
-    database: braze-3f553fdf
-    schema: prod_mpc_dbt_raw
+  - name: prod_mpc_dbt_presentation
+    database: mpc-data-live-628749c5
+    schema: prod_mpc_dbt_presentation
     tables:
-      - name: raw_snid_deletions
-
-
+      - name: snid_deletions
 
 
 

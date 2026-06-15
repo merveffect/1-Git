@@ -6,5 +6,6 @@ teams_webhook_url: https://springernature.webhook.office.com/webhookb2/f9b9be4c-
 dbt_target: dev
 
 
-
-dbt:
+jobs:
+  - name: collections-dbt-dev
+    schedule: 0 6 * * 1

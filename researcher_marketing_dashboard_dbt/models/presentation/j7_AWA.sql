@@ -33,7 +33,8 @@ sum(research_article_readership) as research_article_readership,
 sum(cost) as cost,
 sum(pi_reach_fta) as pi_reach_fta,
 sum(search_volume) as search_volume,
-sum(nav_sign_up_for_alerts) as nav_sign_up_for_alerts
+sum(nav_sign_up_for_alerts) as nav_sign_up_for_alerts,
+sum(signup_etoc) as signup_etoc
 from 
 {{ref('j7')}}
 

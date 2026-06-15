@@ -6,17 +6,13 @@ sources:
     schema: cdp_profile_sync
     tables: 
       - name: user_traits
+      - name: identifies
   - name: dev_audience_explorer_analytics_dbt_staging
     database: dat-analytics-eng-ec869189
     schema: dev_audience_explorer_analytics_dbt_staging
     tables: 
       - name: INFORMATION_SCHEMA.COLUMNS
         description: "Columns in the dev_audience_explorer_analytics_dbt_staging schema"
-  - name: prod_cdp_cep_dbt_presentation
-    database: cdp-data-55497fbb
-    schema: prod_cdp_cep_dbt_presentation
-    tables: 
-      - name: segment_user_profile_sync
 
   - name: dev_audience_explorer_analytics_dbt_raw
     database: dat-analytics-eng-ec869189
@@ -24,4 +20,11 @@ sources:
     tables: 
       - name: user_traits_spreadsheet
 
-      
+
+  - name: prod_cdi_presentation
+    database: braze-3f553fdf
+    schema: prod_cdi_presentation
+    tables:
+      - name: segment_known_users_with_email
+        description: "Production table containing known user segments with associated email addresses."
+

@@ -50,7 +50,9 @@ WITH
     SUM(source_readership) AS source_readership,
     SUM(ejp_submission_start) AS ejp_submission_start,
     SUM(ejp_submission_complete) AS ejp_submission_complete,
-    SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts
+    SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts,
+    SUM(signup_etoc) AS signup_etoc
+
   FROM
     {{ref('j1_ga')}}
    
@@ -165,7 +167,9 @@ WITH
     SUM(source_readership) AS source_readership,
     SUM(ejp_submission_start) AS ejp_submission_start,
     SUM(ejp_submission_complete) AS ejp_submission_complete,
-    SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts
+    SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts,
+    SUM(signup_etoc) AS signup_etoc
+
   FROM
     exclude_columns
   GROUP BY ALL),

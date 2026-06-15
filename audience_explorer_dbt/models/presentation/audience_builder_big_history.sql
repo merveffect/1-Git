@@ -2,6 +2,7 @@
 config(
     materialized=('incremental'),
     incremental_strategy='merge',
+    unique_key='canonical_segment_id',
     on_schema_change='append_new_columns',
     partition_by={
         'field': 'ingestion_timestamp', 
