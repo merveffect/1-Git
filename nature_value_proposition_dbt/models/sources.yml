@@ -1,0 +1,47 @@
+version: 2
+
+sources:
+  - name: journal_metadata
+    database: snproject-cbb9ca25
+    schema: Nature_upsell_2
+    tables:
+      - name: nature_title_list
+        identifier: "2026 Nature Title List"
+
+  - name: tbl_bp_monthly
+    database: usage-data-reporting
+    schema: PROD_IFM_Usage_C51
+    tables:
+      - name: tbl_bp_monthly
+
+
+  - name: SFfinal_table_march1
+    database: snproject-cbb9ca25
+    schema: seema_workspace
+    tables:
+      - name: SFfinal_table_march1
+
+  - name: publications
+    database: dimensions-ai
+    schema: data_analytics_eu
+    tables:
+      - name: publications
+
+  - name: grants
+    database: dimensions-ai
+    schema: data_analytics_eu
+    tables:
+      - name: grants
+
+  - name: grid
+    database: dimensions-ai
+    schema: data_analytics_eu
+    tables:
+      - name: grid
+
+
+  - name: journal_imprint
+    database: snproject-cbb9ca25
+    schema: sandbox_ef
+    tables:
+      - name: Journal_imprint

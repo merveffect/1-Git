@@ -1,3 +1,5 @@
 SELECT * EXCEPT(country),
-REPLACE(LOWER(country), '&', 'and') AS country
+REGEXP_REPLACE(country, '&(.)', 'and ') AS country
 FROM {{ ref('channel_grouping') }}
+
+ 

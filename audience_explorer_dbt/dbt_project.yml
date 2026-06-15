@@ -37,9 +37,27 @@ models:
       +materialized: table
       +tags: presentation
 
-    intermediate:
-      +schema: "analytics_dbt_intermediate"
+
+    country_data_enrichment:
+      +schema: "analytics_dbt_country_data_enrichment"
       +materialized: table
-      +tags: intermediate
+      +tags: country_enrichment
+      raw:
+        +schema: "country_data_enrichment_raw"
+        +materialized: table
+        +tags: country_enrichment_raw
+
+      staging:
+        +schema: "country_data_enrichment_staging"
+        +materialized: table
+        +tags: country_enrichment_staging
+
+      presentation:
+        +schema: "country_data_enrichment_presentation"
+        +materialized: table
+        +tags: country_enrichment_presentation
+
+        
+
 
 
