@@ -1,5 +1,6 @@
-
--- Calculate role, organization, and department scores for filtered employment records
+-- Score each ORCID employment record for HCP likelihood.
+-- Reads directly from orcid_researchers; records with no health signals score 0
+-- and are excluded by downstream phase1 threshold filtering.
 SELECT
   snid,
   orcid_id,
@@ -11,7 +12,9 @@ SELECT
   full_end_date,
 
   -- ROLE TITLE SCORE (weight = 0.50)
+  -- All health-identified roles score 1.00; bucket classification is separate.
   CASE
+    -- Non-clinical consultant → 0 (checked first)
     WHEN role_clean IS NOT NULL
          AND REGEXP_CONTAINS(role_clean, r'\bconsultant\b')
          AND REGEXP_CONTAINS(role_clean,
@@ -19,11 +22,13 @@ SELECT
            r'business|strategy|financial|marketing)\b')
          THEN 0.0
 
+    -- 1.00: All explicitly health-identified roles
+    -- Practitioner
     WHEN role_clean IS NOT NULL AND REGEXP_CONTAINS(role_clean,
       r'(physician|surgeon|cardiologist|oncologist|radiologist|'
       r'dermatologist|neurologist|psychiatrist|'
       r'general\s*practitioner|\bgp\b|'
-      r'registrar|resident\s*physician|attending\s*physician|'
+      r'registrar|resident\s*physician|attending\s*physician|attending\b|'
       r'hospitalist|intensivist|medical\s*director|clinical\s*director|'
       r'consultant\s*physician|chief\s*of\s*(medicine|surgery|staff)|'
       r'registered\s*nurse|\brn\b|staff\s*nurse|charge\s*nurse|'
@@ -34,38 +39,63 @@ SELECT
       r'obstetrician|gynecologist|gynaecologist|urologist|'
       r'orthop(a)?edic\s*surgeon|emergency\s*physician|'
       r'infectious\s*disease\s*physician|palliative\s*care|'
-      r'\bnurse\b|'
-      r'ward\s*sister|enrolled\s*nurse)')
-      THEN 1.00
-
-    WHEN role_clean IS NOT NULL AND REGEXP_CONTAINS(role_clean,
-      r'(clinician|clinical\s*fellow|clinical\s*specialist|'
+      r'\bnurse\b|ward\s*sister|enrolled\s*nurse|'
+      r'\bdentist\b|general\s*dental\s*practitioner|\bgdp\b|'
+      r'dental\s*partner|dental\s*practice\s*owner|dental\s*director|'
+      r'clinician|clinical\s*fellow|clinical\s*specialist|'
       r'medical\s*officer|clinical\s*officer|house\s*officer|'
       r'senior\s*house\s*officer|foundation\s*doctor|junior\s*doctor|'
-      r'specialist\s*registrar|consultant\b|attending\b|'
+      r'specialist\s*registrar|consultant\b|'
       r'nurse\s*specialist|advanced\s*practice\s*nurse|'
       r'advanced\s*practice\s*provider|ward\s*nurse|'
-      r'clinical\s*pharmacist|specialist\s*nurse|'
-      r'research\s*nurse|practice\s*nurse|district\s*nurse|'
-      r'health\s*visitor|nurse\s*manager|ward\s*manager|'
-      r'clinical\s*nurse\s*specialist|advanced\s*nurse|'
-      r'community\s*nurse|school\s*nurse|'
-      r'occupational\s*health\s*nurse)')
-      THEN 0.90
-
-    WHEN role_clean IS NOT NULL AND REGEXP_CONTAINS(role_clean,
-      r'(practitioner|specialist|clinician|'
-      r'\bmd\b|\bdo\b|doctor\b|'
+      r'clinical\s*pharmacist|hospital\s*pharmacist|'
+      r'community\s*pharmacist|specialist\s*pharmacist|'
+      r'lead\s*pharmacist|pharmacy\s*manager|'
+      r'specialist\s*nurse|research\s*nurse|practice\s*nurse|'
+      r'district\s*nurse|health\s*visitor|nurse\s*manager|'
+      r'ward\s*manager|clinical\s*nurse\s*specialist|'
+      r'advanced\s*nurse|community\s*nurse|school\s*nurse|'
+      r'occupational\s*health\s*nurse|'
+      r'\bpharmacist\b|dietitian|dietician|optometrist|podiatrist|'
+      r'practitioner|specialist|\bmd\b|\bdo\b|doctor\b|practice\s*owner|'
+      -- Researcher
+      r'principal\s*investigator|\bpi\b|chief\s*investigator|'
+      r'group\s*leader|lab\s*director|laboratory\s*director|'
       r'clinical\s*professor|'
-      r'professor\s*of\s*(medicine|surgery|nursing|oncology|cardiology|radiology))')
-      THEN 0.60
-
-    WHEN role_clean IS NOT NULL AND REGEXP_CONTAINS(role_clean,
-      r'(pharmacist|dietitian|dietician|optometrist|podiatrist|'
+      r'professor\s*(of\s*)?(medicine|surgery|nursing|oncology|'
+      r'cardiology|pharmacology|pharmacy|neuroscience|biochemistry|immunology)|'
+      r'(medicine|surgery|oncology|pharmacology|pharmacy)\s*professor|'
+      r'senior\s*scientist|senior\s*researcher|research\s*scientist|'
+      r'research\s*fellow|postdoc|research\s*associate\b|'
+      r'molecular\s*biolog|biopharma|'
+      r'clinical\s*researcher|clinical\s*research\s*(associate|coordinator|manager)|'
+      -- Administrator
+      r'chief\s*scientific\s*officer|\bcso\b|'
+      r'vp.*(research|r&d|medical\s*affairs)|'
+      r'vice\s*president.*(research|r&d|medical)|'
+      r'practice\s*manager|clinic\s*manager|'
+      r'lab\s*manager|laboratory\s*manager|'
+      r'health\s*service\s*manager|healthcare\s*manager|'
+      -- Generic HCP (self-identified)
       r'healthcare\s*professional|health\s*professional|'
       r'medical\s*professional|health\s*worker|health\s*practitioner|'
-      r'health\s*officer|medical\s*officer|clinical\s*researcher)')
-      THEN 0.40
+      r'health\s*officer|medical\s*officer)')
+      THEN 1.00
+
+    -- 1.00: Generic management title in health org or dept context
+    WHEN role_clean IS NOT NULL
+         AND REGEXP_CONTAINS(role_clean,
+           r'(\bhead\s+of\b|\bdirector\b|\bmanager\b|\bchief\b|'
+           r'\bsuperintendent\b|\bexecutive\b|\bvice\s*president\b|\bvp\b|\badministrator\b)')
+         AND (
+           REGEXP_CONTAINS(COALESCE(org_clean, ''),
+             r'(health|hospital|\bclinic\b|nhs\b|pharma|medical|dental|'
+             r'cancer|clinical\s*research|biotech|biopharma)')
+           OR REGEXP_CONTAINS(COALESCE(dept_clean, ''),
+             r'(medicine|clinical|nursing|oncology|pharmacy|health|'
+             r'cardiology|neurology|surgery|dental|radiology)')
+         )
+         THEN 1.00
 
     ELSE 0.0
   END AS role_score,
@@ -78,14 +108,19 @@ SELECT
       r'memorial\s*hospital|general\s*hospital|university\s*hospital|'
       r'veterans\s*affairs|\bva\s*medical|royal\s*infirmary|infirmary|'
       r'integrated\s*health|community\s*health\s*cent(er|re)|'
-      r'ambulance\s*service|emergency\s*services)')
+      r'ambulance\s*service|emergency\s*services|'
+      r'dental\s*practice|dental\s*surgery)')
       THEN 1.00
 
     WHEN org_clean IS NOT NULL AND REGEXP_CONTAINS(org_clean,
       r'(school\s*of\s*medicine|college\s*of\s*medicine|'
       r'faculty\s*of\s*(medicine|health)|medical\s*university|'
       r'university\s*of\s*medicine|medical\s*school|'
-      r'academic\s*medical\s*cent(er|re)|teaching\s*hospital)')
+      r'academic\s*medical\s*cent(er|re)|teaching\s*hospital|'
+      r'pharmaceutical|pharma\b|biopharma|biotech|'
+      r'cancer\s*(research|centre|center)|'
+      r'clinical\s*research\s*(organisation|organization)|'
+      r'medical\s*research\s*council|\bmrc\b)')
       THEN 0.60
 
     WHEN org_clean IS NOT NULL
@@ -95,7 +130,8 @@ SELECT
              r'(physician|surgeon|nurse|nursing|clinician|registrar|'
              r'consultant|practitioner|paramedic|physiotherapist|'
              r'occupational\s*ther|radiographer|\bgp\b|'
-             r'nurse\s*practitioner|research\s*nurse|practice\s*nurse)')
+             r'nurse\s*practitioner|research\s*nurse|practice\s*nurse|'
+             r'principal\s*investigator|researcher|scientist)')
            OR
            REGEXP_CONTAINS(COALESCE(dept_clean, ''),
              r'(medicine|surgery|cardiology|oncology|radiology|'
@@ -112,7 +148,7 @@ SELECT
            REGEXP_CONTAINS(COALESCE(role_clean, ''),
              r'(physician|surgeon|nurse|nursing|clinician|registrar|'
              r'consultant|practitioner|paramedic|\bgp\b|doctor\b|'
-             r'nurse\s*practitioner|research\s*nurse)')
+             r'nurse\s*practitioner|research\s*nurse|researcher|scientist)')
            OR
            REGEXP_CONTAINS(COALESCE(dept_clean, ''),
              r'(medicine|surgery|cardiology|oncology|nursing|'
@@ -143,10 +179,11 @@ SELECT
       r'breast\s*surgery|plastic\s*surgery|surgical\b|'
       r'school\s*of\s*medicine|faculty\s*of\s*medicine|'
       r'college\s*of\s*medicine|medical\s*school|'
-      r'nursing|midwifery|'
+      r'nursing|midwifery|dentistry|dental|'
       r'primary\s*care|community\s*health|'
       r'allied\s*health|occupational\s*therapy|'
-      r'physiotherapy|speech\s*therapy|dietetics)')
+      r'physiotherapy|speech\s*therapy|dietetics|'
+      r'pharmacology|pharmacy\b)')
       THEN 1.00
 
     WHEN dept_clean IS NOT NULL AND REGEXP_CONTAINS(dept_clean,
@@ -156,6 +193,76 @@ SELECT
       THEN 0.50
 
     ELSE 0.0
-  END AS dept_score
+  END AS dept_score,
 
-FROM {{ ref('hcp_orcid_employment_filtered') }}
+  -- HCP BUCKET: PRACTITIONER / RESEARCHER / ADMINISTRATOR
+  CASE
+    -- PRACTITIONER: direct patient-care and clinical roles
+    WHEN REGEXP_CONTAINS(COALESCE(role_clean, ''),
+      r'(physician|surgeon|\bdoctor\b|clinician|clinical\s*fellow|'
+      r'registrar|resident\s*physician|attending\b|hospitalist|intensivist|'
+      r'house\s*officer|foundation\s*doctor|junior\s*doctor|'
+      r'\bnurse\b|nurse\s*practitioner|\bnp\b|\banp\b|'
+      r'nurse\s*specialist|ward\s*nurse|ward\s*sister|staff\s*nurse|'
+      r'charge\s*nurse|enrolled\s*nurse|registered\s*nurse|\brn\b|'
+      r'clinical\s*nurse|practice\s*nurse|research\s*nurse|district\s*nurse|'
+      r'community\s*nurse|advanced\s*nurse|specialist\s*nurse|school\s*nurse|'
+      r'health\s*visitor|nurse\s*manager|ward\s*manager|'
+      r'\bdentist\b|\bgdp\b|dental\s*partner|dental\s*practice\s*owner|'
+      r'\bgp\b|general\s*practitioner|'
+      r'paramedic|physiotherapist|occupational\s*therapist|radiographer|'
+      r'anesthesiologist|anaesthetist|obstetrician|gynecologist|gynaecologist|'
+      r'urologist|orthop(a)?edic|emergency\s*physician|'
+      r'cardiologist|oncologist|radiologist|neurologist|psychiatrist|'
+      r'dermatologist|infectious\s*disease\s*physician|palliative\s*care|'
+      r'physician\s*assoc|physician\s*assist|'
+      r'medical\s*director|clinical\s*director|chief\s*of\s*(medicine|surgery|staff)|'
+      r'dietitian|dietician|optometrist|podiatrist|'
+      r'\bpharmacist\b|clinical\s*pharmacist|hospital\s*pharmacist|'
+      r'community\s*pharmacist|specialist\s*pharmacist|'
+      r'healthcare\s*professional|health\s*professional|'
+      r'medical\s*professional|health\s*worker|health\s*practitioner|'
+      r'practitioner|specialist|\bmd\b|\bdo\b|doctor\b)')
+      THEN 'PRACTITIONER'
+
+    -- RESEARCHER: scientific / research roles in health/pharma context
+    WHEN REGEXP_CONTAINS(COALESCE(role_clean, ''),
+      r'(principal\s*investigator|\bpi\b|chief\s*investigator|'
+      r'senior\s*scientist|senior\s*researcher|research\s*scientist|'
+      r'research\s*fellow|postdoc|research\s*associate\b|'
+      r'molecular\s*biolog|group\s*leader|'
+      r'professor\s*(of\s*)?(medicine|surgery|nursing|oncology|cardiology|'
+      r'pharmacology|pharmacy|neuroscience|biochemistry|immunology)|'
+      r'(medicine|surgery|oncology|pharmacology|pharmacy)\s*(professor|chair)|'
+      r'clinical\s*professor|biopharma|'
+      r'clinical\s*research\s*(associate|coordinator|manager))')
+      THEN 'RESEARCHER'
+
+    -- ADMINISTRATOR: explicit health leadership/exec roles, or generic management title in health org/dept
+    WHEN REGEXP_CONTAINS(COALESCE(role_clean, ''),
+      r'(chief\s*scientific\s*officer|\bcso\b|'
+      r'vp.*(research|r&d|medical\s*affairs)|'
+      r'vice\s*president.*(research|r&d|medical)|'
+      r'lab\s*director|laboratory\s*director|'
+      r'lab\s*manager|laboratory\s*manager|'
+      r'practice\s*manager|clinic\s*manager|'
+      r'health\s*service\s*manager|healthcare\s*manager)')
+      OR (
+        REGEXP_CONTAINS(COALESCE(role_clean, ''),
+          r'(\bhead\s+of\b|\bdirector\b|\bmanager\b|\bchief\b|'
+          r'\bsuperintendent\b|\bexecutive\b|\bvice\s*president\b|\bvp\b|\badministrator\b)')
+        AND (
+          REGEXP_CONTAINS(COALESCE(org_clean, ''),
+            r'(health|hospital|\bclinic\b|nhs\b|pharma|medical|dental|'
+            r'cancer|clinical\s*research|biotech|biopharma)')
+          OR REGEXP_CONTAINS(COALESCE(dept_clean, ''),
+            r'(medicine|clinical|nursing|oncology|pharmacy|health|'
+            r'cardiology|neurology|surgery|dental|radiology)')
+        )
+      )
+      THEN 'ADMINISTRATOR'
+
+    ELSE NULL
+  END AS hcp_bucket
+
+FROM {{ ref('orcid_researchers') }}
