@@ -12,12 +12,14 @@ sources:
     schema: ga4_ria_researcher_report
     tables:
       - name: countries
+        identifier: countries_native
 
   - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
     schema: ga4_ria_researcher_report
     tables:
-      - name: optins_sheet    
+      - name: optins_sheet
+        identifier: optins_sheet_native
 
   - name: xx_jflow
     database: snproject52c6e272
@@ -30,6 +32,7 @@ sources:
     schema: ria_researcher_report
     tables:
       - name: journalids
+        identifier: journalids_native
 
   - name: marmind_fnd
     database: datasn-rm-live
@@ -42,18 +45,21 @@ sources:
     schema: ga4_ria_researcher_report
     tables:
       - name: regions
+        identifier: regions_native
 
   - name: ria_researcher_report
     database: snproject-cbb9ca25
     schema: ria_researcher_report
     tables:
       - name: team_codes
+        identifier: team_codes_native
 
   - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
     schema: ga4_ria_researcher_report
     tables:
       - name: transformative_agreements_sheet
+        identifier: transformative_agreements_sheet_native
 
   - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
@@ -66,12 +72,14 @@ sources:
     schema: ae_metadata
     tables:
       - name: channel_groupings
+        identifier: channel_groupings_native
 
   - name: e2e_b2c_researcher_dev
     database: snproject-cbb9ca25
     schema: e2e_b2c_researcher_dev
     tables:
       - name: journal_table
+        identifier: journal_table_native
   
   - name: cookie_consent_data
     database: snproject-cbb9ca25

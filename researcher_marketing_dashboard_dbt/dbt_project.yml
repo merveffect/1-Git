@@ -14,6 +14,11 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+
+# Added this for the native sources refresh macro to run on every dbt run
+on-run-start:
+  - "{{ refresh_native_sources() }}"
+
 models:
   +persist_docs:
     relation: true
@@ -38,10 +43,10 @@ models:
         - presentation
 
 vars:
-  # backfill_start_date: '2025-01-01'
-  # backfill_end_date: '2026-04-26'
+  # backfill_start_date: '2026-06-20'
+  # backfill_end_date: '2026-06-20'
   start_date: '2024-01-01'
-  end_date: '2026-05-25'
+  end_date: '2026-06-09'
 
 
 
