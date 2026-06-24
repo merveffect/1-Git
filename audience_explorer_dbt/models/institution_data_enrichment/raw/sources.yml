@@ -1,0 +1,49 @@
+version : 2
+
+sources:
+  - name: core_researcher_profiles
+    database: aceproducts-143febd8
+    schema: core_researcher_profiles
+    tables:
+      - name: researcher_profiles_out
+        description: "Core Researcher Profiles output table containing researcher information "
+
+  
+  - name: prod_joint_submissions_core
+    database: datasn-submissions-55677263
+    schema: prod_joint_submissions_core
+    tables:
+      - name: authors
+        description: "Authors table containing information about authors from the joint submissions data."
+      - name: submissions
+        description: "Submissions table containing information about submissions from the joint submissions data."
+
+
+  - name: prod_audience_explorer_analytics_dbt_presentation
+    database: dat-analytics-eng-ec869189
+    schema: prod_audience_explorer_analytics_dbt_presentation
+    tables:
+      - name: audience_builder_big
+        description: "Table containing the canonical_segment_id for all CDP records to be enriched with institution data."
+
+  - name: prod_institution_disambiguation_raw
+    database: datasn-rm-live
+    schema: prod_institution_disambiguation_raw
+    tables:
+      - name: raw_ror_data
+        description: "Raw ROR data for institution enrichment."
+
+  - name: prod_institution_disambiguation_staging
+    database: datasn-rm-live
+    schema: prod_institution_disambiguation_staging
+    tables:
+      - name: stg_original_names
+        description: "Staging table containing original institution names (TA + NON-TA) for enrichment."
+
+
+  - name: datasn_plattform
+    database: datasn-tools-live
+    schema: reference_data_presentation
+    tables:
+      - name: full_location_standard
+        description: "SN Data location standard data product"
