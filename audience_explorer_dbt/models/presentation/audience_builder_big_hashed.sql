@@ -257,8 +257,10 @@ CAST(braze_canvas_clicked_last_1000_days AS STRING) AS braze_canvas_clicked_last
 CAST(braze_campaigns_clicked_last_1000_days AS STRING) AS braze_campaigns_clicked_last_1000_days,
 
 -- 15/06/2026 added columns
-CAST(gl_externaldiplay_young_journals AS BOOL) AS gl_externaldiplay_young_journals
+CAST(gl_externaldiplay_young_journals AS BOOL) AS gl_externaldiplay_young_journals,
   
+--25/06/2026 added columns
+CAST(gl_multichannel_leader_persona AS BOOL) AS gl_multichannel_leader_persona
 
   from {{ ref('stg_hashing_pii') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
