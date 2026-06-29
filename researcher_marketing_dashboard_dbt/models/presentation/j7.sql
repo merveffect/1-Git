@@ -1,7 +1,7 @@
 {{ config(
     materialized = "incremental",
     incremental_strategy="insert_overwrite",
-    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"],
+    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "rmdb_j7_mart"],
     partition_by = {"field": "date","data_type": "date"},
     cluster_by = ["clean_campaign", "country", "sub_channels"]
  )}}
@@ -77,23 +77,34 @@ SELECT
   target_audience_name,
   validity_from,
   validity_to,
-  archived,
   workspace_category,
   workspace_name,
   primary_campaign_goal,
   marmind_campaign_code,
-  description
+  description,
+  society_tier,
+  name_of_society,
+  excl_marketing_restricted_by_society
+
 FROM
   {{ref('j5')}} a
 LEFT JOIN (
   SELECT
-    DISTINCT * EXCEPT(channels_categories,
-      programs,
-      leading_product),
+    DISTINCT *
   FROM
-    {{source('marmind_fnd','marmind_data')}} ) b
+    {{source('prod_marmind_presentation','marmind_analytics')}} ) b
 ON
   a.campaign_code = LOWER(b.marmind_campaign_code)
-  
+
+LEFT JOIN 
+( select distinct journal_id as braze_journal_id,
+society_tier,
+name_of_society,
+excl_marketing_restricted_by_society 
+from 
+{{source('prod_cdi_presentation','journal_catalog')}} ) c 
+
+ON a.journal_id=c.braze_journal_id
+
   {{ incremental_date_filter('date') }}
 

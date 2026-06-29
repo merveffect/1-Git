@@ -1,7 +1,7 @@
 {{ config(
     materialized = "incremental",
     incremental_strategy="insert_overwrite",
-    tags= ["daily", "j7", "ta_j7", "transposed_awa1", "transposed_bae", "transposed_nurture"],
+    tags= ["daily", "j7", "ta_j7","rmdb_j7_mart"],
     partition_by = {"field": "date","data_type": "date"},
     cluster_by = ["clean_campaign", "country", "sub_channels"]
  )}}
@@ -27,6 +27,8 @@ portfolio,
 imprint,
 workspace_category,
 research_marketing_activity,
+society_tier,
+name_of_society,
 sum(Sessions) as sessions,
 sum(journal_engagement) as journal_engagement,
 sum(research_article_readership) as research_article_readership,

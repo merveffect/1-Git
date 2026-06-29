@@ -27,6 +27,8 @@
   research_marketing_activity,
   workspace_category,
   primary_campaign_goal,
+  society_tier,
+  name_of_society,
   SUM(Sessions) AS Sessions,
   SUM(EngagedSessions) AS EngagedSessions,
   SUM(ELS) AS ELS,

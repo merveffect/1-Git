@@ -25,6 +25,8 @@ SELECT
   workspace_category,
   researchER_marketing_activity,
   research_marketing_activity,
+  society_tier,
+  name_of_society,
   SUM(Sessions) AS Sessions,
   SUM(ELS) AS ELS,
   SUM(snapp_submission_complete) AS snapp_submission_complete,
