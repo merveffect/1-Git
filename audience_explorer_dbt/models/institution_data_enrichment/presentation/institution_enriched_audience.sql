@@ -7,7 +7,7 @@ with approved as (
         ror_country,
         cosine_similarity
     from {{ ref('ror_match_decisions') }}
-    where match_status = 'auto_approve'
+    where match_status = '1 to 1 match'
 
 ),
 
@@ -19,6 +19,7 @@ targets as (
         researcher_id,
         snid,
         raw_inst_name,
+        enrichment_source,
         embedding_input
     from {{ ref('stg_inst_enrichment_targets') }}
 
@@ -30,6 +31,7 @@ select
     t.researcher_id,
     t.snid,
     t.raw_inst_name                     as original_raw_name,
+    t.enrichment_source,
     a.standardized_institution_name,
     a.ror_id,
     a.ror_country,
@@ -37,3 +39,4 @@ select
 from targets t
 inner join approved a
     on t.embedding_input = a.candidate_input
+where email is not null

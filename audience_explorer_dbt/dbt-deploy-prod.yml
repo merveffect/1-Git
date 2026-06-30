@@ -16,8 +16,10 @@ jobs:
     timeout: 2000
     select_criteria: path:models/country_data_enrichment
 
-
-
+  - name: institution-enrichment-prod
+    schedule: 0 8 * * 2
+    timeout: 2000
+    select_criteria: path:models/institution_data_enrichment
 
 
 

@@ -1,0 +1,37 @@
+unit_tests:
+  - name: test_targets_fallback_logic_and_embedding_format
+    model: stg_inst_enrichment_targets
+    given:
+      - input: source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big')
+        rows:
+          - {canonical_segment_id: 'CID_RESEARCHER', email: 'r_only@example.com', researcher_id: 'RID_1', snid: null, institution_name: null, mkt_pref_opt_in: true, is_legitimate_interest_author_opted_in: false}
+          - {canonical_segment_id: 'CID_BOTH_IDS', email: 'both_ids@example.com', researcher_id: 'RID_2', snid: 'SNID_2', institution_name: null, mkt_pref_opt_in: true, is_legitimate_interest_author_opted_in: false}
+          - {canonical_segment_id: 'CID_EMAIL_ONLY', email: 'author_only@example.com', researcher_id: null, snid: null, institution_name: null, mkt_pref_opt_in: true, is_legitimate_interest_author_opted_in: false}
+          - {canonical_segment_id: 'CID_NOT_ELIGIBLE', email: 'not_eligible@example.com', researcher_id: 'RID_3', snid: 'SNID_3', institution_name: null, mkt_pref_opt_in: false, is_legitimate_interest_author_opted_in: false}
+
+      - input: ref('raw_authors_institutions')
+        rows:
+          - {author_email: 'author_only@example.com', raw_inst_name: 'Authors Institute', country_iso: 'GB', country_name: 'United Kingdom'}
+
+      - input: ref('raw_crp_institutions')
+        rows:
+          - {researcher_id: 'RID_1', raw_inst_name: 'CRP Researcher Institute 1', country_iso: 'US', country_name: 'United States'}
+          - {researcher_id: 'RID_2', raw_inst_name: 'CRP Researcher Institute 2', country_iso: 'DE', country_name: 'Germany'}
+          - {researcher_id: 'RID_3', raw_inst_name: 'CRP Researcher Institute 3', country_iso: 'FR', country_name: 'France'}
+
+      - input: ref('raw_crp_institutions_by_snid')
+        rows:
+          - {snid: 'SNID_2', raw_inst_name: 'CRP SNID Institute 2', country_iso: 'FR', country_name: 'France'}
+          - {snid: 'SNID_3', raw_inst_name: 'CRP SNID Institute 3', country_iso: 'IT', country_name: 'Italy'}
+
+      - input: ref('stg_iso_country_name')
+        rows:
+          - {iso_code: 'US', country_name: 'United States'}
+          - {iso_code: 'DE', country_name: 'Germany'}
+          - {iso_code: 'GB', country_name: 'United Kingdom'}
+
+    expect:
+      rows:
+        - {canonical_segment_id: 'CID_RESEARCHER', raw_inst_name: 'CRP Researcher Institute 1', enrichment_source: 'CRP by researcher id', embedding_input: 'CRP Researcher Institute 1, United States'}
+        - {canonical_segment_id: 'CID_BOTH_IDS', raw_inst_name: 'CRP Researcher Institute 2', enrichment_source: 'CRP by researcher id', embedding_input: 'CRP Researcher Institute 2, Germany'}
+        - {canonical_segment_id: 'CID_EMAIL_ONLY', raw_inst_name: 'Authors Institute', enrichment_source: 'Authors', embedding_input: 'Authors Institute, United Kingdom'}

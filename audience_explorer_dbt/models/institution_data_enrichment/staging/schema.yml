@@ -19,6 +19,11 @@ models:
         description: Resolved raw institution name from the available matching source.
         tests:
           - not_null
+      - name: enrichment_source
+        description: Source used to resolve raw_inst_name (Authors, CRP by researcher id, or CRP by snid).
+        tests:
+          - accepted_values:
+              values: ['Authors', 'CRP by researcher id', 'CRP by snid']
       - name: country_name
         description: Resolved country name from the available matching source.
       - name: country_iso

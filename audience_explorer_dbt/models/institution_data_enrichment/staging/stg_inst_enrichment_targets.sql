@@ -58,6 +58,12 @@ resolved as (
 
         coalesce(a.raw_inst_name, r.raw_inst_name, s.raw_inst_name) as raw_inst_name,
 
+        case
+            when a.raw_inst_name is not null then 'Authors'
+            when r.raw_inst_name is not null then 'CRP by researcher id'
+            when s.raw_inst_name is not null then 'CRP by snid'
+        end as enrichment_source,
+
 
         case
             when a.raw_inst_name is not null then a.country_name
@@ -90,6 +96,7 @@ mapped as (
         resolved.researcher_id,
         resolved.snid,
         resolved.raw_inst_name,
+        resolved.enrichment_source,
         resolved.country_iso,
         iso.country_name as country_name_std
     from resolved
@@ -106,6 +113,7 @@ select
     researcher_id,
     snid,
     raw_inst_name,
+    enrichment_source,
     country_iso,
     nullif(country_name_std, '') as country_name,
     

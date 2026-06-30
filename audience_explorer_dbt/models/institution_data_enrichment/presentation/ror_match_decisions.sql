@@ -38,6 +38,8 @@ decided as (
         end as country_iso_match,
 
         case
+            when cosine_similarity = 1.0
+                then '1 to 1 match'
             -- high confidence + country consistent -> auto approve
             when cosine_similarity >= 0.97
                  and candidate_country_iso is not null
@@ -45,7 +47,7 @@ decided as (
                  and upper(trim(candidate_country_iso)) = upper(trim(ror_country_iso))
                 then 'auto_approve'
 
-            -- high score but country conflict (Jeju/Vienna type) -> needs review
+            -- high score but country conflict-> needs review
             when cosine_similarity >= 0.97
                 then 'needs_review'
 
