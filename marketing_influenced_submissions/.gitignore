@@ -4,3 +4,4 @@ logs/
 .user.yml
 .envrc
 uv.lock
+dbt_internal_packages/
