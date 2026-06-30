@@ -34,11 +34,11 @@ sources:
       - name: journalids
         identifier: journalids_native
 
-  - name: marmind_fnd
+  - name: prod_marmind_presentation
     database: datasn-rm-live
-    schema: marmind_fnd
+    schema: prod_marmind_presentation
     tables:
-      - name: marmind_data
+      - name: marmind_analytics
 
   - name: ga4_ria_researcher_report
     database: snproject-cbb9ca25
@@ -104,3 +104,10 @@ sources:
     schema: sdm_raw
     tables:
       - name: sdm_raw
+
+
+  - name: prod_cdi_presentation
+    database: braze-3f553fdf
+    schema: prod_cdi_presentation
+    tables:
+      - name: journal_catalog

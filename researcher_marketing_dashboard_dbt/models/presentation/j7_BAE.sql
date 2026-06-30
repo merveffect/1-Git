@@ -21,6 +21,8 @@ SELECT
   imprint,
   research_marketing_activity,
   workspace_category,
+  society_tier,
+  name_of_society,
   sum(clicks) as clicks,
   sum(impressions) as impressions,
   sum(Sessions) as Sessions,
