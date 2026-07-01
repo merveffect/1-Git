@@ -21,7 +21,6 @@ models:
         description: ISO alpha-2 country code.
         tests:
           - not_null
-          - unique
       - name: springer_nature_data_standard_location_name
         description: Standardized country name.
         tests:

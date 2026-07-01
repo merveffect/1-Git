@@ -131,3 +131,20 @@ models:
       - name: cosine_similarity
         description: Similarity score between candidate and matched ROR institution.
 
+  - name: stg_ror_domains
+    description: ROR domains mapped to institutions, excluding generic and ambiguous domains.
+    columns:
+      - name: domain
+        description: Normalized domain used for institution matching.
+        tests:
+          - not_null
+          - unique
+      - name: ror_id
+        description: ROR identifier for the matched institution.
+        tests:
+          - not_null
+      - name: ror_name
+        description: ROR display name for the matched institution.
+      - name: ror_country
+        description: Country associated with the matched institution.
+
