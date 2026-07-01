@@ -81,6 +81,9 @@ models:
           - unique
       - name: country_name
         description: Standardized country name for the ISO code.
+        tests:
+          - not_null
+          - unique
 
   - name: stg_ror_embeddings
     description: Semantic embeddings generated for ROR reference institutions.

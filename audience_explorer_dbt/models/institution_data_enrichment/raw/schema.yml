@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: raw_ror_data
+    description: Raw ROR data used as the source for institution enrichment mappings.
+    columns:
+      - name: id
+        description: Unique ROR identifier.
+        tests:
+          - not_null
+          - unique
+      - name: names
+        description: ROR names payload.
+      - name: locations
+        description: ROR locations payload.
+
+  - name: raw_location_standard
+    description: Current location standard reference rows used for ISO-country mapping.
+    columns:
+      - name: alpha_2_code
+        description: ISO alpha-2 country code.
+        tests:
+          - not_null
+          - unique
+      - name: springer_nature_data_standard_location_name
+        description: Standardized country name.
+        tests:
+          - not_null
+      - name: iso_3166_country_name
+        description: ISO country name.
+      - name: official_state_name
+        description: Official state name.
+      - name: valid_to
+        description: End validity timestamp; model keeps active rows where this is null.
+
+  - name: raw_crp_institutions
+    description: Cleaned institution data sourced from core researcher profiles by researcher_id.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - researcher_id
+            - raw_inst_name
+    columns:
+      - name: researcher_id
+        description: Researcher identifier from CRP.
+        tests:
+          - not_null
+      - name: raw_inst_name
+        description: Cleaned raw institution name from CRP.
+        tests:
+          - not_null
+      - name: country_name
+        description: Country name from CRP.
+      - name: country_iso
+        description: Country ISO code from CRP.
+
+  - name: raw_crp_institutions_by_snid
+    description: Cleaned institution data sourced from core researcher profiles and deduplicated by SNID.
+    columns:
+      - name: snid
+        description: SNID from CRP profile mappings.
+        tests:
+          - not_null
+          - unique
+      - name: raw_inst_name
+        description: Cleaned raw institution name from CRP.
+        tests:
+          - not_null
+      - name: country_name
+        description: Country name from CRP.
+      - name: country_iso
+        description: Country ISO code from CRP.
+
+  - name: raw_authors_institutions
+    description: One clean institution row per author email based on most recent submission.
+    columns:
+      - name: author_email
+        description: Author email used as join key for institution enrichment.
+        tests:
+          - not_null
+          - unique
+      - name: raw_inst_name
+        description: Cleaned raw institution name from author submissions.
+        tests:
+          - not_null
+      - name: country_name
+        description: Country name from author submission data.
+      - name: country_iso
+        description: Country ISO code from author submission data.
