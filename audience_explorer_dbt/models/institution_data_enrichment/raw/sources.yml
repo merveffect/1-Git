@@ -47,3 +47,11 @@ sources:
     tables:
       - name: full_location_standard
         description: "SN Data location standard data product"
+
+
+  - name: WikiData
+    database: dat-analytics-eng-ec869189
+    schema: WikiData
+    tables:
+      - name: wikidata_first_50K
+        description: "External WikiData table containing 114K of organization information such as ror id and organization name."
