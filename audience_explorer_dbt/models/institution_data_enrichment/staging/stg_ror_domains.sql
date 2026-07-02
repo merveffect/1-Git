@@ -1,34 +1,17 @@
-With ror as (
-    select
-        id as ror_id,
-        -- primary display name
-        (
-            select n.value
-            from unnest(names) n
-            where 'ror_display' in unnest(n.types)
-            limit 1
-        ) as ror_name,
-        -- primary country
-        (
-            select loc.geonames_details.country_name
-            from unnest(locations) loc
-            limit 1
-        ) as ror_country,
-        domains
-    from {{ ref('raw_ror_data') }}
-),
+with exploded as (
 
-exploded as (
     select
-        lower(trim(domain)) as domain,
-        ror_id,
-        ror_name,
-        ror_country
-    from ror, unnest(domains) as domain
+        lower(trim(domain))     as domain,
+        r.ror_id,
+        r.ror_display_name      as ror_name,
+        r.ror_country_name      as ror_country
+    from {{ ref('stg_ror') }} as r,
+    unnest(r.domains) as domain
     where domain is not null and trim(domain) != ''
+
 ),
 
---if a domain is associated with more than one institution, we will not use it for matching
+-- if a domain is associated with more than one institution, reject
 domain_counts as (
     select domain, count(distinct ror_id) as inst_count
     from exploded
@@ -36,11 +19,11 @@ domain_counts as (
 )
 
 select distinct
-    exploded.domain,
-    exploded.ror_id,
-    exploded.ror_name,
-    exploded.ror_country
-from exploded 
-join domain_counts using (domain)
-where domain_counts.inst_count = 1
-  and not ( {{ is_generic_domain('exploded.domain') }} )
+    e.domain,
+    e.ror_id,
+    e.ror_name,
+    e.ror_country
+from exploded e
+join domain_counts c using (domain)
+where c.inst_count = 1
+  and not ( {{ is_generic_domain('e.domain') }} )
