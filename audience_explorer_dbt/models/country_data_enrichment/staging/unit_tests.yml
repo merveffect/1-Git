@@ -124,3 +124,34 @@ unit_tests:
         - {canonical_segment_id: 'CID_C', snid: 'S_C', email: 'single@example.com', iso_code: 'DE', country: 'Germany', enrichment_source: 'TLD', is_enriched: true, last_enriched_at: '2026-06-09 10:00:00'}
 
 
+  - name: test_incremental_previously_enriched_id_not_original_data
+    model: stg_country_enrichment_matches
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: this
+        rows:
+          - {canonical_segment_id: 'USER_OLD', enrichment_source: 'TLD', calculated_country: 'United Kingdom', iso_code: 'GB', enrichment_timestamp: '2026-06-09 10:00:00'}
+
+      - input: ref('stg_country_enrichment_tld_extract')
+        rows:
+          - {canonical_segment_id: 'USER_OLD', original_raw_cdp_country: 'Germany', extracted_tld: null, email_domain: 'old@example.com', most_seen_ip_country: 'GB'}
+          - {canonical_segment_id: 'USER_NEW', original_raw_cdp_country: 'France', extracted_tld: null, email_domain: 'new@example.com', most_seen_ip_country: null}
+
+      - input: ref('stg_country_enrichment_mapping_location_data')
+        rows:
+          - {generated_tld: '.uk', standard_name: 'United Kingdom', alpha_2_code: 'GB'}
+          - {generated_tld: '.fr', standard_name: 'France', alpha_2_code: 'FR'}
+          - {generated_tld: '.de', standard_name: 'Germany', alpha_2_code: 'DE'}
+
+      - input: ref('stg_country_enrichment_ror_data')
+        rows:
+          - {domain: 'dummy.edu', ror_country: 'United States'}
+
+    expect:
+      rows:
+        - {canonical_segment_id: 'USER_OLD', enrichment_source: 'IP', calculated_country: 'United Kingdom', is_enriched: true, iso_code: 'GB'}
+        - {canonical_segment_id: 'USER_NEW', enrichment_source: 'ORIGINAL_DATA', calculated_country: 'France', is_enriched: false, iso_code: 'FR'}
+
+
