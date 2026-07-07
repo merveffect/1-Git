@@ -8,4 +8,4 @@ dbt_target: dev
 
 jobs:
   - name: collections-dbt-dev
-    schedule: 0 6 * * 1
+    schedule: 0 8 * * *
