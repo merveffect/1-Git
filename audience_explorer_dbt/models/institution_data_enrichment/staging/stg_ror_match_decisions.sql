@@ -1,9 +1,3 @@
-{{
-    config(
-        materialized='table'
-    )
-}}
-
 -- it is possible that the ROR match is a false positive, so we need to make a decision on whether to auto-approve, send for review, or reject.
 -- Threshold: 0.97 + ISO match = auto_approve. ISO conflict or low score = review/reject.
 

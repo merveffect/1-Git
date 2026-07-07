@@ -8,7 +8,7 @@ dbt_target: prod
 
 jobs:
   - name: collections-dbt-prod
-    schedule: 0 6 * * 1
+    schedule: 0 8 * * *
 
 
 

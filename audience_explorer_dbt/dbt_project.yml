@@ -38,10 +38,11 @@ models:
       +tags: presentation
 
 
-    country_data_enrichment:
+    country_data_enrichment: 
       +schema: "analytics_dbt_country_data_enrichment"
       +materialized: table
       +tags: country_enrichment
+      +full_refresh: false
       raw:
         +schema: "country_data_enrichment_raw"
         +materialized: table
