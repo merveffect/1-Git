@@ -20,10 +20,10 @@ models:
         tests:
           - not_null
       - name: enrichment_source
-        description: Source used to resolve raw_inst_name (Authors, CRP by researcher id, or CRP by snid).
+        description: Source used to resolve raw_inst_name (Authors, CRP_by_researcher_id, or CRP_by_snid).
         tests:
           - accepted_values:
-              values: ['Authors', 'CRP by researcher id', 'CRP by snid']
+              values: ['Authors', 'CRP_by_researcher_id', 'CRP_by_snid']
       - name: country_name
         description: Resolved country name from the available matching source.
       - name: country_iso
@@ -42,6 +42,10 @@ models:
           - not_null
       - name: country_name
         description: Country associated with the institution candidate when available.
+        tests:
+         - relationships:
+              to: ref('stg_iso_country_name')
+              field: country_name
       - name: country_iso
         description: ISO country code associated with the institution candidate when available.
       - name: embedding_input
@@ -84,6 +88,20 @@ models:
         tests:
           - not_null
           - unique
+
+  - name: stg_ror
+    description: Research Organization Registry (ROR) data cleaned and standardized for institution matching.
+    columns:
+      - name: ror_id
+        description: ROR identifier 
+      - name: ror_display_name
+        description: Display name for the ROR institution.
+      - name: ror_country_iso
+        description: ISO country code for the ROR institution.
+      - name: ror_country_name
+        description: Standardized country name for the ROR institution.
+      - name: domains
+        description: Array of institutional domains associated with ROR.
 
   - name: stg_ror_embeddings
     description: Semantic embeddings generated for ROR reference institutions.
@@ -131,3 +149,123 @@ models:
       - name: cosine_similarity
         description: Similarity score between candidate and matched ROR institution.
 
+  - name: stg_ror_domains
+    description: ROR domains mapped to institutions, excluding generic and ambiguous domains.
+    columns:
+      - name: domain
+        description: Normalized domain used for institution matching.
+        tests:
+          - not_null
+          - unique
+      - name: ror_id
+        description: ROR identifier for the matched institution.
+        tests:
+          - not_null
+      - name: ror_name
+        description: ROR display name for the matched institution.
+      - name: ror_country
+        description: Country associated with the matched institution.
+
+  - name: stg_ror_match_decisions
+    description: Decision logic for vector similarity matches - validates cosine similarity scores and country ISO alignment to determine match quality (1-to-1, auto-approve, needs review, or reject).
+    columns:
+      - name: candidate_input
+        description: Embedding input text for the candidate institution.
+        tests:
+          - not_null
+          - unique
+      - name: candidate_inst_name
+        description: Candidate institution name.
+      - name: candidate_country
+        description: Candidate institution country name.
+      - name: candidate_country_iso
+        description: Candidate institution ISO country code.
+      - name: ror_id
+        description: Matched ROR identifier.
+      - name: ror_name
+        description: Matched ROR institution name.
+      - name: ror_country
+        description: Matched ROR institution country name.
+      - name: ror_country_iso
+        description: Matched ROR institution ISO country code.
+      - name: cosine_similarity
+        description: Vector similarity score between 0 and 1. Perfect match = 1.0.
+      - name: country_iso_match
+        description: Boolean indicating if candidate and ROR country ISO codes match.
+      - name: match_status
+        description: |
+          Match decision status:
+          - 1 to 1 match: Perfect similarity (Score = 1.0)
+          - auto_approve: High confidence (Score >= 0.97) with matching country
+          - needs_review: High to medium confidence (Score >= 0.95) but country mismatch or lower confidence
+          - reject: Low confidence match (Score < 0.95)
+
+  - name: stg_ror_domain_fallback_targets
+    description: Priority 2 fallback enrichment via email domain to ROR mapping. People without vector 1-to-1 match are enriched using their email domain.
+    columns:
+      - name: canonical_segment_id
+        description: Unique canonical segment identifier.
+      - name: email
+        description: Email address for domain extraction.
+      - name: researcher_id
+        description: Researcher ID if available.
+      - name: snid
+        description: SNID if available.
+      - name: raw_inst_name
+        description: Original institution name from the source.
+      - name: email_domain
+        description: Extracted email domain used for matching.
+      - name: ror_id
+        description: Matched ROR identifier via domain lookup.
+      - name: standardized_institution_name
+        description: Standardized institution name from ROR.
+      - name: ror_country
+        description: Country information from ROR.
+      - name: enrichment_source
+        description: Always 'Domain_ROR_match' for this model.
+
+  - name: stg_wikidata_fallback_targets
+    description: Priority 3 fallback enrichment via WikiData domain to ROR mapping. People without vector/domain matches are enriched using WikiData domain data.
+    columns:
+      - name: canonical_segment_id
+        description: Unique canonical segment identifier.
+      - name: email
+        description: Email address for domain extraction.
+      - name: researcher_id
+        description: Researcher ID if available.
+      - name: snid
+        description: SNID if available.
+      - name: raw_inst_name
+        description: Original institution name from the source.
+      - name: email_domain
+        description: Extracted email domain used for matching.
+      - name: ror_id
+        description: ROR identifier from WikiData domain mapping.
+      - name: standardized_institution_name
+        description: Standardized institution name from ROR.
+      - name: ror_country
+        description: Country information from ROR.
+      - name: enrichment_source
+        description: Always 'WIKIDATA_ROR_NAME' for this model (WikiData domain mapped to ROR name).
+
+  - name: stg_wikidata_names_fallback_targets
+    description: Priority 4 ultimate fallback enrichment via WikiData institution names for ROR-missing IDs. People without any higher-priority match are enriched using institution names from WikiData.
+    columns:
+      - name: canonical_segment_id
+        description: Unique canonical segment identifier.
+      - name: email
+        description: Email address for domain extraction.
+      - name: researcher_id
+        description: Researcher ID if available.
+      - name: snid
+        description: SNID if available.
+      - name: raw_inst_name
+        description: Original institution name from the source.
+      - name: ror_id
+        description: ROR identifier from WikiData domain mapping (may not exist in official ROR data).
+      - name: standardized_institution_name
+        description: Institution name from WikiData (used when ROR ID is missing from official ROR dataset).
+      - name: ror_country
+        description: Null for this model as ROR ID may not exist in official dataset.
+      - name: enrichment_source
+        description: Always 'WIKIDATA_NAME' for this model (WikiData name fallback).

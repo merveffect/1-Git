@@ -60,8 +60,8 @@ resolved as (
 
         case
             when a.raw_inst_name is not null then 'Authors'
-            when r.raw_inst_name is not null then 'CRP by researcher id'
-            when s.raw_inst_name is not null then 'CRP by snid'
+            when r.raw_inst_name is not null then 'CRP_by_researcher_id'
+            when s.raw_inst_name is not null then 'CRP_by_snid'
         end as enrichment_source,
 
 

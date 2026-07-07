@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: institution_enriched_audience
+    description: |
+      Final enriched institution data for audience members.
+      
+      Combines institution enrichment from four priority fallback branches:
+      1. Vector search (1-to-1 ROR match via BigQuery ML embeddings)
+      2. Email domain mapping to ROR
+      3. WikiData domain mapping to ROR with name standardization
+      4. WikiData institution name fallback for ROR-missing IDs
+      
+      Each canonical_segment_id is enriched based on highest-priority match available.
+      If no institutional data exists, no row is output for that segment.
+    
+    columns:
+      - name: canonical_segment_id
+        description: Unique identifier for the audience member/segment
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: email
+        description: Email address of the audience member
+      
+      - name: researcher_id
+        description: Researcher ID from CRP if available
+      
+      - name: snid
+        description: SNID if available
+      
+      - name: original_raw_name
+        description: |
+          Original raw institution name from the input source
+          (Authors email institution, CRP database, or raw WikiData entry)
+      
+      - name: enrichment_source
+        description: |
+          Source of the enrichment data. Priority order:
+          - Authors: Institution from author email affiliation
+          - CRP_by_researcher_id: Institution from CRP researcher lookup
+          - CRP_by_snid: Institution from CRP SNID lookup
+          - Domain_ROR_match: Institution from ROR via email domain matching
+          - WIKIDATA_ROR_NAME: Institution from WikiData with ROR ID mapping
+          - WIKIDATA_NAME: Institution from WikiData name fallback (ROR ID missing from official ROR)
+        data_tests:
+          - accepted_values:
+              values:
+                - Authors
+                - CRP_by_researcher_id
+                - CRP_by_snid
+                - Domain_ROR_match
+                - WIKIDATA_ROR_NAME
+                - WIKIDATA_NAME
+      
+      - name: standardized_institution_name
+        description: |
+          Standardized institution name from the enrichment source.
+        data_tests:
+          - not_null
+      
+      - name: ror_id
+        description: |
+          Research Organization Registry (ROR) identifier.
+      
+      - name: ror_country
+        description: Country information from ROR database (if available)
