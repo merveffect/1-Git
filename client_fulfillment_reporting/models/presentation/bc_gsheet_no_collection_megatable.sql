@@ -18,7 +18,7 @@ WITH gsheet_null_cid AS (
 
 pageview AS (
   SELECT page_path, evt_date, ARRAY_CONCAT_AGG(pageview_data) AS pageview_data
-  FROM {{ ref('stg_collections_ga_pageview') }}
+  FROM {{ ref('stg_collections_ga_pageview_no_collection_id') }}
   {% if is_incremental() %}
     WHERE evt_date >= (
         SELECT DATE_SUB(MAX(evt_date), INTERVAL 3 DAY)

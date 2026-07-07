@@ -40,6 +40,9 @@ models:
   - name: stg_collections_ga_pageview
     description: Staging table that groups GA4 pageview metrics by page path and event date.
 
+  - name: stg_collections_ga_pageview_no_collection_id
+    description: Staging table that groups GA4 pageview metrics by page path and event date for rows where collection_id is NULL or empty.
+
   - name: stg_collections_ga_users
     description: Staging table that aggregates GA4 users by page path and event date.
 
