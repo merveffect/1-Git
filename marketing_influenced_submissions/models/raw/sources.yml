@@ -1,0 +1,60 @@
+version: 2
+
+sources:
+  - name: joint_submissions_core
+    database: datasn-submissions-55677263
+    schema: prod_joint_submissions_core
+    description: >
+      Core joint submissions data (SNAPP, EJP, EM). Read-only upstream owned by
+      the submissions team. Latest view of all submissions, authors and journals.
+    tables:
+      - name: submissions
+        description: Core submissions (manuscripts). Partitioned by submission_date (month).
+      - name: authors
+        description: Authors and co-authors per submission, with email/SNID/roles.
+      - name: journals
+        description: Journal metadata (imprint, publishing model, title).
+
+  # NOTE (pending SN confirmation): the two *_native tables below are produced by
+  # ANOTHER project's pipeline (RMDB refresh_native_sources()) and live in the AE
+  # team's datasets. Depending on them cross-project must be validated with the
+  # client — they could be renamed/removed or their refresh cadence changed
+  # without notice.
+  #
+  # Freshness safeguard: dbt's native (metadata-based) source freshness is enabled
+  # below and works with the project ADC (.gcloud_profile). Run `dbt source
+  # freshness` to detect a stalled shared refresh. Thresholds assume a ~daily
+  # refresh and are to be tuned once SN confirms the actual cadence.
+  - name: ae_metadata
+    database: dat-analytics-eng-ec869189
+    schema: ae_metadata
+    description: Analytics Engineering shared metadata.
+    tables:
+      - name: channel_groupings
+        identifier: channel_groupings_native
+        description: >
+          RM Channel Groupings reference. NATIVE table refreshed daily from the
+          Drive-backed sheet by the shared refresh_native_sources() job (RMDB
+          pipeline, service account). We read the _native table so no Drive scope
+          is needed. Maps GA4 source/medium/adnetwork to sub/main channels.
+        config:
+          freshness:
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 96, period: hour}
+
+  - name: e2e_b2c_researcher_dev
+    database: snproject-cbb9ca25
+    schema: e2e_b2c_researcher_dev
+    description: Research-marketing reference tables used by the MIS pipeline.
+    tables:
+      - name: journal_table
+        identifier: journal_table_native
+        description: >
+          Journal portfolio metadata (business_model, main_group, portfolio).
+          NATIVE table refreshed daily from the Drive-backed sheet (same shared
+          job as channel_groupings). NOTE: journal_id is INTEGER here vs STRING
+          in joint_submissions_core.journals (cast to string downstream).
+        config:
+          freshness:
+            warn_after: {count: 48, period: hour}
+            error_after: {count: 96, period: hour}

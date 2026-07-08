@@ -17,5 +17,18 @@ clean-targets:
 
 models:
   marketing_influenced_submissions:
+    +persist_docs:
+      relation: true
+      columns: true
+    raw:
+      +materialized: view
+      +tags: [raw]
     staging:
+      +materialized: view
+      +tags: [staging]
+    intermediate:
       +materialized: table
+      +tags: [intermediate]
+    presentation:
+      +materialized: table
+      +tags: [presentation]
