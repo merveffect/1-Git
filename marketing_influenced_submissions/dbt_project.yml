@@ -15,6 +15,15 @@ clean-targets:
   - target
   - dbt_packages
 
+# Monthly processing window for the MIS pipeline. Override per run, e.g.:
+#   dbt build --vars '{mis_start_date: 2026-06-01, mis_end_date: 2026-06-30}'
+# Incremental models use insert_overwrite on the month partition, so re-running a
+# month replaces that partition idempotently. Default = May 2026 (Colab benchmark
+# month: 307,176 SNAPP+EM submissions).
+vars:
+  mis_start_date: '2026-05-01'
+  mis_end_date: '2026-05-31'
+
 models:
   marketing_influenced_submissions:
     +persist_docs:

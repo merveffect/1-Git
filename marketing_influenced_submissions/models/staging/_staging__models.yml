@@ -59,6 +59,21 @@ models:
       - name: imprint_code
         description: Short imprint code (e.g. BMCE).
 
+  - name: stg_journal_portfolio
+    description: >
+      Journal portfolio reference (raw passthrough of journal_table_native, ~3187
+      rows) with journal_id cast to STRING to match joint_submissions_core. Provides
+      business_model / main_group / portfolio / main_discipline for the identity and
+      submissions layers. NB: not every core journal_id exists here (left join
+      downstream), so journal_id is not asserted unique until confirmed with SN.
+    columns:
+      - name: journal_id
+        description: Springer Nature journal ID (cast to string).
+        data_tests:
+          - not_null
+      - name: portfolio
+        description: Portfolio grouping used in dashboards.
+
   - name: stg_channel_groupings
     description: >
       RM Channel Groupings reference (raw passthrough of the native table
