@@ -20,7 +20,7 @@ tasks:
     name: deploy-dev
     script: \sndbt deploy --verbose
     docker:
-      image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
+      image: eu.gcr.io/halfpipe-io/sn-dbt-0.3
     vars:
       GCP_PROJECT: snproject-cbb9ca25
       GCP_SERVICE_ACCOUNT_INFO: ((dev.dbt_deployer_service_account))
@@ -30,7 +30,7 @@ tasks:
     name: deploy-prod
     script: \sndbt deploy --verbose
     docker:
-      image: eu.gcr.io/halfpipe-io/sn-dbt-0.2
+      image: eu.gcr.io/halfpipe-io/sn-dbt-0.3
     vars:
       GCP_PROJECT: snproject-cbb9ca25
       GCP_SERVICE_ACCOUNT_INFO: ((prod.dbt_deployer_service_account))

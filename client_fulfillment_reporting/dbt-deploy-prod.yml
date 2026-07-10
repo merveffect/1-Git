@@ -2,7 +2,7 @@ project_id: "snproject-cbb9ca25"
 location: europe-west1
 runner_service_account: prod-analytics-dbt-runner@snproject-cbb9ca25.iam.gserviceaccount.com
 invoker_service_account: prod-analytics-dbt-deployer@snproject-cbb9ca25.iam.gserviceaccount.com
-teams_webhook_url: https://springernature.webhook.office.com/webhookb2/f9b9be4c-f11b-491d-94ed-527bdd97fb6a@d9aabe7c-608b-4fe1-957c-0739cb0dfe22/IncomingWebhook/341d2a4367a94b9ca66db8b1f0bb139d/27126adb-be10-44e9-8cca-201830372ef0/V2L-RDj6-kGy_dx1TnI-FNZsqZSscwJuaKAAfUR4cvyjI1
+teams_webhook_url: https://defaultd9aabe7c608b4fe1957c0739cb0dfe.22.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3c0845089bc44260b6229c340c9260aa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YDUX4OEctyF7a3aelewbiTuyQDVUKXJEN7SRxmiWcT4
 dbt_target: prod
 
 
