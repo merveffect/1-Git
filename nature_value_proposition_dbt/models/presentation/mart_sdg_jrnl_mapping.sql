@@ -33,12 +33,12 @@ journal_sdg AS (
 journal_meta AS (
   -- Nature journal metadata (Launch year)
   SELECT
-    LOWER(TRIM(Title)) AS journal_title_clean,
-    `Product ID` AS journal_id_meta,
-    `Launch Year` AS launch_year
+    journal_title_clean,
+     journal_id,
+     launch_year
   FROM
 
-  {{source('journal_metadata', 'nature_title_list') }}
+  {{ref('stg_jrnl_metadata') }}
 
 ),
 

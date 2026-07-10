@@ -34,11 +34,10 @@ SELECT
   No_Lic,
   Total_Item_Req
 
-FROM 
-
-{{ source('tbl_bp_monthly', 'tbl_bp_monthly') }}
+FROM {{ source('tbl_bp_monthly', 'tbl_bp_monthly') }}
 
 WHERE
+
 
 {% if is_incremental() %}
 
@@ -64,7 +63,6 @@ WHERE
     'Author',
     'Personal'
   )
-
   AND BP_Channel_Type NOT IN ('Trade Relations')
   AND Jrnl_Title_No IN (
     '41586','43587','41550','41551','41587','43018','44161','41929','41556',
@@ -80,12 +78,13 @@ WHERE
 ),
 
 months_2026 AS (
+
 SELECT
   COUNT(DISTINCT EXTRACT(MONTH FROM Cal_Date)) AS months_available_2026
 FROM base
 WHERE Cal_Year = 2026
-)
 
+)
 
 SELECT
   b.bp_id,
@@ -119,13 +118,19 @@ SELECT
   SUM(b.Total_Item_Req) AS Total_Item_Requests,
 
   -- dynamic projection
-  SUM(CASE WHEN b.Cal_Year = 2026 THEN b.No_Lic ELSE 0 END)
-  * SAFE_DIVIDE(12, m.months_available_2026)
-  AS Projected_No_License_2026,
+CAST(
+  ROUND(
+    SUM(CASE WHEN b.Cal_Year = 2026 THEN b.No_Lic ELSE 0 END)
+    * (12.0 / m.months_available_2026)
+  ) AS INT64
+) AS Projected_No_License_2026,
 
-  SUM(CASE WHEN b.Cal_Year = 2026 THEN b.Total_Item_Req ELSE 0 END)
-  * SAFE_DIVIDE(12, m.months_available_2026)
-  AS Projected_Item_Requests_2026
+CAST(
+  ROUND(
+    SUM(CASE WHEN b.Cal_Year = 2026 THEN b.Total_Item_Req ELSE 0 END)
+    * (12.0 / m.months_available_2026)
+  ) AS INT64
+) AS Projected_Item_Requests_2026
 
 FROM base b
 CROSS JOIN months_2026 m

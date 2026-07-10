@@ -43,15 +43,15 @@ FROM
 journal_meta AS (
 
 SELECT
-    LOWER(TRIM(Title)) AS journal_title_clean,
+   journal_title_clean,
 
-    `Product ID` AS journal_id_meta,
+    journal_id,
 
-    `Launch Year` AS launch_year
+    launch_year
 
 FROM
 
-{{source('journal_metadata', 'nature_title_list') }}
+{{ref('stg_jrnl_metadata') }}
 
 ),
 
