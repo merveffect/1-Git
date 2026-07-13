@@ -260,11 +260,18 @@ CAST(braze_campaigns_clicked_last_1000_days AS STRING) AS braze_campaigns_clicke
 CAST(gl_externaldiplay_young_journals AS BOOL) AS gl_externaldiplay_young_journals,
   
 --25/06/2026 added columns
-CAST(gl_multichannel_leader_persona AS BOOL) AS gl_multichannel_leader_persona
+CAST(gl_multichannel_leader_persona AS BOOL) AS gl_multichannel_leader_persona,
+
+--13/07/2026 added columns
+CAST(gl_externaldisplay_collections AS BOOL) AS gl_externaldisplay_collections,
+CAST(gl_externaldisplay_collection_cta_engagers_180_d AS BOOL) AS gl_externaldisplay_collection_cta_engagers_180_d,
+CAST(nmo_user_groups AS STRING) AS nmo_user_groups,
+CAST(nmo_job_title AS STRING) AS nmo_job_title,
+CAST(books_submission_title AS STRING) AS books_submission_title,
+CAST(journal_submission_title AS STRING) AS journal_submission_title
 
   from {{ ref('stg_hashing_pii') }} cleaned
   left join {{ ref('stg_df_audience_explorer_id_flags') }} flags
   on cleaned.canonical_segment_id = flags.canonical_segment_id
   where cleaned.flag_column = 1
-
- 
+  
