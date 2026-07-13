@@ -15,8 +15,9 @@ inst_for2 AS (
     SUM(no_of_grants) AS grants,
     SUM(total_funding_eur) AS total_funding_eur
   FROM
-  {{ref('stg_for2_top10_by_funding_per_institute') }}
-    
+
+    {{ref("stg_for2_top10_by_funding_per_institute")}}
+ 
   GROUP BY
     org_grid_id,
     for2name
@@ -32,7 +33,8 @@ journal_for2 AS (
     for2,
     SUM(no_of_articles) AS journal_for2_articles
   FROM
-    {{ref('stg_jrnl_for2_top10') }}
+    
+    {{ref("stg_jrnl_for2_top10")}}
 
   GROUP BY
     journal_id,
@@ -45,13 +47,11 @@ journal_for2 AS (
 -------------------------------------------------- */
 journal_meta AS (
   SELECT
-    LOWER(TRIM(Title)) AS journal_title_clean,
-    `Product ID` AS journal_id_meta,
-    `Launch Year` AS launch_year
+    journal_title_clean,
+    journal_id,
+    launch_year
   FROM
-
-  {{source('journal_metadata', 'nature_title_list') }}
- 
+    {{ref("stg_jrnl_metadata")}}
 ),
 
 /* --------------------------------------------------
@@ -64,11 +64,10 @@ bp_grid AS (
     BP_Full_Name,
     Jrnl_Title,
     LOWER(TRIM(Jrnl_Title)) AS journal_title_clean
-    
   FROM
 
-    {{ref('mart_top_10_denied_nature_jrnls_per_institute') }}
-   
+    {{ref("mart_top_10_denied_nature_jrnls_per_institute")}}
+
 ),
 
 base AS (

@@ -4,6 +4,7 @@
 )
 }}
 
+
 WITH grant_for2_org AS (
   SELECT
     SAFE_CAST(g.id AS STRING) AS grant_id,
@@ -12,9 +13,9 @@ WITH grant_for2_org AS (
     org.name AS org_name,
     SUM(SAFE_CAST(g.funding_eur AS FLOAT64)) AS funding_eur
   FROM 
-  
-  {{source('grants', 'grants') }} g
-  
+
+  {{source('grants','grants')}} g
+
   LEFT JOIN UNNEST(g.organisation_details) AS org
   LEFT JOIN UNNEST(g.categories.for_2020_v2022.second_level.full) AS f
   WHERE
@@ -48,7 +49,7 @@ ranked AS (
     *,
     ROW_NUMBER() OVER (
       PARTITION BY org_grid_id
-      ORDER BY total_funding_eur ASC
+      ORDER BY total_funding_eur DESC
     ) AS rank_within_org
   FROM agg
 )
@@ -62,6 +63,3 @@ SELECT
 FROM ranked
 WHERE rank_within_org <= 10
 ORDER BY org_grid_id, rank_within_org
-
-
-
