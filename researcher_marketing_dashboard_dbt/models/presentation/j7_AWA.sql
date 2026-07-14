@@ -3,7 +3,8 @@
     incremental_strategy="insert_overwrite",
     tags= ["daily", "j7", "ta_j7","rmdb_j7_mart"],
     partition_by = {"field": "date","data_type": "date"},
-    cluster_by = ["clean_campaign", "country", "sub_channels"]
+    cluster_by = ["clean_campaign", "country", "sub_channels"],
+    require_partition_filter=true
  )}}
 
 select 

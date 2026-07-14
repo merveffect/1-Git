@@ -2,7 +2,8 @@
     materialized = "incremental",
     incremental_strategy="insert_overwrite",
     partition_by = {"field": "etoc_date","data_type": "date"},
-    tags= ["daily", "etocs"]
+    tags= ["daily", "etocs"],
+    require_partition_filter=true
  )}}
 
 SELECT

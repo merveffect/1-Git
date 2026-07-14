@@ -3,7 +3,8 @@
     incremental_strategy="insert_overwrite",
     tags= ["daily", "ta_j7"],
     partition_by = {"field": "date","data_type": "date"},
-    cluster_by = ["journal_id", "country", "oatype", "researchER_marketing_activity"]
+    cluster_by = ["journal_id", "country", "oatype", "researchER_marketing_activity"],
+    require_partition_filter=true
  )}} 
 
 SELECT

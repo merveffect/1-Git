@@ -12,7 +12,7 @@ rmdb_dbt:
       location: EU # Optional, one of US or EU
       priority: interactive
       retries: 1
-
+      maximum_bytes_billed: 500000000000  # 500 GB
       
     prod:
       type: bigquery
@@ -24,6 +24,7 @@ rmdb_dbt:
       location: EU # Optional, one of US or EU
       priority: interactive
       retries: 1
+      maximum_bytes_billed: 500000000000  # 500 GB query limit
 
     sandbox:
       type: bigquery
@@ -35,6 +36,7 @@ rmdb_dbt:
       location: EU # Optional, one of US or EU
       priority: interactive
       retries: 1
+      maximum_bytes_billed: 500000000000  # 500 GB query limit
     
 
   # target: "{{ env_var('DBT_TARGET', 'dev') }}" 
