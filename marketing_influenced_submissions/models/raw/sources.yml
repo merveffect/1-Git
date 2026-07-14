@@ -58,3 +58,132 @@ sources:
           freshness:
             warn_after: {count: 48, period: hour}
             error_after: {count: 96, period: hour}
+      - name: snapp_submission_funnel_new
+        description: >
+          SNAPP submission funnel: GA-observed submission events (submission_id,
+          user_pseudo_id, journal, full_date). Filtered to snapp_process =
+          'snapp_success' in the submissions layer. Maps GA users to submissions.
+      - name: snapp_regional_clusters
+        description: >
+          Country -> region / country_grouping lookup for channel-planning.
+          SN-REVIEW (E2): this is a Google Sheets EXTERNAL table, so querying it
+          via dbt needs a Drive OAuth scope that SN policy blocks (same issue as
+          the channel-groupings sheet). Left-joined in Phase 8; region columns are
+          null in dev until a native/seed equivalent is provided.
+
+  # Identity-resolution sources (Phase 1B). Access verified 2026-07-14.
+  - name: cdp_profile_sync
+    database: cdp-data-55497fbb
+    schema: cdp_profile_sync
+    description: CDP profile sync — active email/GA client_id identifiers.
+    tables:
+      - name: user_identifiers
+        description: >
+          canonical_segment_id -> typed identifiers (email, ga_client_id, ...).
+          Source of the ACTIVE identity table mis_2_email_clientid_new.
+
+  - name: smc_products
+    database: datasn-rm-live
+    schema: smc_products
+    description: SMC author behaviour (SAP outbound id -> author email).
+    tables:
+      - name: smc_author_behavior_by_persona
+        description: >
+          author_email + interaction_source_object (first 36 chars = SAP outbound
+          id). Feeds the GA4+SMC identity branch. SN-REVIEW (A2): last refresh
+          2026-02-26; Colab notes "stop from June".
+
+  - name: braze_interactions
+    database: dat-analytics-eng-ec869189
+    schema: braze_interactions_presentation
+    description: Braze email interactions (user_id = CEP id -> email).
+    tables:
+      - name: interactions_datasource
+        description: Braze interactions; email_click rows map cep_id -> email.
+
+  - name: core_researcher_profiles_restricted
+    database: aceproducts-143febd8
+    schema: core_researcher_profiles_restricted
+    description: Researcher profiles (restricted) — email lookup.
+    tables:
+      - name: email_lookup
+        description: researcher_id -> email lookup for the power-author flag.
+
+  - name: core_researcher_profiles
+    database: aceproducts-143febd8
+    schema: core_researcher_profiles
+    description: Researcher profiles — loyalty / author group.
+    tables:
+      - name: researcher_profiles_out
+        description: >
+          researcher_id -> Total_AMT_5yr_Author_Group (power-author classification).
+
+  # Attribution / campaign metadata (Phases 3-4, 8).
+  - name: marmind_fnd
+    database: datasn-rm-live
+    schema: marmind_fnd
+    description: Marmind campaign metadata (workspace + channel categories).
+    tables:
+      - name: marmind_data
+        description: >
+          marmind_campaign_code -> workspace_category, channels_categories.
+          Joined on UPPER(marmind_code) to GA activity.
+
+  - name: ga4
+    database: snproject1d3c9a0a
+    schema: analytics_290402450
+    description: GA4 raw events export (researcher web analytics).
+    tables:
+      - name: events
+        identifier: events_*
+        description: >
+          GA4 daily-sharded raw events. Read with _table_suffix month filters.
+          Provides user_properties (sap_outbound_id, cep_id), manual_campaign,
+          google_ads_campaign, event params and device info.
+
+  - name: ga4_ria_researcher_report_dataform
+    database: snproject-cbb9ca25
+    schema: ga4_ria_researcher_report_dataform
+    description: GA4 RIA researcher report (dataform build; primary from Nov 2025).
+    tables:
+      - name: j7
+        description: >
+          Sessions by campaign x channel; used to split Google auto-tagged
+          campaigns into SEA / External Display shares.
+
+  - name: author_profile
+    database: datasn-rm-live
+    schema: author_profile
+    description: SDM author profiles (author -> country).
+    tables:
+      - name: sdm_author_profiles
+        description: author_email -> author_country (for submission country).
+
+  - name: prod_articles_pipeline_reporting
+    database: datasn-submissions-55677263
+    schema: prod_articles_pipeline_reporting
+    description: Articles pipeline reporting (stage history) for out-to-review.
+    tables:
+      - name: rpt_stage_history
+        description: internal_submission_id -> stage_id (stage 5 = out to review).
+
+  # Existing prod MIS outputs read as sources: the collections-email input (native
+  # table backing the Sheets input) and the frozen deprecated identity tables that
+  # the var-gated union optionally re-includes.
+  - name: mis_prod
+    database: snproject-cbb9ca25
+    schema: RM_Submissions_mktg_infl
+    description: >
+      Existing prod MIS dataset, read-only. Used for the collections-email input
+      and for optionally re-including frozen deprecated identity tables.
+    tables:
+      - name: mis_input_data_collections_emails_2
+        description: >
+          Collections-email marmind mapping (native, 63 rows). SN-REVIEW (D4): the
+          upstream is a Google Sheet; we read the existing native table for dev.
+      - name: mis_2_email_clientid
+        description: DEPRECATED CDP identity (frozen 2025-09-04). Only read if identity_include_cdp_legacy.
+      - name: mis_2_email_clientid_cdp
+        description: DEPRECATED CDP user_traits identity (frozen 2025-02-05). Only read if identity_include_cdp_user_traits.
+      - name: mis_1_email_clientid
+        description: DEPRECATED SNID+SAP identity. Only read if identity_include_snid.
