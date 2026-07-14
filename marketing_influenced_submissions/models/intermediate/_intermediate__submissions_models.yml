@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: int_subs_unique
+    description: Submission-level spine (Colab mis_1_subs_unique), one row per submission.
+    columns:
+      - name: internal_submission_id
+        data_tests: [not_null, unique]
+      - name: submission_date
+        data_tests: [not_null]
+      - name: flag_power_author
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  - name: int_subs_clientids_ga
+    description: GA-observed SNAPP submissions (Colab mis_1_subs_clientids_1).
+    columns:
+      - name: ga_submission_id
+        data_tests: [not_null]
+      - name: user_pseudo_id
+        data_tests: [not_null]
+
+  - name: int_sub_details
+    description: >
+      Submission x user detail with role flags (Colab mis_2_sub_details_2), after the
+      author-inclusion filter. Grain: (internal_submission_id, user_pseudo_id).
+    columns:
+      - name: internal_submission_id
+        data_tests: [not_null]
+      - name: user_pseudo_id
+        description: >
+          GA client_id for the author. NULL is valid: a real author (coauthor/
+          corresponding) whose email has no GA identity mapping, so not GA-trackable.
