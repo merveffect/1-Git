@@ -15,16 +15,19 @@ sources:
       - name: journals
         description: Journal metadata (imprint, publishing model, title).
 
-  # NOTE (pending SN confirmation): the two *_native tables below are produced by
-  # ANOTHER project's pipeline (RMDB refresh_native_sources()) and live in the AE
-  # team's datasets. Depending on them cross-project must be validated with the
-  # client — they could be renamed/removed or their refresh cadence changed
-  # without notice.
+  # NOTE: the two *_native tables below are produced by another project's pipeline
+  # (RMDB refresh_native_sources()) and live in AE-team datasets.
   #
-  # Freshness safeguard: dbt's native (metadata-based) source freshness is enabled
-  # below and works with the project ADC (.gcloud_profile). Run `dbt source
-  # freshness` to detect a stalled shared refresh. Thresholds assume a ~daily
-  # refresh and are to be tuned once SN confirms the actual cadence.
+  # channel_groupings_native — CONFIRMED by Anup Mane (2026-07-15): correct
+  # cross-project source; AE team owns the table; underlying Google Sheet is
+  # updated quarterly.
+  #
+  # journal_table_native — same refresh job, but not yet explicitly confirmed by SN.
+  #
+  # Freshness safeguard: dbt source freshness (metadata-based) via project ADC
+  # (.gcloud_profile). Thresholds for channel_groupings match the quarterly sheet
+  # cadence (warn ~100d, error ~120d). journal_table_native keeps the same
+  # tentative thresholds until SN confirms.
   - name: ae_metadata
     database: dat-analytics-eng-ec869189
     schema: ae_metadata
@@ -33,14 +36,16 @@ sources:
       - name: channel_groupings
         identifier: channel_groupings_native
         description: >
-          RM Channel Groupings reference. NATIVE table refreshed daily from the
+          RM Channel Groupings reference. NATIVE table materialised from the
           Drive-backed sheet by the shared refresh_native_sources() job (RMDB
-          pipeline, service account). We read the _native table so no Drive scope
-          is needed. Maps GA4 source/medium/adnetwork to sub/main channels.
+          pipeline, service account). SN-confirmed (Anup, 2026-07-15): correct
+          source, owned by the AE team; underlying sheet updated quarterly. We
+          read the _native table so no Drive scope is needed. Maps GA4
+          source/medium/adnetwork to sub/main channels.
         config:
           freshness:
-            warn_after: {count: 48, period: hour}
-            error_after: {count: 96, period: hour}
+            warn_after: {count: 100, period: day}
+            error_after: {count: 120, period: day}
 
   - name: e2e_b2c_researcher_dev
     database: snproject-cbb9ca25
@@ -51,13 +56,14 @@ sources:
         identifier: journal_table_native
         description: >
           Journal portfolio metadata (business_model, main_group, portfolio).
-          NATIVE table refreshed daily from the Drive-backed sheet (same shared
-          job as channel_groupings). NOTE: journal_id is INTEGER here vs STRING
-          in joint_submissions_core.journals (cast to string downstream).
+          NATIVE table from the same refresh_native_sources() job as
+          channel_groupings (pending explicit SN confirmation). NOTE: journal_id
+          is INTEGER here vs STRING in joint_submissions_core.journals (cast to
+          string downstream).
         config:
           freshness:
-            warn_after: {count: 48, period: hour}
-            error_after: {count: 96, period: hour}
+            warn_after: {count: 100, period: day}
+            error_after: {count: 120, period: day}
       - name: snapp_submission_funnel_new
         description: >
           SNAPP submission funnel: GA-observed submission events (submission_id,
@@ -187,3 +193,12 @@ sources:
         description: DEPRECATED CDP user_traits identity (frozen 2025-02-05). Only read if identity_include_cdp_user_traits.
       - name: mis_1_email_clientid
         description: DEPRECATED SNID+SAP identity. Only read if identity_include_snid.
+      - name: mis_2_ga_data
+        description: >
+          Prod accumulated manual-campaign GA extract (user x event x campaign, with
+          clean_campaign + marmind_code). Read instead of re-scanning raw GA4 events
+          when ga_extract_from_prod=true (identity-independent; ~2.3TB unpartitioned).
+      - name: mis_2_google_auto_1
+        description: >
+          Prod accumulated Google auto-tagged GA extract. Read instead of re-scanning
+          raw GA4 events when ga_extract_from_prod=true (~14GB).

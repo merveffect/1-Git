@@ -39,6 +39,12 @@ vars:
   identity_include_snid: false            # mis_1_email_clientid (SNID path) - deprecated + source-of-truth unconfirmed -> DROP
   identity_conflict_strategy: 'keep_all'  # 'keep_all' (Colab union, keep all email/client_id pairs) | 'priority'
 
+  # --- GA extract source ---
+  # true  = read the accumulated prod GA extracts (mis_2_ga_data / mis_2_google_auto_1)
+  #         -> ~$15 one-off, identity-independent, lets Phases 3-8 be materialised cheaply.
+  # false = re-scan ~7 months of raw GA4 events (Colab-faithful) -> ~$55.
+  ga_extract_from_prod: true
+
   # --- Attribution windows / thresholds ---
   attribution_window_days: 180            # DATE_DIFF(submission, event) in (0, 180]
   ga_lookback_months: 6                   # GA activity pulled 7 calendar months back (submission month - 6)

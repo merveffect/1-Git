@@ -9,6 +9,30 @@
 
 {{ config(materialized='table', tags=['ga', 'ga_expensive']) }}
 
+{% if var('ga_extract_from_prod') %}
+
+-- Cheap path: read the accumulated prod extract instead of re-scanning raw GA4 events.
+-- Identity-independent, so downstream still uses the new dev identity resolution.
+select
+    user_pseudo_id,
+    event_date,
+    campaign,
+    campaign_name_cleaned,
+    journal_id,
+    hostname_cleaned,
+    hostname,
+    event_name,
+    medium,
+    source,
+    event_count,
+    clean_campaign,
+    marmind_code
+from {{ source('mis_prod', 'mis_2_ga_data') }}
+where event_date >= date_sub(date('{{ var("mis_start_date") }}'), interval {{ var("ga_lookback_months") }} month)
+  and event_date <= date('{{ var("mis_end_date") }}')
+
+{% else %}
+
 select
     *,
     regexp_extract(lower(clean_campaign), r'[A-z]{4}_[A-z0-9]{5}_[A-z0-9]{4}_.._[A-z0-9]{4}_([A-z0-9\-]{5}).*') as marmind_code
@@ -52,3 +76,5 @@ from (
         group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
     )
 )
+
+{% endif %}
