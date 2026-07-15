@@ -4,7 +4,7 @@
 -- chatgpt/etoc/peeref/letpub/growkudos exceptions, google+cpc External Display
 -- exclusion) at the GA4 join step, which will live in the Layer 3 intermediate.
 
-with source as (
+with raw_channel_groupings as (
 
     select * from {{ source('ae_metadata', 'channel_groupings') }}
 
@@ -19,7 +19,7 @@ renamed as (
         sub_channels,
         main_channels,
         ga4_console_grouping
-    from source
+    from raw_channel_groupings
 
 )
 
