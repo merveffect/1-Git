@@ -58,6 +58,7 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 | # | Decision | Default | SN question |
 |---|---|---|---|
 | E1 | Dashboard column contracts | column-for-column parity with prod `mis_2_subs_all` / `mis_2_subs_coll_2` / `_4_v8` | Confirm exact contract before promotion |
+| E1a | `repeated_author_flag` as a dashboard output | [CONFIRMED] Giorgia 2026-07-16 lists `repeated_author_flag` as a direct dashboard table (with `mis_2_subs_all`, `_4_v8`, + the two EM tables). Exposed as a `presentation` model (thin contract over `int_repeated_author_flag`; schema = prod: internal_submission_id STRING, source_system STRING, month DATE, repeated_author INT). May-2026 dev vs prod: rows 340,310 vs 340,880 (−0.17%), repeated rate 0.9502 vs 0.9501 (~0); rows = distinct submission in both (one flag per submission holds). | Line-by-line check vs Giorgia's refreshed Colab still advisable, but numbers already match prod |
 | E2 | `snapp_regional_clusters` (region, country_grouping) | Sheets-backed external table — Drive scope BLOCKED; join gated by `enable_regional_clusters` var (default false -> null in dev) | Need native/seed equivalent |
 | E3 | `channel_planning_multi_threshold` | 0.5 | Confirm Phase 8 uses 0.5 (vs 0.8 main path) |
 | E4 | `_3` accumulation idempotency | dbt incremental insert_overwrite by month (replaces Colab non-atomic INSERT) | Confirm month-grain replace is acceptable |
