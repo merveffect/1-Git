@@ -15,15 +15,16 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 
 | # | Var / decision | Default | Rationale / evidence | SN question |
 |---|---|---|---|---|
-| A1 | `identity_include_cdp_new` | true | `mis_2_email_clientid_new` refreshed 2026-07-06 [VERIFIED] | Confirm still authoritative |
-| A2 | `identity_include_ga4_sap` | true | GA4+SMC path; SMC last refresh 2026-02-26 | Colab note "stop from June" — keep or drop? |
-| A3 | `identity_include_braze` | true | `braze_ga4_email` active | Confirm |
-| A4 | `identity_include_cdp_legacy` | false | `mis_2_email_clientid` frozen 2025-09-04 [VERIFIED] | Confirm drop |
-| A5 | `identity_include_cdp_user_traits` | false | source `cdp...user_traits` frozen 2025-02-05 [VERIFIED] | Confirm drop |
-| A6 | `identity_include_snid` | false | SNID path deprecated; `snid_aggregated_view` vs MDT `final_master_table_for_testing_new` source-of-truth unconfirmed | Which is current? re-enable? |
-| A7 | `identity_conflict_strategy` | keep_all | Colab union keeps all (email, client_id) pairs | Priority order when one email -> many client_ids? |
+| A1 | `identity_include_cdp_new` | true | `mis_2_email_clientid_new` refreshed 2026-07-06 [VERIFIED]; active monthly | [CONFIRMED] Giorgia 2026-07-16 — active |
+| A2 | `identity_include_ga4_sap` | true | GA4+SMC path; **deprecated from June 2026** (Giorgia) but kept for historical mappings | [CONFIRMED] Giorgia 2026-07-16 — deprecated, keep in union |
+| A3 | `identity_include_braze` | true | `braze_ga4_email` active monthly | [CONFIRMED] Giorgia 2026-07-16 — active |
+| A4 | `identity_include_cdp_legacy` | **true** | `mis_2_email_clientid` frozen 2025-09-04 [VERIFIED]; historical mappings still useful | [CONFIRMED] Giorgia 2026-07-16 — keep in union despite no refresh |
+| A5 | `identity_include_cdp_user_traits` | **true** | `mis_2_email_clientid_cdp` frozen 2025-02-05 [VERIFIED]; historical mappings still useful | [CONFIRMED] Giorgia 2026-07-16 — keep in union |
+| A6 | `identity_include_snid` | **true** | `mis_1_email_clientid` / `mis_1_snid_clientid` stopped Oct 2025 (Giorgia); part of the final union but not refreshed | [CONFIRMED] Giorgia 2026-07-16 — keep in union; process not active |
+| A7 | `identity_conflict_strategy` | keep_all | Keep all (email, client_id) pairs — the CDP can map multiple GA4 client_ids to one email, so all mappings are wanted | [CONFIRMED] Giorgia 2026-07-16 — no priority, keep all |
 | A8 | GA client_id trim | `substr(value,7,30)` | Colab `_new` uses 30; deprecated `_cdp` used 21 | Confirm 30 is correct |
 | A9 | Power author labels | `['d. Power author (21+)','Power author']` | Colab CASE on `Total_AMT_5yr_Author_Group` | Confirm label set |
+| A10 | `identity_extract_from_prod` | **true** | `int_ga4_sap_ids` / `int_braze_cep_ids` read prod's accumulated maps (`mis_2_sap_ids_ga4_2` / `braze_cep_ids`) instead of scanning raw GA4 events for the processing window only. Full-history mapping coverage; closes the email_rm gap (see reconciliation). Same pattern as `ga_extract_from_prod`. `false` = Colab-faithful windowed raw-events scan (undercounts in a single-month dev build). | Confirm reading prod identity maps is acceptable for the dev validation build |
 
 ## B. Submissions (Phase 2)
 
@@ -47,9 +48,10 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 | # | Var / decision | Default | SN question |
 |---|---|---|---|
 | D1 | `gr_*` genuine-researcher thresholds | sessions (1,360), pv/session (1,100) | Confirm; imprint-match stays disabled |
-| D2 | `repeated_author_full_history` | false | Within-window (Colab) vs full history |
+| D2 | `repeated_author_full_history` | **true** | [CONFIRMED] Giorgia 2026-07-16 — lookback must span full history to the submission date (=1 if any author previously submitted); one flag per submission |
 | D3 | `collection_email_types` (fixed pivot) | 5 known types | Colab pivot is dynamic (EXECUTE IMMEDIATE); dashboard hardcodes 5 — fixed list OK? |
 | D4 | Collections input source | native `mis_input_data_collections_emails_2` | Sheets-backed base blocked by Drive scope; confirm source for prod |
+| D5 | `is_in_collection` point-in-time vs latest-view | [OPEN - later] Derived from `collection_id` in the submissions "latest view" (mutable). Prod `mis_2_subs_all` froze it at build date; dev re-derives from current state -> May 2026 dev 24,388 vs prod 25,496 (bidirectional churn: 1,351 lost a collection since prod's build, 243 gained one; dev matches the source's current state). NOT a bug/windowing/join issue. | Should `is_in_collection` be point-in-time (frozen at first processing month, like prod today) or latest-view? Decides whether we snapshot the flag per month (dbt snapshot / seed historical months) or keep re-deriving. Deferred. |
 
 ## E. Dashboards + channel planning (Phases 7-8)
 
@@ -60,6 +62,8 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 | E3 | `channel_planning_multi_threshold` | 0.5 | Confirm Phase 8 uses 0.5 (vs 0.8 main path) |
 | E4 | `_3` accumulation idempotency | dbt incremental insert_overwrite by month (replaces Colab non-atomic INSERT) | Confirm month-grain replace is acceptable |
 | E5 | `int_channel_planning_google_2` transform | Colab `mis_..._google_2` SQL not in export; approximated (channel_from_lookup -> main_channels, sub_channels null) | Provide/confirm exact Google planning channel mapping |
+| E6 | Channel-planning run cadence | [CONFIRMED] Giorgia 2026-07-16 — `mis_3_..._4_v8` (+ `_ejp_em`) must be refreshed over the FULL historical dataset every month (journal status can change retroactively, e.g. a January submission accepted in June). Models are `table` (full rebuild, no incremental staleness) but windowed by `mis_start_date`/`mis_end_date`; run the v8 chain with a full-history window (e.g. `mis_start_date=2024-07-01`). The rest of the pipeline stays monthly-incremental (past months static). | None — operational note |
+| E7 | `journal_table` -> `journal_catalog` | [PENDING] Giorgia 2026-07-16 — plans to replace `journal_table_native` (Strategy-team Google Sheet, manual business_model) with `braze-3f553fdf.prod_cdi_presentation.journal_catalog` once she verifies equivalence. Current dep on `journal_table_native` valid for now. | Confirm timing + run equivalence check before switching |
 
 ## Build / materialization status (dev, 2026-07-14)
 
@@ -98,6 +102,20 @@ dev cost drops from ~$55 to **~$15**. Set `ga_extract_from_prod: false` for a fu
 Colab-faithful raw-events rebuild. SN-REVIEW: confirm prod extract is an acceptable input
 for the dev validation build.
 
+**Identity extract source (`identity_extract_from_prod`, default `true`):** the two active
+GA4-derived identity extracts read prod's accumulated maps instead of scanning raw GA4 events
+for the processing window only:
+- `int_ga4_sap_ids` reads `mis_prod.mis_2_sap_ids_ga4_2` (2.26M rows, ~137MB) — column
+  `sap_outbound_id_36` (already the 36-char id that `int_ga4_sap_clientid` joins on), aliased to
+  `sap_outbound_id`.
+- `int_braze_cep_ids` reads `mis_prod.braze_cep_ids` (1.17M rows, ~57MB).
+
+Both maps are tiny (<0.2 GB total, ~$0.001 to scan). All accumulated pairs are stamped with the
+processing month partition; downstream `int_*_clientid` dedups via `group by`, correct for the dev
+single-month reconciliation. This is the identity analogue of `ga_extract_from_prod` and closes the
+residual email_rm gap (see reconciliation). Set `identity_extract_from_prod: false` for a fully
+Colab-faithful windowed identity extract (which undercounts email coverage in a single-month build).
+
 ## Reconciliation log (dev vs prod, May 2026)
 
 Filled in as each phase is built and validated via the bigquery MCP.
@@ -125,10 +143,70 @@ Filled in as each phase is built and validated via the bigquery MCP.
 | 8 | mis_3_..._4_v8 out_to_review | 23,817 | 28,110 | -15.3% | follows row-level reduction |
 | 8 | mis_3_..._4_v8 region not-null | 0 | 171,057 | E2 (expected) | region gated off in dev (snapp_regional_clusters Drive-blocked) — not a defect |
 
-**Read of the Phase 3-7 reconciliation:** GA extract is now shared with prod (`ga_extract_from_prod`),
-so the submission spine is exact (0 delta) and every remaining channel delta traces to the
-disabled deprecated identity branches (A4/A5/A6). `email_rm_flag` is the most exposed (-17%)
-because email touchpoints are matched purely through `user_pseudo_id`; the deprecated branches
-contributed a large share of those email->client_id->user_pseudo_id links. SN-REVIEW: decide
-whether to re-enable any deprecated identity branch (`identity_include_*`) to close the email gap,
-or accept the cleaner native-only identity.
+### After including the deprecated identity branches (Giorgia 2026-07-16, all identity_include_* = true)
+
+Rebuilt the identity subtree + downstream. May 2026, `mis_2_subs_all` dev vs prod:
+
+| Metric | dev (branches ON) | prod | delta | vs branches OFF |
+|---|---|---|---|---|
+| submissions | 208,797 | 208,797 | 0 | unchanged |
+| trackable_sub | 170,473 | 169,785 | +688 (+0.4%) | 169,397 -> closer (now slightly above) |
+| is_in_collection | 24,388 | 25,496 | -1,108 (-4.3%) | **unchanged** (identity-independent) |
+| sea_rm_flag | 1,299 | 1,290 | +9 (+0.7%) | 1,256 -> closed |
+| email_rm_flag | 40,546 | 47,851 | -7,305 (-15.3%) | 39,600 -> only marginally closed |
+| external_display_rm_flag | 11,605 | 11,431 | +174 (+1.5%) | 11,242 -> closed |
+| paid_social_rm_flag | 645 | 660 | -15 (-2.3%) | 616 -> closer |
+
+**Revised read:** including the deprecated branches moved almost every channel to within ±2% of
+prod (some now slightly above), but the **email gap barely moved (-17.2% -> -15.3%)**. Identity
+coverage is therefore **not** the dominant driver of the email delta. The identity table did grow
+(`int_email_clientid`: 11.86M -> **12.48M** pairs, 3.96M -> **4.14M** emails), but dev is still ~7%
+below prod (13.43M pairs / 4.49M emails). The residual is explained by the **ACTIVE** identity
+branches, not the deprecated ones: `int_ga4_sap_ids` / `int_braze_cep_ids` scan only the processing
+window of GA4 events, whereas prod has accumulated those GA4->SAP/CEP mappings over many months. So
+to fully match prod's email coverage we would need to accumulate the active identity branches over
+full history (the same pattern as `ga_extract_from_prod`), or read prod's accumulated identity
+tables. Two residuals remain:
+- **email_rm -15.3%**: driven by the windowed active identity branches (GA4->SAP/CEP), not the
+  deprecated tables. Fix = accumulate identity over history, or read prod identity extracts.
+- **is_in_collection -4.3%**: fully identity-independent (unchanged when branches flipped) — a
+  collection-membership data/definition difference upstream, not an attribution issue.
+
+SN-REVIEW: the deprecated branches are now IN the union per Giorgia; the residual email gap is a
+separate matter (windowed active-identity accumulation), not the identity-inclusion decision.
+
+### After reading prod's accumulated identity maps (`identity_extract_from_prod: true`, 2026-07-16)
+
+Rebuilt `int_ga4_sap_ids+` and `int_braze_cep_ids+` (identity subtree + all downstream). The two
+active GA4-derived extracts now read prod's cumulative maps instead of the single-month GA4 window.
+May 2026, `mis_2_subs_all` dev vs prod:
+
+| Metric | dev (from_prod) | prod | delta | vs windowed extract |
+|---|---|---|---|---|
+| submissions | 208,797 | 208,797 | 0 | unchanged |
+| trackable_sub | 171,401 | 169,785 | +1,616 (+0.95%) | 170,473 -> now slightly above |
+| is_in_collection | 24,388 | 25,496 | -1,108 (-4.3%) | **unchanged** (identity-independent) |
+| sea_rm_flag | 1,310 | 1,290 | +20 (+1.6%) | 1,299 -> still ~parity |
+| email_rm_flag | 48,142 | 47,851 | **+291 (+0.61%)** | 40,546 -> **gap closed (was -15.3%)** |
+| external_display_rm_flag | 11,694 | 11,431 | +263 (+2.3%) | 11,605 -> ~parity |
+| paid_social_rm_flag | 674 | 660 | +14 (+2.1%) | 645 -> now slightly above |
+
+`int_email_clientid` pairs: dev **13.62M** vs prod 13.43M (**+1.4%**), up from 12.48M (was -7%). The
+identity map now slightly *exceeds* prod because the full cumulative prod maps are combined with all
+`identity_include_*` branches ON (and downstream dedups), which is expected and immaterial.
+
+**Corrected read of the reconciliation.** The earlier hypothesis — that the email gap was mainly a
+consequence of the disabled deprecated identity branches — was **wrong**. Flipping those branches on
+barely moved email_rm (-17.2% -> -15.3%). The actual driver was the **windowed active identity
+extracts**: `int_ga4_sap_ids` / `int_braze_cep_ids` scanned only the processing month of raw GA4
+events, while prod accumulates those user_pseudo_id -> SAP/CEP mappings over full history. Reading
+prod's accumulated maps (`identity_extract_from_prod: true`) closes the email_rm gap from **-15.3%
+to +0.61%** and lifts `int_email_clientid` from -7% to +1.4% vs prod. This mirrors the
+`ga_extract_from_prod` fix for the GA event extract.
+
+**Only residual now:**
+- **is_in_collection -4.3%**: fully identity-independent (unchanged across every identity experiment
+  above — deprecated branches, then from_prod). This is a collection-membership data/definition
+  difference upstream (`mis_input_data_collections_emails_2` / collections activity), not an
+  attribution or identity-coverage issue. All identity-driven channel flags (email, sea, external
+  display, paid social) are now within ±2.5% of prod, mostly slightly above.
