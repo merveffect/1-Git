@@ -2,12 +2,13 @@
 -- Union of the enabled identity branches. Each branch is toggled by an
 -- identity_include_* var (see dbt_project.yml + docs/assumptions-register.md).
 --
--- SN-REVIEW (A1-A7): defaults keep the ACTIVE branches (cdp_new, ga4_sap, braze) and
--- DROP the deprecated ones (cdp_legacy frozen 2025-09-04, cdp_user_traits frozen
--- 2025-02-05, snid path) — verified stale on BigQuery. Enable a branch by flipping
--- its var. Conflict handling is 'keep_all' (Colab behaviour: keep every distinct
--- email/client_id pair). A 'priority' strategy is not implemented until SN defines
--- the precedence order.
+-- Giorgia (2026-07-16): ALL branches stay in the union, active or deprecated. The
+-- deprecated tables (cdp_legacy frozen 2025-09-04, cdp_user_traits frozen 2025-02-05,
+-- snid stopped Oct 2025, ga4_sap deprecated from June 2026) are no longer refreshed but
+-- their historical email<->client_id mappings still help match GA4 activity, so every
+-- identity_include_* var defaults ON. Conflict handling is 'keep_all' (Colab behaviour:
+-- keep every distinct email/client_id pair — the CDP can legitimately map multiple GA4
+-- client_ids to one email). A 'priority' strategy is not implemented (SN: no precedence).
 
 {% if var('identity_conflict_strategy') != 'keep_all' %}
     {{ exceptions.raise_compiler_error("identity_conflict_strategy='" ~ var('identity_conflict_strategy') ~ "' is not implemented. SN must define the precedence order before a 'priority' union can be built.") }}

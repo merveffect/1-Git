@@ -22,21 +22,24 @@ clean-targets:
 # month: 307,176 SNAPP+EM submissions).
 #
 # SN-REVIEW: every var below encodes an assumption ported from the Colab that the
-# client must confirm. Defaults reproduce current Colab behaviour, EXCEPT the
-# deprecated identity branches (verified dead on BigQuery -> default off). See
-# docs/assumptions-register.md for the full rationale, evidence and SN questions.
+# client must confirm. Defaults reproduce current Colab behaviour. Giorgia confirmed
+# (2026-07-16) that the deprecated identity tables must STAY in the union — even though
+# they are no longer refreshed, their historical client_id<->email mappings are still
+# useful — so all identity_include_* branches default ON. See docs/assumptions-register.md.
 vars:
   mis_start_date: '2026-05-01'
   mis_end_date: '2026-05-31'
 
   # --- Identity resolution (Phase 1B): which email -> client_id branches feed the
-  # combined identity union (Colab mis_2_email_clientid_v3). ---
-  identity_include_cdp_new: true          # mis_2_email_clientid_new (cdp_profile_sync.user_identifiers) - ACTIVE
-  identity_include_ga4_sap: true          # mis_2_ga4_sap_clientid (GA4 + SMC) - "stop from June" note, kept ON
-  identity_include_braze: true            # braze_ga4_email - ACTIVE
-  identity_include_cdp_legacy: false      # mis_2_email_clientid - frozen 2025-09-04 (verified) -> DROP
-  identity_include_cdp_user_traits: false # mis_2_email_clientid_cdp - source frozen 2025-02-05 (verified) -> DROP
-  identity_include_snid: false            # mis_1_email_clientid (SNID path) - deprecated + source-of-truth unconfirmed -> DROP
+  # combined identity union (Colab mis_2_email_clientid_v3). Giorgia (2026-07-16):
+  # include every branch, active or deprecated — the historical mappings still help
+  # match GA4 activity to emails. ---
+  identity_include_cdp_new: true          # mis_2_email_clientid_new (cdp_profile_sync.user_identifiers) - ACTIVE (monthly)
+  identity_include_ga4_sap: true          # mis_2_ga4_sap_clientid (GA4 + SMC) - DEPRECATED from June 2026; kept for historical mappings
+  identity_include_braze: true            # braze_ga4_email - ACTIVE (monthly)
+  identity_include_cdp_legacy: true       # mis_2_email_clientid - frozen 2025-09-04; kept for historical mappings (Giorgia 2026-07-16)
+  identity_include_cdp_user_traits: true  # mis_2_email_clientid_cdp - frozen 2025-02-05; kept for historical mappings (Giorgia 2026-07-16)
+  identity_include_snid: true             # mis_1_email_clientid (SNID) - stopped Oct 2025; kept for historical mappings (Giorgia 2026-07-16)
   identity_conflict_strategy: 'keep_all'  # 'keep_all' (Colab union, keep all email/client_id pairs) | 'priority'
 
   # --- GA extract source ---
@@ -44,6 +47,15 @@ vars:
   #         -> ~$15 one-off, identity-independent, lets Phases 3-8 be materialised cheaply.
   # false = re-scan ~7 months of raw GA4 events (Colab-faithful) -> ~$55.
   ga_extract_from_prod: true
+
+  # --- Identity extract source (Phase 1B) ---
+  # Controls how int_ga4_sap_ids / int_braze_cep_ids source their user_pseudo_id maps.
+  # true  = read the accumulated prod identity maps (mis_2_sap_ids_ga4_2 / braze_cep_ids)
+  #         -> cheap (tiny tables) and reflects the full-history mappings, so
+  #         int_email_clientid / email_rm_flag match prod's cumulative coverage.
+  # false = re-scan raw GA4 events for the processing window only (Colab-faithful),
+  #         which undercounts identity pairs in a single-month dev build.
+  identity_extract_from_prod: true
 
   # --- Attribution windows / thresholds ---
   attribution_window_days: 180            # DATE_DIFF(submission, event) in (0, 180]
@@ -59,7 +71,7 @@ vars:
 
   # --- Business rules ---
   power_author_labels: ['d. Power author (21+)', 'Power author']
-  repeated_author_full_history: false     # false = repetition within processed window (Colab); true = full history
+  repeated_author_full_history: true      # Giorgia (2026-07-16): lookback must span full history to the submission date (=1 if any author previously submitted), not just the processed window
   collection_email_types: ['coll_algo_canto', 'coll_optin_etoc', 'coll_retain_and_gain', 'coll_referral', 'coll_optin_other']
 
   # --- "Genuine researcher" / trackable-user filter (Colab mis_2_latest_month_users_2) ---

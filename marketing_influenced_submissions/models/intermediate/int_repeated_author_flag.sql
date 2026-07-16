@@ -2,10 +2,15 @@
 -- Flags, per submission, whether any of its authors was seen on an EARLIER
 -- submission. Author identity is COALESCE(author_email, snid, author_id).
 --
--- IMPORTANT (parity note / SN question): "first seen" is computed only within the
--- loaded window (see base CTE), exactly as the Colab does. So the flag detects
--- repetition WITHIN the processed window, not across full history. Changing this
--- to a full-history lookback would alter the numbers vs prod — deferred to SN.
+-- Business rule (Giorgia 2026-07-16):
+--   repeated_author = 0 if ALL authors on a submission are brand new
+--   repeated_author = 1 if at least one author has previously submitted
+-- The "previously submitted" lookback should span FULL history up to the submission
+-- date, controlled by the repeated_author_full_history var:
+--   true  -> earliest submission per author across ALL submissions (<= mis_end_date)
+--   false -> repetition within the processed window only (original Colab INSERT INTO)
+-- A submission can re-enter with the same id and multiple submission_dates; the final
+-- group-by collapses that to a single flag per (submission, source_system).
 --
 -- Incremental: monthly partitions on `month`. insert_overwrite replaces the month
 -- partitions produced by the current window.
@@ -44,7 +49,22 @@ author_first_seen as (
     select
         author_identifier,
         min(submission_date) as first_seen_date
-    from base
+    from (
+        {% if var('repeated_author_full_history') %}
+        -- Full history: earliest submission per author across ALL submissions up to the
+        -- end of the processing window (as-of, so re-runs stay idempotent).
+        select
+            s.submission_date,
+            coalesce(a.author_email, a.snid, a.author_id) as author_identifier
+        from {{ ref('stg_submissions') }} s
+        left join {{ ref('stg_authors') }} a
+            on s.submission_id = a.submission_id
+        where s.submission_date <= date('{{ var("mis_end_date") }}')
+        {% else %}
+        -- Window only (original Colab behaviour).
+        select submission_date, author_identifier from base
+        {% endif %}
+    )
     group by author_identifier
 
 ),

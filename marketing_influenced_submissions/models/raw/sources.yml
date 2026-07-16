@@ -202,3 +202,15 @@ sources:
         description: >
           Prod accumulated Google auto-tagged GA extract. Read instead of re-scanning
           raw GA4 events when ga_extract_from_prod=true (~14GB).
+      - name: mis_2_sap_ids_ga4_2
+        description: >
+          Prod cumulative user_pseudo_id -> sap_outbound_id_36 map (2.26M rows,
+          ~137MB). Cumulative version of int_ga4_sap_ids. Read instead of scanning
+          raw GA4 events for the processing window when identity_extract_from_prod=true;
+          reflects the full-history identity mapping. Column is sap_outbound_id_36
+          (already 36-char), aliased to sap_outbound_id downstream.
+      - name: braze_cep_ids
+        description: >
+          Prod cumulative user_pseudo_id -> cep_id map (1.17M rows, ~57MB). Cumulative
+          version of int_braze_cep_ids. Read instead of scanning raw GA4 events for the
+          processing window when identity_extract_from_prod=true.
