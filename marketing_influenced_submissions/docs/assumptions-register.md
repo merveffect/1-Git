@@ -30,7 +30,7 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 
 | # | Decision | Default | SN question |
 |---|---|---|---|
-| B1 | Author-role inclusion filter in `int_sub_details` | coauthor OR corresp OR (ga_submitter-only) | Confirm the "real author" rule; ~98 EM subs dropped (null roles) |
+| B1 | Author-role inclusion filter in `int_sub_details` | coauthor OR corresp OR (ga_submitter-only) | Confirm the "real author" rule; ≈98 EM subs dropped (null roles) |
 | B2 | SNAPP submissions source | `snapp_submission_funnel_new` where `snapp_process='snapp_success'` | Confirm |
 
 ## C. GA4 attribution (Phases 3-4)
@@ -58,7 +58,7 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 | # | Decision | Default | SN question |
 |---|---|---|---|
 | E1 | Dashboard column contracts | column-for-column parity with prod `mis_2_subs_all` / `mis_2_subs_coll_2` / `_4_v8` | Confirm exact contract before promotion |
-| E1a | `repeated_author_flag` as a dashboard output | [CONFIRMED] Giorgia 2026-07-16 lists `repeated_author_flag` as a direct dashboard table (with `mis_2_subs_all`, `_4_v8`, + the two EM tables). Exposed as a `presentation` model (thin contract over `int_repeated_author_flag`; schema = prod: internal_submission_id STRING, source_system STRING, month DATE, repeated_author INT). May-2026 dev vs prod: rows 340,310 vs 340,880 (−0.17%), repeated rate 0.9502 vs 0.9501 (~0); rows = distinct submission in both (one flag per submission holds). | Line-by-line check vs Giorgia's refreshed Colab still advisable, but numbers already match prod |
+| E1a | `repeated_author_flag` as a dashboard output | [CONFIRMED] Giorgia 2026-07-16 lists `repeated_author_flag` as a direct dashboard table (with `mis_2_subs_all`, `_4_v8`, + the two EM tables). Exposed as a `presentation` model (thin contract over `int_repeated_author_flag`; schema = prod: internal_submission_id STRING, source_system STRING, month DATE, repeated_author INT). May-2026 dev vs prod: rows 340,310 vs 340,880 (−0.17%), repeated rate 0.9502 vs 0.9501 (≈0); rows = distinct submission in both (one flag per submission holds). | Line-by-line check vs Giorgia's refreshed Colab still advisable, but numbers already match prod |
 | E2 | `snapp_regional_clusters` (region, country_grouping) | Sheets-backed external table — Drive scope BLOCKED; join gated by `enable_regional_clusters` var (default false -> null in dev) | Need native/seed equivalent |
 | E3 | `channel_planning_multi_threshold` | 0.5 | Confirm Phase 8 uses 0.5 (vs 0.8 main path) |
 | E4 | `_3` accumulation idempotency | dbt incremental insert_overwrite by month (replaces Colab non-atomic INSERT) | Confirm month-grain replace is acceptable |
@@ -87,31 +87,31 @@ pass) but NOT materialised yet, pending client sign-off on BigQuery scan cost.
 
 ### Cost note (GA4 scans)
 
-The GA4 attribution phases need ~7 months of GA4 raw events (May submissions attributed
-up to 180 days back). Dry run of the manual-campaign extract = **4.29 TB (~$27)**; the
-Google auto-tag extract is similar (~$27); full Phase 3-8 materialisation ~**$55-60** of
+The GA4 attribution phases need ≈7 months of GA4 raw events (May submissions attributed
+up to 180 days back). Dry run of the manual-campaign extract = **4.29 TB (≈$27)**; the
+Google auto-tag extract is similar (≈$27); full Phase 3-8 materialisation ≈**$55-60** of
 BigQuery, once. In prod this is cheap because it accumulates one month at a time
-(~$4/month). The GA event scanners are tagged `ga_expensive`; the whole GA chain is
+(≈$4/month). The GA event scanners are tagged `ga_expensive`; the whole GA chain is
 tagged `ga` (build with `dbt build --select tag:ga` once signed off).
 
 **Cheaper dev path (`ga_extract_from_prod`, default `true`):** instead of re-scanning
 raw GA4 events, `int_ga_data` / `int_google_auto_1` read the already-accumulated prod
-extracts `mis_2_ga_data` (2.3 TB unpartitioned, ~$14.5 to slice) and `mis_2_google_auto_1`
-(~$0.09). These extracts are **identity-independent** (user x event x campaign only), so
+extracts `mis_2_ga_data` (2.3 TB unpartitioned, ≈$14.5 to slice) and `mis_2_google_auto_1`
+(≈$0.09). These extracts are **identity-independent** (user x event x campaign only), so
 the new dev identity resolution still drives every downstream submission join. Net one-off
-dev cost drops from ~$55 to **~$15**. Set `ga_extract_from_prod: false` for a fully
+dev cost drops from ≈$55 to **≈$15**. Set `ga_extract_from_prod: false` for a fully
 Colab-faithful raw-events rebuild. SN-REVIEW: confirm prod extract is an acceptable input
 for the dev validation build.
 
 **Identity extract source (`identity_extract_from_prod`, default `true`):** the two active
 GA4-derived identity extracts read prod's accumulated maps instead of scanning raw GA4 events
 for the processing window only:
-- `int_ga4_sap_ids` reads `mis_prod.mis_2_sap_ids_ga4_2` (2.26M rows, ~137MB) — column
+- `int_ga4_sap_ids` reads `mis_prod.mis_2_sap_ids_ga4_2` (2.26M rows, ≈137MB) — column
   `sap_outbound_id_36` (already the 36-char id that `int_ga4_sap_clientid` joins on), aliased to
   `sap_outbound_id`.
-- `int_braze_cep_ids` reads `mis_prod.braze_cep_ids` (1.17M rows, ~57MB).
+- `int_braze_cep_ids` reads `mis_prod.braze_cep_ids` (1.17M rows, ≈57MB).
 
-Both maps are tiny (<0.2 GB total, ~$0.001 to scan). All accumulated pairs are stamped with the
+Both maps are tiny (<0.2 GB total, ≈$0.001 to scan). All accumulated pairs are stamped with the
 processing month partition; downstream `int_*_clientid` dedups via `group by`, correct for the dev
 single-month reconciliation. This is the identity analogue of `ga_extract_from_prod` and closes the
 residual email_rm gap (see reconciliation). Set `identity_extract_from_prod: false` for a fully
@@ -126,7 +126,7 @@ Filled in as each phase is built and validated via the bigquery MCP.
 | 1A | int_authors distinct subs | 307,182 | 307,176 | +6 | pre-existing (data refresh) |
 | 1B | int_authors_enriched distinct subs (May 2026) | 307,181 | 307,176 | +5 | matches 1A; data refresh |
 | 1B | subs with non-null client_id (May 2026) | 253,366 | 258,974 | -5,608 (-2.2%) | cost of dropping deprecated identity branches (A4/A5/A6) — small at submission level |
-| 1B | int_email_clientid rows / emails / cids | 11.86M / 3.96M / 11.35M | 13.43M / 4.49M / 12.67M | ~-12% pairs | deprecated branches add ~12% raw pairs but only 2.2% sub coverage |
+| 1B | int_email_clientid rows / emails / cids | 11.86M / 3.96M / 11.35M | 13.43M / 4.49M / 12.67M | ≈-12% pairs | deprecated branches add ≈12% raw pairs but only 2.2% sub coverage |
 | 2 | int_sub_details distinct subs (May 2026) | 307,181 | 307,176 | +5 | data refresh; submission-level parity holds |
 | 2 | int_sub_details rows (May 2026) | 4.04M | 4.33M | -6.9% | fewer (sub,user) pairs from dropping deprecated multi-client_id fan-out |
 | 3-7 | mis_2_subs_all submissions (May 2026) | 208,797 | 208,797 | 0 | spine exact once GA extract is shared |
@@ -161,7 +161,7 @@ Rebuilt the identity subtree + downstream. May 2026, `mis_2_subs_all` dev vs pro
 **Revised read:** including the deprecated branches moved almost every channel to within ±2% of
 prod (some now slightly above), but the **email gap barely moved (-17.2% -> -15.3%)**. Identity
 coverage is therefore **not** the dominant driver of the email delta. The identity table did grow
-(`int_email_clientid`: 11.86M -> **12.48M** pairs, 3.96M -> **4.14M** emails), but dev is still ~7%
+(`int_email_clientid`: 11.86M -> **12.48M** pairs, 3.96M -> **4.14M** emails), but dev is still ≈7%
 below prod (13.43M pairs / 4.49M emails). The residual is explained by the **ACTIVE** identity
 branches, not the deprecated ones: `int_ga4_sap_ids` / `int_braze_cep_ids` scan only the processing
 window of GA4 events, whereas prod has accumulated those GA4->SAP/CEP mappings over many months. So
@@ -187,9 +187,9 @@ May 2026, `mis_2_subs_all` dev vs prod:
 | submissions | 208,797 | 208,797 | 0 | unchanged |
 | trackable_sub | 171,401 | 169,785 | +1,616 (+0.95%) | 170,473 -> now slightly above |
 | is_in_collection | 24,388 | 25,496 | -1,108 (-4.3%) | **unchanged** (identity-independent) |
-| sea_rm_flag | 1,310 | 1,290 | +20 (+1.6%) | 1,299 -> still ~parity |
+| sea_rm_flag | 1,310 | 1,290 | +20 (+1.6%) | 1,299 -> still ≈parity |
 | email_rm_flag | 48,142 | 47,851 | **+291 (+0.61%)** | 40,546 -> **gap closed (was -15.3%)** |
-| external_display_rm_flag | 11,694 | 11,431 | +263 (+2.3%) | 11,605 -> ~parity |
+| external_display_rm_flag | 11,694 | 11,431 | +263 (+2.3%) | 11,605 -> ≈parity |
 | paid_social_rm_flag | 674 | 660 | +14 (+2.1%) | 645 -> now slightly above |
 
 `int_email_clientid` pairs: dev **13.62M** vs prod 13.43M (**+1.4%**), up from 12.48M (was -7%). The
