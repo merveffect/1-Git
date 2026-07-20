@@ -1,0 +1,85 @@
+version: 2
+
+models:
+  - name: int_email_clientid_cdp_new
+    description: Active CDP email -> GA client_id (Colab mis_2_email_clientid_new).
+    columns:
+      - name: author_email
+        data_tests: [not_null]
+      - name: clientid
+        data_tests: [not_null]
+
+  - name: int_ga4_sap_ids
+    description: GA4 user_pseudo_id -> SAP outbound id for the processing month.
+    columns:
+      - name: user_pseudo_id
+        data_tests: [not_null]
+      - name: sap_outbound_id
+        data_tests: [not_null]
+
+  - name: int_ga4_sap_clientid
+    description: GA4 + SMC email -> client_id (Colab mis_2_ga4_sap_clientid).
+    columns:
+      - name: author_email
+        data_tests: [not_null]
+      - name: clientid
+        data_tests: [not_null]
+
+  - name: int_braze_cep_ids
+    description: GA4 user_pseudo_id -> Braze CEP id for the processing month.
+    columns:
+      - name: user_pseudo_id
+        data_tests: [not_null]
+      - name: cep_id
+        data_tests: [not_null]
+
+  - name: int_braze_email_clientid
+    description: Braze email -> client_id (Colab braze_ga4_email).
+    columns:
+      - name: author_email
+        data_tests: [not_null]
+      - name: client_id
+        data_tests: [not_null]
+
+  - name: int_email_clientid
+    description: >
+      Combined email -> client_id identity table (Colab mis_2_email_clientid_v3),
+      union of enabled identity_include_* branches. One row per distinct (email,
+      client_id) pair.
+    columns:
+      - name: email
+        data_tests: [not_null]
+      - name: client_id
+        data_tests: [not_null]
+
+  - name: int_power_author_flag
+    description: Power-author flag per email (Colab power_author_flag).
+    columns:
+      - name: email
+        data_tests: [not_null, unique]
+      - name: flag_power_author
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  - name: int_authors_clientid
+    description: Author backbone joined to client_id (Colab mis_2_authors_clientid).
+    columns:
+      - name: internal_submission_id
+        data_tests: [not_null]
+
+  - name: int_authors_enriched
+    description: Authors + client_id + power-author flag (Colab mis_2_authors_2).
+    columns:
+      - name: internal_submission_id
+        data_tests: [not_null]
+      - name: flag_power_author
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
