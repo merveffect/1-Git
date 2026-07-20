@@ -5,6 +5,7 @@
 WITH j7_max_date AS (
     SELECT MAX(date) AS max_date
     FROM {{ ref('j7') }}
+    WHERE date >= {{ start_date }}
 ),
 
 j7_totals AS (
