@@ -64,6 +64,7 @@ WITH
     SUM(cost) AS cost,
     SUM(clicks) AS clicks,
     SUM(impressions) AS impressions,
+    sum(video_views) AS video_views,
     date AS cost_date,
     campaign AS cost_campaign,
     SOURCE AS cost_source,
@@ -168,7 +169,8 @@ WITH
     SUM(ejp_submission_start) AS ejp_submission_start,
     SUM(ejp_submission_complete) AS ejp_submission_complete,
     SUM(nav_sign_up_for_alerts) AS nav_sign_up_for_alerts,
-    SUM(signup_etoc) AS signup_etoc
+    SUM(signup_etoc) AS signup_etoc,
+    sum(video_views) AS video_views
 
   FROM
     exclude_columns
@@ -182,7 +184,8 @@ WITH
 SELECT
   * EXCEPT(cost,
     clicks,
-    impressions),
+    impressions,
+    video_views),
   CASE
     WHEN ROW = 1 AND isoalphatwo IS NOT NULL THEN cost
     WHEN isoalphatwo IS NULL THEN cost
@@ -200,6 +203,12 @@ END
     WHEN isoalphatwo IS NULL THEN impressions
     ELSE 0
 END
-  AS impressions
+  AS impressions,
+  CASE
+    WHEN ROW = 1 AND isoalphatwo IS NOT NULL THEN video_views
+    WHEN isoalphatwo IS NULL THEN video_views
+    ELSE 0
+  END
+  AS video_views
 FROM
   sort_rows
