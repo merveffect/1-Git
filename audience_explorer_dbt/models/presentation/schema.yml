@@ -10,15 +10,6 @@ models:
          - not_null
          - unique
 
-  - name: audience_builder_optin
-    description: This model includes features related to audience opt-in status.
-    columns:
-     - name: canonical_segment_id
-       description: The unique identifier for the audience segment.
-       tests:
-         - not_null
-         - unique
-
   - name: audience_builder_known_users
     description: This model includes only records where both canonical segment ID and email match with known users source data.
     columns:
