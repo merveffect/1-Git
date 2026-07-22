@@ -11,9 +11,8 @@ models:
       - name: flag_power_author
         data_tests:
           - accepted_values:
-              arguments:
-                values: [0, 1]
-                quote: false
+              values: [0, 1]
+              quote: false
 
   - name: int_subs_clientids_ga
     description: GA-observed SNAPP submissions (Colab mis_1_subs_clientids_1).
