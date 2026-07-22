@@ -9,6 +9,10 @@ select * from
     value
        
     from {{ ref('raw_user_traits') }}
+    WHERE canonical_segment_id IN (
+	    select segment_id from {{ ref('raw_segment_known_users_with_email') }}
+	    where segment_id IS NOT NULL
+)
   )
   Pivot(max(value) for name in ({{ column_names }} ))
   
