@@ -11,3 +11,130 @@ models:
          - unique
 
  
+  - name: audience_builder_optin
+    description: This model includes features related to audience opt-in status.
+    columns:
+     - name: canonical_segment_id
+       description: The unique identifier for the audience segment.
+       tests:
+         - not_null
+         - unique
+
+  - name: audience_builder_known_users
+    description: This model includes only records where both canonical segment ID and email match with known users source data.
+    columns:
+     - name: canonical_segment_id
+       description: The canonical segment identifier matched with known users source segment_id.
+       tests:
+         - unique
+         - not_null
+     - name: email
+       description: The email address matched between audience_builder_big and known users source.
+       tests:
+         - unique
+         - not_null
+
+
+
+  - name: audience_builder_big_hashed
+    description: "This encrypted model includes a comprehensive set of features for audience segmentation and analysis"
+
+    columns:
+      - name: canonical_segment_id
+        description: "Anonymous internal id"
+
+      - name: all_audiences
+        description: "all profiles in sampled subset"
+
+      - name: snid
+        description: "internal sn id"
+
+      - name: user_id
+        description: " "
+
+      - name: role
+        description: "Role a user chooses when giving Marketing opt-in (only from new MPC): Healthcare professional, Lecturer, Other, Researcher"
+
+      - name: institution_name
+        description: "Name of affiliated institution, according to submission"
+
+      - name: advertising_opt_in
+        description: "If Advertising opt in was given (from MPC)"
+
+      - name: subjects
+        description: "Areas of interest a user chooses when giving Marketing opt-in (only from new MPC) mapped to SNT"
+
+      - name: mkt_pref_opt_in
+        description: "If Marketing opt in was given (from MPC)"
+
+      - name: main_f2
+        description: "The most frequent second-level field of research for the researcher, based on Citation Topic"
+
+      - name: change_over_py_sn_loyalty
+        description: "Whether there was a change in PY % of publications with SN"
+
+      - name: oa_articles
+        description: "Count of OA publications all time"
+
+      - name: percent_oa
+        description: "Percentage of OA publications in the last 5 years"
+
+      - name: h_index
+        description: "H-index calculated from Dimensions data"
+
+      - name: most_recent_pub
+        description: "Date of last publication"
+
+      - name: avg_if
+        description: "Average impact factor of a journal the researcher has published in last 5 years"
+
+      - name: loyalty_group
+        description: "Based on the % of article published with SN out of a researchers 5 yr publications in the AMT, researchers are assigned to one of 4 loyalty groups"
+
+      - name: years_active
+        description: "Number of years between first and last publications recorded in Dimensions"
+
+      - name: total_amt_5yr_author_group
+        description: "Based on count of publications, researchers are assigned to one of 4 volume groups (One Time Author, Occasional 2-10, Regular 11-20, Power 21+)"
+
+      - name: top_publisher
+        description: "The publisher with the highest share of a researcher's publications in the last 5 years"
+
+      - name: country
+        description: "Country (as per submission or self-indicated)"
+
+      - name: persona
+        description: "Marketing persona as per SN definition (Leader, Career Climber, Steady Author, SN Novice)"
+
+      - name: snid_flag
+        description: "SNID"
+
+      - name: first_name_flag
+        description: "Boolean value - true if first name present else false"
+
+      - name: ga_client_id_flag
+        description: "Boolean value - true if GA id present else false"
+
+      - name: orcid_flag
+        description: "Boolean value - true if orcid present else false"
+
+      - name: researcher_id_flag
+        description: "Boolean value - true if researcher_id present else false"
+
+      - name: email_flag
+        description: "Boolean value - true if email present else false"
+
+      - name: last_name_flag
+        description: "Boolean value - true if email present else false"
+
+      - name: sap_outbound_id_flag
+        description: "Boolean value - true if sap outbound id present else false"
+
+      - name: anonymous_id_flag
+        description: "Boolean value - true if anonymous id present else false"
+
+      - name: flag_column
+        description: "Flag if we have information yet"
+
+      - name: permutive_id_flag
+        description: "Boolean value - true if permutive id present else false"

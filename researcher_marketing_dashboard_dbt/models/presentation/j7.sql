@@ -66,6 +66,7 @@ SELECT
   cost,
   clicks,
   impressions,
+  video_views,
   researchER_marketing_activity,
   research_marketing_activity,
   naming_convention_correct,

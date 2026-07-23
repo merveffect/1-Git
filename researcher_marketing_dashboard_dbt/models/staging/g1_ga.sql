@@ -70,7 +70,7 @@ SELECT
     ga4_signup_etoc ),
   COALESCE(b.sub_channels,
     CASE
-      WHEN REGEXP_CONTAINS(a.source, r"^(?:[^.]+\.)?(chatgpt|perplexity|claude|mistral|copilot|blackbox|felo|andisearch|komo|waldo|deepseek|scienceos|consensus|jasper|gemini\.google|chat\.openai|meta|search.jina)\.(?:ai|com|fyi|app)$") THEN "ai seo"
+      WHEN REGEXP_CONTAINS(a.source, r"^(?:[^.]+\.)?(chatgpt|perplexity|claude|mistral|copilot|blackbox|felo|andisearch|komo|waldo|deepseek|scienceos|consensus|jasper|gemini\.google|chat\.openai|meta|search.jina)\.(?:ai|com|fyi|app)$") OR a.medium IN ('ai assistant', 'ai-assistant') THEN "ai seo"
       WHEN a.source = 'google' AND a.medium = 'cpc' AND COALESCE(a.google_ad_network_b,'(not set)') = '(not set)' AND REGEXP_CONTAINS(LOWER(COALESCE(a.campaign, '')), r'(^|[_\-\s])gdn($|[_\-\s])') THEN 'google - external display'
       WHEN a.source = 'google' AND a.medium = 'cpc' AND COALESCE(a.google_ad_network_b, '(not set)') = '(not set)' AND REGEXP_CONTAINS(LOWER(COALESCE(a.campaign, '')), r'(^|[_\-\s])sea($|[_\-\s])') THEN 'google - sea'
       WHEN a.medium = 'external_display' THEN 'other - external display'

@@ -24,14 +24,15 @@ WITH
       account_ID,
       CampaignID,
       Data_Origin_Identifier,
-      conversion_value_google_ads),
+      conversion_value_google_ads,video_views),
     LOWER(SOURCE) AS SOURCE,
     LOWER(medium) AS medium,
     LOWER(Network_with_search_partners__AdWords) AS google_ad_network,
     "" AS ad_content,
     SUM(cost) AS cost,
     SUM(clicks) AS clicks,
-    SUM(impressions) AS impressions
+    SUM(impressions) AS impressions,
+    SUM(video_views) AS video_views,
   FROM
     {{source('RM_adspend','rm_adspend_static')}}
    

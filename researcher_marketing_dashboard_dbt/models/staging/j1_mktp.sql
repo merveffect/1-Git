@@ -44,10 +44,12 @@ SELECT
   * EXCEPT(country,
     cost,
     clicks,
-    impressions),
+    impressions,
+    video_views),
   SUM(cost) AS cost,
   SUM(clicks) AS clicks,
-  SUM(impressions) AS impressions
+  SUM(impressions) AS impressions,
+  SUM(video_views) AS video_views,
 FROM ( (
     SELECT
       * EXCEPT (regions_country)

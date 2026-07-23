@@ -9,10 +9,10 @@
 SELECT
   a.* EXCEPT(JournalID),
   c.journal_title,
+  jc.journal_portfolio as portfolio,
   -- from JFlow
   b.business_model,
   b.main_group,
-  b.portfolio,
   -- portfolio only from sheet
   c.main_discipline,
   -- from JFlow
@@ -40,6 +40,17 @@ FULL JOIN (
    {{source('e2e_b2c_researcher_dev', 'journal_table') }} ) b
 ON
   SAFE_CAST(a.JournalID AS int64) = b.journal_id
+
+
+LEFT JOIN (
+SELECT
+journal_id,
+journal_portfolio
+FROM {{source('prod_cdi_presentation', 'journal_catalog')}}
+) jc
+ON COALESCE(SAFE_CAST(a.JournalID AS INT64), b.journal_id) = jc.journal_id
+
+
 LEFT JOIN (
 -- ensure 1 row per journal_id
   SELECT
