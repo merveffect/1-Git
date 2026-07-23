@@ -12,6 +12,7 @@ WITH j7_table AS (
     journal_title
   FROM
    {{ref('j7')}}
+   where date >= '2024-01-01'
 ),
 
 submissions AS (

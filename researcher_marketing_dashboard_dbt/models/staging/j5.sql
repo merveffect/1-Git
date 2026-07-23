@@ -85,6 +85,7 @@ WITH
     SUM(cost) AS cost,
     SUM(clicks) AS clicks,
     SUM(impressions) AS impressions,
+    sum(video_views) AS video_views,
     SUM(research_article_readership) AS research_article_readership,
     SUM(source_readership) AS source_readership,
     SUM(ejp_submission_start) AS ejp_submission_start,
@@ -130,7 +131,8 @@ WITH
       signup_etoc,
       cost,
       clicks,
-      impressions ),
+      impressions,
+      video_views),
     CASE
       WHEN kpi_marbl_leads IS NULL THEN 0
       ELSE kpi_marbl_leads
@@ -277,7 +279,12 @@ CASE
       WHEN impressions IS NULL THEN 0
       ELSE impressions
   END
-    AS impressions
+    AS impressions,
+    CASE
+      WHEN video_views IS NULL THEN 0
+      ELSE video_views
+  END
+    AS video_views,
     -- case when content_consumption is null then 0 else content_consumption end as content_consumption,
     -- case when pi_pdf_download is null then 0 else pi_pdf_download end as pi_pdf_download,
     -- case when pi_ealert_click is null then 0 else pi_ealert_click end as pi_ealert_click,

@@ -1,10 +1,13 @@
 {{ config(store_failures = true) }}
 
+{% set start_date = "DATE '2025-01-01'" %}
+
 WITH base_totals AS (
     SELECT
         SUM(Sessions)                AS sessions,
         ROUND(SUM(cost), 4)          AS cost
     FROM {{ ref('j7') }}
+    WHERE date >= {{ start_date }}
 ),
 
 mart_totals AS (
@@ -15,6 +18,7 @@ mart_totals AS (
         SUM(sessions)                AS sessions,
         ROUND(SUM(cost), 4)          AS cost
     FROM {{ ref('j7_AWA') }}
+    WHERE date >= {{ start_date }}
 
     UNION ALL
 
@@ -24,6 +28,7 @@ mart_totals AS (
         SUM(Sessions),
         ROUND(SUM(cost), 4)
     FROM {{ ref('j7_BAE') }}
+    WHERE date >= {{ start_date }}
 
     UNION ALL
 
@@ -33,6 +38,7 @@ mart_totals AS (
         SUM(Sessions),
         ROUND(SUM(cost), 4)
     FROM {{ ref('j7_Nurture') }}
+    WHERE date >= {{ start_date }}
 
     UNION ALL
 
@@ -42,6 +48,7 @@ mart_totals AS (
         SUM(Sessions),
         ROUND(SUM(cost), 4)
     FROM {{ ref('j7_SRF') }}
+    WHERE date >= {{ start_date }}
 )
 
 SELECT

@@ -78,7 +78,8 @@ WITH
     signup_etoc,
     cost,
     clicks,
-    impressions
+    impressions,
+    video_views
   FROM
     joined_data),
   transformation_one AS (

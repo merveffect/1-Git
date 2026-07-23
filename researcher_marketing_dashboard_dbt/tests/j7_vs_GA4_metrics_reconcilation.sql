@@ -5,13 +5,13 @@
 WITH j7_max_date AS (
     SELECT MAX(date) AS max_date
     FROM {{ ref('j7') }}
+    WHERE date >= {{ start_date }}
 ),
 
 j7_totals AS (
     SELECT SUM(Sessions) AS j7_sessions
     FROM {{ ref('j7') }}
-    WHERE date BETWEEN {{ start_date }}
-                          AND (SELECT max_date FROM j7_max_date)
+    WHERE date >= {{ start_date }}
 ),
 
 ga4_totals AS (
