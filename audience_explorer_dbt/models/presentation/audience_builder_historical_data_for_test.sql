@@ -13,19 +13,30 @@ config(
 )
 }}
 
-with current_data as (
+with normalized_current as (
+
+    select
+        src.* replace(
+            cast(awr_click_submit_manuscript_on_link_springer_com as string)
+            as awr_click_submit_manuscript_on_link_springer_com
+        )
+    from {{ ref('audience_builder_big') }} src
+
+),
+
+current_data as (
 
     select
         src.*,
         current_timestamp() as ingestion_timestamp,
         farm_fingerprint(to_json_string((select as struct src.*))) as row_hash
-    from {{ ref('audience_builder_big') }} src
+    from normalized_current src
 
-),
+)
 
 {% if is_incremental() %}
 
-last_state as (
+,last_state as (
 
     select * except(rn)
     from (
