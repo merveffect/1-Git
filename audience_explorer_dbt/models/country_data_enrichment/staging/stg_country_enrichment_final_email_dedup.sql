@@ -41,7 +41,7 @@ email_counts AS (
 
 known_users AS (
     SELECT
-        canonical_segment_id,
+        segment_id AS canonical_segment_id,
         LOWER(TRIM(email)) AS email_normalized
     FROM {{ source('prod_cdi_presentation','segment_known_users_with_email') }}
     WHERE email IS NOT NULL
