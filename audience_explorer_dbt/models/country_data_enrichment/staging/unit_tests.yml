@@ -114,9 +114,9 @@ unit_tests:
           - {canonical_segment_id: 'CID_B', snid: 'S_B', email: 'dup@example.com', mkt_pref_opt_in: true}
           - {canonical_segment_id: 'CID_C', snid: 'S_C', email: 'single@example.com', mkt_pref_opt_in: true}
 
-      - input: ref('audience_builder_known_users')
+      - input: source('prod_cdi_presentation','segment_known_users_with_email')
         rows:
-          - {canonical_segment_id: 'CID_B', email: 'dup@example.com'}
+          - {segment_id: 'CID_B', email: 'dup@example.com'}
 
     expect:
       rows:
