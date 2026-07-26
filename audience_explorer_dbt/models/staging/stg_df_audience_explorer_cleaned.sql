@@ -1,7 +1,11 @@
+--depends_on: {{ ref('stg_user_traits_column_names') }}
+-- depends_on: {{ ref('raw_identifies') }}
+
 {{ config(
   materialized = 'table'
 ) }}
 
+WITH cleaned AS(
 SELECT
 
   * EXCEPT(advertising_opt_in, mkt_pref_opt_in, subjects, list_keywords_dois_last_60_d),
@@ -24,3 +28,7 @@ SELECT
   ) AS list_keywords_dois_last_60_d
 
 FROM {{ ref('stg_df_audience_explorer_base_2') }}
+)
+
+select {{ data_type_cast_columns() }}
+from cleaned

@@ -4,136 +4,901 @@ models:
   - name: audience_builder_big
     description: This model includes a comprehensive set of features for audience segmentation and analysis.
     columns:
-     - name: canonical_segment_id
-       description: The unique identifier for the audience segment.
-       tests:
-         - not_null
-         - unique
-
-  - name: audience_builder_optin
-    description: This model includes features related to audience opt-in status.
-    columns:
-     - name: canonical_segment_id
-       description: The unique identifier for the audience segment.
-       tests:
-         - not_null
-         - unique
-
-  - name: audience_builder_known_users
-    description: This model includes only records where both canonical segment ID and email match with known users source data.
-    columns:
-     - name: canonical_segment_id
-       description: The canonical segment identifier matched with known users source segment_id.
-       tests:
-         - unique
-         - not_null
-     - name: email
-       description: The email address matched between audience_builder_big and known users source.
-       tests:
-         - unique
-         - not_null
-
-
+      - name: canonical_segment_id
+        description: "{{ doc('canonical_segment_id') }}"
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "{{ doc('email') }}"
+      - name: hashed_email
+        description: "{{ doc('hashed_email') }}"
+      - name: all_audiences
+        description: "{{ doc('all_audiences') }}"
+      - name: snid
+        description: "{{ doc('snid') }}"
+      - name: user_id
+        description: "{{ doc('user_id') }}"
+      - name: role
+        description: "{{ doc('role') }}"
+      - name: institution_name
+        description: "{{ doc('institution_name') }}"
+      - name: advertising_opt_in
+        description: "{{ doc('advertising_opt_in') }}"
+      - name: subjects
+        description: "{{ doc('subjects') }}"
+      - name: mkt_pref_opt_in
+        description: "{{ doc('mkt_pref_opt_in') }}"
+      - name: main_f2
+        description: "{{ doc('main_f2') }}"
+      - name: change_over_py_sn_loyalty
+        description: "{{ doc('change_over_py_sn_loyalty') }}"
+      - name: oa_articles
+        description: "{{ doc('oa_articles') }}"
+      - name: percent_oa
+        description: "{{ doc('percent_oa') }}"
+      - name: h_index
+        description: "{{ doc('h_index') }}"
+      - name: most_recent_pub
+        description: "{{ doc('most_recent_pub') }}"
+      - name: avg_if
+        description: "{{ doc('avg_if') }}"
+      - name: loyalty_group
+        description: "{{ doc('loyalty_group') }}"
+      - name: years_active
+        description: "{{ doc('years_active') }}"
+      - name: total_amt_5yr_author_group
+        description: "{{ doc('total_amt_5yr_author_group') }}"
+      - name: top_publisher
+        description: "{{ doc('top_publisher') }}"
+      - name: country
+        description: "{{ doc('country') }}"
+      - name: persona
+        description: "{{ doc('persona') }}"
+      - name: snid_flag
+        description: "{{ doc('snid_flag') }}"
+      - name: first_name_flag
+        description: "{{ doc('first_name_flag') }}"
+      - name: ga_client_id_flag
+        description: "{{ doc('ga_client_id_flag') }}"
+      - name: orcid_flag
+        description: "{{ doc('orcid_flag') }}"
+      - name: researcher_id_flag
+        description: "{{ doc('researcher_id_flag') }}"
+      - name: email_flag
+        description: "{{ doc('email_flag') }}"
+      - name: last_name_flag
+        description: "{{ doc('last_name_flag') }}"
+      - name: sap_outbound_id_flag
+        description: "{{ doc('sap_outbound_id_flag') }}"
+      - name: anonymous_id_flag
+        description: "{{ doc('anonymous_id_flag') }}"
+      - name: flag_column
+        description: "{{ doc('flag_column') }}"
+      - name: permutive_id_flag
+        description: "{{ doc('permutive_id_flag') }}"
+      - name: count_article_readership_last_60_d
+        description: "{{ doc('count_article_readership_last_60_d') }}"
+      - name: has_recent_online_behaviour
+        description: "{{ doc('has_recent_online_behaviour') }}"
+      - name: gl_multichannel_leader_persona
+        description: "{{ doc('gl_multichannel_leader_persona') }}"
+      - name: oa_agreement_bmc_url1
+        description: "{{ doc('oa_agreement_bmc_url1') }}"
+      - name: b_2_c_marketing_contacts_monthly
+        description: "{{ doc('b_2_c_marketing_contacts_monthly') }}"
+      - name: total_medr_persona_group_2879_2977_2992
+        description: "{{ doc('total_medr_persona_group_2879_2977_2992') }}"
+      - name: the_source_unsubscribe_monthly
+        description: "{{ doc('the_source_unsubscribe_monthly') }}"
+      - name: article_submission_last_180_d
+        description: "{{ doc('article_submission_last_180_d') }}"
+      - name: braze_campaigns_clicked_last_1000_days
+        description: "{{ doc('braze_campaigns_clicked_last_1000_days') }}"
+      - name: gl_externaldiplay_young_journals
+        description: "{{ doc('gl_externaldiplay_young_journals') }}"
+      - name: nmo_job_title
+        description: "{{ doc('nmo_job_title') }}"
+      - name: email_received_all
+        description: "{{ doc('email_received_all') }}"
+      - name: oa_agreement_springer_flag1
+        description: "{{ doc('oa_agreement_springer_flag1') }}"
+      - name: interested_journal_ids
+        description: "{{ doc('interested_journal_ids') }}"
+      - name: article_submission_last_180_d_42003
+        description: "{{ doc('article_submission_last_180_d_42003') }}"
+      - name: not_sn_power_author
+        description: "{{ doc('not_sn_power_author') }}"
+      - name: first_name
+        description: "{{ doc('first_name') }}"
+      - name: sn_book_authors_unsubscribe_monthly
+        description: "{{ doc('sn_book_authors_unsubscribe_monthly') }}"
+      - name: journal_nurture_eligible_canvas_1
+        description: "{{ doc('journal_nurture_eligible_canvas_1') }}"
+      - name: third_party_promotion_unsubscribe_monthly
+        description: "{{ doc('third_party_promotion_unsubscribe_monthly') }}"
+      - name: n_total_chapters
+        description: "{{ doc('n_total_chapters') }}"
+      - name: journal_submission_title
+        description: "{{ doc('journal_submission_title') }}"
+      - name: last_name
+        description: "{{ doc('last_name') }}"
+      - name: article_submission_last_180_d_10639
+        description: "{{ doc('article_submission_last_180_d_10639') }}"
+      - name: is_editorial_board_members_communications_opted_in
+        description: "{{ doc('is_editorial_board_members_communications_opted_in') }}"
+      - name: gl_externaldisplay_collections
+        description: "{{ doc('gl_externaldisplay_collections') }}"
+      - name: braze_received_all
+        description: "{{ doc('braze_received_all') }}"
+      - name: count_reach_fta_last_90_d
+        description: "{{ doc('count_reach_fta_last_90_d') }}"
+      - name: list_article_title_from_readership
+        description: "{{ doc('list_article_title_from_readership') }}"
+      - name: sn_book_authors_monthly
+        description: "{{ doc('sn_book_authors_monthly') }}"
+      - name: nmo_id
+        description: "{{ doc('nmo_id') }}"
+      - name: awa_lookalike_health_sciences
+        description: "{{ doc('awa_lookalike_health_sciences') }}"
+      - name: sn_fan_power_author
+        description: "{{ doc('sn_fan_power_author') }}"
+      - name: max_if
+        description: "{{ doc('max_if') }}"
+      - name: list_journals_read_last_30_d
+        description: "{{ doc('list_journals_read_last_30_d') }}"
+      - name: oa_agreement_bmc_flag1
+        description: "{{ doc('oa_agreement_bmc_flag1') }}"
+      - name: list_keywords_dois_last_60_d
+        description: "{{ doc('list_keywords_dois_last_60_d') }}"
+      - name: submissions
+        description: "{{ doc('submissions') }}"
+      - name: article_submission_last_180_d_scirep
+        description: "{{ doc('article_submission_last_180_d_scirep') }}"
+      - name: count_about_last_30_d
+        description: "{{ doc('count_about_last_30_d') }}"
+      - name: author_group_srep
+        description: "{{ doc('author_group_srep') }}"
+      - name: journal_awareness_low_active_eligible_canvas_1
+        description: "{{ doc('journal_awareness_low_active_eligible_canvas_1') }}"
+      - name: test_predict_churn
+        description: "{{ doc('test_predict_churn') }}"
+      - name: gl_externaldisplay_collection_cta_engagers_180_d
+        description: "{{ doc('gl_externaldisplay_collection_cta_engagers_180_d') }}"
+      - name: not_sn_occasional_author
+        description: "{{ doc('not_sn_occasional_author') }}"
+      - name: one_time_author_1_publication
+        description: "{{ doc('one_time_author_1_publication') }}"
+      - name: third_party_promotion_monthly
+        description: "{{ doc('third_party_promotion_monthly') }}"
+      - name: marketing_opt_ins_have_visited_the_source
+        description: "{{ doc('marketing_opt_ins_have_visited_the_source') }}"
+      - name: not_sn_one_time_author
+        description: "{{ doc('not_sn_one_time_author') }}"
+      - name: count_research_integrity_last_180_d
+        description: "{{ doc('count_research_integrity_last_180_d') }}"
+      - name: oa_agreement_nature_name1
+        description: "{{ doc('oa_agreement_nature_name1') }}"
+      - name: count_reach_fta_last_60_d
+        description: "{{ doc('count_reach_fta_last_60_d') }}"
+      - name: is_global_subscribed
+        description: "{{ doc('is_global_subscribed') }}"
+      - name: current_sn_ebm_journals
+        description: "{{ doc('current_sn_ebm_journals') }}"
+      - name: nmo_user_groups
+        description: "{{ doc('nmo_user_groups') }}"
+      - name: andre_sub_2_pub_test
+        description: "{{ doc('andre_sub_2_pub_test') }}"
+      - name: occasional_author_2_10_publications
+        description: "{{ doc('occasional_author_2_10_publications') }}"
+      - name: b_2_c_marketing_contacts
+        description: "{{ doc('b_2_c_marketing_contacts') }}"
+      - name: n_sn_total_books
+        description: "{{ doc('n_sn_total_books') }}"
+      - name: lifetime_aggregations
+        description: "{{ doc('lifetime_aggregations') }}"
+      - name: advertising_3rd_platforms_opt_in
+        description: "{{ doc('advertising_3rd_platforms_opt_in') }}"
+      - name: marketing_consent_opt_out_monthly
+        description: "{{ doc('marketing_consent_opt_out_monthly') }}"
+      - name: min_if
+        description: "{{ doc('min_if') }}"
+      - name: competitor_book_author_not_sn_yet
+        description: "{{ doc('competitor_book_author_not_sn_yet') }}"
+      - name: nmo_user_license
+        description: "{{ doc('nmo_user_license') }}"
+      - name: nmo_region
+        description: "{{ doc('nmo_region') }}"
+      - name: article_submission_last_180_d_12144
+        description: "{{ doc('article_submission_last_180_d_12144') }}"
+      - name: interested_journal_ids_90
+        description: "{{ doc('interested_journal_ids_90') }}"
+      - name: total_number_of_marketing_reachable_contacts
+        description: "{{ doc('total_number_of_marketing_reachable_contacts') }}"
+      - name: list_article_title_from_view
+        description: "{{ doc('list_article_title_from_view') }}"
+      - name: reading_interest_60_d
+        description: "{{ doc('reading_interest_60_d') }}"
+      - name: conr_jrnls_rep_1_gl_pjnl_05_rok_inspire
+        description: "{{ doc('conr_jrnls_rep_1_gl_pjnl_05_rok_inspire') }}"
+      - name: sn_positive_regular_author
+        description: "{{ doc('sn_positive_regular_author') }}"
+      - name: permutive_id
+        description: "{{ doc('permutive_id') }}"
+      - name: count_oa_content_online_last_60_d
+        description: "{{ doc('count_oa_content_online_last_60_d') }}"
+      - name: sn_opportunity_power_author
+        description: "{{ doc('sn_opportunity_power_author') }}"
+      - name: awr_click_submit_manuscript_on_link_springer_com
+        description: "{{ doc('awr_click_submit_manuscript_on_link_springer_com') }}"
+      - name: count_about_last_90_days
+        description: "{{ doc('count_about_last_90_days') }}"
+      - name: list_doi_last_60_d
+        description: "{{ doc('list_doi_last_60_d') }}"
+      - name: most_recent_sn_book_date
+        description: "{{ doc('most_recent_sn_book_date') }}"
+      - name: count_submguidelines_last_90_days
+        description: "{{ doc('count_submguidelines_last_90_days') }}"
+      - name: journal_publications
+        description: "{{ doc('journal_publications') }}"
+      - name: most_recent_book_date
+        description: "{{ doc('most_recent_book_date') }}"
+      - name: list_ip_country
+        description: "{{ doc('list_ip_country') }}"
+      - name: country_author_iso
+        description: "{{ doc('country_author_iso') }}"
+      - name: cep_id
+        description: "{{ doc('cep_id') }}"
+      - name: is_webshop_buyer_communications_opted_in
+        description: "{{ doc('is_webshop_buyer_communications_opted_in') }}"
+      - name: exclusion_journal_nurture_test_tom
+        description: "{{ doc('exclusion_journal_nurture_test_tom') }}"
+      - name: user_researcher_home
+        description: "{{ doc('user_researcher_home') }}"
+      - name: author_group_bmc
+        description: "{{ doc('author_group_bmc') }}"
+      - name: oa_agreement_nature_flag1
+        description: "{{ doc('oa_agreement_nature_flag1') }}"
+      - name: count_doi_last_180_d
+        description: "{{ doc('count_doi_last_180_d') }}"
+      - name: list_journals_allpageviews_30_d
+        description: "{{ doc('list_journals_allpageviews_30_d') }}"
+      - name: most_seen_ip_country
+        description: "{{ doc('most_seen_ip_country') }}"
+      - name: list_journals_etocs_last_180_d
+        description: "{{ doc('list_journals_etocs_last_180_d') }}"
+      - name: count_researcherhome_last_180_d
+        description: "{{ doc('count_researcherhome_last_180_d') }}"
+      - name: n_sn_total_chapters
+        description: "{{ doc('n_sn_total_chapters') }}"
+      - name: mpc_signup
+        description: "{{ doc('mpc_signup') }}"
+      - name: author_group_spr
+        description: "{{ doc('author_group_spr') }}"
+      - name: sn_journal_submitter
+        description: "{{ doc('sn_journal_submitter') }}"
+      - name: sn_fan_regular_author
+        description: "{{ doc('sn_fan_regular_author') }}"
+      - name: journal_nurture_oa_interest_eligible_canvas_2
+        description: "{{ doc('journal_nurture_oa_interest_eligible_canvas_2') }}"
+      - name: scirep_repeat_visitors_and_submissions_opened
+        description: "{{ doc('scirep_repeat_visitors_and_submissions_opened') }}"
+      - name: oa_agreements
+        description: "{{ doc('oa_agreements') }}"
+      - name: etoc_received_all
+        description: "{{ doc('etoc_received_all') }}"
+      - name: list_journals_submguide_about_last_30_d
+        description: "{{ doc('list_journals_submguide_about_last_30_d') }}"
+      - name: list_doi_last_180_d
+        description: "{{ doc('list_doi_last_180_d') }}"
+      - name: chatpgt_users
+        description: "{{ doc('chatpgt_users') }}"
+      - name: count_submguidelines_last_30_d
+        description: "{{ doc('count_submguidelines_last_30_d') }}"
+      - name: is_book_author_communications_opted_in
+        description: "{{ doc('is_book_author_communications_opted_in') }}"
+      - name: author_group_global
+        description: "{{ doc('author_group_global') }}"
+      - name: article_submission_last_180_d_10551
+        description: "{{ doc('article_submission_last_180_d_10551') }}"
+      - name: list_doi_last_90_d
+        description: "{{ doc('list_doi_last_90_d') }}"
+      - name: author_group_sn
+        description: "{{ doc('author_group_sn') }}"
+      - name: key_contributor
+        description: "{{ doc('key_contributor') }}"
+      - name: sn_opportunity_regular_author
+        description: "{{ doc('sn_opportunity_regular_author') }}"
+      - name: list_journals_submission_opened_last_90_d
+        description: "{{ doc('list_journals_submission_opened_last_90_d') }}"
+      - name: anonymous_id
+        description: "{{ doc('anonymous_id') }}"
+      - name: is_editor_referral_opted_in
+        description: "{{ doc('is_editor_referral_opted_in') }}"
+      - name: explicit_user_choice
+        description: "{{ doc('explicit_user_choice') }}"
+      - name: third_party_promotion
+        description: "{{ doc('third_party_promotion') }}"
+      - name: global_list_unsubscribe_monthly
+        description: "{{ doc('global_list_unsubscribe_monthly') }}"
+      - name: sn_journal_author_unsubscribe_monthly
+        description: "{{ doc('sn_journal_author_unsubscribe_monthly') }}"
+      - name: last_date_book_interest
+        description: "{{ doc('last_date_book_interest') }}"
+      - name: oa_agreement_nature_url1
+        description: "{{ doc('oa_agreement_nature_url1') }}"
+      - name: advertising_3rd_platforms_unsubscribe_monthly
+        description: "{{ doc('advertising_3rd_platforms_unsubscribe_monthly') }}"
+      - name: snt_inferred
+        description: "{{ doc('snt_inferred') }}"
+      - name: list_imprints_90_days
+        description: "{{ doc('list_imprints_90_days') }}"
+      - name: oa_agreement_springer_name1
+        description: "{{ doc('oa_agreement_springer_name1') }}"
+      - name: article_submission_last_180_d_10668
+        description: "{{ doc('article_submission_last_180_d_10668') }}"
+      - name: sn_journal_authors_legitimate_interest
+        description: "{{ doc('sn_journal_authors_legitimate_interest') }}"
+      - name: b_2_c_contacts_unsubscribe_monthly
+        description: "{{ doc('b_2_c_contacts_unsubscribe_monthly') }}"
+      - name: accepted_journal_authors
+        description: "{{ doc('accepted_journal_authors') }}"
+      - name: newsletters
+        description: "{{ doc('newsletters') }}"
+      - name: welcome_onboarding_retargeting_internal_display
+        description: "{{ doc('welcome_onboarding_retargeting_internal_display') }}"
+      - name: the_source_newsletter_subscribers
+        description: "{{ doc('the_source_newsletter_subscribers') }}"
+      - name: most_recent_sn_chapter_date
+        description: "{{ doc('most_recent_sn_chapter_date') }}"
+      - name: control_cells_rg_2025
+        description: "{{ doc('control_cells_rg_2025') }}"
+      - name: sn_journal_authors
+        description: "{{ doc('sn_journal_authors') }}"
+      - name: count_els_last_60_d
+        description: "{{ doc('count_els_last_60_d') }}"
+      - name: sn_fan_one_time_author
+        description: "{{ doc('sn_fan_one_time_author') }}"
+      - name: author_group_nature
+        description: "{{ doc('author_group_nature') }}"
+      - name: orcid
+        description: "{{ doc('orcid') }}"
+      - name: the_source_newsletter_monthly
+        description: "{{ doc('the_source_newsletter_monthly') }}"
+      - name: nature_careers_journey_eligible
+        description: "{{ doc('nature_careers_journey_eligible') }}"
+      - name: nmo_registered_courses
+        description: "{{ doc('nmo_registered_courses') }}"
+      - name: awa_lookalike_health_sciences_context
+        description: "{{ doc('awa_lookalike_health_sciences_context') }}"
+      - name: sn_positive_occasional_author
+        description: "{{ doc('sn_positive_occasional_author') }}"
+      - name: n_total_books
+        description: "{{ doc('n_total_books') }}"
+      - name: journal_awareness_1
+        description: "{{ doc('journal_awareness_1') }}"
+      - name: article_submission_last_180_d_10853
+        description: "{{ doc('article_submission_last_180_d_10853') }}"
+      - name: count_reach_fta_last_180_d
+        description: "{{ doc('count_reach_fta_last_180_d') }}"
+      - name: japa_all
+        description: "{{ doc('japa_all') }}"
+      - name: count_submission_complete_last_180_d
+        description: "{{ doc('count_submission_complete_last_180_d') }}"
+      - name: books_submission_title
+        description: "{{ doc('books_submission_title') }}"
+      - name: test_any_journal_1_article_published_facebook_phone
+        description: "{{ doc('test_any_journal_1_article_published_facebook_phone') }}"
+      - name: regular_author_11_20_publications
+        description: "{{ doc('regular_author_11_20_publications') }}"
+      - name: not_sn_regular_author
+        description: "{{ doc('not_sn_regular_author') }}"
+      - name: ga_client_id
+        description: "{{ doc('ga_client_id') }}"
+      - name: article_submission_last_180_d_natcomm
+        description: "{{ doc('article_submission_last_180_d_natcomm') }}"
+      - name: author_group_global_detailed
+        description: "{{ doc('author_group_global_detailed') }}"
+      - name: last_time_online
+        description: "{{ doc('last_time_online') }}"
+      - name: list_journals_read_last_60_d
+        description: "{{ doc('list_journals_read_last_60_d') }}"
+      - name: list_journals_submissions_alltime
+        description: "{{ doc('list_journals_submissions_alltime') }}"
+      - name: sn_positive_power_author
+        description: "{{ doc('sn_positive_power_author') }}"
+      - name: online_marketing_engagement
+        description: "{{ doc('online_marketing_engagement') }}"
+      - name: marketing_opt_in_past_month
+        description: "{{ doc('marketing_opt_in_past_month') }}"
+      - name: is_legitimate_interest_author_opted_in
+        description: "{{ doc('is_legitimate_interest_author_opted_in') }}"
+      - name: sn_fan_occasional_author
+        description: "{{ doc('sn_fan_occasional_author') }}"
+      - name: researcher_id
+        description: "{{ doc('researcher_id') }}"
+      - name: list_journals_submguide_about_last_60_d
+        description: "{{ doc('list_journals_submguide_about_last_60_d') }}"
+      - name: sn_opportunity_occasional_author
+        description: "{{ doc('sn_opportunity_occasional_author') }}"
+      - name: sn_journal_authors_monthly
+        description: "{{ doc('sn_journal_authors_monthly') }}"
+      - name: oa_agreement_springer_url1
+        description: "{{ doc('oa_agreement_springer_url1') }}"
+      - name: advertising_3rd_platfoms_opt_in_monthly
+        description: "{{ doc('advertising_3rd_platfoms_opt_in_monthly') }}"
+      - name: sn_book_authors_legitimate_interest
+        description: "{{ doc('sn_book_authors_legitimate_interest') }}"
+      - name: books_nurture_api
+        description: "{{ doc('books_nurture_api') }}"
+      - name: the_source_pages_visitors
+        description: "{{ doc('the_source_pages_visitors') }}"
+      - name: total_comp_persona_group_2970_2971
+        description: "{{ doc('total_comp_persona_group_2970_2971') }}"
+      - name: nmo_completed_courses
+        description: "{{ doc('nmo_completed_courses') }}"
+      - name: gl_externaldisplay_novice_persona
+        description: "{{ doc('gl_externaldisplay_novice_persona') }}"
+      - name: power_author_21_publications
+        description: "{{ doc('power_author_21_publications') }}"
+      - name: article_submission_last_180_d_41392
+        description: "{{ doc('article_submission_last_180_d_41392') }}"
+      - name: oa_agreement_bmc_name1
+        description: "{{ doc('oa_agreement_bmc_name1') }}"
+      - name: braze_canvas_clicked_last_1000_days
+        description: "{{ doc('braze_canvas_clicked_last_1000_days') }}"
+      - name: count_s_rep_about
+        description: "{{ doc('count_s_rep_about') }}"
+      - name: article_submission_last_180_d_41599
+        description: "{{ doc('article_submission_last_180_d_41599') }}"
+      - name: last_time_online_rh
+        description: "{{ doc('last_time_online_rh') }}"
+      - name: most_recent_chapter_date
+        description: "{{ doc('most_recent_chapter_date') }}"
 
   - name: audience_builder_big_hashed
-    description: "This encrypted model includes a comprehensive set of features for audience segmentation and analysis"
-
+    description: "PII-safe version of audience_builder_big. Same columns as audience_builder_big excluding email, first_name, last_name, orcid and researcher_id. hashed_email is retained."
     columns:
       - name: canonical_segment_id
-        description: "Anonymous internal id"
-
+        description: "{{ doc('canonical_segment_id') }}"
+        tests:
+          - not_null
+          - unique
+      - name: hashed_email
+        description: "{{ doc('hashed_email') }}"
       - name: all_audiences
-        description: "all profiles in sampled subset"
-
+        description: "{{ doc('all_audiences') }}"
       - name: snid
-        description: "internal sn id"
-
+        description: "{{ doc('snid') }}"
       - name: user_id
-        description: " "
-
+        description: "{{ doc('user_id') }}"
       - name: role
-        description: "Role a user chooses when giving Marketing opt-in (only from new MPC): Healthcare professional, Lecturer, Other, Researcher"
-
+        description: "{{ doc('role') }}"
       - name: institution_name
-        description: "Name of affiliated institution, according to submission"
-
+        description: "{{ doc('institution_name') }}"
       - name: advertising_opt_in
-        description: "If Advertising opt in was given (from MPC)"
-
+        description: "{{ doc('advertising_opt_in') }}"
       - name: subjects
-        description: "Areas of interest a user chooses when giving Marketing opt-in (only from new MPC) mapped to SNT"
-
+        description: "{{ doc('subjects') }}"
       - name: mkt_pref_opt_in
-        description: "If Marketing opt in was given (from MPC)"
-
+        description: "{{ doc('mkt_pref_opt_in') }}"
       - name: main_f2
-        description: "The most frequent second-level field of research for the researcher, based on Citation Topic"
-
+        description: "{{ doc('main_f2') }}"
       - name: change_over_py_sn_loyalty
-        description: "Whether there was a change in PY % of publications with SN"
-
+        description: "{{ doc('change_over_py_sn_loyalty') }}"
       - name: oa_articles
-        description: "Count of OA publications all time"
-
+        description: "{{ doc('oa_articles') }}"
       - name: percent_oa
-        description: "Percentage of OA publications in the last 5 years"
-
+        description: "{{ doc('percent_oa') }}"
       - name: h_index
-        description: "H-index calculated from Dimensions data"
-
+        description: "{{ doc('h_index') }}"
       - name: most_recent_pub
-        description: "Date of last publication"
-
+        description: "{{ doc('most_recent_pub') }}"
       - name: avg_if
-        description: "Average impact factor of a journal the researcher has published in last 5 years"
-
+        description: "{{ doc('avg_if') }}"
       - name: loyalty_group
-        description: "Based on the % of article published with SN out of a researchers 5 yr publications in the AMT, researchers are assigned to one of 4 loyalty groups"
-
+        description: "{{ doc('loyalty_group') }}"
       - name: years_active
-        description: "Number of years between first and last publications recorded in Dimensions"
-
+        description: "{{ doc('years_active') }}"
       - name: total_amt_5yr_author_group
-        description: "Based on count of publications, researchers are assigned to one of 4 volume groups (One Time Author, Occasional 2-10, Regular 11-20, Power 21+)"
-
+        description: "{{ doc('total_amt_5yr_author_group') }}"
       - name: top_publisher
-        description: "The publisher with the highest share of a researcher's publications in the last 5 years"
-
+        description: "{{ doc('top_publisher') }}"
       - name: country
-        description: "Country (as per submission or self-indicated)"
-
+        description: "{{ doc('country') }}"
       - name: persona
-        description: "Marketing persona as per SN definition (Leader, Career Climber, Steady Author, SN Novice)"
-
+        description: "{{ doc('persona') }}"
       - name: snid_flag
-        description: "SNID"
-
+        description: "{{ doc('snid_flag') }}"
       - name: first_name_flag
-        description: "Boolean value - true if first name present else false"
-
+        description: "{{ doc('first_name_flag') }}"
       - name: ga_client_id_flag
-        description: "Boolean value - true if GA id present else false"
-
+        description: "{{ doc('ga_client_id_flag') }}"
       - name: orcid_flag
-        description: "Boolean value - true if orcid present else false"
-
+        description: "{{ doc('orcid_flag') }}"
       - name: researcher_id_flag
-        description: "Boolean value - true if researcher_id present else false"
-
+        description: "{{ doc('researcher_id_flag') }}"
       - name: email_flag
-        description: "Boolean value - true if email present else false"
-
+        description: "{{ doc('email_flag') }}"
       - name: last_name_flag
-        description: "Boolean value - true if email present else false"
-
+        description: "{{ doc('last_name_flag') }}"
       - name: sap_outbound_id_flag
-        description: "Boolean value - true if sap outbound id present else false"
-
+        description: "{{ doc('sap_outbound_id_flag') }}"
       - name: anonymous_id_flag
-        description: "Boolean value - true if anonymous id present else false"
-
+        description: "{{ doc('anonymous_id_flag') }}"
       - name: flag_column
-        description: "Flag if we have information yet"
-
+        description: "{{ doc('flag_column') }}"
       - name: permutive_id_flag
-        description: "Boolean value - true if permutive id present else false"
+        description: "{{ doc('permutive_id_flag') }}"
+      - name: count_article_readership_last_60_d
+        description: "{{ doc('count_article_readership_last_60_d') }}"
+      - name: has_recent_online_behaviour
+        description: "{{ doc('has_recent_online_behaviour') }}"
+      - name: gl_multichannel_leader_persona
+        description: "{{ doc('gl_multichannel_leader_persona') }}"
+      - name: oa_agreement_bmc_url1
+        description: "{{ doc('oa_agreement_bmc_url1') }}"
+      - name: b_2_c_marketing_contacts_monthly
+        description: "{{ doc('b_2_c_marketing_contacts_monthly') }}"
+      - name: total_medr_persona_group_2879_2977_2992
+        description: "{{ doc('total_medr_persona_group_2879_2977_2992') }}"
+      - name: the_source_unsubscribe_monthly
+        description: "{{ doc('the_source_unsubscribe_monthly') }}"
+      - name: article_submission_last_180_d
+        description: "{{ doc('article_submission_last_180_d') }}"
+      - name: braze_campaigns_clicked_last_1000_days
+        description: "{{ doc('braze_campaigns_clicked_last_1000_days') }}"
+      - name: gl_externaldiplay_young_journals
+        description: "{{ doc('gl_externaldiplay_young_journals') }}"
+      - name: nmo_job_title
+        description: "{{ doc('nmo_job_title') }}"
+      - name: email_received_all
+        description: "{{ doc('email_received_all') }}"
+      - name: oa_agreement_springer_flag1
+        description: "{{ doc('oa_agreement_springer_flag1') }}"
+      - name: interested_journal_ids
+        description: "{{ doc('interested_journal_ids') }}"
+      - name: article_submission_last_180_d_42003
+        description: "{{ doc('article_submission_last_180_d_42003') }}"
+      - name: not_sn_power_author
+        description: "{{ doc('not_sn_power_author') }}"
+      - name: sn_book_authors_unsubscribe_monthly
+        description: "{{ doc('sn_book_authors_unsubscribe_monthly') }}"
+      - name: journal_nurture_eligible_canvas_1
+        description: "{{ doc('journal_nurture_eligible_canvas_1') }}"
+      - name: third_party_promotion_unsubscribe_monthly
+        description: "{{ doc('third_party_promotion_unsubscribe_monthly') }}"
+      - name: n_total_chapters
+        description: "{{ doc('n_total_chapters') }}"
+      - name: journal_submission_title
+        description: "{{ doc('journal_submission_title') }}"
+      - name: article_submission_last_180_d_10639
+        description: "{{ doc('article_submission_last_180_d_10639') }}"
+      - name: is_editorial_board_members_communications_opted_in
+        description: "{{ doc('is_editorial_board_members_communications_opted_in') }}"
+      - name: gl_externaldisplay_collections
+        description: "{{ doc('gl_externaldisplay_collections') }}"
+      - name: braze_received_all
+        description: "{{ doc('braze_received_all') }}"
+      - name: count_reach_fta_last_90_d
+        description: "{{ doc('count_reach_fta_last_90_d') }}"
+      - name: list_article_title_from_readership
+        description: "{{ doc('list_article_title_from_readership') }}"
+      - name: sn_book_authors_monthly
+        description: "{{ doc('sn_book_authors_monthly') }}"
+      - name: nmo_id
+        description: "{{ doc('nmo_id') }}"
+      - name: awa_lookalike_health_sciences
+        description: "{{ doc('awa_lookalike_health_sciences') }}"
+      - name: sn_fan_power_author
+        description: "{{ doc('sn_fan_power_author') }}"
+      - name: max_if
+        description: "{{ doc('max_if') }}"
+      - name: list_journals_read_last_30_d
+        description: "{{ doc('list_journals_read_last_30_d') }}"
+      - name: oa_agreement_bmc_flag1
+        description: "{{ doc('oa_agreement_bmc_flag1') }}"
+      - name: list_keywords_dois_last_60_d
+        description: "{{ doc('list_keywords_dois_last_60_d') }}"
+      - name: submissions
+        description: "{{ doc('submissions') }}"
+      - name: article_submission_last_180_d_scirep
+        description: "{{ doc('article_submission_last_180_d_scirep') }}"
+      - name: count_about_last_30_d
+        description: "{{ doc('count_about_last_30_d') }}"
+      - name: author_group_srep
+        description: "{{ doc('author_group_srep') }}"
+      - name: journal_awareness_low_active_eligible_canvas_1
+        description: "{{ doc('journal_awareness_low_active_eligible_canvas_1') }}"
+      - name: test_predict_churn
+        description: "{{ doc('test_predict_churn') }}"
+      - name: gl_externaldisplay_collection_cta_engagers_180_d
+        description: "{{ doc('gl_externaldisplay_collection_cta_engagers_180_d') }}"
+      - name: not_sn_occasional_author
+        description: "{{ doc('not_sn_occasional_author') }}"
+      - name: one_time_author_1_publication
+        description: "{{ doc('one_time_author_1_publication') }}"
+      - name: third_party_promotion_monthly
+        description: "{{ doc('third_party_promotion_monthly') }}"
+      - name: marketing_opt_ins_have_visited_the_source
+        description: "{{ doc('marketing_opt_ins_have_visited_the_source') }}"
+      - name: not_sn_one_time_author
+        description: "{{ doc('not_sn_one_time_author') }}"
+      - name: count_research_integrity_last_180_d
+        description: "{{ doc('count_research_integrity_last_180_d') }}"
+      - name: oa_agreement_nature_name1
+        description: "{{ doc('oa_agreement_nature_name1') }}"
+      - name: count_reach_fta_last_60_d
+        description: "{{ doc('count_reach_fta_last_60_d') }}"
+      - name: is_global_subscribed
+        description: "{{ doc('is_global_subscribed') }}"
+      - name: current_sn_ebm_journals
+        description: "{{ doc('current_sn_ebm_journals') }}"
+      - name: nmo_user_groups
+        description: "{{ doc('nmo_user_groups') }}"
+      - name: andre_sub_2_pub_test
+        description: "{{ doc('andre_sub_2_pub_test') }}"
+      - name: occasional_author_2_10_publications
+        description: "{{ doc('occasional_author_2_10_publications') }}"
+      - name: b_2_c_marketing_contacts
+        description: "{{ doc('b_2_c_marketing_contacts') }}"
+      - name: n_sn_total_books
+        description: "{{ doc('n_sn_total_books') }}"
+      - name: lifetime_aggregations
+        description: "{{ doc('lifetime_aggregations') }}"
+      - name: advertising_3rd_platforms_opt_in
+        description: "{{ doc('advertising_3rd_platforms_opt_in') }}"
+      - name: marketing_consent_opt_out_monthly
+        description: "{{ doc('marketing_consent_opt_out_monthly') }}"
+      - name: min_if
+        description: "{{ doc('min_if') }}"
+      - name: competitor_book_author_not_sn_yet
+        description: "{{ doc('competitor_book_author_not_sn_yet') }}"
+      - name: nmo_user_license
+        description: "{{ doc('nmo_user_license') }}"
+      - name: nmo_region
+        description: "{{ doc('nmo_region') }}"
+      - name: article_submission_last_180_d_12144
+        description: "{{ doc('article_submission_last_180_d_12144') }}"
+      - name: interested_journal_ids_90
+        description: "{{ doc('interested_journal_ids_90') }}"
+      - name: total_number_of_marketing_reachable_contacts
+        description: "{{ doc('total_number_of_marketing_reachable_contacts') }}"
+      - name: list_article_title_from_view
+        description: "{{ doc('list_article_title_from_view') }}"
+      - name: reading_interest_60_d
+        description: "{{ doc('reading_interest_60_d') }}"
+      - name: conr_jrnls_rep_1_gl_pjnl_05_rok_inspire
+        description: "{{ doc('conr_jrnls_rep_1_gl_pjnl_05_rok_inspire') }}"
+      - name: sn_positive_regular_author
+        description: "{{ doc('sn_positive_regular_author') }}"
+      - name: permutive_id
+        description: "{{ doc('permutive_id') }}"
+      - name: count_oa_content_online_last_60_d
+        description: "{{ doc('count_oa_content_online_last_60_d') }}"
+      - name: sn_opportunity_power_author
+        description: "{{ doc('sn_opportunity_power_author') }}"
+      - name: awr_click_submit_manuscript_on_link_springer_com
+        description: "{{ doc('awr_click_submit_manuscript_on_link_springer_com') }}"
+      - name: count_about_last_90_days
+        description: "{{ doc('count_about_last_90_days') }}"
+      - name: list_doi_last_60_d
+        description: "{{ doc('list_doi_last_60_d') }}"
+      - name: most_recent_sn_book_date
+        description: "{{ doc('most_recent_sn_book_date') }}"
+      - name: count_submguidelines_last_90_days
+        description: "{{ doc('count_submguidelines_last_90_days') }}"
+      - name: journal_publications
+        description: "{{ doc('journal_publications') }}"
+      - name: most_recent_book_date
+        description: "{{ doc('most_recent_book_date') }}"
+      - name: list_ip_country
+        description: "{{ doc('list_ip_country') }}"
+      - name: country_author_iso
+        description: "{{ doc('country_author_iso') }}"
+      - name: cep_id
+        description: "{{ doc('cep_id') }}"
+      - name: is_webshop_buyer_communications_opted_in
+        description: "{{ doc('is_webshop_buyer_communications_opted_in') }}"
+      - name: exclusion_journal_nurture_test_tom
+        description: "{{ doc('exclusion_journal_nurture_test_tom') }}"
+      - name: user_researcher_home
+        description: "{{ doc('user_researcher_home') }}"
+      - name: author_group_bmc
+        description: "{{ doc('author_group_bmc') }}"
+      - name: oa_agreement_nature_flag1
+        description: "{{ doc('oa_agreement_nature_flag1') }}"
+      - name: count_doi_last_180_d
+        description: "{{ doc('count_doi_last_180_d') }}"
+      - name: list_journals_allpageviews_30_d
+        description: "{{ doc('list_journals_allpageviews_30_d') }}"
+      - name: most_seen_ip_country
+        description: "{{ doc('most_seen_ip_country') }}"
+      - name: list_journals_etocs_last_180_d
+        description: "{{ doc('list_journals_etocs_last_180_d') }}"
+      - name: count_researcherhome_last_180_d
+        description: "{{ doc('count_researcherhome_last_180_d') }}"
+      - name: n_sn_total_chapters
+        description: "{{ doc('n_sn_total_chapters') }}"
+      - name: mpc_signup
+        description: "{{ doc('mpc_signup') }}"
+      - name: author_group_spr
+        description: "{{ doc('author_group_spr') }}"
+      - name: sn_journal_submitter
+        description: "{{ doc('sn_journal_submitter') }}"
+      - name: sn_fan_regular_author
+        description: "{{ doc('sn_fan_regular_author') }}"
+      - name: journal_nurture_oa_interest_eligible_canvas_2
+        description: "{{ doc('journal_nurture_oa_interest_eligible_canvas_2') }}"
+      - name: scirep_repeat_visitors_and_submissions_opened
+        description: "{{ doc('scirep_repeat_visitors_and_submissions_opened') }}"
+      - name: oa_agreements
+        description: "{{ doc('oa_agreements') }}"
+      - name: etoc_received_all
+        description: "{{ doc('etoc_received_all') }}"
+      - name: list_journals_submguide_about_last_30_d
+        description: "{{ doc('list_journals_submguide_about_last_30_d') }}"
+      - name: list_doi_last_180_d
+        description: "{{ doc('list_doi_last_180_d') }}"
+      - name: chatpgt_users
+        description: "{{ doc('chatpgt_users') }}"
+      - name: count_submguidelines_last_30_d
+        description: "{{ doc('count_submguidelines_last_30_d') }}"
+      - name: is_book_author_communications_opted_in
+        description: "{{ doc('is_book_author_communications_opted_in') }}"
+      - name: author_group_global
+        description: "{{ doc('author_group_global') }}"
+      - name: article_submission_last_180_d_10551
+        description: "{{ doc('article_submission_last_180_d_10551') }}"
+      - name: list_doi_last_90_d
+        description: "{{ doc('list_doi_last_90_d') }}"
+      - name: author_group_sn
+        description: "{{ doc('author_group_sn') }}"
+      - name: key_contributor
+        description: "{{ doc('key_contributor') }}"
+      - name: sn_opportunity_regular_author
+        description: "{{ doc('sn_opportunity_regular_author') }}"
+      - name: list_journals_submission_opened_last_90_d
+        description: "{{ doc('list_journals_submission_opened_last_90_d') }}"
+      - name: anonymous_id
+        description: "{{ doc('anonymous_id') }}"
+      - name: is_editor_referral_opted_in
+        description: "{{ doc('is_editor_referral_opted_in') }}"
+      - name: explicit_user_choice
+        description: "{{ doc('explicit_user_choice') }}"
+      - name: third_party_promotion
+        description: "{{ doc('third_party_promotion') }}"
+      - name: global_list_unsubscribe_monthly
+        description: "{{ doc('global_list_unsubscribe_monthly') }}"
+      - name: sn_journal_author_unsubscribe_monthly
+        description: "{{ doc('sn_journal_author_unsubscribe_monthly') }}"
+      - name: last_date_book_interest
+        description: "{{ doc('last_date_book_interest') }}"
+      - name: oa_agreement_nature_url1
+        description: "{{ doc('oa_agreement_nature_url1') }}"
+      - name: advertising_3rd_platforms_unsubscribe_monthly
+        description: "{{ doc('advertising_3rd_platforms_unsubscribe_monthly') }}"
+      - name: snt_inferred
+        description: "{{ doc('snt_inferred') }}"
+      - name: list_imprints_90_days
+        description: "{{ doc('list_imprints_90_days') }}"
+      - name: oa_agreement_springer_name1
+        description: "{{ doc('oa_agreement_springer_name1') }}"
+      - name: article_submission_last_180_d_10668
+        description: "{{ doc('article_submission_last_180_d_10668') }}"
+      - name: sn_journal_authors_legitimate_interest
+        description: "{{ doc('sn_journal_authors_legitimate_interest') }}"
+      - name: b_2_c_contacts_unsubscribe_monthly
+        description: "{{ doc('b_2_c_contacts_unsubscribe_monthly') }}"
+      - name: accepted_journal_authors
+        description: "{{ doc('accepted_journal_authors') }}"
+      - name: newsletters
+        description: "{{ doc('newsletters') }}"
+      - name: welcome_onboarding_retargeting_internal_display
+        description: "{{ doc('welcome_onboarding_retargeting_internal_display') }}"
+      - name: the_source_newsletter_subscribers
+        description: "{{ doc('the_source_newsletter_subscribers') }}"
+      - name: most_recent_sn_chapter_date
+        description: "{{ doc('most_recent_sn_chapter_date') }}"
+      - name: control_cells_rg_2025
+        description: "{{ doc('control_cells_rg_2025') }}"
+      - name: sn_journal_authors
+        description: "{{ doc('sn_journal_authors') }}"
+      - name: count_els_last_60_d
+        description: "{{ doc('count_els_last_60_d') }}"
+      - name: sn_fan_one_time_author
+        description: "{{ doc('sn_fan_one_time_author') }}"
+      - name: author_group_nature
+        description: "{{ doc('author_group_nature') }}"
+      - name: the_source_newsletter_monthly
+        description: "{{ doc('the_source_newsletter_monthly') }}"
+      - name: nature_careers_journey_eligible
+        description: "{{ doc('nature_careers_journey_eligible') }}"
+      - name: nmo_registered_courses
+        description: "{{ doc('nmo_registered_courses') }}"
+      - name: awa_lookalike_health_sciences_context
+        description: "{{ doc('awa_lookalike_health_sciences_context') }}"
+      - name: sn_positive_occasional_author
+        description: "{{ doc('sn_positive_occasional_author') }}"
+      - name: n_total_books
+        description: "{{ doc('n_total_books') }}"
+      - name: journal_awareness_1
+        description: "{{ doc('journal_awareness_1') }}"
+      - name: article_submission_last_180_d_10853
+        description: "{{ doc('article_submission_last_180_d_10853') }}"
+      - name: count_reach_fta_last_180_d
+        description: "{{ doc('count_reach_fta_last_180_d') }}"
+      - name: japa_all
+        description: "{{ doc('japa_all') }}"
+      - name: count_submission_complete_last_180_d
+        description: "{{ doc('count_submission_complete_last_180_d') }}"
+      - name: books_submission_title
+        description: "{{ doc('books_submission_title') }}"
+      - name: test_any_journal_1_article_published_facebook_phone
+        description: "{{ doc('test_any_journal_1_article_published_facebook_phone') }}"
+      - name: regular_author_11_20_publications
+        description: "{{ doc('regular_author_11_20_publications') }}"
+      - name: not_sn_regular_author
+        description: "{{ doc('not_sn_regular_author') }}"
+      - name: ga_client_id
+        description: "{{ doc('ga_client_id') }}"
+      - name: article_submission_last_180_d_natcomm
+        description: "{{ doc('article_submission_last_180_d_natcomm') }}"
+      - name: author_group_global_detailed
+        description: "{{ doc('author_group_global_detailed') }}"
+      - name: last_time_online
+        description: "{{ doc('last_time_online') }}"
+      - name: list_journals_read_last_60_d
+        description: "{{ doc('list_journals_read_last_60_d') }}"
+      - name: list_journals_submissions_alltime
+        description: "{{ doc('list_journals_submissions_alltime') }}"
+      - name: sn_positive_power_author
+        description: "{{ doc('sn_positive_power_author') }}"
+      - name: online_marketing_engagement
+        description: "{{ doc('online_marketing_engagement') }}"
+      - name: marketing_opt_in_past_month
+        description: "{{ doc('marketing_opt_in_past_month') }}"
+      - name: is_legitimate_interest_author_opted_in
+        description: "{{ doc('is_legitimate_interest_author_opted_in') }}"
+      - name: sn_fan_occasional_author
+        description: "{{ doc('sn_fan_occasional_author') }}"
+      - name: list_journals_submguide_about_last_60_d
+        description: "{{ doc('list_journals_submguide_about_last_60_d') }}"
+      - name: sn_opportunity_occasional_author
+        description: "{{ doc('sn_opportunity_occasional_author') }}"
+      - name: sn_journal_authors_monthly
+        description: "{{ doc('sn_journal_authors_monthly') }}"
+      - name: oa_agreement_springer_url1
+        description: "{{ doc('oa_agreement_springer_url1') }}"
+      - name: advertising_3rd_platfoms_opt_in_monthly
+        description: "{{ doc('advertising_3rd_platfoms_opt_in_monthly') }}"
+      - name: sn_book_authors_legitimate_interest
+        description: "{{ doc('sn_book_authors_legitimate_interest') }}"
+      - name: books_nurture_api
+        description: "{{ doc('books_nurture_api') }}"
+      - name: the_source_pages_visitors
+        description: "{{ doc('the_source_pages_visitors') }}"
+      - name: total_comp_persona_group_2970_2971
+        description: "{{ doc('total_comp_persona_group_2970_2971') }}"
+      - name: nmo_completed_courses
+        description: "{{ doc('nmo_completed_courses') }}"
+      - name: gl_externaldisplay_novice_persona
+        description: "{{ doc('gl_externaldisplay_novice_persona') }}"
+      - name: power_author_21_publications
+        description: "{{ doc('power_author_21_publications') }}"
+      - name: article_submission_last_180_d_41392
+        description: "{{ doc('article_submission_last_180_d_41392') }}"
+      - name: oa_agreement_bmc_name1
+        description: "{{ doc('oa_agreement_bmc_name1') }}"
+      - name: braze_canvas_clicked_last_1000_days
+        description: "{{ doc('braze_canvas_clicked_last_1000_days') }}"
+      - name: count_s_rep_about
+        description: "{{ doc('count_s_rep_about') }}"
+      - name: article_submission_last_180_d_41599
+        description: "{{ doc('article_submission_last_180_d_41599') }}"
+      - name: last_time_online_rh
+        description: "{{ doc('last_time_online_rh') }}"
+      - name: most_recent_chapter_date
+        description: "{{ doc('most_recent_chapter_date') }}"
+
+
