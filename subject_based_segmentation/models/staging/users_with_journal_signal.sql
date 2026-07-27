@@ -1,9 +1,6 @@
 SELECT
     snid,
 
-    -- direct signals (no unnest)
-    ARRAY_AGG(last_submission_journal_id IGNORE NULLS)[SAFE_OFFSET(0)]  AS last_submission_journal_id,
-
     -- multi-valued signals kept as-is (we unnest later in resolved)
     ARRAY_AGG(list_journals_read_last_30_d IGNORE NULLS)[SAFE_OFFSET(0)]  AS read_last_30d,
     ARRAY_AGG(list_journals_read_last_60_d IGNORE NULLS)[SAFE_OFFSET(0)]  AS read_last_60d,

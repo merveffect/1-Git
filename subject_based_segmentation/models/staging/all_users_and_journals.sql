@@ -3,14 +3,8 @@ SELECT DISTINCT
     snid,
     TRIM(journal_id) AS journal_id
   FROM (
-    -- 1️⃣ last_submission_journal_id
-    SELECT snid, CAST(last_submission_journal_id AS STRING) AS journal_id
-    FROM {{ref('users_with_journal_signal')}}
-    WHERE last_submission_journal_id IS NOT NULL
-
-    UNION ALL
-
-    -- 2️⃣ read_last_30d
+ 
+    -- read_last_30d
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
     UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(read_last_30d, r'[\[\]\"]', ''), ';', ','), ',')) AS x
@@ -18,7 +12,7 @@ SELECT DISTINCT
 
     UNION ALL
 
-    -- 3️⃣ read_last_60d
+    --  read_last_60d
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
     UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(read_last_60d, r'[\[\]\"]', ''), ';', ','), ',')) AS x
@@ -26,7 +20,7 @@ SELECT DISTINCT
 
     UNION ALL
 
-    -- 4️⃣ journals_etocs_180d
+    --  journals_etocs_180d
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
     UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(journals_etocs_180d, r'[\[\]\"]', ''), ';', ','), ',')) AS x
@@ -34,7 +28,7 @@ SELECT DISTINCT
 
     UNION ALL
 
-    -- 5️⃣ journals_submguide_last_30d
+    --  journals_submguide_last_30d
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
     UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(journals_submguide_last_30d, r'[\[\]\"]', ''), ';', ','), ',')) AS x
@@ -42,7 +36,7 @@ SELECT DISTINCT
 
     UNION ALL
 
-    -- 6️⃣ journals_submguide_last_60d
+    --  journals_submguide_last_60d
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
     UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(journals_submguide_last_60d, r'[\[\]\"]', ''), ';', ','), ',')) AS x
@@ -50,7 +44,7 @@ SELECT DISTINCT
 
     UNION ALL
 
-    -- 7️⃣ journals_subm_alltime
+    --  journals_subm_alltime
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
     UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(journals_subm_alltime, r'[\[\]\"]', ''), ';', ','), ',')) AS x
@@ -58,7 +52,7 @@ SELECT DISTINCT
 
     UNION ALL
 
-    -- 8️⃣ list_journal_etocs_last_180_d
+    --  list_journal_etocs_last_180_d
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
     UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(list_journal_etocs_last_180_d, r'[\[\]\"]', ''), ';', ','), ',')) AS x
@@ -66,7 +60,7 @@ SELECT DISTINCT
 
     UNION ALL
 
-    -- 9️⃣ list_journals_allpageviews_30_d
+    --  list_journals_allpageviews_30_d
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
     UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(list_journals_allpageviews_30_d, r'[\[\]\"]', ''), ';', ','), ',')) AS x
@@ -74,6 +68,7 @@ SELECT DISTINCT
   )
   WHERE journal_id IS NOT NULL AND journal_id != ''
 )
+
 
 
 SELECT snid, journal_id
