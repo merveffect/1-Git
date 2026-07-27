@@ -17,6 +17,8 @@ with normalized_current as (
 
     select
         src.* replace(
+            cast(avg_if as numeric)
+            as avg_if,
             cast(awr_click_submit_manuscript_on_link_springer_com as string)
             as awr_click_submit_manuscript_on_link_springer_com
         )
