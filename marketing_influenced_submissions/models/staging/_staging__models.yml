@@ -21,8 +21,7 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              arguments:
-                values: ['SNAPP', 'EJP', 'EM']
+              values: ['SNAPP', 'EJP', 'EM']
       - name: submission_date
         description: Submission received date (cast from timestamp).
         data_tests:
@@ -45,8 +44,7 @@ models:
         description: Origin system of the author record.
         data_tests:
           - accepted_values:
-              arguments:
-                values: ['SNAPP', 'EJP', 'EM']
+              values: ['SNAPP', 'EJP', 'EM']
 
   - name: stg_journals
     description: Cleaned journal metadata (imprint, publishing model, title).
