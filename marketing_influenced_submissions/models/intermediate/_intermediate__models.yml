@@ -13,9 +13,8 @@ models:
         data_tests:
           - not_null
           - relationships:
-              arguments:
-                to: ref('stg_submissions')
-                field: submission_id
+              to: ref('stg_submissions')
+              field: submission_id
       - name: internal_submission_id
         description: Source-system submission ID (join key to GA4/outside-core data).
         data_tests:
@@ -25,8 +24,7 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              arguments:
-                values: ['SNAPP', 'EM']
+              values: ['SNAPP', 'EM']
       - name: submission_date
         description: Submission received date (partition key).
         data_tests:
@@ -35,9 +33,8 @@ models:
         description: Springer Nature journal ID (string).
         data_tests:
           - relationships:
-              arguments:
-                to: ref('stg_journals')
-                field: journal_id
+              to: ref('stg_journals')
+              field: journal_id
       - name: author_email
         description: Author email (primary identity key; nullable when the author row is missing).
 
@@ -62,6 +59,5 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              arguments:
-                values: [0, 1]
-                quote: false
+              values: [0, 1]
+              quote: false

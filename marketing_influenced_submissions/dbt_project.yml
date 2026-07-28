@@ -95,5 +95,6 @@ models:
       +materialized: table
       +tags: [intermediate]
     presentation:
+      +schema: "presentation"
       +materialized: table
       +tags: [presentation]

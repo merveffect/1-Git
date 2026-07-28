@@ -26,6 +26,5 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              arguments:
-                values: [0, 1]
-                quote: false
+              values: [0, 1]
+              quote: false

@@ -14,7 +14,7 @@ marketing_influenced_submissions:
       type: bigquery
       method: oauth
       project: snproject-cbb9ca25
-      dataset: RM_Submissions_mktg_infl
+      dataset: precis_prod_RM_Submissions_mktg_infl
       threads: 8
       job_execution_timeout_seconds: 6000
       location: EU

@@ -61,9 +61,8 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              arguments:
-                values: [0, 1]
-                quote: false
+              values: [0, 1]
+              quote: false
 
   - name: int_authors_clientid
     description: Author backbone joined to client_id (Colab mis_2_authors_clientid).
@@ -80,6 +79,5 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              arguments:
-                values: [0, 1]
-                quote: false
+              values: [0, 1]
+              quote: false
