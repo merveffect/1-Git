@@ -15,7 +15,7 @@ from {{ source('cdp_profile_sync', 'user_traits') }}
 where canonical_segment_id is not null
 
 {% if is_incremental() %}
-    where date(_PARTITIONTIME) >= timestamp_sub(timestamp_trunc(current_timestamp(), day), interval 3 day)
+    where date(_PARTITIONTIME) >= date_sub(current_date(), interval 3 day)
 
 {% endif %}
 
