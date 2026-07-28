@@ -14,7 +14,5 @@ date(_PARTITIONTIME) as partition_date
 from {{ source('cdp_profile_sync', 'identifies') }}
 
 {% if is_incremental() %}
-    where date(_PARTITIONTIME) >= timestamp_sub(timestamp_trunc(current_timestamp(), day), interval 3 day
-    )
-
+    where date(_PARTITIONTIME) >= date_sub(current_date(), interval 3 day)
 {% endif %}
