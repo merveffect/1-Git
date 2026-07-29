@@ -8,7 +8,7 @@
 WITH cleaned AS(
 SELECT
 
-  * EXCEPT(advertising_opt_in, mkt_pref_opt_in, subjects, list_keywords_dois_last_60_d),
+  * EXCEPT(advertising_opt_in, mkt_pref_opt_in, subjects, list_keywords_dois_last_60_d, email_address, user_id),
 
 
   NULLIF(advertising_opt_in, 'null') AS advertising_opt_in,

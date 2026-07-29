@@ -2,6 +2,20 @@ version: 2
 
 models:
 
+  - name: stg_user_traits_snid_email_combined
+    description: "Staging model that combines email/email_address into email and snid/user_id into snid"
+    columns:
+      - name: canonical_segment_id
+        tests:
+         - not_null
+         - unique
+
+      - name: email
+        tests:
+         - not_null
+
+      - name: snid
+
   - name: stg_known_users_join
     description: "Staging model for joining known users with email traits and eliminate unused/deleted users"
     columns:

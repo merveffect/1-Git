@@ -1,0 +1,63 @@
+unit_tests:
+  - name: test_email_and_snid_fallback_priority
+    model: stg_user_traits_snid_email_combined
+    given:
+      - input: ref('raw_user_traits')
+        rows:
+          # SCENARIO 1: Both primary and fallback values exist -> primary should win
+          - {canonical_segment_id: 'CID_1', name: 'email', value: 'Primary@One.Com'}
+          - {canonical_segment_id: 'CID_1', name: 'email_address', value: 'fallback1@one.com'}
+          - {canonical_segment_id: 'CID_1', name: 'snid', value: 'SNID_1'}
+          - {canonical_segment_id: 'CID_1', name: 'user_id', value: 'USER_1'}
+
+          # SCENARIO 2: Primary email missing -> email_address fallback should be used
+          #             Primary snid missing -> user_id fallback should be used
+          - {canonical_segment_id: 'CID_2', name: 'email', value: '   '}
+          - {canonical_segment_id: 'CID_2', name: 'email_address', value: 'fallback2@two.com'}
+          - {canonical_segment_id: 'CID_2', name: 'snid', value: '   '}
+          - {canonical_segment_id: 'CID_2', name: 'user_id', value: 'USER_2'}
+
+          # SCENARIO 3: Email exists, snid missing and user_id missing -> snid should stay null
+          - {canonical_segment_id: 'CID_3', name: 'email', value: 'third@three.com'}
+          - {canonical_segment_id: 'CID_3', name: 'user_id', value: null}
+
+          # SCENARIO 4: No email/email_address -> row should be filtered out entirely
+          - {canonical_segment_id: 'CID_4', name: 'snid', value: 'SNID_4'}
+          - {canonical_segment_id: 'CID_4', name: 'user_id', value: 'USER_4'}
+
+    expect:
+      rows:
+        - {canonical_segment_id: 'CID_1', email: 'primary@one.com', snid: 'SNID_1'}
+        - {canonical_segment_id: 'CID_2', email: 'fallback2@two.com', snid: 'USER_2'}
+        - {canonical_segment_id: 'CID_3', email: 'third@three.com', snid: null}
+
+  - name: test_base_uses_latest_received_at_per_trait
+    model: stg_df_audience_explorer_base
+    overrides:
+      macros:
+        get_query_result: "'email','snid'"
+    given:
+      - input: ref('stg_user_traits_column_names')
+        rows:
+          - {column_names: 'email'}
+          - {column_names: 'snid'}
+
+      - input: ref('stg_known_users_join')
+        rows:
+          - {canonical_segment_id: 'CID_A', email: 'a@example.com'}
+          - {canonical_segment_id: 'CID_B', email: 'b@example.com'}
+
+      - input: ref('raw_user_traits')
+        rows:
+          - {canonical_segment_id: 'CID_A', name: 'email', value: 'a_old@example.com', received_at: '2026-01-01 00:00:00'}
+          - {canonical_segment_id: 'CID_A', name: 'email', value: 'a_new@example.com', received_at: '2026-02-01 00:00:00'}
+          - {canonical_segment_id: 'CID_A', name: 'snid',  value: 'SNID_A_OLD',      received_at: '2026-01-10 00:00:00'}
+          - {canonical_segment_id: 'CID_A', name: 'snid',  value: 'SNID_A_NEW',      received_at: '2026-02-10 00:00:00'}
+          - {canonical_segment_id: 'CID_B', name: 'email', value: 'b_only@example.com', received_at: '2026-03-01 00:00:00'}
+
+    expect:
+      rows:
+        - {canonical_segment_id: 'CID_A', email: 'a_new@example.com', snid: 'SNID_A_NEW'}
+        - {canonical_segment_id: 'CID_B', email: 'b_only@example.com', snid: null}
+
+
