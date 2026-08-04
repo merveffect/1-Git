@@ -13,7 +13,7 @@ life AS (
 
 SELECT
     base.*,
-    subs.submissions AS submissions,
+    subs.submissions AS nested_submissions,
     life.* EXCEPT(canonical_segment_id)
 FROM base
 LEFT JOIN subs USING (canonical_segment_id)
