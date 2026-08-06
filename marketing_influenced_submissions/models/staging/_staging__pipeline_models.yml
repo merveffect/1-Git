@@ -42,10 +42,15 @@ models:
         description: 5-year author group used to classify power authors.
 
   - name: stg_marmind
-    description: Marmind campaign metadata (code -> workspace / channel categories).
+    description: >
+      Marmind campaign metadata from prod_marmind_presentation.marmind_analytics
+      (code -> workspace_category). channels_categories removed with the Jun-2026
+      source swap (Colab hardcodes 'N/A' downstream).
     columns:
       - name: marmind_campaign_code
         description: Marmind campaign code (join key to GA marmind_code).
+      - name: workspace_category
+        description: Workspace category (Authors / India / New Launches / Collections / …).
 
   - name: stg_snapp_submission_funnel
     description: SNAPP funnel; GA-observed submissions (submission_id -> user_pseudo_id).
