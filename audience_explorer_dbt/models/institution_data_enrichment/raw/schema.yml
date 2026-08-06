@@ -2,7 +2,10 @@ version: 2
 
 models:
   - name: raw_ror_data
-    description: Raw ROR data used as the source for institution enrichment mappings.
+    description: >-
+      External table pointing to ROR (Research Organization Registry) v2 data stored as newline-delimited JSON in GCS.
+      Source file: gs://datasn-rm-live-institution-disambiguation/ror_data/v2.4-2026-03-12-ror-data.ndjson.
+      Refreshed by running: dbt run-operation dbt_external_tables.stage_external_sources
     columns:
       - name: id
         description: Unique ROR identifier.
