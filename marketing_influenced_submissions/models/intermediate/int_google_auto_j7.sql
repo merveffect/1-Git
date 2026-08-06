@@ -25,6 +25,7 @@ from (
             count(distinct internal_submission_id) as n_subs
         from {{ ref('int_google_auto_sub') }}
         where (workspace_category like "%Author%" or workspace_category like "%India%"
+               or workspace_category like "%New Launches%"
                or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb'))
         group by 1
     ) ga

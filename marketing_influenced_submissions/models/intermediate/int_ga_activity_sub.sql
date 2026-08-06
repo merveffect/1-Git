@@ -1,6 +1,8 @@
 -- Phase 3 GA activity: submission x GA touchpoint over the lookback window (Colab
 -- mis_3_ga_activity_backfill_3). Left-joins each submission's user_pseudo_id to the
--- channel-tagged GA activity and enriches with marmind workspace / channel category.
+-- channel-tagged GA activity and enriches with marmind workspace_category.
+-- channels_categories is hardcoded 'N/A' (Colab Jul-2026): new marmind_analytics
+-- table no longer exposes that column.
 
 {{ config(materialized='table', tags=['ga']) }}
 
@@ -8,7 +10,7 @@ select
     subid.*,
     ga.* except (user_pseudo_id),
     mar.workspace_category,
-    mar.channels_categories
+    'N/A' as channels_categories
 from (
     select
         internal_submission_id,

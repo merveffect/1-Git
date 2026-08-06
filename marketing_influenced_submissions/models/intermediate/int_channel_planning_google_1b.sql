@@ -34,6 +34,7 @@ from (
       and clean_campaign <> "(referral)"
       and clean_campaign <> "confirmation-email"
       and (workspace_category like "%Authors%" or workspace_category like "%India%"
+           or workspace_category like "%New Launches%"
            or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb'))
     group by 1, 2, 3, 4, 5, 6, 7, 8, 9
 ) t1
