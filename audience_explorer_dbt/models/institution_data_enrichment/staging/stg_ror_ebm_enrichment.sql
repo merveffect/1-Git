@@ -6,7 +6,7 @@ with individual_flat as (
         c.snid,
         a.institution_ror_id,
         a.affiliation_start_date
-    from {{ source('yy_editor_data', 'individual') }},
+    from {{ ref('raw_ebm_data') }},                 
     unnest(individual_contact)     as c,
     unnest(individual_affiliation) as a
     where c.snid is not null and trim(c.snid) != ''
@@ -14,7 +14,6 @@ with individual_flat as (
 
 ),
 
--- pick latest affiliation per snid (by start date)
 latest_affiliation as (
 
     select

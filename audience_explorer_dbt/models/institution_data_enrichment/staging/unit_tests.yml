@@ -109,7 +109,7 @@ unit_tests:
       Tests that stg_ror_ebm_enrichment picks the LATEST affiliation per snid.
     model: stg_ror_ebm_enrichment
     given:
-      - input: source('yy_editor_data', 'individual')
+      - input: ref('raw_ebm_data')
         format: sql
         rows: |
           select
