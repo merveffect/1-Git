@@ -5,11 +5,12 @@ models:
     description: |
       Final enriched institution data for audience members.
       
-      Combines institution enrichment from four priority fallback branches:
-      1. Vector search (1-to-1 ROR match via BigQuery ML embeddings)
-      2. Email domain mapping to ROR
-      3. WikiData domain mapping to ROR with name standardization
-      4. WikiData institution name fallback for ROR-missing IDs
+      Combines institution enrichment from five priority fallback branches:
+      1. EBM deterministic match (snid + latest affiliation -> ROR ID)
+      2. Vector search (1-to-1 ROR match via BigQuery ML embeddings)
+      3. Email domain mapping to ROR
+      4. WikiData domain mapping to ROR with name standardization
+      5. WikiData institution name fallback for ROR-missing IDs
       
       Each canonical_segment_id is enriched based on highest-priority match available.
       If no institutional data exists, no row is output for that segment.
@@ -38,6 +39,7 @@ models:
       - name: enrichment_source
         description: |
           Source of the enrichment data. Priority order:
+          - EBM: Institution from EBM individual data (snid + latest affiliation -> ROR ID)
           - Authors: Institution from author email affiliation
           - CRP_by_researcher_id: Institution from CRP researcher lookup
           - CRP_by_snid: Institution from CRP SNID lookup
@@ -45,8 +47,10 @@ models:
           - WIKIDATA_ROR_NAME: Institution from WikiData with ROR ID mapping
           - WIKIDATA_NAME: Institution from WikiData name fallback (ROR ID missing from official ROR)
         data_tests:
+          - not_null
           - accepted_values:
               values:
+                - EBM
                 - Authors
                 - CRP_by_researcher_id
                 - CRP_by_snid
@@ -63,6 +67,8 @@ models:
       - name: ror_id
         description: |
           Research Organization Registry (ROR) identifier.
+        data_tests:
+          - not_null
       
       - name: ror_country
         description: Country information from ROR database (if available)

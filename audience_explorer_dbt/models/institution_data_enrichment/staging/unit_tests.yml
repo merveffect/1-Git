@@ -39,7 +39,7 @@ unit_tests:
         - {canonical_segment_id: 'CID_EMAIL_ONLY', raw_inst_name: 'Authors Institute', enrichment_source: 'Authors', embedding_input: 'Authors Institute, United Kingdom'}
         - {canonical_segment_id: 'CID_UNKNOWN_ISO', raw_inst_name: 'CRP Unknown ISO Institute', enrichment_source: 'CRP_by_researcher_id', embedding_input: 'CRP Unknown ISO Institute'}
 
-  - name: test_fallback_priority_logic_1to1_domain_wikidata
+  - name: test_fallback_priority_logic
     description: |
       Test fallback priority logic with four enrichment branches.
 
@@ -59,52 +59,94 @@ unit_tests:
     given:
       - input: ref('stg_inst_enrichment_targets')
         rows:
-          # CID_VECTOR_ONLY: has raw inst name for embedding match
           - {canonical_segment_id: 'CID_VECTOR_ONLY', email: 'researcher@vector.edu', researcher_id: null, snid: null, raw_inst_name: 'Vector Research Institute', enrichment_source: 'CRP_by_researcher_id', country_iso: 'US', country_name: 'United States', embedding_input: 'Vector Research Institute, United States'}
-          # CID_DOMAIN_PRIORITY: has embedding candidate but PARTIAL match (confidence < 1.0) - will be FILTERED OUT, then fallback to domain
           - {canonical_segment_id: 'CID_DOMAIN_PRIORITY', email: 'user@domain-only.edu', researcher_id: null, snid: null, raw_inst_name: 'Domain Priority Institute', enrichment_source: null, country_iso: 'UK', country_name: 'United Kingdom', embedding_input: 'Domain Priority Institute, United Kingdom'}
-          # CID_WIKI_FALLBACK: no enrichment source (will fall back to wiki)
           - {canonical_segment_id: 'CID_WIKI_FALLBACK', email: 'scholar@wiki-only.org', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: null, country_iso: null, country_name: null, embedding_input: null}
-          # CID_WIKI_NAME_ONLY: no vector/domain/wiki-ror result; should fallback to wikidata name targets (priority 4)
           - {canonical_segment_id: 'CID_WIKI_NAME_ONLY', email: 'nameonly@wikidata.org', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: null, country_iso: null, country_name: null, embedding_input: null}
+          - {canonical_segment_id: 'CID_EBM_WINS', email: 'ebm@example.edu', researcher_id: null, snid: 'SNID_EBM', raw_inst_name: null, enrichment_source: 'EBM', country_iso: null, country_name: null, embedding_input: null}
+
+      - input: ref('stg_ror_ebm_enrichment_targets')
+        rows:
+          - {canonical_segment_id: 'CID_EBM_WINS', email: 'ebm@example.edu', researcher_id: null, snid: 'SNID_EBM', raw_inst_name: null, enrichment_source: 'EBM', standardized_institution_name: 'EBM University', ror_id: 'ror.org/ebm', ror_country: 'United States'}
+
+      - input: ref('stg_ror_vector_enriched_targets')
+        rows:
+          - {canonical_segment_id: 'CID_VECTOR_ONLY', email: 'researcher@vector.edu', researcher_id: null, snid: null, raw_inst_name: 'Vector Research Institute', enrichment_source: 'CRP_by_researcher_id', standardized_institution_name: 'Vector University', ror_id: 'ror.org/vector', ror_country: 'United States'}
+          - {canonical_segment_id: 'CID_EBM_WINS', email: 'ebm@example.edu', researcher_id: null, snid: 'SNID_EBM', raw_inst_name: null, enrichment_source: 'EBM', standardized_institution_name: 'EBM Vector Fallback', ror_id: 'ror.org/ebm-vector', ror_country: 'United States'}
 
       - input: ref('stg_ror_match_decisions')
         rows:
-          # Only CID_VECTOR_ONLY has a 1-1 vector match (score = 1.0, status = '1 to 1 match')
           - {candidate_input: 'Vector Research Institute, United States', candidate_inst_name: 'Vector Research Institute', candidate_country: 'United States', candidate_country_iso: 'US', ror_id: 'ror.org/vector', ror_name: 'Vector University', ror_country: 'United States', ror_country_iso: 'US', cosine_similarity: 1.0, country_iso_match: true, match_status: '1 to 1 match'}
-          # CID_DOMAIN_PRIORITY has PARTIAL vector match (score = 0.78, status != '1 to 1 match') - MODEL FILTERS THIS OUT - will fallback to domain
           - {candidate_input: 'Domain Priority Institute, United Kingdom', candidate_inst_name: 'Domain Priority Institute', candidate_country: 'United Kingdom', candidate_country_iso: 'UK', ror_id: 'ror.org/domain-partial', ror_name: 'Domain Partial Match', ror_country: 'United Kingdom', ror_country_iso: 'UK', cosine_similarity: 0.78, country_iso_match: true, match_status: 'needs_review'}
 
       - input: ref('stg_ror_domain_fallback_targets')
         rows:
-          # CID_DOMAIN_PRIORITY gets enriched via email domain match (partial vector match was rejected, so domain wins)
           - {canonical_segment_id: 'CID_DOMAIN_PRIORITY', email: 'user@domain-only.edu', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: 'Domain_ROR_match', standardized_institution_name: 'Domain Matched University', ror_id: 'ror.org/domain', ror_country: 'UK'}
-          # CID_VECTOR_ONLY also has domain match BUT should be ignored (1-1 takes priority)
           - {canonical_segment_id: 'CID_VECTOR_ONLY', email: 'researcher@vector.edu', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: 'Domain_ROR_match', standardized_institution_name: 'Vector Domain Fallback', ror_id: 'ror.org/vector-domain', ror_country: 'US'}
+          - {canonical_segment_id: 'CID_EBM_WINS', email: 'ebm@example.edu', researcher_id: null, snid: 'SNID_EBM', raw_inst_name: null, enrichment_source: 'Domain_ROR_match', standardized_institution_name: 'EBM Domain Fallback', ror_id: 'ror.org/ebm-domain', ror_country: 'United States'}
 
       - input: ref('stg_wikidata_fallback_targets')
         rows:
-          # CID_WIKI_FALLBACK only has wiki enrichment (ultimate fallback)
           - {canonical_segment_id: 'CID_WIKI_FALLBACK', email: 'scholar@wiki-only.org', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'WikiData University', ror_id: 'ror.org/wiki', ror_country: 'France'}
-          # CID_DOMAIN_PRIORITY also has wiki match BUT should be ignored (domain takes priority)
           - {canonical_segment_id: 'CID_DOMAIN_PRIORITY', email: 'user@domain-only.edu', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'Domain Wiki Fallback', ror_id: 'ror.org/domain-wiki', ror_country: 'UK'}
-          # CID_VECTOR_ONLY also has wiki match BUT should be ignored (1-1 takes priority)
           - {canonical_segment_id: 'CID_VECTOR_ONLY', email: 'researcher@vector.edu', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'Vector Wiki Fallback', ror_id: 'ror.org/vector-wiki', ror_country: 'US'}
 
       - input: ref('stg_wikidata_names_fallback_targets')
         rows:
-          # CID_WIKI_NAME_ONLY: no higher-priority match exists, so this branch should be selected
           - {canonical_segment_id: 'CID_WIKI_NAME_ONLY', email: 'nameonly@wikidata.org', researcher_id: null, snid: null, raw_inst_name: null, ror_id: 'ror.org/nameonly', standardized_institution_name: 'Wiki Name Only University', ror_country: null, enrichment_source: 'WIKIDATA_NAME'}
-          # CID_WIKI_FALLBACK also has name fallback BUT should be ignored (wikidata_ror priority 3 wins over name priority 4)
           - {canonical_segment_id: 'CID_WIKI_FALLBACK', email: 'scholar@wiki-only.org', researcher_id: null, snid: null, raw_inst_name: null, ror_id: 'ror.org/wiki-name', standardized_institution_name: 'Wiki Name Backup', ror_country: null, enrichment_source: 'WIKIDATA_NAME'}
 
     expect:
       rows:
-        # CID_VECTOR_ONLY: selected vector-enriched row; enrichment_source is inherited from target input row
+        - {canonical_segment_id: 'CID_EBM_WINS', enrichment_source: 'EBM', standardized_institution_name: 'EBM University', ror_id: 'ror.org/ebm'}
         - {canonical_segment_id: 'CID_VECTOR_ONLY', enrichment_source: 'CRP_by_researcher_id', standardized_institution_name: 'Vector University', ror_id: 'ror.org/vector'}
-        # CID_DOMAIN_PRIORITY: selected domain enrichment (medium priority, no 1-1 match)
         - {canonical_segment_id: 'CID_DOMAIN_PRIORITY', enrichment_source: 'Domain_ROR_match', standardized_institution_name: 'Domain Matched University', ror_id: 'ror.org/domain'}
-        # CID_WIKI_FALLBACK: selected wiki enrichment (lowest priority fallback)
         - {canonical_segment_id: 'CID_WIKI_FALLBACK', enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'WikiData University', ror_id: 'ror.org/wiki'}
-        # CID_WIKI_NAME_ONLY: selected wikidata-name fallback (priority 4) because no higher-priority match exists
         - {canonical_segment_id: 'CID_WIKI_NAME_ONLY', enrichment_source: 'WIKIDATA_NAME', standardized_institution_name: 'Wiki Name Only University', ror_id: 'ror.org/nameonly'}
+
+  - name: test_ebm_latest_affiliation
+    description: |
+      Tests that stg_ror_ebm_enrichment picks the LATEST affiliation per snid.
+    model: stg_ror_ebm_enrichment
+    given:
+      - input: source('yy_editor_data', 'individual')
+        format: sql
+        rows: |
+          select
+            [struct('SNID_MULTI' as snid)] as individual_contact,
+            [
+              struct('https://ror.org/old' as institution_ror_id, timestamp '2020-01-01' as affiliation_start_date),
+              struct('https://ror.org/new' as institution_ror_id, timestamp '2023-01-01' as affiliation_start_date)
+            ] as individual_affiliation
+
+      - input: ref('stg_ror')
+        rows:
+          - {ror_id: 'https://ror.org/old', ror_display_name: 'Old University', ror_country_name: 'United States'}
+          - {ror_id: 'https://ror.org/new', ror_display_name: 'New University', ror_country_name: 'Germany'}
+
+    expect:
+      rows:
+        - {snid: 'SNID_MULTI', ror_id: 'https://ror.org/new', standardized_institution_name: 'New University', ror_country: 'Germany', enrichment_source: 'EBM'}
+
+  - name: test_ror_domains_generic_and_reject
+    description: |
+      Tests stg_ror_domains filtering logic:
+      1. Generic domains (e.g. gmail.com) must be excluded via is_generic_domain macro.
+      2. Domains associated with more than one ROR ID must be rejected (ambiguous).
+      3. A clean domain mapped to a single institution must pass through.
+    model: stg_ror_domains
+    given:
+      - input: ref('stg_ror')
+        rows:
+          # clean domain -> single institution (should PASS)
+          - {ror_id: 'https://ror.org/clean', ror_display_name: 'Clean University', ror_country_name: 'United States', domains: ['clean-uni.edu']}
+          # generic domain (should be EXCLUDED by is_generic_domain)
+          - {ror_id: 'https://ror.org/generic', ror_display_name: 'Generic Institute', ror_country_name: 'Germany', domains: ['gmail.com']}
+          # ambiguous domain: same domain on two different institutions (should be REJECTED)
+          - {ror_id: 'https://ror.org/ambig1', ror_display_name: 'Ambiguous One', ror_country_name: 'France', domains: ['shared.edu']}
+          - {ror_id: 'https://ror.org/ambig2', ror_display_name: 'Ambiguous Two', ror_country_name: 'Italy', domains: ['shared.edu']}
+
+    expect:
+      rows:
+        # only the clean domain survives; generic excluded, ambiguous rejected
+        - {domain: 'clean-uni.edu', ror_id: 'https://ror.org/clean', ror_name: 'Clean University', ror_country: 'United States'}

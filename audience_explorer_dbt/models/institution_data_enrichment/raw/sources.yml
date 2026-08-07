@@ -55,3 +55,11 @@ sources:
     tables:
       - name: wikidata_first_50K
         description: "External WikiData table containing 114K of organization information such as ror id and organization name."
+
+  
+  - name: yy_editor_data
+    database: snproject52c6e272
+    schema: yy_editor_data
+    tables:
+      - name: individual
+        description: "Editor data containing individual information."
