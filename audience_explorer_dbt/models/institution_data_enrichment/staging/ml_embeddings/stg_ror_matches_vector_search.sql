@@ -28,7 +28,7 @@ with new_candidates as (
         where m.candidate_input = embedding_input
     )
     {% endif %}
-    limit 100000
+    limit 50000
 
 ),
 
