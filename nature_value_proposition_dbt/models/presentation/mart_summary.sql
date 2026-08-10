@@ -70,8 +70,8 @@ SELECT
             cumulative_denials,
             total_bp_denials
         ) <= 0.60
-        THEN 'YES'
-        ELSE 'NO'
+        THEN 'High'
+        ELSE 'Moderate'
     END AS denial_signal
 
 FROM all_denials_ranked
