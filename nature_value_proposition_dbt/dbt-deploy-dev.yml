@@ -9,5 +9,5 @@ teams_webhook_url: https://defaultd9aabe7c608b4fe1957c0739cb0dfe.22.environment.
 
 jobs:
   - name: nature-value-proposition-dev
-    schedule: 0 7 * * *
+    schedule: 30 7 15 * *
   
