@@ -150,3 +150,31 @@ unit_tests:
       rows:
         # only the clean domain survives; generic excluded, ambiguous rejected
         - {domain: 'clean-uni.edu', ror_id: 'https://ror.org/clean', ror_name: 'Clean University', ror_country: 'United States'}
+
+
+  - name: test_authors_latest_submission
+    description: |
+      Tests that raw_authors_institutions picks the LATEST institution per author
+      by submission_date. When an author has multiple submissions with different
+      institutions, only the most recent one must be returned.
+      
+    model: raw_authors_institutions
+    given:
+      - input: source('prod_joint_submissions_core', 'authors')
+        rows:
+          - {author_email: 'moved@example.com', submission_id: 'SUB_OLD', institute: 'Old University', author_country: 'United States', author_country_iso_code: 'US'}
+          - {author_email: 'moved@example.com', submission_id: 'SUB_NEW', institute: 'New University', author_country: 'Germany', author_country_iso_code: 'DE'}
+          - {author_email: 'single@example.com', submission_id: 'SUB_X', institute: 'Single University', author_country: 'France', author_country_iso_code: 'FR'}
+
+      - input: source('prod_joint_submissions_core', 'submissions')
+        rows:
+          - {submission_id: 'SUB_OLD', submission_date: '2020-01-01'}
+          - {submission_id: 'SUB_NEW', submission_date: '2023-01-01'}
+          - {submission_id: 'SUB_X', submission_date: '2021-06-15'}
+
+    expect:
+      rows:
+        # moved@example.com -> latest submission (2023) wins -> New University
+        - {author_email: 'moved@example.com', raw_inst_name: 'New University', country_name: 'Germany', country_iso: 'DE'}
+        # single@example.com -> only one submission
+        - {author_email: 'single@example.com', raw_inst_name: 'Single University', country_name: 'France', country_iso: 'FR'}
