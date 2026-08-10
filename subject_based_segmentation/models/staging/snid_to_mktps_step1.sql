@@ -23,7 +23,7 @@ cte_user_snt AS (
 ),
 
 cte_snt_mktp AS (
-  -- S&T → Marketing Preference eşleşmesi
+  -- S&T → Marketing Preference 
   SELECT
     us.snid,
     us.journal_id,

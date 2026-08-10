@@ -24,7 +24,7 @@
   {% for col in keep_cols %}
     {% set dtype = type_map.get(col) %}
     {% if dtype is none %}
-      {% do log("raw_identifies'ta yok, STRING kaldi: " ~ col, info=True) %}
+      {% do log("Not in raw_identifies, it remained STRING : " ~ col, info=True) %}
     {% elif dtype != 'STRING' %}
       {% set target = bq_type.get(dtype, dtype) %}
       {% do replacements.append(

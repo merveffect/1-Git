@@ -1,6 +1,6 @@
 select
 canonical_segment_id,
- (email IS NOT NULL) AS email_flag,
+  (email IS NOT NULL) AS email_flag,
   (last_name IS NOT NULL) AS last_name_flag,
   (snid IS NOT NULL) AS snid_flag,
   (researcher_id IS NOT NULL) AS researcher_id_flag,

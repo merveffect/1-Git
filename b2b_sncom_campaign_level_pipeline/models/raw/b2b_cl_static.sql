@@ -1,0 +1,1 @@
+select * from {{source ('b2b_e2e_report','b2b_cl_test_static')}}

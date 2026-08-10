@@ -1,7 +1,7 @@
   -- depends_on: {{ ref('raw_user_traits') }}
 
 {% set exclude_columns = [
-  'canonical_segment_id', 'anonymous_id', 'sap_outbound_id', 'last_name', 'snid', 
+  'canonical_segment_id', 'last_name', 'snid', 
   'researcher_id', 'orcid', 'ga_client_id', 'email', 'first_name', 'permutive_id'
 ] %}
 

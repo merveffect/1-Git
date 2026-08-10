@@ -11,3 +11,13 @@ SELECT
   ) AS submissions
 FROM {{ ref('raw_user_traits') }} AS t
 WHERE t.name = 'submissions'
+
+select
+    t.canonical_segment_id,
+    array( ... ) as submissions
+from {{ ref('raw_user_traits') }} as t
+where t.name = 'submissions'
+qualify row_number() over (
+    partition by t.canonical_segment_id
+    order by t.received_at desc
+) = 1

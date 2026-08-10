@@ -1,0 +1,19 @@
+version: 2
+
+sources:      
+  - name: b2b_e2e_report
+    database: snproject-cbb9ca25
+    schema: b2b_e2e_report
+    tables: 
+      - name: b2b_cl_test_static
+
+      
+  - name: ae_metadata
+    database: dat-analytics-eng-ec869189
+    schema: ae_metadata
+    tables: 
+      - name: channel_groupings
+  
+  
+  
+ 
