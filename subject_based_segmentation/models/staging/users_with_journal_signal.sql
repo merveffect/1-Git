@@ -6,7 +6,6 @@ SELECT
     ARRAY_AGG(list_journals_read_last_60_d IGNORE NULLS)[SAFE_OFFSET(0)]  AS read_last_60d,
     ARRAY_AGG(list_journals_etocs_last_180_d IGNORE NULLS)[SAFE_OFFSET(0)] AS journals_etocs_180d,
     ARRAY_AGG(list_journals_submguide_about_last_30_d IGNORE NULLS)[SAFE_OFFSET(0)] AS journals_submguide_last_30d,
-    ARRAY_AGG(list_journals_submguide_about_last_60_d IGNORE NULLS)[SAFE_OFFSET(0)] AS journals_submguide_last_60d,
     ARRAY_AGG(list_journals_submissions_alltime IGNORE NULLS)[SAFE_OFFSET(0)]  AS journals_subm_alltime,
     ARRAY_AGG(list_journals_etocs_last_180_d IGNORE NULLS)[SAFE_OFFSET(0)]  AS list_journal_etocs_last_180_d,
     ARRAY_AGG(list_journals_allpageviews_30_d IGNORE NULLS)[SAFE_OFFSET(0)]  AS list_journals_allpageviews_30_d,
