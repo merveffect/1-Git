@@ -10,4 +10,4 @@ dbt_target: prod
 
 jobs:
   - name: nature-value-proposition-prod
-    schedule: 0 7 * * *
+    schedule: 30 7 15 * *
