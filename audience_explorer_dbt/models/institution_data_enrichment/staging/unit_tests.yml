@@ -55,7 +55,7 @@ unit_tests:
       - CID_WIKI_FALLBACK: no vector/domain; has wiki + wikidata_name -> wiki_ror (P3) must win over wikidata_name (P4).
       - CID_WIKI_NAME_ONLY: only wikidata_name exists -> wikidata_name (P4) must be selected.
     
-    model: institution_enriched_audience
+    model: institution_enriched_audience_base
     given:
       - input: ref('stg_inst_enrichment_targets')
         rows:
@@ -178,3 +178,72 @@ unit_tests:
         - {author_email: 'moved@example.com', raw_inst_name: 'New University', country_name: 'Germany', country_iso: 'DE'}
         # single@example.com -> only one submission
         - {author_email: 'single@example.com', raw_inst_name: 'Single University', country_name: 'France', country_iso: 'FR'}
+
+
+
+  - name: test_history_change_detection
+    description: |
+      Tests the append-only change-detection logic of institution_enriched_history.
+
+      Given an existing history (the `this` table) with prior records, and a new
+      base run, the model must:
+        - ADD a brand-new user (not in history yet)
+        - NOT add a user whose enrichment is unchanged (no data bloat)
+        - ADD a user whose institution name / ror_id / source changed (change captured)
+
+      This runs in incremental mode (overrides is_incremental = true) so the
+      change-detection branch is exercised.
+    model: institution_enriched_history
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      # the base model output for THIS run
+      - input: ref('institution_enriched_audience_base')
+        rows:
+          # NEW user - not in history yet -> must be ADDED
+          - {canonical_segment_id: 'CID_NEW', email: 'new@example.com', researcher_id: null, snid: null, original_raw_name: 'New Uni', enrichment_source: 'EBM', standardized_institution_name: 'New University', ror_id: 'ror.org/new', ror_country: 'Germany'}
+          # UNCHANGED user - same institution as latest history -> must NOT be added
+          - {canonical_segment_id: 'CID_SAME', email: 'same@example.com', researcher_id: null, snid: null, original_raw_name: 'Same Uni', enrichment_source: 'EBM', standardized_institution_name: 'Same University', ror_id: 'ror.org/same', ror_country: 'France'}
+          # CHANGED user - institution name differs from latest history -> must be ADDED
+          - {canonical_segment_id: 'CID_CHANGED', email: 'changed@example.com', researcher_id: null, snid: null, original_raw_name: 'Changed Uni', enrichment_source: 'Domain_ROR_match', standardized_institution_name: 'New Institution Name', ror_id: 'ror.org/changed-new', ror_country: 'Italy'}
+
+      # the existing history table (this)
+      - input: this
+        rows:
+          # CID_SAME already has this exact institution (latest) -> new run is unchanged
+          - {canonical_segment_id: 'CID_SAME', email: 'same@example.com', researcher_id: null, snid: null, original_raw_name: 'Same Uni', enrichment_source: 'EBM', standardized_institution_name: 'Same University', ror_id: 'ror.org/same', ror_country: 'France', enrichment_timestamp: '2024-01-01 00:00:00'}
+          # CID_CHANGED previously had a DIFFERENT institution -> new run is a change
+          - {canonical_segment_id: 'CID_CHANGED', email: 'changed@example.com', researcher_id: null, snid: null, original_raw_name: 'Changed Uni', enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'Old Institution Name', ror_id: 'ror.org/changed-old', ror_country: 'Italy', enrichment_timestamp: '2024-01-01 00:00:00'}
+
+    expect:
+      rows:
+        # only NEW and CHANGED users are added; SAME is filtered out (no bloat)
+        - {canonical_segment_id: 'CID_NEW', standardized_institution_name: 'New University', enrichment_source: 'EBM', ror_id: 'ror.org/new'}
+        - {canonical_segment_id: 'CID_CHANGED', standardized_institution_name: 'New Institution Name', enrichment_source: 'Domain_ROR_match', ror_id: 'ror.org/changed-new'}
+
+
+  - name: test_final_latest_selection
+    description: |
+      Tests that institution_enriched_audience returns exactly one row per user -
+      the latest enrichment by enrichment_timestamp - from the append-only history.
+
+      CID_MULTI has two history records (an older and a newer institution).
+      The final model must return only the newer one.
+      CID_SINGLE has one history record and must pass through unchanged.
+    model: institution_enriched_audience
+    given:
+      - input: ref('institution_enriched_history')
+        rows:
+          # CID_MULTI: two records, different timestamps -> latest (2024-06) must win
+          - {canonical_segment_id: 'CID_MULTI', email: 'multi@example.com', researcher_id: null, snid: null, original_raw_name: 'Old Uni', enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'Old University', ror_id: 'ror.org/old', ror_country: 'France', enrichment_timestamp: '2024-01-01 00:00:00'}
+          - {canonical_segment_id: 'CID_MULTI', email: 'multi@example.com', researcher_id: null, snid: null, original_raw_name: 'New Uni', enrichment_source: 'EBM', standardized_institution_name: 'New University', ror_id: 'ror.org/new', ror_country: 'Germany', enrichment_timestamp: '2024-06-01 00:00:00'}
+          # CID_SINGLE: only one record -> passes through
+          - {canonical_segment_id: 'CID_SINGLE', email: 'single@example.com', researcher_id: null, snid: null, original_raw_name: 'Single Uni', enrichment_source: 'Authors', standardized_institution_name: 'Single University', ror_id: 'ror.org/single', ror_country: 'Italy', enrichment_timestamp: '2024-03-01 00:00:00'}
+
+    expect:
+      rows:
+        # CID_MULTI -> latest record (2024-06, New University) only
+        - {canonical_segment_id: 'CID_MULTI', standardized_institution_name: 'New University', enrichment_source: 'EBM', ror_id: 'ror.org/new'}
+        # CID_SINGLE -> only record passes through
+        - {canonical_segment_id: 'CID_SINGLE', standardized_institution_name: 'Single University', enrichment_source: 'Authors', ror_id: 'ror.org/single'}

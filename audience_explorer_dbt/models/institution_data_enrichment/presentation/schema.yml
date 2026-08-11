@@ -1,41 +1,42 @@
 version: 2
 
 models:
-  - name: institution_enriched_audience
+  - name: institution_enriched_audience_base
     description: |
-      Final enriched institution data for audience members.
-      
-      Combines institution enrichment from five priority fallback branches:
+      Base enrichment model (recomputed each run).
+
+      Combines institution enrichment from five priority branches:
       1. EBM deterministic match (snid + latest affiliation -> ROR ID)
       2. Vector search (1-to-1 ROR match via BigQuery ML embeddings)
       3. Email domain mapping to ROR
       4. WikiData domain mapping to ROR with name standardization
       5. WikiData institution name fallback for ROR-missing IDs
-      
+
       Each canonical_segment_id is enriched based on highest-priority match available.
-      If no institutional data exists, no row is output for that segment.
-    
+      Only currently-empty users are enriched, so this model shrinks over time as
+      users are populated in the CDP. It feeds institution_enriched_history.
+
     columns:
       - name: canonical_segment_id
         description: Unique identifier for the audience member/segment
         data_tests:
           - not_null
           - unique
-      
+
       - name: email
         description: Email address of the audience member
-      
+
       - name: researcher_id
         description: Researcher ID from CRP if available
-      
+
       - name: snid
         description: SNID if available
-      
+
       - name: original_raw_name
         description: |
           Original raw institution name from the input source
           (Authors email institution, CRP database, or raw WikiData entry)
-      
+
       - name: enrichment_source
         description: |
           Source of the enrichment data. Priority order:
@@ -57,18 +58,133 @@ models:
                 - Domain_ROR_match
                 - WIKIDATA_ROR_NAME
                 - WIKIDATA_NAME
-      
+
       - name: standardized_institution_name
         description: |
           Standardized institution name from the enrichment source.
         data_tests:
           - not_null
-      
+
       - name: ror_id
         description: |
           Research Organization Registry (ROR) identifier.
         data_tests:
           - not_null
-      
+
       - name: ror_country
         description: Country information from ROR database (if available)
+
+  - name: institution_enriched_history
+    description: |
+      Append-only enrichment history (persistent). A new row is added only for a
+      new user, or when their enrichment changes (institution name, ROR id, or
+      enrichment source) versus their latest existing record. Nothing is ever
+      removed, so users enriched in the past remain here even after their
+      institution is populated in the CDP. Partitioned by enrichment_timestamp;
+      full_refresh is disabled to protect past enrichments. A user can have
+      multiple rows over time (one per change), so canonical_segment_id is NOT unique here.
+
+    columns:
+      - name: canonical_segment_id
+        description: Identifier for the audience member/segment (not unique - one row per enrichment change over time)
+        data_tests:
+          - not_null
+
+      - name: email
+        description: Email address of the audience member
+
+      - name: researcher_id
+        description: Researcher ID from CRP if available
+
+      - name: snid
+        description: SNID if available
+
+      - name: original_raw_name
+        description: Original raw institution name from the input source
+
+      - name: enrichment_source
+        description: Source of the enrichment data for this record.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - EBM
+                - Authors
+                - CRP_by_researcher_id
+                - CRP_by_snid
+                - Domain_ROR_match
+                - WIKIDATA_ROR_NAME
+                - WIKIDATA_NAME
+
+      - name: standardized_institution_name
+        description: Standardized institution name from the enrichment source.
+        data_tests:
+          - not_null
+
+      - name: ror_id
+        description: Research Organization Registry (ROR) identifier.
+
+      - name: ror_country
+        description: Country information from ROR database (if available)
+
+      - name: enrichment_timestamp
+        description: Timestamp when this enrichment record was created.
+        data_tests:
+          - not_null
+
+  - name: institution_enriched_audience
+    description: |
+      Final enrichment output for CDI / downstream systems (CDP, Braze).
+      Latest enrichment record per user from institution_enriched_history.
+      Users enriched in any past run remain here even after their institution
+      is populated in the CDP, so downstream systems never lose an enrichment.
+      One row per user (latest by enrichment_timestamp).
+
+    columns:
+      - name: canonical_segment_id
+        description: Unique identifier for the audience member/segment (one row per user)
+        data_tests:
+          - not_null
+          - unique
+
+      - name: email
+        description: Email address
+
+      - name: researcher_id
+        description: Researcher ID from CRP if available
+
+      - name: snid
+        description: SNID if available
+
+      - name: original_raw_name
+        description: Original raw institution name from the input source
+
+      - name: enrichment_source
+        description: Source of the latest enrichment for this user.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - EBM
+                - Authors
+                - CRP_by_researcher_id
+                - CRP_by_snid
+                - Domain_ROR_match
+                - WIKIDATA_ROR_NAME
+                - WIKIDATA_NAME
+
+      - name: standardized_institution_name
+        description: Standardized institution name from the latest enrichment.
+        data_tests:
+          - not_null
+
+      - name: ror_id
+        description: Research Organization Registry (ROR) identifier.
+
+      - name: ror_country
+        description: Country information from ROR database (if available)
+
+      - name: enrichment_timestamp
+        description: Timestamp of this user's latest enrichment record.
+        data_tests:
+          - not_null
