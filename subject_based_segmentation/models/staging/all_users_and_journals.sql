@@ -36,14 +36,6 @@ SELECT DISTINCT
 
     UNION ALL
 
-    --  journals_submguide_last_60d
-    SELECT snid, TRIM(x) AS journal_id
-    FROM {{ref('users_with_journal_signal')}},
-    UNNEST(SPLIT(REGEXP_REPLACE(REGEXP_REPLACE(journals_submguide_last_60d, r'[\[\]\"]', ''), ';', ','), ',')) AS x
-    WHERE journals_submguide_last_60d IS NOT NULL
-
-    UNION ALL
-
     --  journals_subm_alltime
     SELECT snid, TRIM(x) AS journal_id
     FROM {{ref('users_with_journal_signal')}},
