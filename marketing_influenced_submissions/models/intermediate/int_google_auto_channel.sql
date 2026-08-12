@@ -21,6 +21,7 @@ from (
     select *
     from {{ ref('int_google_auto_sub') }}
     where (workspace_category like "%Author%" or workspace_category like "%India%"
+           or workspace_category like "%New Launches%"
            or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb'))
       and submission_date_min >= date('{{ var("mis_start_date") }}')
       and submission_date_min <= date('{{ var("mis_end_date") }}')

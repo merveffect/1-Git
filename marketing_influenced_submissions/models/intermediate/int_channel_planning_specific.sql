@@ -44,6 +44,7 @@ from (
     and (
         mar.workspace_category like "%Authors%"
         or mar.workspace_category like "%India%"
+        or mar.workspace_category like "%New Launches%"
         or regexp_contains(lower(t1.clean_campaign), r'(hpaut|letpb)')
         or regexp_contains(lower(t1.sub_channels), r'(naver|researchgate)')
     )

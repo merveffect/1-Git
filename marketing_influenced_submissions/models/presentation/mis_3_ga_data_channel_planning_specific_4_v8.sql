@@ -38,6 +38,7 @@ select
     cast(null as string) as country_grouping,
     {% endif %}
     otr.out_to_review,
+    otr.stage_9_accepted_flag,
     jnl.journal_title
 from {{ ref('int_channel_planning_3') }} t3
 
