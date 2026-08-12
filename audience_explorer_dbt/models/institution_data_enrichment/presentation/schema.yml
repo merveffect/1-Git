@@ -145,10 +145,12 @@ models:
         description: Unique identifier for the audience member/segment (one row per user)
         data_tests:
           - not_null
-          - unique
-
+          
       - name: email
         description: Email address
+        data_tests:
+          - not_null
+          - unique
 
       - name: researcher_id
         description: Researcher ID from CRP if available
