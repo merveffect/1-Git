@@ -4,9 +4,10 @@
 -- submission.
 --
 -- SN-REVIEW (C1/C5): attribution_window_days (default 180, strictly before submission)
--- and the workspace filters (%Authors%, %India%, hpaut, letpb, naver) are ported
--- verbatim. SEA is matched on the submitted journal_id; SEA "no journal" is the
--- unmatched variant kept for comparison.
+-- and the workspace filters (%Authors%, %India%, %New Launches%, hpaut, letpb, naver)
+-- are ported from the Jul-2026 Colab. channels_categories equality checks removed
+-- (marmind_analytics no longer exposes that column; Colab matches on main_channels only).
+-- SEA is matched on the submitted journal_id; SEA "no journal" is the unmatched variant.
 
 {{ config(materialized='table', tags=['ga']) }}
 
@@ -58,22 +59,22 @@ from (
             internal_submission_id,
             submission_date_min,
             user_pseudo_id,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb')) and channels_categories = "E-Mail" and trim(main_channels) = "Email" then 1 else 0 end as email_rm,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or workspace_category like "%New Launches%" or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb')) and trim(main_channels) = "Email" then 1 else 0 end as email_rm,
             sea_rm,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb')) and channels_categories = "Internal Display" and trim(main_channels) = "Internal Display" then 1 else 0 end as internal_display_rm,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb')) and channels_categories = "External Display" and trim(main_channels) = "External Display" then 1 else 0 end as external_display_rm,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb')) and channels_categories = "Paid Social" and trim(main_channels) = "Paid Social" then 1 else 0 end as paid_social_rm,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or regexp_contains(lower(clean_campaign), r'(hpaut|letpb)') or regexp_contains(lower(sub_channels), 'naver')) and channels_categories = "SEA" and trim(main_channels) = "SEA" then 1 else 0 end as sea_rm_no_journal,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or workspace_category like "%New Launches%" or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb')) and trim(main_channels) = "Internal Display" then 1 else 0 end as internal_display_rm,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or workspace_category like "%New Launches%" or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb')) and trim(main_channels) = "External Display" then 1 else 0 end as external_display_rm,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or workspace_category like "%New Launches%" or regexp_contains(lower(clean_campaign), 'hpaut') or regexp_contains(lower(clean_campaign), 'letpb')) and trim(main_channels) = "Paid Social" then 1 else 0 end as paid_social_rm,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or workspace_category like "%New Launches%" or regexp_contains(lower(clean_campaign), r'(hpaut|letpb)') or regexp_contains(lower(sub_channels), 'naver')) and trim(main_channels) = "SEA" then 1 else 0 end as sea_rm_no_journal,
             case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and regexp_contains(lower(trim(sub_channels)), 'organic social') then 1 else 0 end as organic_social,
             case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and medium = "organic" then 1 else 0 end as seo_no_journal,
             seo,
             case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and regexp_contains(lower(sub_channels), 'researchgate referral|researchgate organic') then 1 else 0 end as rg_organic,
             case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and regexp_contains(lower(sub_channels), 'researchgate journal home') then 1 else 0 end as rg_journal_home,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and channels_categories = "E-Mail" and trim(main_channels) = "Email" then 1 else 0 end as email_col,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and trim(main_channels) = "Email" then 1 else 0 end as email_col,
             sea_col,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and channels_categories = "Internal Display" and trim(main_channels) = "Internal Display" then 1 else 0 end as internal_display_col,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and channels_categories = "External Display" and trim(main_channels) = "External Display" then 1 else 0 end as external_display_col,
-            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and channels_categories = "Paid Social" and trim(main_channels) = "Paid Social" then 1 else 0 end as paid_social_col,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and trim(main_channels) = "Internal Display" then 1 else 0 end as internal_display_col,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and trim(main_channels) = "External Display" then 1 else 0 end as external_display_col,
+            case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and trim(main_channels) = "Paid Social" then 1 else 0 end as paid_social_col,
             case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and regexp_contains(lower(trim(sub_channels)), 'organic social') then 1 else 0 end as organic_social_col
         from (
             select
@@ -87,14 +88,13 @@ from (
                 main_channels,
                 sub_channels,
                 workspace_category,
-                channels_categories,
-                max(case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or regexp_contains(lower(clean_campaign), r'(hpaut|letpb)') or regexp_contains(lower(sub_channels), 'naver')) and channels_categories = "SEA" and trim(main_channels) = "SEA" and journal_id_submission = cast(journal_id as string) then 1 else 0 end) as sea_rm,
-                max(case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and channels_categories = "SEA" and trim(main_channels) = "SEA" and journal_id_submission = cast(journal_id as string) then 1 else 0 end) as sea_col,
+                max(case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Authors%" or workspace_category like "%India%" or workspace_category like "%New Launches%" or regexp_contains(lower(clean_campaign), r'(hpaut|letpb)') or regexp_contains(lower(sub_channels), 'naver')) and trim(main_channels) = "SEA" and journal_id_submission = cast(journal_id as string) then 1 else 0 end) as sea_rm,
+                max(case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and (workspace_category like "%Collection%") and trim(main_channels) = "SEA" and journal_id_submission = cast(journal_id as string) then 1 else 0 end) as sea_col,
                 max(case when (date_diff(submission_date_min, event_date, day) > 0 and date_diff(submission_date_min, event_date, day) <= {{ win }}) and medium = "organic" and journal_id_submission = cast(journal_id as string) then 1 else 0 end) as seo
             from {{ ref('int_ga_activity_sub') }}
             where submission_date_min >= date('{{ var("mis_start_date") }}')
               and submission_date_min <= date('{{ var("mis_end_date") }}')
-            group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+            group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
         ) ga
     )
     group by 1

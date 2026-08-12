@@ -125,14 +125,18 @@ sources:
           researcher_id -> Total_AMT_5yr_Author_Group (power-author classification).
 
   # Attribution / campaign metadata (Phases 3-4, 8).
-  - name: marmind_fnd
+  # Giorgia (2026-08): marmind_fnd.marmind_data discontinued end-Jun 2026;
+  # replaced by prod_marmind_presentation.marmind_analytics. The new table has
+  # workspace_category but not channels_categories / channel_groupings — Colab
+  # now hardcodes channels_categories = 'N/A' and drops those equality checks.
+  - name: prod_marmind_presentation
     database: datasn-rm-live
-    schema: marmind_fnd
-    description: Marmind campaign metadata (workspace + channel categories).
+    schema: prod_marmind_presentation
+    description: Marmind campaign presentation (workspace category per campaign code).
     tables:
-      - name: marmind_data
+      - name: marmind_analytics
         description: >
-          marmind_campaign_code -> workspace_category, channels_categories.
+          marmind_campaign_code -> workspace_category (no channels_categories).
           Joined on UPPER(marmind_code) to GA activity.
 
   - name: ga4

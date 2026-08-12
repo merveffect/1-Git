@@ -1,6 +1,6 @@
 -- Phase 4 Google auto-tagged: submission x google-ads touchpoint over the lookback
--- window (Colab mis_2_google_auto_2_backfill). Enriched with marmind workspace /
--- channel category. Not materialised yet (depends on int_google_auto_1).
+-- window (Colab mis_2_google_auto_2_backfill). Enriched with marmind
+-- workspace_category; channels_categories hardcoded 'N/A' (Colab Jul-2026).
 
 {{ config(materialized='table', tags=['ga']) }}
 
@@ -8,7 +8,7 @@ select
     subid.*,
     ga.* except (user_pseudo_id),
     mar.workspace_category,
-    mar.channels_categories
+    'N/A' as channels_categories
 from (
     select
         internal_submission_id,

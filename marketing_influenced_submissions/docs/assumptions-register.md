@@ -41,7 +41,8 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 | C2 | `ga_lookback_months` | 6 | Confirm GA pull window |
 | C3 | `google_multichannel_threshold` | 0.8 | Confirm >80% allocation + tie-break (both can be 1) |
 | C4 | Channel groupings source | `ae_metadata.channel_groupings_native` | **Confirmed** [CONFIRMED] — Anup Mane (2026-07-15): correct cross-project source; AE team owns table; sheet updated quarterly. Open: native refresh job cadence (daily copy vs on-change); confirm `journal_table_native` same pattern |
-| C5 | RM workspace filter | `%Authors%`/`%India%`/`hpaut`/`letpb`/`naver` | Confirm |
+| C5 | RM workspace filter | `%Authors%`/`%India%`/`%New Launches%`/`hpaut`/`letpb`/`naver` | [CONFIRMED] Giorgia 2026-08-04 — New Launches added wherever workspace filter applies (except Collections) |
+| C6 | Marmind source | `prod_marmind_presentation.marmind_analytics` | [CONFIRMED] Giorgia 2026-08-04 — replaces discontinued `marmind_fnd.marmind_data`; no `channels_categories`/`channel_groupings`; Colab hardcodes `'N/A'` and matches flags on `main_channels` only |
 
 ## D. Combination + collections (Phases 5-6)
 
@@ -59,6 +60,7 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 |---|---|---|---|
 | E1 | Dashboard column contracts | column-for-column parity with prod `mis_2_subs_all` / `mis_2_subs_coll_2` / `_4_v8` | Confirm exact contract before promotion |
 | E1a | `repeated_author_flag` as a dashboard output | [CONFIRMED] Giorgia 2026-07-16 lists `repeated_author_flag` as a direct dashboard table (with `mis_2_subs_all`, `_4_v8`, + the two EM tables). Exposed as a `presentation` model (thin contract over `int_repeated_author_flag`; schema = prod: internal_submission_id STRING, source_system STRING, month DATE, repeated_author INT). May-2026 dev vs prod: rows 340,310 vs 340,880 (−0.17%), repeated rate 0.9502 vs 0.9501 (≈0); rows = distinct submission in both (one flag per submission holds). | Line-by-line check vs Giorgia's refreshed Colab still advisable, but numbers already match prod |
+| E1b | `stage_9_accepted_flag` on `_4_v8` | [CONFIRMED] Giorgia Colab 06/07/2026 — `otr.stage_9_accepted_flag` selected next to `out_to_review`. Already computed in `int_snapp_otr` (`final_decision = 'accepted'`); now exposed on the presentation model in the same position as prod (`out_to_review`, `stage_9_accepted_flag`, `journal_title`) [VERIFIED against prod schema] | Confirm the acceptance proxy is the intended definition (same open point as the OTR proxy) |
 | E2 | `snapp_regional_clusters` (region, country_grouping) | Sheets-backed external table — Drive scope BLOCKED; join gated by `enable_regional_clusters` var (default false -> null in dev) | Need native/seed equivalent |
 | E3 | `channel_planning_multi_threshold` | 0.5 | Confirm Phase 8 uses 0.5 (vs 0.8 main path) |
 | E4 | `_3` accumulation idempotency | dbt incremental insert_overwrite by month (replaces Colab non-atomic INSERT) | Confirm month-grain replace is acceptable |
