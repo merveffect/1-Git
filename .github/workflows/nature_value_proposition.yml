@@ -32,7 +32,7 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: "projects/592557465902/locations/global/workloadIdentityPools/github-actions/providers/github-actions"
+          workload_identity_provider: "projects/592557465902/locations/global/workloadIdentityPools/github-actions/providers/github"
           service_account: "nvp-python-github@snproject-cbb9ca25.iam.gserviceaccount.com"
           create_credentials_file: true
           export_environment_variables: true
