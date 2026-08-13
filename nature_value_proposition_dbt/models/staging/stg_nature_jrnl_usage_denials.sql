@@ -131,7 +131,7 @@ GROUP BY
   m.months_available_2026
 
 HAVING
-  SUM(b.No_Lic + b.Total_Item_Req) > 0;
+  SUM(b.No_Lic + b.Total_Item_Req) > 0
 
 
 
