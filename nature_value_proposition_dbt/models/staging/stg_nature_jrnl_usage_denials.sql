@@ -1,15 +1,7 @@
-{{
-config(
-    materialized = 'incremental',
-    incremental_strategy = 'insert_overwrite',
-    partition_by = {
-    'field': 'Cal_date',
-    'data_type': 'date',
-    'granularity': 'month'
-    },
-    cluster_by = ['bp_id', 'grid_id', 'Jrnl_Title', 'Access_Type'])
+{{config(
+  materialized = 'table'
+)
 }}
-
 
 WITH base AS (
 
@@ -37,22 +29,7 @@ SELECT
 FROM {{ source('tbl_bp_monthly', 'tbl_bp_monthly') }}
 
 WHERE
-
-
-{% if is_incremental() %}
-
-    -- Incremental: reload previous month only
-     Cal_Date >= DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH)
-     AND Cal_Date < DATE_TRUNC(CURRENT_DATE(), MONTH)
-
-{% else %}
-
-    -- Full refresh: from Jan 2024 until last completed month
-     Cal_Date >= DATE '2024-01-01'
-     AND Cal_Date < DATE_TRUNC(CURRENT_DATE(), MONTH)
-
-{% endif %}
-
+  Cal_Date >= DATE '2024-01-01'
   AND BP_Type_Key IN ('0004', '0005')
   AND BP_ID_w_16 != 'Y'
   AND Jrnl_or_Bk = "Journal"
@@ -103,7 +80,6 @@ SELECT
   b.Jrnl_Title,
   b.Access_Type,
   b.Cal_Year,
-  b.cal_date,
 
   SUM(b.No_Lic) AS No_License,
 
@@ -152,8 +128,10 @@ GROUP BY
   b.Jrnl_Title,
   b.Access_Type,
   b.Cal_Year,
-  b.cal_date,
   m.months_available_2026
 
 HAVING
   SUM(b.No_Lic + b.Total_Item_Req) > 0
+
+
+
