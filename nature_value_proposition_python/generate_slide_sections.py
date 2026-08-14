@@ -73,7 +73,7 @@ def SDG(r):
 
     return (
         f"Over the past five years, researchers from {bp_full_name} "
-        f"have published {r.Total_pubs:,} articles linked to Sustainable "
+        f"have published {r.total_sdg_publications:,} articles linked to Sustainable "
         f"Development Goal (SDG) areas. This section maps the recommended "
         f"Nature journals against the SDGs represented in the institution's "
         f"research publication output. The analysis highlights a strong "
@@ -136,9 +136,9 @@ def create_sections(df):
             else r["publication_count"]
         )
 
-        r["Total_pubs"] = (
-            0 if pd.isna(r["Total_pubs"])
-            else r["Total_pubs"]
+        r["total_sdg_publications"] = (
+            0 if pd.isna(r["total_sdg_publications"])
+            else r["total_sdg_publications"]
         )
 
         rows.append([
