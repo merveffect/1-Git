@@ -56,7 +56,7 @@ def for2(r):
 
     return (
         f"Over the past five years, researchers from {bp_full_name} "
-        f"have published a total of {r.publication_count:,} articles "
+        f"have published a total of {r.Total_pubs:,} articles "
         f"across multiple Fields of Research (FoR2). Fields of Research "
         f"Level 2 provide a more detailed view of research strengths "
         f"than broader subject classifications, making them a valuable "
@@ -131,9 +131,9 @@ def create_sections(df):
             else r["top_denied_journals"]
         )
 
-        r["publication_count"] = (
-            0 if pd.isna(r["publication_count"])
-            else r["publication_count"]
+        r["Total_pubs"] = (
+            0 if pd.isna(r["Total_pubs"])
+            else r["Total_pubs"]
         )
 
         r["total_sdg_publications"] = (
