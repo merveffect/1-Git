@@ -26,12 +26,11 @@ sources:
       - name: audience_builder_big
         description: "Table containing the canonical_segment_id for all CDP records to be enriched with institution data."
 
-  - name: prod_institution_disambiguation_raw
-    database: datasn-rm-live
-    schema: prod_institution_disambiguation_raw
+  - name: ror
+    database: ri-data-engineering-dd4c0eca
+    schema: ror
     tables:
-      - name: raw_ror_data
-        description: "Raw ROR data for institution enrichment."
+      - name: ror_data_refresh
 
   - name: prod_institution_disambiguation_staging
     database: datasn-rm-live

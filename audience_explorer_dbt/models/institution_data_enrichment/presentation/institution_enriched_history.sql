@@ -1,6 +1,6 @@
 {{ config(
     materialized='incremental',
-    full_refresh=false,
+    full_refresh=False,
     partition_by={
         'field': 'enrichment_timestamp',
         'data_type': 'timestamp',

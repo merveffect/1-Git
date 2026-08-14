@@ -31,14 +31,13 @@ select
     m.snid,
     m.raw_inst_name,
     m.email_domain,
-    m.ror_id,
+    concat('https://ror.org/', m.ror_id) as ror_id,   
     r.ror_display_name  as standardized_institution_name,
     r.ror_country_name  as ror_country,
     'WIKIDATA_ROR_NAME' as enrichment_source
 from matched m
 inner join ror_names r
-    on m.ror_id = r.ror_id
-
+    on m.ror_id = r.ror_id                        
 qualify row_number() over (
     partition by canonical_segment_id
     order by email

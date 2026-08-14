@@ -35,7 +35,6 @@ qualify row_number() over (
             when 'CRP_by_snid' then 4
             when 'Domain_ROR_match' then 5
             when 'WIKIDATA_ROR_NAME' then 6
-            when 'WIKIDATA_NAME' then 7
         end,
         enrichment_timestamp desc
 ) = 1

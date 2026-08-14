@@ -4,7 +4,6 @@
     {'cte': 'vector_enriched',        'model': 'stg_ror_vector_enriched_targets',    'priority': 2},
     {'cte': 'domain_enriched',        'model': 'stg_ror_domain_fallback_targets',    'priority': 3},
     {'cte': 'wikidata_ror_enriched',  'model': 'stg_wikidata_fallback_targets',      'priority': 4},
-    {'cte': 'wikidata_name_enriched', 'model': 'stg_wikidata_names_fallback_targets','priority': 5},
 ] %}
 
 with

@@ -41,19 +41,17 @@ unit_tests:
 
   - name: test_fallback_priority_logic
     description: |
-      Test fallback priority logic with four enrichment branches.
+      Test fallback priority logic with three enrichment branches.
 
       Priority order per canonical_segment_id:
       1) Vector 1-to-1 match (stg_ror_match_decisions)
       2) Domain fallback (stg_ror_domain_fallback_targets)
       3) WikiData ROR fallback (stg_wikidata_fallback_targets)
-      4) WikiData name fallback for ROR-missing ids (stg_wikidata_names_fallback_targets)
 
       Scenario coverage:
       - CID_VECTOR_ONLY: has vector/domain/wiki -> vector (P1) must win.
       - CID_DOMAIN_PRIORITY: no valid vector; has domain + wiki -> domain (P2) must win.
-      - CID_WIKI_FALLBACK: no vector/domain; has wiki + wikidata_name -> wiki_ror (P3) must win over wikidata_name (P4).
-      - CID_WIKI_NAME_ONLY: only wikidata_name exists -> wikidata_name (P4) must be selected.
+      - CID_WIKI_FALLBACK: no vector/domain; has wiki -> wiki_ror (P3) must be selected.
     
     model: institution_enriched_audience_base
     given:
@@ -62,7 +60,6 @@ unit_tests:
           - {canonical_segment_id: 'CID_VECTOR_ONLY', email: 'researcher@vector.edu', researcher_id: null, snid: null, raw_inst_name: 'Vector Research Institute', enrichment_source: 'CRP_by_researcher_id', country_iso: 'US', country_name: 'United States', embedding_input: 'Vector Research Institute, United States'}
           - {canonical_segment_id: 'CID_DOMAIN_PRIORITY', email: 'user@domain-only.edu', researcher_id: null, snid: null, raw_inst_name: 'Domain Priority Institute', enrichment_source: null, country_iso: 'UK', country_name: 'United Kingdom', embedding_input: 'Domain Priority Institute, United Kingdom'}
           - {canonical_segment_id: 'CID_WIKI_FALLBACK', email: 'scholar@wiki-only.org', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: null, country_iso: null, country_name: null, embedding_input: null}
-          - {canonical_segment_id: 'CID_WIKI_NAME_ONLY', email: 'nameonly@wikidata.org', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: null, country_iso: null, country_name: null, embedding_input: null}
           - {canonical_segment_id: 'CID_EBM_WINS', email: 'ebm@example.edu', researcher_id: null, snid: 'SNID_EBM', raw_inst_name: null, enrichment_source: 'EBM', country_iso: null, country_name: null, embedding_input: null}
 
       - input: ref('stg_ror_ebm_enrichment_targets')
@@ -91,18 +88,12 @@ unit_tests:
           - {canonical_segment_id: 'CID_DOMAIN_PRIORITY', email: 'user@domain-only.edu', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'Domain Wiki Fallback', ror_id: 'ror.org/domain-wiki', ror_country: 'UK'}
           - {canonical_segment_id: 'CID_VECTOR_ONLY', email: 'researcher@vector.edu', researcher_id: null, snid: null, raw_inst_name: null, enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'Vector Wiki Fallback', ror_id: 'ror.org/vector-wiki', ror_country: 'US'}
 
-      - input: ref('stg_wikidata_names_fallback_targets')
-        rows:
-          - {canonical_segment_id: 'CID_WIKI_NAME_ONLY', email: 'nameonly@wikidata.org', researcher_id: null, snid: null, raw_inst_name: null, ror_id: 'ror.org/nameonly', standardized_institution_name: 'Wiki Name Only University', ror_country: null, enrichment_source: 'WIKIDATA_NAME'}
-          - {canonical_segment_id: 'CID_WIKI_FALLBACK', email: 'scholar@wiki-only.org', researcher_id: null, snid: null, raw_inst_name: null, ror_id: 'ror.org/wiki-name', standardized_institution_name: 'Wiki Name Backup', ror_country: null, enrichment_source: 'WIKIDATA_NAME'}
-
     expect:
       rows:
         - {canonical_segment_id: 'CID_EBM_WINS', enrichment_source: 'EBM', standardized_institution_name: 'EBM University', ror_id: 'ror.org/ebm'}
         - {canonical_segment_id: 'CID_VECTOR_ONLY', enrichment_source: 'CRP_by_researcher_id', standardized_institution_name: 'Vector University', ror_id: 'ror.org/vector'}
         - {canonical_segment_id: 'CID_DOMAIN_PRIORITY', enrichment_source: 'Domain_ROR_match', standardized_institution_name: 'Domain Matched University', ror_id: 'ror.org/domain'}
         - {canonical_segment_id: 'CID_WIKI_FALLBACK', enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'WikiData University', ror_id: 'ror.org/wiki'}
-        - {canonical_segment_id: 'CID_WIKI_NAME_ONLY', enrichment_source: 'WIKIDATA_NAME', standardized_institution_name: 'Wiki Name Only University', ror_id: 'ror.org/nameonly'}
 
   - name: test_ebm_latest_affiliation
     description: |
