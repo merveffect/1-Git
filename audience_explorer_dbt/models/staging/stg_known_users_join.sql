@@ -3,7 +3,7 @@ with traits_with_email as (
     canonical_segment_id,
     email
   from {{ ref('stg_user_traits_snid_email_combined') }}
-),
+)
 
   select
   known_users.segment_id as canonical_segment_id,
