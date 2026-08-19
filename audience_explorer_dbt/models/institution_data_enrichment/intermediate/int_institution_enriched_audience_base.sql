@@ -11,8 +11,8 @@ with
 {% for src in enrichment_sources %}
 {{ src.cte }} as (
     select
-        canonical_segment_id,
         email,
+        canonical_segment_id,
         researcher_id,
         snid,
         raw_inst_name,
@@ -33,8 +33,8 @@ unioned as (
 )
 
 select
-    canonical_segment_id,
     email,
+    canonical_segment_id,
     researcher_id,
     snid,
     raw_inst_name as original_raw_name,
@@ -44,6 +44,6 @@ select
     ror_country
 from unioned
 qualify row_number() over (
-    partition by canonical_segment_id
-    order by priority
+    partition by lower(email)
+    order by priority, canonical_segment_id
 ) = 1

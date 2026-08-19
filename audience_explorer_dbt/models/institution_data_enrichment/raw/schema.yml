@@ -89,3 +89,21 @@ models:
         description: Country name from author submission data.
       - name: country_iso
         description: Country ISO code from author submission data.
+
+  - name: raw_ebm_data
+    description: Raw EBM payload with contact and affiliation arrays used for deterministic SNID-to-ROR enrichment.
+    columns:
+      - name: individual_contact
+        description: Repeated contact structure containing SNID and related person fields.
+      - name: individual_affiliation
+        description: Repeated affiliation structure containing institution ROR and affiliation dates.
+
+  - name: raw_wikidata
+    description: Raw WikiData institutions and domains used as fallback enrichment source.
+    columns:
+      - name: ror_id
+        description: ROR identifier string provided by WikiData.
+      - name: institution_name
+        description: Institution name provided by WikiData.
+      - name: website
+        description: Institution website URL used for domain extraction.

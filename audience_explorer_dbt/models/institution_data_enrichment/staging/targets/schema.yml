@@ -1,0 +1,131 @@
+version: 2
+
+models:
+  - name: stg_inst_enrichment_targets
+    description: Eligible CDP users with resolved raw institution and embedding input.
+    columns:
+      - name: email
+        description: Unique identifier for enrichment targeting at person level.
+        data_tests:
+          - not_null
+          - unique
+      - name: canonical_segment_id
+        description: Segment identifier from source systems; not unique and can map to multiple emails.
+      - name: researcher_id
+        description: Researcher identifier when available.
+      - name: snid
+        description: SNID when available.
+      - name: raw_inst_name
+        description: Resolved raw institution name.
+      - name: enrichment_source
+        description: Resolution source (Authors, CRP_by_researcher_id, CRP_by_snid).
+      - name: country_iso
+        description: Country ISO code from selected source.
+      - name: country_name
+        description: Standardized country name.
+      - name: embedding_input
+        description: Text used for embedding and vector matching.
+
+  - name: stg_ror_ebm_enrichment_targets
+    description: User-grain EBM deterministic enrichment targets.
+    columns:
+      - name: email
+        description: Unique identifier for enrichment targeting at person level.
+        data_tests:
+          - not_null
+          - unique
+      - name: canonical_segment_id
+        description: Segment identifier from source systems; not unique and can map to multiple emails.
+      - name: researcher_id
+        description: Researcher identifier when available.
+      - name: snid
+        description: SNID key used to join EBM enrichment.
+      - name: raw_inst_name
+        description: Original institution_name from CDP.
+      - name: enrichment_source
+        description: Enrichment source label (EBM).
+      - name: standardized_institution_name
+        description: Standardized institution name from ROR.
+      - name: ror_id
+        description: ROR identifier.
+      - name: ror_country
+        description: ROR country.
+
+  - name: stg_ror_vector_enriched_targets
+    description: User-grain targets enriched from vector matches with match_status = 1 to 1 match.
+    columns:
+      - name: email
+        description: Unique identifier for enrichment targeting at person level.
+        data_tests:
+          - not_null
+          - unique
+      - name: canonical_segment_id
+        description: Segment identifier from source systems; not unique and can map to multiple emails.
+      - name: researcher_id
+        description: Researcher identifier when available.
+      - name: snid
+        description: SNID when available.
+      - name: raw_inst_name
+        description: Raw institution name from targets.
+      - name: enrichment_source
+        description: Original enrichment source from targets.
+      - name: standardized_institution_name
+        description: Matched ROR display name.
+      - name: ror_id
+        description: Matched ROR identifier.
+      - name: ror_country
+        description: Matched ROR country.
+
+  - name: stg_ror_domain_fallback_targets
+    description: User-grain fallback targets enriched by exact domain-to-ROR mapping.
+    columns:
+      - name: email
+        description: Unique identifier for enrichment targeting at person level.
+        data_tests:
+          - not_null
+          - unique
+      - name: canonical_segment_id
+        description: Segment identifier from source systems; not unique and can map to multiple emails.
+      - name: researcher_id
+        description: Researcher identifier when available.
+      - name: snid
+        description: SNID when available.
+      - name: raw_inst_name
+        description: Original institution_name from CDP.
+      - name: email_domain
+        description: Extracted email domain used for matching.
+      - name: ror_id
+        description: ROR identifier resolved from domain.
+      - name: standardized_institution_name
+        description: ROR institution name resolved from domain.
+      - name: ror_country
+        description: ROR country resolved from domain.
+      - name: enrichment_source
+        description: Constant source label Domain_ROR_match.
+
+  - name: stg_wikidata_fallback_targets
+    description: User-grain fallback targets enriched by WikiData domain-to-ROR mapping.
+    columns:
+      - name: email
+        description: Unique identifier for enrichment targeting at person level.
+        data_tests:
+          - not_null
+          - unique
+      - name: canonical_segment_id
+        description: Segment identifier from source systems; not unique and can map to multiple emails.
+      - name: researcher_id
+        description: Researcher identifier when available.
+      - name: snid
+        description: SNID when available.
+      - name: raw_inst_name
+        description: Original institution_name from CDP.
+      - name: email_domain
+        description: Extracted email domain used for matching.
+      - name: ror_id
+        description: Resolved canonical ROR URL.
+      - name: standardized_institution_name
+        description: ROR display name joined from stg_ror.
+      - name: ror_country
+        description: ROR country joined from stg_ror.
+      - name: enrichment_source
+        description: Constant source label WIKIDATA_ROR_NAME.

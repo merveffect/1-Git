@@ -19,8 +19,8 @@
 with final_records as (
 
     select
-        canonical_segment_id,
         email,
+        canonical_segment_id,
         researcher_id,
         snid,
         original_raw_name,
@@ -29,7 +29,7 @@ with final_records as (
         ror_id,
         ror_country,
         current_timestamp() as enrichment_timestamp
-    from {{ ref('institution_enriched_audience_base') }}
+    from {{ ref('int_institution_enriched_audience_base') }}
 
 )
 

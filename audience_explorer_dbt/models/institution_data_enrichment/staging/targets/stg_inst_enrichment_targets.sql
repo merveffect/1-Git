@@ -51,8 +51,8 @@ crp_by_snid as (
 resolved as (
 
     select
-        cdp.canonical_segment_id,
         cdp.email,
+        cdp.canonical_segment_id,
         cdp.researcher_id,
         cdp.snid,
 
@@ -91,8 +91,8 @@ resolved as (
 
 mapped as (
     select
-        resolved.canonical_segment_id,
         resolved.email,
+        resolved.canonical_segment_id,
         resolved.researcher_id,
         resolved.snid,
         resolved.raw_inst_name,
@@ -104,12 +104,14 @@ mapped as (
         on resolved.country_iso = iso.iso_code
     where resolved.raw_inst_name is not null
         and resolved.raw_inst_name != ''
+        and resolved.email is not null
+        and trim(resolved.email) != ''
 )
 
 
 select
-    canonical_segment_id,
     email,
+    canonical_segment_id,
     researcher_id,
     snid,
     raw_inst_name,
@@ -125,6 +127,6 @@ select
 from mapped
 
 qualify row_number() over (
-    partition by canonical_segment_id
-    order by email
+    partition by lower(email)
+    order by canonical_segment_id
 ) = 1

@@ -53,7 +53,7 @@ unit_tests:
       - CID_DOMAIN_PRIORITY: no valid vector; has domain + wiki -> domain (P2) must win.
       - CID_WIKI_FALLBACK: no vector/domain; has wiki -> wiki_ror (P3) must be selected.
     
-    model: institution_enriched_audience_base
+    model: int_institution_enriched_audience_base
     given:
       - input: ref('stg_inst_enrichment_targets')
         rows:
@@ -174,7 +174,7 @@ unit_tests:
 
   - name: test_history_change_detection
     description: |
-      Tests the append-only change-detection logic of institution_enriched_history.
+      Tests the append-only change-detection logic of int_institution_enriched_history.
 
       Given an existing history (the `this` table) with prior records, and a new
       base run, the model must:
@@ -184,13 +184,13 @@ unit_tests:
 
       This runs in incremental mode (overrides is_incremental = true) so the
       change-detection branch is exercised.
-    model: institution_enriched_history
+    model: int_institution_enriched_history
     overrides:
       macros:
         is_incremental: true
     given:
       # the base model output for THIS run
-      - input: ref('institution_enriched_audience_base')
+      - input: ref('int_institution_enriched_audience_base')
         rows:
           # NEW user - not in history yet -> must be ADDED
           - {canonical_segment_id: 'CID_NEW', email: 'new@example.com', researcher_id: null, snid: null, original_raw_name: 'New Uni', enrichment_source: 'EBM', standardized_institution_name: 'New University', ror_id: 'ror.org/new', ror_country: 'Germany'}
@@ -217,14 +217,14 @@ unit_tests:
   - name: test_final_latest_selection
     description: |
       Tests that institution_enriched_audience returns exactly one row per user -
-      the latest enrichment by enrichment_timestamp - from the append-only history.
+      the latest enrichment by enrichment_timestamp - from validated enrichment rows.
 
-      CID_MULTI has two history records (an older and a newer institution).
+      CID_MULTI has two valid records (an older and a newer institution).
       The final model must return only the newer one.
-      CID_SINGLE has one history record and must pass through unchanged.
+      CID_SINGLE has one valid record and must pass through unchanged.
     model: institution_enriched_audience
     given:
-      - input: ref('institution_enriched_history')
+      - input: ref('int_institution_enriched_valid')
         rows:
           # CID_MULTI: two records, different timestamps -> latest (2024-06) must win
           - {canonical_segment_id: 'CID_MULTI', email: 'multi@example.com', researcher_id: null, snid: null, original_raw_name: 'Old Uni', enrichment_source: 'WIKIDATA_ROR_NAME', standardized_institution_name: 'Old University', ror_id: 'ror.org/old', ror_country: 'France', enrichment_timestamp: '2024-01-01 00:00:00'}

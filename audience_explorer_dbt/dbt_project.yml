@@ -77,6 +77,11 @@ models:
         +materialized: table
         +tags: institution_data_enrichment_presentation
 
+      intermediate:
+        +schema: "institution_data_enrichment_intermediate"
+        +materialized: table
+        +tags: institution_data_enrichment_intermediate
+
         
 
 

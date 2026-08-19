@@ -12,8 +12,8 @@
 -- populated in the CDP (they leave the base model but stay in history).
 
 select
-    canonical_segment_id,
     lower(email) as email,
+    canonical_segment_id,
     researcher_id,
     snid,
     original_raw_name,
@@ -22,7 +22,7 @@ select
     ror_id,
     ror_country,
     enrichment_timestamp
-from {{ ref('institution_enriched_history') }}
+from {{ ref('int_institution_enriched_valid') }}
 where email is not null
   and trim(email) != ''
 qualify row_number() over (

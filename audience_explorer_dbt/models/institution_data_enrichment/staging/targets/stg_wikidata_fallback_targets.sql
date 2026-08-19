@@ -3,8 +3,8 @@ with {{ cdp_domain_targets() }},
 -- WikiData: email domain -> ror_id
 matched as (
     select
-        c.canonical_segment_id,
         c.email,
+        c.canonical_segment_id,
         c.researcher_id,
         c.snid,
         c.institution_name as raw_inst_name,
@@ -25,8 +25,8 @@ ror_names as (
 )
 
 select
-    m.canonical_segment_id,
     m.email,
+    m.canonical_segment_id,
     m.researcher_id,
     m.snid,
     m.raw_inst_name,
@@ -39,6 +39,6 @@ from matched m
 inner join ror_names r
     on m.ror_id = r.ror_id                        
 qualify row_number() over (
-    partition by canonical_segment_id
-    order by email
+    partition by lower(m.email)
+    order by m.canonical_segment_id
 ) = 1

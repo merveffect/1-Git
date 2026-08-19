@@ -1,7 +1,7 @@
 -- Vector 1:1 matches -> user grain (joined with targets).
 select
-    targets.canonical_segment_id,
     targets.email,
+    targets.canonical_segment_id,
     targets.researcher_id,
     targets.snid,
     targets.raw_inst_name,

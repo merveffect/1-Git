@@ -2,8 +2,8 @@
 with {{ cdp_domain_targets() }}
 
 select
-    with_domain.canonical_segment_id,
     with_domain.email,
+    with_domain.canonical_segment_id,
     with_domain.researcher_id,
     with_domain.snid,
     with_domain.institution_name as raw_inst_name,

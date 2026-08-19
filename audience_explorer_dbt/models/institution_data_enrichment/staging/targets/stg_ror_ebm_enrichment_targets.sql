@@ -15,8 +15,8 @@ with cdp as (
 )
 
 select
-    cdp.canonical_segment_id,
     cdp.email,
+    cdp.canonical_segment_id,
     cdp.researcher_id,
     cdp.snid,
     cdp.institution_name         as raw_inst_name,
@@ -29,6 +29,6 @@ inner join {{ ref('stg_ror_ebm_enrichment') }} ebm
     on cdp.snid = ebm.snid
 
 qualify row_number() over (
-    partition by canonical_segment_id
-    order by snid
+    partition by lower(cdp.email)
+    order by cdp.canonical_segment_id, snid
 ) = 1
