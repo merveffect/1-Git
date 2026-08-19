@@ -6,9 +6,9 @@ teams_webhook_url: https://defaultd9aabe7c608b4fe1957c0739cb0dfe.22.environment.
 dbt_target: prod
 
 
-# jobs:
-#   - name: collections-dbt-prod
-#     schedule: 0 8 * * *
+jobs:
+  - name: collections-dbt-prod
+    schedule: 0 8 * * *
 
 
 
