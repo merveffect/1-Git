@@ -20,15 +20,9 @@ SELECT
         session_count,
         country,
         device_category,
+        aq_source,
         aq_source_sess,
-        aq_medium_sess,
-        pageTitle,
-        BPID,
-        bpid_delimit,
-        aq_campaign_name_sess,
-        mps_partner_id,
-        type_description,
-        customer_type
+        pageTitle
       )
     ) AS pageview_data
   FROM {{ ref('stg_ga4_exploded_collection_ids') }}
