@@ -21,9 +21,7 @@ jobs:
     timeout: 2000
     select_criteria: path:models/institution_data_enrichment
 
-  - name: daily-incremental-run-dev
-    schedule: 0 9 * * *
-    select_criteria: +tag:daily
+
 
 
 
