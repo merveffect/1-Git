@@ -1,0 +1,16 @@
+# see https://confluence-export.apps.private.k8s.springernature.io/Engineering/SN%20Technology%20-%20Engineering/Playbook/Tooling/Developer%20Portal
+version: 1
+component:
+  name: analytics-engineering-dbt
+  owner: analytics-engineering
+  description: Data pipelines serving analytics engineering data products.
+  type: application_module
+  lifecycle: core  # See Lifecycle Values section - confirm with your team
+  tier: Internal-Only      # See Tier Values section
+  language: python
+  system: APPL-605  # e.g. APPL-132 — use the Ardoq EAID, NOT the OpsLevel System name
+  properties:
+    gcp_projects:
+      - snproject-cbb9ca25
+      - dat-analytics-eng-ec869189
+
