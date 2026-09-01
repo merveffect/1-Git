@@ -11,6 +11,7 @@ component:
   system: APPL-605  # e.g. APPL-132 — use the Ardoq EAID, NOT the OpsLevel System name
   properties:
     gcp_projects:
+      - dimensions-ai
       - snproject-cbb9ca25
-      - dat-analytics-eng-ec869189
+      - usage-data-reporting
 

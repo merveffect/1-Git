@@ -12,5 +12,4 @@ component:
   properties:
     gcp_projects:
       - snproject-cbb9ca25
-      - dat-analytics-eng-ec869189
 
