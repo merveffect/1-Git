@@ -16,8 +16,8 @@ unit_tests:
 
       - input: ref('stg_collections_ga_pageview_no_collection_id')
         rows:
-          - {page_path: '/p-null', evt_date: '2026-07-01', pageview_data: ["struct(100 as total_engaged_ms, 1 as pageview_count, 1 as session_count, 'TR' as country, 'desktop' as device_category, 'google' as aq_source, 'google' as aq_source_sess, 'P Null' as pageTitle)"]}
-          - {page_path: '/p-empty', evt_date: '2026-07-01', pageview_data: ["struct(200 as total_engaged_ms, 2 as pageview_count, 1 as session_count, 'GB' as country, 'mobile' as device_category, 'direct' as aq_source, 'direct' as aq_source_sess, 'P Empty' as pageTitle)"]}
+          - {page_path: '/p-null', evt_date: '2026-07-01', pageview_data: ["struct(100 as total_engaged_ms, 1 as pageview_count, 1 as session_count, 'TR' as country, 'desktop' as device_category, 'google' as aq_source, 'google' as sess_source, 'P Null' as pageTitle)"]}
+          - {page_path: '/p-empty', evt_date: '2026-07-01', pageview_data: ["struct(200 as total_engaged_ms, 2 as pageview_count, 1 as session_count, 'GB' as country, 'mobile' as device_category, 'direct' as aq_source, 'direct' as sess_source, 'P Empty' as pageTitle)"]}
 
       - input: ref('stg_collections_ga_events')
         rows:

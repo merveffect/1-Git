@@ -1,6 +1,7 @@
 {{ config(
 materialized='incremental',
 incremental_strategy='insert_overwrite',
+on_schema_change='sync_all_columns',
 partition_by={
 "field": "evt_date",
 "data_type": "date",
@@ -9,8 +10,19 @@ partition_by={
 cluster_by=["page_path"]
 ) }}
 
-Select * from 
-    {{ source('rm_bc_client_fulfillment_reporting', 'bc_all_ga4_base_pageview_data') }}
+SELECT
+        evt_date,
+        page_path,
+        total_engaged_ms,
+        pageview_count,
+        session_count,
+        country,
+        device_category,
+        aq_source,
+        sess_source,
+        collection_id,
+        pageTitle
+    FROM {{ source('rm_bc_client_fulfillment_reporting', 'bc_all_ga4_base_pageview_data') }}
 
 
 {% if is_incremental() %}

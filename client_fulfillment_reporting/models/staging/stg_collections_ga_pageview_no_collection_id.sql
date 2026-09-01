@@ -20,7 +20,7 @@ SELECT
         country,
         device_category,
         aq_source,
-        aq_source_sess,
+        sess_source,
         pageTitle
       )
     ) AS pageview_data
