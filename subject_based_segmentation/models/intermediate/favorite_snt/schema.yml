@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: snt_embeddings
+    description: >
+      One embedding vector per SNT (S&T taxonomy, ~3000 codes) name, generated via
+      the shared Vertex AI embedding model. This is the comparison set for
+      favorite-SNT inference: a user's aggregated reading-behaviour embedding is
+      compared against this table via VECTOR_SEARCH to find their top-N SNTs.
+      Incremental (merge on snt_id): only new or renamed SNTs get re-embedded
+      on each run.
+    columns:
+      - name: snt_id
+      - name: snt_name
+      - name: embedding
+        description: Embedding vector (ARRAY<FLOAT64>) of snt_name.
+
+  - name: distinct_keywords
+    description: >
+      Every distinct keyword across the target audience (~1.8M), deduplicated
+      once. keyword_id is MD5(keyword) — stable across runs, safe as a merge key.
+
+  - name: keyword_embeddings
+    description: >
+      Embedding of every distinct keyword. Incremental (merge on keyword_id):
+      only newly-seen keywords get embedded each run.

@@ -1,3 +1,5 @@
+-- alias and the "isnt" ID prefix are an existing contract with Permutive's
+-- segment feed — kept unchanged so the live integration doesn't break
 {{ config(
     alias = "permutive_inferred_subjects",
     tags = ["poc"]
@@ -11,10 +13,10 @@ WITH optin_snids AS (
 ),
 
 
-subject_source AS (
+mpc_subject_source AS (
     SELECT
         snid,
-        top_3_marketing_pref_ids AS inferred_subjects
+        top_3_marketing_pref_ids AS inferred_mpc_subject_ids
     FROM {{ ref('snid_to_mktps_step2') }}
     WHERE snid IS NOT NULL
       AND top_3_marketing_pref_ids IS NOT NULL
@@ -29,28 +31,28 @@ prefixed AS (
                 SELECT CONCAT('isnt', TRIM(id))
                 FROM UNNEST(
                     SPLIT(
-                        REPLACE(REPLACE(inferred_subjects, ';', ','), ':', ','),
+                        REPLACE(REPLACE(inferred_mpc_subject_ids, ';', ','), ':', ','),
                         ','
                     )
                 ) AS id
                 WHERE TRIM(id) != ''
             ),
             ','
-        ) AS prefixed_inferred_subjects
-    FROM subject_source
+        ) AS prefixed_mpc_subject_ids
+    FROM mpc_subject_source
 ),
 
 
 joined AS (
     SELECT DISTINCT
         s.snid,
-        s.prefixed_inferred_subjects
+        s.prefixed_mpc_subject_ids
     FROM prefixed s
     JOIN optin_snids o
       ON s.snid = o.snid
 )
 
 SELECT
-    CONCAT(CAST(snid AS STRING), ' ', prefixed_inferred_subjects) AS snid_and_subjects
+    CONCAT(CAST(snid AS STRING), ' ', prefixed_mpc_subject_ids) AS snid_and_mpc_subjects
 FROM joined
 

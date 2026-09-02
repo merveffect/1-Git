@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: users_with_journal_signal
+    description: >
+      Per-SNID pass-through of raw journal-reading behaviour list columns from
+      audience_builder_big (reads, eTOCs, submission guide views, submissions,
+      pageviews). One row per SNID; each column is a semicolon/JSON-ish list of
+      journal IDs, unnested downstream in all_users_and_journals.
+
+  - name: all_users_and_journals
+    description: >
+      Long-format (snid, journal_id) pairs, unpivoted from every journal-reading
+      signal in users_with_journal_signal. This is the behavioural fan-out that
+      feeds the journal -> SNT -> MPC mapping in snid_to_mktps_step1.
+
+  - name: snid_to_mktps_step1
+    description: >
+      Row per (snid, journal_id, snt_code): resolves each journal to its SNT
+      (S&T taxonomy) discipline code(s)/label(s) via journal_metadata, then maps
+      each SNT to an MPC (marketing preference center, 46-subject) ID via the
+      SNTS-MKTPS_MAPPED_FINAL mapping table (direct match, falling back to a
+      match against any of the mapping table's 6 taxonomy hierarchy levels).

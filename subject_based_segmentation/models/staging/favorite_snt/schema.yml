@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: journal_snt_codes
+    description: >
+      Journal -> SNT id, resolved fresh from journal_metadata.snt_discipline_code
+      against the current SNT reference table (snts_full_list — validated 100%
+      match as of 2026-09). Independent of favorite_mpc_subject's journal->SNT
+      resolution, which is tied to the old SNT reference table.
+
+  - name: users_and_journal_ids
+    description: >
+      Long-format (snid, journal_id) pairs covering every journal-relationship
+      signal on audience_builder_big (reads, eTOCs, submission guide views,
+      submissions, pageviews, interested-in lists). Scoped to the favorite_snt
+      target audience. Feeds the journal-based SNT signal via journal_snt_codes.
+
+  - name: users_with_content_signal
+    description: >
+      Per-SNID pass-through of keyword and DOI reading-behaviour signals.
+      Article titles and newsletters were dropped (see model comment). DOI
+      columns are staged but unused — on hold pending a DOI/article-level SNT
+      metadata table. Scoped to the favorite_snt target audience
+      (advertising_opt_in OR mkt_pref_opt_in).

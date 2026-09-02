@@ -24,6 +24,10 @@ models:
       +schema: "staging"
       +materialized: table
 
+    intermediate:
+      +schema: "intermediate"
+      +materialized: table
+
     presentation:
        +schema: "presentation"
        +materialized: table
