@@ -67,10 +67,10 @@ agg AS (
 )
 
 SELECT
-  -- Her dbt run için benzersiz id (unique_key)
+  -- Unique id per dbt run (unique_key)
   '{{ invocation_id }}' AS run_id,
 
-  -- Partition alanı
+  -- Partition field
   CURRENT_TIMESTAMP() AS run_ts,
   CURRENT_DATE() AS run_date,
 
