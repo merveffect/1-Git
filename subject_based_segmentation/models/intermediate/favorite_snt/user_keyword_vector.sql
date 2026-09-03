@@ -10,6 +10,11 @@
 -- Only keywords that already have a keyword_snt_confidence row are used —
 -- this table backfills incrementally, so coverage grows over time as that
 -- backfill completes.
+--
+-- Averaging strategy: group into one array of (embedding, weight) structs
+-- per user first (array_agg), then compute the weighted average per-offset
+-- inside a per-row correlated subquery — see user_journal_snt_vector.sql
+-- for why this avoids a 768x row explosion + global shuffle.
 
 with weighted as (
 
@@ -23,23 +28,22 @@ with weighted as (
 
 ),
 
-exploded as (
+grouped as (
 
-    select snid, off, val * weight as weighted_val, weight
-    from weighted, unnest(embedding) as val with offset off
-
-),
-
-averaged as (
-
-    select snid, off, sum(weighted_val) / sum(weight) as avg_val
-    from exploded
-    group by snid, off
+    select snid, array_agg(struct(embedding, weight)) as items
+    from weighted
+    group by snid
 
 )
 
 select
     snid,
-    array_agg(avg_val order by off) as embedding
-from averaged
-group by snid
+    (
+        select array_agg(w_avg order by off)
+        from (
+            select off, sum(val * item.weight) / sum(item.weight) as w_avg
+            from unnest(items) as item, unnest(item.embedding) as val with offset off
+            group by off
+        )
+    ) as embedding
+from grouped
