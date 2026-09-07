@@ -30,6 +30,7 @@
   primary_campaign_goal,
   society_tier,
   name_of_society,
+  new_launch,
   SUM(Sessions) AS Sessions,
   SUM(EngagedSessions) AS EngagedSessions,
   SUM(ELS) AS ELS,

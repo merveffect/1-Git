@@ -28,6 +28,7 @@ SELECT
   research_marketing_activity,
   society_tier,
   name_of_society,
+  new_launch,
   SUM(Sessions) AS Sessions,
   SUM(ELS) AS ELS,
   SUM(snapp_submission_complete) AS snapp_submission_complete,
