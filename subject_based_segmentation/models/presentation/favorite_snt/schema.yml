@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: favorite_snt_predictions
+    description: >
+      Top-5 favorite SNTs per user — nearest SNTs (by cosine distance) to
+      their reading-behaviour embedding (user_embedding). This is the real
+      product output: an SNT-level prediction, not rolled up to MPC.
+
+  - name: favorite_snt_predictions_rolled_up_mpc
+    description: >
+      Each user's top-5 predicted SNTs, rolled up to MPC subject ids via the
+      SNT->MKTP mapping table. Exists only to enable evaluation_metrics —
+      there's no other use for MPC-rolled-up SNT predictions.
+
+  - name: favorite_snt_evaluation_metrics
+    description: >
+      Precision/recall/F1 of the rolled-up SNT predictions against the real
+      MPC ground truth (advertising_opt_in=TRUE users' actual subjects) —
+      the same ground truth favorite_mpc_subject/evaluation_metrics.sql
+      uses. Indirect validation: there is no SNT-level ground truth to
+      compare against directly. Appends one row per dbt run.

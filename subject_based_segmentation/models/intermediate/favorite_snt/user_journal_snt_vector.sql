@@ -35,7 +35,6 @@ grouped as (
 select
     snid,
     (
-        
         select array_agg(avg_val order by off)
         from (
             select off, avg(val) as avg_val
