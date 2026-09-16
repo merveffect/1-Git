@@ -20,6 +20,12 @@ sources:
       - name: journal_metadata
         description: Journal-level metadata, including SNT (S&T taxonomy) discipline code(s)/label(s) per journal.
 
+      - name: snts_full_list
+        description: >
+          Flat SNT taxonomy reference table — one row per SNT id with its label.
+          Columns: ct_id, snt_id, label (SNT name), label_length (unused),
+          url / url_link (unused). Source of SNT names for snt_embeddings.
+
 
   - name: subject_based_segmentation
     database: snproject-cbb9ca25
@@ -30,12 +36,6 @@ sources:
           SNT (S&T taxonomy, ~3000 codes) -> MPC (marketing preference center,
           46 subjects) mapping table, with 6 taxonomy hierarchy levels used as
           fallback match keys when there's no direct SNT->MKTP match.
-
-      - name: snts_full_list
-        description: >
-          Flat SNT taxonomy reference table — one row per SNT id with its label.
-          Columns: ct_id, snt_id, label (SNT name), label_length (unused),
-          url / url_link (unused). Source of SNT names for snt_embeddings.
 
   - name: prod_mpc_dbt_presentation
     database: mpc-data-live-628749c5

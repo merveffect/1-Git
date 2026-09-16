@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: snts_full_list
+    description: >
+      Clean pass-through of ae_metadata.snts_full_list (SNT taxonomy) — one row
+      per SNT id with its name, with null/empty/literal-"NULL"-string
+      snt_id and label values filtered out. All downstream SNT-name
+      consumers (snt_embeddings) build on this instead of the raw source.
+    columns:
+      - name: snt_id
+      - name: snt_name

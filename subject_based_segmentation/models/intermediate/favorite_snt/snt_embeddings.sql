@@ -13,13 +13,8 @@
 -- directly since it's not a dbt-managed source/table.
 
 WITH snt_names AS (
-  SELECT DISTINCT
-    CAST(snt_id AS STRING) AS snt_id,
-    label AS snt_name
-  FROM {{ source('subject_based_segmentation', 'snts_full_list') }}
-  WHERE snt_id IS NOT NULL
-    AND label IS NOT NULL
-    AND label != ''
+  SELECT snt_id, snt_name
+  FROM {{ ref('snts_full_list') }}
 ),
 
 to_embed AS (

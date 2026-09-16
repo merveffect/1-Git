@@ -3,9 +3,11 @@ version: 2
 models:
   - name: journal_snt_codes
     description: >
-      Journal -> SNT id, resolved fresh from journal_metadata.snt_discipline_code
-      against the current SNT reference table (snts_full_list — validated 100%
-      match as of 2026-09). Independent of favorite_mpc_subject's journal->SNT
+      Journal -> SNT id, resolved fresh from two sources on journal_metadata:
+      snt_discipline_code (semicolon-delimited list, validated 100% match
+      against snts_full_list as of 2026-09) and SNT_Hierarchy1-4 (four
+      single-value columns, not yet separately validated) — a journal's SNTs
+      can live in either. Independent of favorite_mpc_subject's journal->SNT
       resolution, which is tied to the old SNT reference table.
 
   - name: users_and_journal_ids

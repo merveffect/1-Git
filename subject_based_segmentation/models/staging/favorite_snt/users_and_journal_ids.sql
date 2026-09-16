@@ -40,4 +40,7 @@ unpivoted AS (
 
 SELECT DISTINCT snid, journal_id
 FROM unpivoted
-WHERE journal_id IS NOT NULL AND journal_id != ''
+WHERE journal_id IS NOT NULL
+  AND TRIM(journal_id) != ''
+  AND TRIM(journal_id) != '(not set)'
+  AND TRIM(journal_id) != 'NULL'
