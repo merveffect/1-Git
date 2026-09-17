@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
--- QA table for manually eyeballing whether the top-5 SNT predictions make
+-- QA table for manually eyeballing whether the top-10 SNT predictions make
 -- sense, given the user's actual reading-behaviour inputs: which journals
 -- they're linked to, those journals' own SNTs, and their keywords.
 
@@ -8,7 +8,7 @@ with predicted as (
 
     select
         snid,
-        string_agg(snt_name, ', ' order by distance) as predicted_snt_names
+        string_agg(snt_name, ', ' order by favorite_rank) as predicted_snt_names
     from {{ ref('favorite_snt_predictions') }}
     group by snid
 

@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
--- Rolls up each user's top-5 predicted SNTs to MPC (marketing preference
+-- Rolls up each user's top-10 predicted SNTs to MPC (marketing preference
 -- center, 46-subject) ids via the SNT->MKTP mapping table, purely to enable
 -- evaluation against the MPC-level ground truth we actually have (no
 -- SNT-level ground truth exists — see evaluation_metrics.sql in this

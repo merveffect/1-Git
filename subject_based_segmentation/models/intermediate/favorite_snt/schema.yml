@@ -55,10 +55,37 @@ models:
       keyword_snt_confidence, floored at 0.05). Only covers keywords whose
       confidence has been backfilled so far.
 
+  - name: distinct_collections
+    description: >
+      Every distinct Snail-recommended collection (~9.5k), deduplicated once.
+      collection_text = title + HTML-stripped description (description is
+      often absent; title alone is the fallback signal).
+
+  - name: collection_embeddings
+    description: >
+      Embedding of every distinct collection's collection_text. Small scale
+      (~9.5k) — no batching needed, unlike keyword_embeddings.
+
+  - name: collection_snt_confidence
+    description: >
+      Nearest-SNT distance per collection (top_k=1 VECTOR_SEARCH against
+      snt_embeddings), same purpose as keyword_snt_confidence.
+
+  - name: users_and_collections
+    description: >
+      Long-format (snid, collection_id) pairs, mirroring users_and_keywords.
+
+  - name: user_collection_vector
+    description: >
+      Collection-based signal per user: confidence-weighted average
+      embedding across the user's recommended collections (weight = 1 -
+      nearest_snt distance from collection_snt_confidence, floored at 0.05).
+
   - name: user_embedding
     description: >
       Final per-user embedding — channel-level average of
-      user_journal_snt_vector and user_keyword_vector (each channel counted
-      once regardless of how many journals/keywords fed into it). This is
-      what gets compared against snt_embeddings via VECTOR_SEARCH to produce
-      each user's top-N favorite SNTs.
+      user_journal_snt_vector, user_keyword_vector, and
+      user_collection_vector (each channel counted once regardless of how
+      many journals/keywords/collections fed into it). This is what gets
+      compared against snt_embeddings via VECTOR_SEARCH to produce each
+      user's top-N favorite SNTs.

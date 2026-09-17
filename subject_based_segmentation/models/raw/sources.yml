@@ -44,6 +44,28 @@ sources:
       - name: snid_deletions
         description: SNIDs to exclude from inferred-subject outputs (e.g. deleted/opted-out users).
 
+  - name: prod_mdt_dbt_presentation
+    database: braze-3f553fdf
+    schema: prod_mdt_dbt_presentation
+    tables:
+      - name: snail_recommendation_journals
+        description: >
+          Snail's per-SNID journal recommendations. One row per snid;
+          `recommendations` is directly a native ARRAY<STRUCT<id, title,
+          description, ...>> (not JSON, and not nested under another
+          "recommendations" field despite how it renders in a spreadsheet
+          paste — just UNNEST(recommendations) directly).
+          `id` values are real journal_metadata.journal_id (validated 100%
+          match as of 2026-09) — resolved via journal_snt_codes, no embedding
+          needed.
+
+      - name: snail_recommendation_collections
+        description: >
+          Snail's per-SNID collection recommendations. Same shape as
+          snail_recommendation_journals. Collection ids have no existing SNT
+          tagging, so title + description are embedded to get a topical
+          signal (~9.5k distinct collections).
+
 
 
 

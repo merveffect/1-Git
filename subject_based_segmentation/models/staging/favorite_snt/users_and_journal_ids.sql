@@ -1,10 +1,18 @@
 -- Long-format (snid, journal_id) pairs for the favorite_snt project, built
 -- independently from favorite_mpc_subject/all_users_and_journals.sql.
--- Covers every journal-relationship signal on audience_builder_big, not just
--- reads: reads, eTOCs, submission guide views, submissions, pageviews, and
--- "interested in" journal lists.
+-- Covers every journal-relationship signal on audience_builder_big (reads,
+-- eTOCs, submission guide views, submissions, pageviews, "interested in"
+-- lists) plus Snail's journal recommendations (a separate source, validated
+-- 100% of its ids match real journal_metadata.journal_id as of 2026-09).
 
-WITH raw AS (
+WITH target_snids AS (
+  SELECT snid
+  FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
+  WHERE snid IS NOT NULL
+    AND (advertising_opt_in = TRUE OR mkt_pref_opt_in = TRUE)
+),
+
+raw AS (
   SELECT
       snid,
       list_journals_read_last_30_d,
@@ -36,6 +44,11 @@ unpivoted AS (
   SELECT snid, journal_id FROM raw, UNNEST(JSON_EXTRACT_STRING_ARRAY(interested_journal_ids)) AS journal_id
   UNION ALL
   SELECT snid, journal_id FROM raw, UNNEST(JSON_EXTRACT_STRING_ARRAY(interested_journal_ids_90)) AS journal_id
+  UNION ALL
+  SELECT snail.snid, rec.id AS journal_id
+  FROM {{ source('prod_mdt_dbt_presentation', 'snail_recommendation_journals') }} snail
+  JOIN target_snids USING (snid),
+  UNNEST(snail.recommendations) AS rec
 )
 
 SELECT DISTINCT snid, journal_id

@@ -14,8 +14,10 @@ models:
     description: >
       Long-format (snid, journal_id) pairs covering every journal-relationship
       signal on audience_builder_big (reads, eTOCs, submission guide views,
-      submissions, pageviews, interested-in lists). Scoped to the favorite_snt
-      target audience. Feeds the journal-based SNT signal via journal_snt_codes.
+      submissions, pageviews, interested-in lists) plus Snail's journal
+      recommendations (snail_recommendation_journals — ids validated 100%
+      against journal_metadata). Scoped to the favorite_snt target audience.
+      Feeds the journal-based SNT signal via journal_snt_codes.
 
   - name: users_with_content_signal
     description: >
@@ -24,3 +26,10 @@ models:
       columns are staged but unused — on hold pending a DOI/article-level SNT
       metadata table. Scoped to the favorite_snt target audience
       (advertising_opt_in OR mkt_pref_opt_in).
+
+  - name: users_and_collection_recommendations
+    description: >
+      Long-format (snid, collection_id, title, description) from Snail's
+      collection recommendations (snail_recommendation_collections).
+      Collections have no existing SNT tagging (unlike journals), so
+      title/description are carried through to be embedded downstream.

@@ -3,16 +3,16 @@ version: 2
 models:
   - name: favorite_snt_predictions
     description: >
-      Top-5 favorite SNTs per user — nearest SNTs (by cosine distance) to
-      their reading-behaviour embedding (user_embedding). This is the real
-      product output: an SNT-level prediction, not rolled up to MPC.
-      Incremental (merge on snid+snt_id), capped at 5k users per run — re-run
-      repeatedly (or on a schedule) until it catches up to user_embedding
-      (~2.1M users).
+      Top-10 favorite SNTs per user — nearest SNTs (by cosine distance) to
+      their reading-behaviour embedding (user_embedding), ranked 1 (most
+      favorite) to 10 via favorite_rank. This is the real product output: an
+      SNT-level prediction, not rolled up to MPC. Incremental (merge on
+      snid+snt_id), capped at 5k users per run — re-run repeatedly (or on a
+      schedule) until it catches up to user_embedding.
 
   - name: favorite_snt_predictions_rolled_up_mpc
     description: >
-      Each user's top-5 predicted SNTs, rolled up to MPC subject ids via the
+      Each user's top-10 predicted SNTs, rolled up to MPC subject ids via the
       SNT->MKTP mapping table. Exists only to enable
       favorite_snt_evaluation_metrics — there's no other use for
       MPC-rolled-up SNT predictions.
@@ -29,5 +29,6 @@ models:
     description: >
       One row per user for manual spot-checking: journal_ids and their own
       SNT names, keywords, and the predicted_snt_names (comma-separated,
-      ordered by distance) side by side — so a reviewer can eyeball whether
-      a prediction makes sense given the actual reading-behaviour inputs.
+      ordered by favorite_rank — most to least favorite) side by side — so
+      a reviewer can eyeball whether a prediction makes sense given the
+      actual reading-behaviour inputs.
