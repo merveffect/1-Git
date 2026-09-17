@@ -1,0 +1,39 @@
+# `doctolib.yaml` olarak kopyala ve doldur.
+
+country: fr          # fr | de | it  -> doctolib.fr / .de / .it
+transport: http      # http (hızlı) | browser (bot korumasına takılırsan)
+model: claude-opus-5
+
+profile:
+  first_name: ""
+  last_name: ""
+  birthdate: ""       # GG/AA/YYYY
+  phone: ""
+  email: ""
+  insurance_sector: unknown   # public | private | self_pay | unknown
+
+scan:
+  horizon_days: 21          # kaç gün ileriye bakılsın
+  poll_interval_seconds: 900   # watch modunda tur arası (alt sınır 300)
+  min_request_interval: 1.5    # istekler arası min saniye (alt sınır 1.0)
+  max_practitioners: 25        # tur başına incelenecek hekim tavanı
+  max_pages: 2
+
+booking:
+  # notify: sadece haber ver
+  # assist: son onay ekranına kadar götür, son tıkı sen yap  (varsayılan)
+  # auto  : son onayı da agent yapsın
+  mode: assist
+  max_bookings_per_run: 1
+  headless: false
+  storage_state: .doctolib_state.json
+  screenshot_dir: doctolib_screenshots
+  confirm_timeout_seconds: 300
+
+# Kesinlikle olmayacak günler
+blackout_dates: []
+#  - 2026-10-03
+
+# Slug parçasına göre öncelik / eleme
+preferred_practitioners: []
+excluded_practitioners: []
