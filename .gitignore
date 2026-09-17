@@ -29,3 +29,9 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Doctolib agent
+doctolib.yaml
+selectors.yaml
+.doctolib_state.json
+doctolib_screenshots/
