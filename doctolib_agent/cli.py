@@ -6,7 +6,7 @@ import contextlib
 import logging
 import sys
 
-from .agent import EMERGENCY_NOTICE, book_slots, build_client, scan_once, watch
+from .agent import EMERGENCY_NOTICE, book_slots, build_client, closing_client, scan_once, watch
 from .booker import browser_session, login_interactive
 from .config import AgentConfig
 from .intent import parse_intent
@@ -47,13 +47,8 @@ def _session(cfg: AgentConfig, dump: str | None):
             page.goto(cfg.base_url, wait_until="domcontentloaded")
             yield build_client(cfg, page=page, dump_dir=dump)
     else:
-        client = build_client(cfg, dump_dir=dump)
-        try:
+        with closing_client(cfg, dump_dir=dump) as client:
             yield client
-        finally:
-            close = getattr(client.transport, "close", None)
-            if close:
-                close()
 
 
 def _run_search(args: argparse.Namespace, cfg: AgentConfig, keep_watching: bool) -> int:
@@ -113,6 +108,10 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("login", help="Tarayıcıda Doctolib'e giriş yap ve oturumu kaydet")
 
+    p_web = sub.add_parser("web", help="Telefondan kullanılan web arayüzünü başlat")
+    p_web.add_argument("--host", default="127.0.0.1", help="Telefondan erişim için 0.0.0.0")
+    p_web.add_argument("--port", type=int, default=8600)
+
     p_intent = sub.add_parser("intent", help="Sadece isteği çözümle, arama yapma")
     p_intent.add_argument("text")
 
@@ -140,6 +139,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "login":
         return 0 if login_interactive(cfg) else 1
+
+    if args.command == "web":
+        # fastapi/uvicorn sadece bu komut için gerekli - tembel içe aktar.
+        from .web.app import main as web_main
+
+        return web_main(["--config", args.config, "--host", args.host, "--port", str(args.port)])
 
     if args.command == "intent":
         _show_intent(parse_intent(args.text, cfg))

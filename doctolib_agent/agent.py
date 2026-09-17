@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import time
+from contextlib import contextmanager
 from datetime import date
 from typing import Callable, Iterator
 
@@ -29,6 +30,18 @@ def build_client(cfg: AgentConfig, page=None, dump_dir: str | None = None) -> Do
     else:
         transport = HttpTransport(cfg)
     return DoctolibClient(cfg, transport, dump_dir=dump_dir)
+
+
+@contextmanager
+def closing_client(cfg: AgentConfig, page=None, dump_dir: str | None = None) -> Iterator[DoctolibClient]:
+    """İstemciyi kur ve çıkışta taşımayı (varsa) kapat."""
+    client = build_client(cfg, page=page, dump_dir=dump_dir)
+    try:
+        yield client
+    finally:
+        close = getattr(getattr(client, "transport", None), "close", None)
+        if callable(close):
+            close()
 
 
 def scan_once(

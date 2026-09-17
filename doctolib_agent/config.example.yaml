@@ -1,6 +1,11 @@
 # `doctolib.yaml` olarak kopyala ve doldur.
 
-country: fr          # fr | de | it  -> doctolib.fr / .de / .it
+country: de          # fr | de | it  -> doctolib.fr / .de / .it
+
+# Arama her zaman burada yapılır; mesajında başka şehir yazsan bile bu kazanır.
+# Boş bırakırsan konum mesajdan çıkarılır.
+location: berlin
+location_label: Berlin
 transport: http      # http (hızlı) | browser (bot korumasına takılırsan)
 model: claude-opus-5
 

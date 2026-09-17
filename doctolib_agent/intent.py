@@ -64,9 +64,16 @@ def parse_intent(
     client = client or anthropic.Anthropic()
     slugs = COMMON_SLUGS.get(cfg.country, COMMON_SLUGS["fr"])
 
+    location_line = (
+        f"Konum SABİT: '{cfg.location}'. Kullanıcı başka şehir yazsa bile `location` "
+        f"alanına bunu yaz.\n"
+        if cfg.location
+        else "Konumu kullanıcının mesajından çıkar.\n"
+    )
     prompt = (
         f"Bugünün tarihi: {date.today().isoformat()} ({date.today():%A}).\n"
         f"Ülke: doctolib.{cfg.country}\n"
+        f"{location_line}"
         f"Sık kullanılan uzmanlık slug'ları: {', '.join(slugs)}\n\n"
         f"Kullanıcının mesajı:\n---\n{text}\n---"
     )
@@ -85,8 +92,11 @@ def parse_intent(
         raise RuntimeError(f"Model isteği reddetti: {detail}")
 
     intent = response.parsed_output
-    # Ülke bilgisi yapılandırmadan gelir, modelin tahmininden değil.
+    # Ülke ve konum yapılandırmadan gelir, modelin tahmininden değil.
     intent.country = cfg.country  # type: ignore[assignment]
+    if cfg.location:
+        intent.location = cfg.location
+        intent.location_label = cfg.location_label or cfg.location.title()
     if cfg.profile.insurance_sector and intent.insurance_sector == "unknown":
         intent.insurance_sector = cfg.profile.insurance_sector  # type: ignore[assignment]
     return intent

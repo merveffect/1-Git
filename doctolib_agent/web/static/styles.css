@@ -1,0 +1,245 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f4f6f7;
+  --surface: #ffffff;
+  --surface-2: #eef1f3;
+  --text: #16232a;
+  --text-muted: #5d7079;
+  --border: #d9e0e4;
+  --accent: #0b7285;
+  --accent-text: #ffffff;
+  --accent-soft: #e0f2f5;
+  --danger: #a4331f;
+  --danger-soft: #fdecea;
+  --radius: 14px;
+  --gutter: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1416;
+    --surface: #142024;
+    --surface-2: #1c2b30;
+    --text: #e6eef0;
+    --text-muted: #94a9b0;
+    --border: #26383e;
+    --accent: #3bb3c9;
+    --accent-text: #04191e;
+    --accent-soft: #123037;
+    --danger: #ff9b8a;
+    --danger-soft: #3a1c17;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  padding-bottom: env(safe-area-inset-bottom);
+  -webkit-text-size-adjust: 100%;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(env(safe-area-inset-top) + 12px) var(--gutter) 12px;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.topbar h1 { margin: 0; font-size: 18px; letter-spacing: 0.01em; }
+
+.pill {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+main { padding: var(--gutter); display: grid; gap: var(--gutter); max-width: 640px; margin: 0 auto; }
+footer { padding: 0 var(--gutter) 24px; max-width: 640px; margin: 0 auto; }
+
+/* Grid/flex öğelerinin varsayılan min-width:auto değeri, sarmayan uzun metnin
+   konteyneri esnetmesine izin verir ve sayfayı yatay kaydırılır hâle getirir.
+   Zincirin her halkasında sıfırlanması gerekiyor. */
+main > *, .card, .card > *, .chips, .slot > *, .history-item, .history-item .t {
+  min-width: 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gutter);
+  display: grid;
+  gap: 10px;
+}
+.card h2 { margin: 0; font-size: 16px; }
+
+label, .label-sm {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+}
+
+textarea, input[type="password"], input[type="text"] {
+  width: 100%;
+  /* 16px altına inme: iOS sayfayı yakınlaştırıyor. */
+  font: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  resize: vertical;
+}
+textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+}
+.chip[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+button.primary {
+  min-height: 48px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button.primary.big { margin-top: 8px; }
+button.primary:disabled { opacity: 0.55; cursor: progress; }
+
+button.secondary {
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.muted { color: var(--text-muted); }
+.tiny { font-size: 13px; }
+.hidden { display: none !important; }
+
+.status-head { display: flex; align-items: center; gap: 10px; }
+
+.spinner {
+  width: 16px; height: 16px; flex: none;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+.spinner.done { animation: none; border-top-color: var(--border); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+.intent { background: var(--surface-2); border-radius: 10px; padding: 12px; font-size: 14px; display: grid; gap: 4px; }
+.intent b { color: var(--text-muted); font-weight: 600; }
+
+.alert {
+  background: var(--danger-soft);
+  border-left: 3px solid var(--danger);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+details summary { cursor: pointer; font-size: 14px; color: var(--text-muted); }
+pre {
+  margin: 8px 0 0;
+  padding: 10px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 220px;
+  overflow: auto;
+}
+
+#results { display: grid; gap: 10px; }
+
+.slot {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.slot .when {
+  background: var(--accent-soft);
+  border-radius: 10px;
+  padding: 8px 4px;
+  text-align: center;
+  line-height: 1.25;
+}
+.slot .when .d { font-size: 18px; font-weight: 700; }
+.slot .when .m, .slot .when .w { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+.slot .when .t { font-size: 15px; font-weight: 600; margin-top: 2px; }
+.slot .who { font-weight: 600; overflow-wrap: anywhere; }
+.slot .meta { font-size: 13px; color: var(--text-muted); margin-top: 2px; overflow-wrap: anywhere; }
+.slot .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.slot .actions a, .slot .actions button {
+  flex: 1 1 auto;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.slot .actions a { background: var(--accent); color: var(--accent-text); }
+.slot .actions button { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 14px;
+}
+.history-item:first-child { border-top: none; }
+/* min-width:0 olmadan flex öğesi kısalmaz ve sayfayı yatay taşırır. */
+.history-item .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-item .n { flex: none; color: var(--text-muted); font-size: 13px; }

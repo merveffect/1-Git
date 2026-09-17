@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b7285" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1416" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Randevu">
+<title>Randevu</title>
+<link rel="manifest" href="/static/manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🩺</text></svg>">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>Randevu</h1>
+  <span class="pill" id="locationPill">Berlin</span>
+</header>
+
+<main>
+  <!-- Token istenirse -->
+  <section id="authCard" class="card hidden">
+    <h2>Erişim anahtarı</h2>
+    <p class="muted">Sunucu bir token istiyor. Bir kez gir, cihazında saklanır.</p>
+    <input id="tokenInput" type="password" inputmode="text" autocomplete="off" placeholder="DOCTOLIB_WEB_TOKEN">
+    <button class="primary" id="tokenSave">Kaydet</button>
+  </section>
+
+  <section id="searchCard" class="card">
+    <label for="complaint">Neyin var?</label>
+    <textarea id="complaint" rows="3" placeholder="ör. üç gündür boğazım ağrıyor, yutarken zorlanıyorum"></textarea>
+
+    <p class="label-sm">Sık aranan</p>
+    <div class="chips" id="complaintChips"></div>
+
+    <p class="label-sm">Hangi günler müsaitsin?</p>
+    <div class="chips" id="dayChips"></div>
+
+    <p class="label-sm">Günün hangi saati?</p>
+    <div class="chips" id="timeChips"></div>
+
+    <button class="primary big" id="searchBtn">Randevu ara</button>
+    <p class="muted tiny" id="previewLine"></p>
+  </section>
+
+  <section id="statusCard" class="card hidden">
+    <div class="status-head">
+      <span class="spinner" id="spinner"></span>
+      <strong id="statusText">Aranıyor…</strong>
+    </div>
+    <div id="intentBox" class="intent hidden"></div>
+    <div id="alertBox" class="alert hidden"></div>
+    <details id="logDetails">
+      <summary>Ayrıntılar</summary>
+      <pre id="logBox"></pre>
+    </details>
+  </section>
+
+  <section id="resultsCard" class="hidden">
+    <h2 id="resultsTitle"></h2>
+    <div id="results"></div>
+  </section>
+
+  <section id="historyCard" class="card hidden">
+    <h2>Önceki aramalar</h2>
+    <div id="history"></div>
+  </section>
+</main>
+
+<footer>
+  <p class="muted tiny">
+    Bu araç teşhis koymaz. Acil bir durumda 112'yi ara.
+  </p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

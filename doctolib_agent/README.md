@@ -1,8 +1,10 @@
 # Doctolib Randevu Agent'ı
 
-Şikayetini ve müsait günlerini serbest metinle yazıyorsun; agent bunu aranabilir
-bir niyete çeviriyor, Doctolib'i tarıyor, sana uyan slotları buluyor ve
-randevuyu senin adına açıyor.
+Şikayetini ve müsait günlerini yazıyorsun; agent bunu aranabilir bir niyete
+çeviriyor, Doctolib'i tarıyor, sana uyan slotları buluyor ve randevuyu senin
+adına açıyor. Telefondan kullanmak için bir web arayüzü var.
+
+Arama **her zaman Berlin'de** yapılır (`doctolib.yaml` içinde `location`).
 
 ```
 $ doctolib-agent find "boğazım üç gündür ağrıyor, Paris'te KBB lazım, \
@@ -58,11 +60,39 @@ içine kaydedilir:
 python -m doctolib_agent.cli login
 ```
 
+## Telefondan kullanım
+
+Sunucuyu bilgisayarında (veya bir VPS'te) çalıştırıyorsun, telefondan tarayıcıyla
+bağlanıyorsun. Ekle-ana-ekrana ile uygulama gibi açılır (PWA).
+
+```bash
+# Ağa açıyorsan token zorunlu - bu sunucu Doctolib oturumunu tutuyor
+export DOCTOLIB_WEB_TOKEN=$(python -c 'import secrets;print(secrets.token_urlsafe(24))')
+python -m doctolib_agent.cli web --host 0.0.0.0 --port 8600
+```
+
+Telefonda `http://<bilgisayarının-yerel-ip>:8600` adresini aç, token'ı bir kez gir
+(cihazda saklanır), sonra:
+
+1. Şikayetini yaz ya da hazır etiketlerden seç (Diş ağrısı, Cilt sorunu, …).
+2. Müsait günlerine ve günün saatine dokun.
+3. **Randevu ara** → sonuçlar kart kart gelir.
+4. **Doctolib'de aç** → Doctolib telefonda açılır, girişin zaten varsa randevuyu
+   orada bitirirsin.
+
+`booking.mode: auto` isen kartlarda ayrıca **Sunucuda al** düğmesi çıkar; onay
+dahil her şeyi sunucudaki tarayıcı yapar.
+
+Güvenlik notu: `DOCTOLIB_WEB_TOKEN` tanımlı değilse sunucu yalnızca localhost'tan
+gelen istekleri kabul eder; uzak istekler 403 döner. Sunucuyu doğrudan internete
+açacaksan önüne HTTPS koy (Caddy/nginx) — token düz HTTP'de açık gider.
+
 ## Komutlar
 
 | Komut | Ne yapar |
 |---|---|
 | `login` | Tarayıcıda giriş yap, oturumu kaydet |
+| `web` | Telefon arayüzünü başlatır (`--host 0.0.0.0` ile ağa açılır) |
 | `intent "<metin>"` | Sadece isteğini çözümler, ağa çıkmaz — filtreni kontrol etmek için |
 | `find "<metin>"` | Bir kez tarar, uyanları listeler, istersen rezerve eder |
 | `watch "<metin>"` | Uygun slot çıkana kadar periyodik tarar |
@@ -92,7 +122,8 @@ kesilebilir ve o slot başkasına lazımdı.
 ## Nasıl çalışıyor
 
 ```
-metin ──► intent.py ──► SearchIntent        (Claude, yapılandırılmış çıktı)
+telefon ─► web/app.py ─┐
+komut satırı ─► cli.py ┴► intent.py ──► SearchIntent  (Claude, yapılandırılmış çıktı)
                           │
                           ▼
           client.py ──► arama → /booking/<slug>.json → /availabilities.json
@@ -113,6 +144,9 @@ metin ──► intent.py ──► SearchIntent        (Claude, yapılandırıl
   olarak döndürebiliyor, ikisi de desteklenir, bozuk kayıt sessizce elenir.
 - **`booker.py`** — DOM sık değiştiği için seçiciler aday listeleri hâlinde
   tutulur ve kod değiştirmeden `selectors.yaml` ile ezilebilir.
+- **`web/`** — FastAPI + tek sayfalık mobil arayüz. Taramalar tek çalışanlı bir
+  kuyrukta sıraya girer, böylece telefondan arka arkaya istek atsan bile
+  Doctolib'e paralel istek gitmez.
 
 ## Doctolib DOM'u değişince
 
@@ -145,4 +179,4 @@ Kod içine gömülü, yapılandırmayla gevşetilemeyen sınırlar:
 python -m pytest doctolib_agent/tests -q
 ```
 
-24 test; ağ veya API anahtarı gerektirmez.
+39 test; ağ veya API anahtarı gerektirmez.

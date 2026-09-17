@@ -75,7 +75,11 @@ class BookingSettings:
 
 @dataclass
 class AgentConfig:
-    country: str = "fr"
+    country: str = "de"
+    # Aramanın her zaman yapılacağı Doctolib konum slug'ı. Modelin metinden
+    # çıkardığı konumu ezer - boş bırakılırsa model ne bulursa o kullanılır.
+    location: str = "berlin"
+    location_label: str = "Berlin"
     transport: Literal["http", "browser"] = "http"
     model: str = "claude-opus-5"
     profile: Profile = field(default_factory=Profile)
@@ -103,7 +107,9 @@ class AgentConfig:
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> "AgentConfig":
         return cls(
-            country=raw.get("country", "fr"),
+            country=raw.get("country", "de"),
+            location=raw.get("location", "berlin"),
+            location_label=raw.get("location_label") or str(raw.get("location", "berlin")).title(),
             transport=raw.get("transport", "http"),
             model=raw.get("model", "claude-opus-5"),
             profile=Profile(**(raw.get("profile") or {})),

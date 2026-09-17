@@ -1,0 +1,1 @@
+"""Telefondan kullanılabilen web arayüzü."""
