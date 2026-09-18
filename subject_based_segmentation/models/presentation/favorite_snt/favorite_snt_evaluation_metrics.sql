@@ -12,7 +12,7 @@
   )
 }}
 
--- Precision/recall/F1 of favorite_snt's top-5 SNT predictions, rolled up to
+-- Precision/recall/F1 of favorite_snt's top-10 SNT predictions, rolled up to
 -- MPC subjects (favorite_snt_predictions_rolled_up_mpc), against the same
 -- MPC ground truth used by favorite_mpc_subject/evaluation_metrics.sql
 -- (advertising_opt_in=TRUE users' actual opted-in subjects). This is an

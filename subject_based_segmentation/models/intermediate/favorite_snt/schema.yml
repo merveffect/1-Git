@@ -11,7 +11,9 @@ models:
       on each run.
     columns:
       - name: snt_id
+        description: SNT id, as a string.
       - name: snt_name
+        description: SNT name, as embedded.
       - name: embedding
         description: Embedding vector (ARRAY<FLOAT64>) of snt_name.
 
@@ -19,12 +21,24 @@ models:
     description: >
       Every distinct keyword across the target audience (~1.8M), deduplicated
       once. keyword_id is MD5(keyword) — stable across runs, safe as a merge key.
+    columns:
+      - name: keyword_id
+        description: MD5(keyword), used as a stable join/merge key.
+      - name: keyword
+        description: The raw keyword text.
 
   - name: keyword_embeddings
     description: >
       Embedding of every distinct keyword. Incremental (merge on keyword_id),
       capped at 100k new keywords per run — re-run repeatedly (or on a
       schedule) until it catches up to distinct_keywords.
+    columns:
+      - name: keyword_id
+        description: MD5(keyword), matches distinct_keywords.
+      - name: keyword
+        description: The raw keyword text, as embedded.
+      - name: embedding
+        description: Embedding vector (ARRAY<FLOAT64>) of the keyword.
 
   - name: keyword_snt_confidence
     description: >
@@ -37,16 +51,37 @@ models:
       run (more expensive per row than keyword_embeddings — VECTOR_SEARCH
       scales with query_rows x base_rows) — re-run repeatedly (or on a
       schedule) until it catches up to keyword_embeddings.
+    columns:
+      - name: keyword_id
+        description: MD5(keyword), matches keyword_embeddings.
+      - name: keyword
+        description: The raw keyword text.
+      - name: nearest_snt_id
+        description: Id of the SNT closest to this keyword's embedding.
+      - name: nearest_snt_name
+        description: Name of the nearest SNT.
+      - name: distance
+        description: Cosine distance to the nearest SNT — lower means a more confident/topical match. Used downstream as (1 - distance) confidence weight.
 
   - name: user_journal_snt_vector
     description: >
       Journal-based signal per user: average embedding across every SNT
       linked (via journal_snt_codes) to a journal the user has any
       reading-relationship signal for. No embedding cost.
+    columns:
+      - name: snid
+        description: snid.
+      - name: embedding
+        description: Per-user average of the SNT embeddings for all journals linked to them (equal weight per distinct journal-SNT pair).
 
   - name: users_and_keywords
     description: >
       Long-format (snid, keyword_id) pairs, mirroring users_and_journal_ids.
+    columns:
+      - name: snid
+        description: snid.
+      - name: keyword_id
+        description: MD5(keyword) of a keyword this user is associated with.
 
   - name: user_keyword_vector
     description: >
@@ -54,6 +89,11 @@ models:
       across the user's own keywords (weight = 1 - nearest_snt distance from
       keyword_snt_confidence, floored at 0.05). Only covers keywords whose
       confidence has been backfilled so far.
+    columns:
+      - name: snid
+        description: snid.
+      - name: embedding
+        description: Per-user confidence-weighted average of their keyword embeddings.
 
   - name: distinct_collections
     description: >
@@ -62,26 +102,61 @@ models:
       often absent; title alone is the fallback signal). description_clean
       is the HTML-stripped description alone (NULL if absent), exposed for
       QA display.
+    columns:
+      - name: collection_id
+        description: Snail collection id.
+      - name: title
+        description: Collection title.
+      - name: description_clean
+        description: HTML-stripped description (NULL if the source had none). Exposed for QA display, not used in collection_text's embedding input on its own.
+      - name: collection_text
+        description: title + ". " + description_clean (if present) — the actual text embedded downstream in collection_embeddings.
 
   - name: collection_embeddings
     description: >
       Embedding of every distinct collection's collection_text. Small scale
       (~9.5k) — no batching needed, unlike keyword_embeddings.
+    columns:
+      - name: collection_id
+        description: Snail collection id, matches distinct_collections.
+      - name: collection_text
+        description: The text that was embedded (title + description).
+      - name: embedding
+        description: Embedding vector (ARRAY<FLOAT64>) of collection_text.
 
   - name: collection_snt_confidence
     description: >
       Nearest-SNT distance per collection (top_k=1 VECTOR_SEARCH against
       snt_embeddings), same purpose as keyword_snt_confidence.
+    columns:
+      - name: collection_id
+        description: Snail collection id, matches collection_embeddings.
+      - name: nearest_snt_id
+        description: Id of the SNT closest to this collection's embedding.
+      - name: nearest_snt_name
+        description: Name of the nearest SNT.
+      - name: distance
+        description: Cosine distance to the nearest SNT — used downstream as (1 - distance) confidence weight.
 
   - name: users_and_collections
     description: >
       Long-format (snid, collection_id) pairs, mirroring users_and_keywords.
+    columns:
+      - name: snid
+        description: snid.
+      - name: collection_id
+        description: A Snail collection id recommended to this user.
 
   - name: user_collection_vector
     description: >
       Collection-based signal per user: confidence-weighted average
       embedding across the user's recommended collections (weight = 1 -
       nearest_snt distance from collection_snt_confidence, floored at 0.05).
+    columns:
+      - name: snid
+        description: snid.
+      - name: embedding
+        description: Per-user confidence-weighted average of their recommended collections' embeddings.
 
   - name: user_embedding
     description: >
@@ -91,3 +166,8 @@ models:
       many journals/keywords/collections fed into it). This is what gets
       compared against snt_embeddings via VECTOR_SEARCH to produce each
       user's top-N favorite SNTs.
+    columns:
+      - name: snid
+        description: snid.
+      - name: embedding
+        description: Final combined reading-behaviour embedding — equal-weight average of whichever of the 3 channels (journal/keyword/collection) this user has.

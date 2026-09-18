@@ -9,4 +9,6 @@ models:
       consumers (snt_embeddings) build on this instead of the raw source.
     columns:
       - name: snt_id
+        description: Unique identifier of an SNT (S&T taxonomy) code, as a string.
       - name: snt_name
+        description: Human-readable name of the SNT (e.g. "Coral Reefs", "Machine Learning").
