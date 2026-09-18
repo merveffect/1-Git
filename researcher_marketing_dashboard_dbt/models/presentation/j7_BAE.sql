@@ -24,6 +24,7 @@ SELECT
   workspace_category,
   society_tier,
   name_of_society,
+  new_launch,
   sum(clicks) as clicks,
   sum(impressions) as impressions,
   sum(Sessions) as Sessions,

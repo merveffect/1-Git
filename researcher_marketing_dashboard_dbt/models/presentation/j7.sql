@@ -87,7 +87,8 @@ SELECT
   description,
   society_tier,
   name_of_society,
-  excl_marketing_restricted_by_society
+  excl_marketing_restricted_by_society,
+  new_launch
 
 FROM
   {{ref('j5')}} a
@@ -103,7 +104,8 @@ LEFT JOIN
 ( select distinct journal_id as braze_journal_id,
 society_tier,
 name_of_society,
-excl_marketing_restricted_by_society 
+excl_marketing_restricted_by_society,
+new_launch 
 from 
 {{source('prod_cdi_presentation','journal_catalog')}} ) c 
 
