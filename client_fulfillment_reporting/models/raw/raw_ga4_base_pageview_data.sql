@@ -19,7 +19,7 @@ SELECT
         country,
         device_category,
         aq_source,
-        sess_source,
+        aq_source_sess as sess_source,
         collection_id,
         pageTitle
     FROM {{ source('rm_bc_client_fulfillment_reporting', 'bc_all_ga4_base_pageview_data') }}
