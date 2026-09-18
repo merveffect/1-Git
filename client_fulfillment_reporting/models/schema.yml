@@ -18,6 +18,14 @@ models:
         tests:
           - not_null
 
+  - name: bc_gsheet_no_collection_megatable
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - evt_date
+              - page_path
+
   - name: raw_bc_collections_article_google_sheets_metadata
     description: Raw metadata from the BC collections article Google Sheet source.
 
