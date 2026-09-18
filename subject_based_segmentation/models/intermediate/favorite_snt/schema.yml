@@ -59,7 +59,9 @@ models:
     description: >
       Every distinct Snail-recommended collection (~9.5k), deduplicated once.
       collection_text = title + HTML-stripped description (description is
-      often absent; title alone is the fallback signal).
+      often absent; title alone is the fallback signal). description_clean
+      is the HTML-stripped description alone (NULL if absent), exposed for
+      QA display.
 
   - name: collection_embeddings
     description: >

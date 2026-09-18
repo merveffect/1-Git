@@ -18,6 +18,7 @@ WITH deduped AS (
 SELECT
   collection_id,
   title,
+  REGEXP_REPLACE(description, r'<[^>]+>', ' ') AS description_clean,
   CONCAT(
     title,
     IF(description IS NOT NULL, CONCAT('. ', REGEXP_REPLACE(description, r'<[^>]+>', ' ')), '')

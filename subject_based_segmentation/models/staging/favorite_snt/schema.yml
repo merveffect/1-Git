@@ -3,12 +3,15 @@ version: 2
 models:
   - name: journal_snt_codes
     description: >
-      Journal -> SNT id, resolved fresh from two sources on journal_metadata:
-      snt_discipline_code (semicolon-delimited list, validated 100% match
-      against snts_full_list as of 2026-09) and SNT_Hierarchy1-4 (four
-      single-value columns, not yet separately validated) — a journal's SNTs
-      can live in either. Independent of favorite_mpc_subject's journal->SNT
-      resolution, which is tied to the old SNT reference table.
+      Journal -> SNT id, resolved from snt_discipline_code (validated 100%
+      match against snts_full_list as of 2026-09), with SNT_Hierarchy1-4
+      used ONLY as a fallback for the ~2.2% of journals with no
+      discipline_code — not as an equal additional source. Hierarchy
+      columns were found to be dominated by broad umbrella categories
+      ("Life Sciences" on 44.6% of journals) which, mixed in equally,
+      visibly skewed favorite_snt_predictions toward generic top-level
+      SNTs. Independent of favorite_mpc_subject's journal->SNT resolution,
+      which is tied to the old SNT reference table.
 
   - name: users_and_journal_ids
     description: >
