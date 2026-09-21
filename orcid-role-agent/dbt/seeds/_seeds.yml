@@ -1,0 +1,48 @@
+version: 2
+
+seeds:
+  - name: role_anchors
+    description: >
+      Her rol icin cekirdek anchor terimleri. VECTOR_SEARCH bunlara karsi
+      arama yapar. polarity=exclude olanlar yanlis pozitifleri keser
+      (Phase-1'deki "data consultant" kuralinin vektor karsiligi).
+      YENI ROL EKLERKEN buraya satir eklenir.
+    config:
+      column_types: {role_key: STRING, anchor_term: STRING, polarity: STRING, language_code: STRING, note: STRING}
+    columns:
+      - name: role_key
+        tests:
+          - not_null
+          - accepted_values: {values: "{{ role_keys() }}"}
+      - name: polarity
+        tests:
+          - accepted_values: {values: ['include', 'exclude']}
+
+  - name: org_type_scores
+    description: >
+      (rol, ROR kurum tipi) -> org skoru. Phase-1'deki kurum regex
+      gradyaninin yerini alir. Kurum tipi ROR'dan geldigi icin
+      "St. Mary's Hosp." gibi varyantlar artik kacmiyor.
+    config:
+      column_types: {role_key: STRING, org_type: STRING, org_score: FLOAT64, note: STRING}
+
+  - name: dept_signals
+    description: (rol, departman regex) -> dept skoru.
+    config:
+      column_types: {role_key: STRING, dept_pattern: STRING, dept_score: FLOAT64, note: STRING}
+
+  - name: education_signals
+    description: (rol, derece/bolum regex) -> egitim bonusu bileseni.
+    config:
+      column_types: {role_key: STRING, signal_type: STRING, pattern: STRING, degree_score: FLOAT64, note: STRING}
+
+  - name: role_title_overrides
+    description: >
+      INSAN KARARLARI. Her zaman vektor ve LLM kararlarini ezer.
+      rpt_title_review_queue'yu gozden gecirdikten sonra buraya yazilir.
+    config:
+      column_types: {title: STRING, role_key: STRING, decision: STRING, reviewer: STRING, reviewed_at: DATE, note: STRING}
+    columns:
+      - name: decision
+        tests:
+          - accepted_values: {values: ['ACCEPT', 'REJECT']}

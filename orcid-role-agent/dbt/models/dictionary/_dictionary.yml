@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: int_title_distinct
+    description: Benzersiz unvanlar + frekans. Tum pahali islemler bunun uzerinde calisir.
+    columns:
+      - name: title_key
+        tests: [unique, not_null]
+      - name: frequency
+        tests: [not_null]
+
+  - name: int_anchor_terms
+    description: Rol basina anchor terimleri (seed + ESCO birlesimi).
+    columns:
+      - name: anchor_key
+        tests: [unique, not_null]
+      - name: role_key
+        tests:
+          - accepted_values: {values: "{{ role_keys() }}"}
+
+  - name: dim_title_role
+    description: >
+      ⭐ SOZLUK. Bir satir = (unvan, rol). Bir unvan birden fazla role ait olabilir.
+      Bu tablodan sonra hicbir yerde AI calismaz.
+    columns:
+      - name: title_key
+        tests: [not_null]
+      - name: role_key
+        tests:
+          - not_null
+          - accepted_values: {values: "{{ role_keys() }}"}
+      - name: role_score
+        tests:
+          - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
+      - name: decision_source
+        tests:
+          - accepted_values: {values: ['HUMAN', 'VECTOR', 'LLM_JUDGE', 'REJECTED']}
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [title_key, role_key]

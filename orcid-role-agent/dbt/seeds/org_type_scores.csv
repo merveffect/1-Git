@@ -1,0 +1,46 @@
+role_key,org_type,org_score,note
+hcp,Healthcare,1.00,hastane / klinik / saglik merkezi
+hcp,Education,0.60,universite - rol veya departman klinik sinyali tasirsa anlamli
+hcp,Company,0.60,ilac / biotech / CRO
+hcp,Nonprofit,0.50,arastirma vakiflari
+hcp,Government,0.50,saglik bakanligi / kamu saglik kurumu
+hcp,Facility,0.60,arastirma tesisi
+hcp,Archive,0.00,
+hcp,Other,0.25,
+hcp,UNKNOWN,0.25,ROR eslesmesi yok - dusuk guven
+pharmacist,Healthcare,1.00,
+pharmacist,Company,0.70,ilac firmasi eczacilari
+pharmacist,Education,0.50,eczacilik fakultesi
+pharmacist,Government,0.50,
+pharmacist,Nonprofit,0.40,
+pharmacist,Facility,0.40,
+pharmacist,Archive,0.00,
+pharmacist,Other,0.25,
+pharmacist,UNKNOWN,0.25,
+librarian,Education,1.00,universite kutuphanesi - ana hedef
+librarian,Archive,1.00,arsiv / ulusal kutuphane
+librarian,Nonprofit,0.70,arastirma enstitusu kutuphanesi
+librarian,Government,0.70,kamu kutuphanesi
+librarian,Facility,0.60,
+librarian,Healthcare,0.60,tip kutuphanesi
+librarian,Company,0.40,kurumsal bilgi merkezi
+librarian,Other,0.25,
+librarian,UNKNOWN,0.25,
+researcher,Education,1.00,
+researcher,Facility,1.00,arastirma tesisi / enstitu
+researcher,Nonprofit,0.80,
+researcher,Government,0.80,
+researcher,Healthcare,0.80,
+researcher,Company,0.60,endustriyel ar-ge
+researcher,Archive,0.20,
+researcher,Other,0.25,
+researcher,UNKNOWN,0.25,
+faculty_head,Education,1.00,sadece akademik kurumda anlamli
+faculty_head,Facility,0.60,
+faculty_head,Healthcare,0.50,tip fakultesi hastanesi
+faculty_head,Nonprofit,0.40,
+faculty_head,Government,0.30,
+faculty_head,Company,0.00,sirket yoneticisi fakulte baskani degil
+faculty_head,Archive,0.20,
+faculty_head,Other,0.10,
+faculty_head,UNKNOWN,0.20,

@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: dim_researcher_role_flags
+    description: Kisi basina tek satir, rol bayraklari genis formatta.
+    columns:
+      - name: snid
+        tests: [unique, not_null]
+
+  - name: fct_role_audience
+    description: >
+      Audience ciktisi - consent bayraklariyla birlestirilmis.
+      Kanit kolonlari (evidence_*) her satirin NEDEN listede oldugunu gosterir.
+    columns:
+      - name: snid
+        tests: [not_null]
+
+  - name: fct_role_audience_summary
+    description: >
+      Rol x ulke ozeti. "Kac kisi bulduk" degil "kacina ulasabiliriz"
+      sorusunun cevabi - Phase-1 analizinde consent'in asil darbogaz
+      oldugu gorulmustu (%22 marketing, %13 advertising).
+
+  - name: rpt_title_review_queue
+    description: >
+      Insan review kuyrugu, frekansa gore sirali. En yuksek getirili adim:
+      en sik gecen birkac yuz unvani gozden gecirmek on binlerce kisiyi kapsar.

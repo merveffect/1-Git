@@ -1,0 +1,13 @@
+role_key,dept_pattern,dept_score,note
+hcp,\b(cardiolog|oncolog|radiolog|neurolog|psychiatr|paediatr|pediatr|obstetric|gynaecolog|gynecolog|dermatolog|ophthalmolog|orthopaed|orthoped|urolog|anaesthe|anesthe)\w*,1.00,spesifik klinik bolum
+hcp,\b(internal medicine|emergency medicine|intensive care|icu|surgery|surgical|nursing|dentistry|dental|pharmacy|physiotherapy|general practice)\b,1.00,
+hcp,\b(clinical|patient care|ward|outpatient|inpatient|medicine|health service)\b,0.50,genis klinik baglam
+hcp,\b(public health|epidemiolog|biomedical)\w*,0.40,
+pharmacist,\b(pharmacy|pharmaceutical care|dispensary|medicines management)\b,1.00,
+pharmacist,\b(clinical|hospital|formulary)\b,0.50,
+librarian,\b(librar|information service|information resource|knowledge service|scholarly communication|open access|repositor|archiv|special collection)\w*,1.00,
+librarian,\b(digital scholarship|research support|collection|metadata|cataloguing)\b,0.60,
+researcher,\b(research|laborator|institute|r&d|science|scientific)\w*,0.80,
+researcher,\b(centre for|center for|group|unit|division)\b,0.30,
+faculty_head,\b(faculty|school of|college of|department of|institute of|graduate school)\b,1.00,
+faculty_head,\b(academic affairs|deanery|rectorate)\b,0.80,

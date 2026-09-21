@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: fct_researcher_roles
+    description: >
+      ⭐ TEK GERCEK MODEL. Bir satir = (snid, role_key). Multi-label:
+      bir kisi birden fazla rol tasiyabilir. Presentation katmaninin
+      tamami buradan beslenir.
+    columns:
+      - name: snid
+        tests: [not_null]
+      - name: role_key
+        tests:
+          - not_null
+          - accepted_values: {values: "{{ role_keys() }}"}
+      - name: role_label
+        tests:
+          - accepted_values: {values: ['CONFIRMED', 'PROBABLE']}
+      - name: role_final_score
+        tests:
+          - not_null
+          - dbt_utils.accepted_range: {min_value: 0, max_value: 1.2, inclusive: true}
+      - name: derived_from_role
+        description: Roll-up ile geldiyse kaynak rol (orn. pharmacist -> hcp).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [snid, role_key]

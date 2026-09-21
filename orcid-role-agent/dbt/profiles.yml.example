@@ -1,0 +1,21 @@
+# ~/.dbt/profiles.yml icine kopyala
+orcid_role_agent:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth              # veya service-account
+      project: researcher-360-prod-e7fd74be
+      dataset: orcid_role_agent_dev
+      location: EU              # vertex_ai_conn ile AYNI bolge olmali
+      threads: 8
+      priority: interactive
+      job_execution_timeout_seconds: 1800
+    prod:
+      type: bigquery
+      method: service-account
+      keyfile: /path/to/keyfile.json
+      project: researcher-360-prod-e7fd74be
+      dataset: orcid_role_agent
+      location: EU
+      threads: 16

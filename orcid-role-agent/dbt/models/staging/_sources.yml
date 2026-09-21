@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: researcher_profiles
+    project: "{{ var('gcp_project') }}"
+    dataset: "{{ var('source_dataset') }}"
+    description: ORCID tabanli arastirmaci profilleri (mevcut Phase-1 kaynagi).
+    tables:
+      - name: v_orcid_researchers
+        description: >
+          Kisi x employment/education kaydi. Kolon adlari DOGRULANACAK -
+          asagidaki isimler Phase-1 dokumanindan tahmin edildi.
+        columns:
+          - name: snid
+            description: Springer Nature kullanici tanimlayicisi.
+            tests: [not_null]
+
+      # TODO: ROR eslestirme tablon - adini dbt_project.yml:vars.ror_mapping_table'a yaz
+      - name: TODO_ror_mapping_table
+        description: >
+          Dagitik kurum isimlerinin ROR standart isimlerine eslendigi mevcut
+          tablo. org_score'u regex yerine buradan uretecegiz.
+
+  - name: cdp
+    project: "{{ var('gcp_project') }}"
+    dataset: "{{ var('source_dataset') }}"
+    tables:
+      - name: audience_builder_big
+        description: CDP opt-in populasyonu ve consent bayraklari.

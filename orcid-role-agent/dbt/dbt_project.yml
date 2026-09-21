@@ -1,0 +1,168 @@
+name: 'orcid_role_agent'
+version: '1.0.0'
+config-version: 2
+profile: 'orcid_role_agent'
+
+model-paths:   ["models"]
+macro-paths:   ["macros"]
+seed-paths:    ["seeds"]
+analysis-paths: ["analyses"]
+target-path:   "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  orcid_role_agent:
+    +persist_docs: {relation: true, columns: true}
+    staging:      {+materialized: view,  +schema: staging}
+    dictionary:   {+materialized: table, +schema: dictionary}
+    scoring:      {+materialized: table, +schema: scoring}
+    presentation: {+materialized: table, +schema: marts}
+
+seeds:
+  orcid_role_agent:
+    +schema: seeds
+
+vars:
+
+  # ───────────────────────────────────────────────────────────────────────
+  # 1. SOURCES
+  # ───────────────────────────────────────────────────────────────────────
+  gcp_project:      'researcher-360-prod-e7fd74be'
+  source_dataset:   'researcher_profiles'
+  orcid_view:       'v_orcid_researchers'
+  ror_mapping_table: 'TODO_ror_mapping_table'      # <-- senin mevcut ROR eşleme tablon
+  cdp_table:        'audience_builder_big'
+
+  # ───────────────────────────────────────────────────────────────────────
+  # 2. VERTEX AI
+  # ───────────────────────────────────────────────────────────────────────
+  vertex_connection:  'EU.vertex_ai_conn'
+  embedding_model:    'text-multilingual-embedding-002'
+  judge_model:        'gemini-2.5-flash'
+
+  # Benzerlik eşikleri. Institution matching'de 1.0 kullanmıştık; burada
+  # "doğru cevap" tek bir şey olmadığı icin kademeli gidiyoruz.
+  sim_auto_accept:  0.90    # >= bu   -> otomatik kabul, LLM'e sorulmaz
+  sim_judge_floor:  0.55    # >= bu   -> LLM hakemliğine gider
+  sim_review_floor: 0.70    # bunun altindakiler ayrica insan review kuyruguna
+                            # <  sim_judge_floor -> reddedilir
+
+  # ───────────────────────────────────────────────────────────────────────
+  # 3. ROL KAYIT DEFTERİ  ⭐
+  #
+  #    YENİ ROL EKLEMEK = buraya bir blok + seeds/role_anchors.csv'ye
+  #    birkaç satır. Başka HİÇBİR dosyaya dokunulmaz.
+  #    Kapatmak icin: enabled: false   (silme, geçmiş bozulur)
+  # ───────────────────────────────────────────────────────────────────────
+  roles:
+
+    hcp:
+      enabled: true
+      label: 'Healthcare Professional'
+      axis: profession
+      description: >
+        Klinik bakım, saglik arastirmasi veya saglik kurumu yoneticiligi yapan
+        kisiler. Phase-1 HCP dokumanindaki tanimin devami.
+      isco_groups: ['22']
+      weights:         {role: 0.50, org: 0.30, dept: 0.20}
+      education_bonus: 0.20
+      thresholds:      {confirmed: 0.60, probable: 0.30}
+      current_only:    false
+      buckets: ['PRACTITIONER', 'HCP_RESEARCHER', 'ADMINISTRATOR']
+
+    pharmacist:
+      enabled: true
+      label: 'Pharmacist'
+      axis: profession
+      description: >
+        Eczaci. Hastane, toplum, klinik ve endustriyel eczacilik dahil.
+        Ayri bir audience; ayrica HCP/PRACTITIONER altina da roll-up olur.
+      isco_groups: ['2262']
+      parent:        'hcp'            # <-- ayni kisi hcp olarak da yazilir
+      parent_bucket: 'PRACTITIONER'
+      weights:         {role: 0.60, org: 0.25, dept: 0.15}
+      education_bonus: 0.20
+      thresholds:      {confirmed: 0.60, probable: 0.30}
+      current_only:    false
+
+    librarian:
+      enabled: true
+      label: 'Librarian / Information Professional'
+      axis: profession
+      description: >
+        Akademik ve arastirma kutuphanecileri, konu uzmani kutuphaneciler,
+        scholarly communications / open access uzmanlari, repository ve
+        e-resources yoneticileri, kutuphane muduru ve direktorleri.
+        Is amaci farkli: kurumsal satis / lisans yenileme audience'i.
+      isco_groups: ['2622']
+      weights:         {role: 0.70, org: 0.20, dept: 0.10}
+      education_bonus: 0.00           # LIS derecesi zorunlu degil, bonus yok
+      thresholds:      {confirmed: 0.60, probable: 0.35}
+      current_only:    true           # kurumsal satis icin GUNCEL gorev sart
+
+    researcher:
+      enabled: true
+      label: 'Researcher (all fields)'
+      axis: position
+      description: >
+        TUM alanlardan arastirmacilar - saglikla sinirli DEGIL.
+        Postdoc, research fellow, PI, research scientist, research associate.
+      isco_groups: ['21', '213', '2131']
+      weights:         {role: 0.70, org: 0.20, dept: 0.10}
+      education_bonus: 0.00
+      thresholds:      {confirmed: 0.60, probable: 0.30}
+      current_only:    false
+
+    faculty_head:
+      enabled: true
+      label: 'Head of Faculty / Department'
+      axis: position
+      description: >
+        Dekan, bolum baskani, enstitu muduru, rektor yardimcisi, provost.
+      isco_groups: ['1345']
+      weights:         {role: 0.60, org: 0.20, dept: 0.20}
+      education_bonus: 0.00
+      thresholds:      {confirmed: 0.65, probable: 0.40}
+      current_only:    true           # gecici gorev - sadece guncel kayit
+
+    # ─── SONRA EKLENECEKLER ────────────────────────────────────────────
+    lecturer:
+      enabled: false                  # <-- true yap, dbt run, biter
+      label: 'Lecturer / Teaching Academic'
+      axis: position
+      description: >
+        Ogretim uyesi/gorevlisi. DIKKAT: UK "Lecturer" ~ US "Assistant
+        Professor". Ulke bazli eslestirme gerekiyor, o yuzden ertelendi.
+      isco_groups: ['231', '2310']
+      weights:         {role: 0.70, org: 0.20, dept: 0.10}
+      education_bonus: 0.00
+      thresholds:      {confirmed: 0.60, probable: 0.30}
+      current_only:    false
+
+  # ───────────────────────────────────────────────────────────────────────
+  # 4. NORMALIZASYON — kisaltma acma kurallari
+  #    Sirali uygulanir. Yeni kural = yeni satir.
+  # ───────────────────────────────────────────────────────────────────────
+  abbreviations:
+    - {from: '\bprof\b',        to: 'professor'}
+    - {from: '\bassoc\b',       to: 'associate'}
+    - {from: '\basst\b',        to: 'assistant'}
+    - {from: '\bsr\b',          to: 'senior'}
+    - {from: '\bjr\b',          to: 'junior'}
+    - {from: '\bdept\b',        to: 'department'}
+    - {from: '\bdiv\b',         to: 'division'}
+    - {from: '\bdir\b',         to: 'director'}
+    - {from: '\bmgr\b',         to: 'manager'}
+    - {from: '\bres\b',         to: 'research'}
+    - {from: '\bsci\b',         to: 'scientist'}
+    - {from: '\bphys\b',        to: 'physician'}
+    - {from: '\bpharm\b',       to: 'pharmacy'}
+    - {from: '\bmed\b',         to: 'medical'}
+    - {from: '\bclin\b',        to: 'clinical'}
+    - {from: '\buniv\b',        to: 'university'}
+    - {from: '\bhosp\b',        to: 'hospital'}
+    - {from: '\blib\b',         to: 'library'}
+    - {from: '\bpi\b',          to: 'principal investigator'}
+    - {from: '\bpdra\b',        to: 'postdoctoral research associate'}
+    - {from: '\bpost doc\b',    to: 'postdoc'}
+    - {from: '\bpost-doc\b',    to: 'postdoc'}
