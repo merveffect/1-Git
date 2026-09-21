@@ -1,0 +1,4402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  The app is not allowed to talk to the network at all: no connect-src, no
+  remote scripts, no images from anywhere but this file. If it ever tried to
+  send your statement somewhere, the browser would block it.
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>My Money — private finance tracker</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%232a78d6'/%3E%3Cpath d='M9 21l5-6 4 3 5-7' stroke='%23fff' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* Light and dark are two selected palettes, not an automatic flip. */
+:root {
+  color-scheme: light;
+  --plane: #f9f9f7;
+  --surface-1: #fcfcfb;
+  --surface-2: #f2f1ed;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.10);
+  --series-income: #2a78d6;
+  --series-expense: #eb6834;
+  --series-net: #1baf7a;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --critical: #d03b3b;
+  --accent: #2a78d6;
+  --shadow: 0 1px 2px rgba(11, 11, 11, 0.06), 0 8px 24px rgba(11, 11, 11, 0.05);
+  --radius: 12px;
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --plane: #0d0d0d;
+    --surface-1: #1a1a19;
+    --surface-2: #232321;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --series-income: #3987e5;
+    --series-expense: #d95926;
+    --series-net: #199e70;
+    --accent: #3987e5;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --plane: #0d0d0d;
+  --surface-1: #1a1a19;
+  --surface-2: #232321;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255, 255, 255, 0.10);
+  --series-income: #3987e5;
+  --series-expense: #d95926;
+  --series-net: #199e70;
+  --accent: #3987e5;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--plane);
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+h1 { font-size: 20px; }
+h2 { font-size: 17px; }
+h3 { font-size: 14px; color: var(--text-secondary); font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); }
+
+/* ------------------------------------------------------------------ shell */
+
+.app { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 216px;
+  flex: 0 0 216px;
+  padding: 20px 12px;
+  border-right: 1px solid var(--border);
+  background: var(--surface-1);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand { display: flex; align-items: center; gap: 9px; padding: 0 10px 18px; }
+.brand-mark {
+  width: 26px; height: 26px; border-radius: 8px; flex: none;
+  background: linear-gradient(135deg, var(--series-income), var(--series-net));
+}
+.brand-name { font-weight: 600; font-size: 15px; }
+
+.nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 9px;
+  color: var(--text-secondary); text-decoration: none;
+  border: none; background: none; font: inherit; text-align: left;
+  cursor: pointer; width: 100%;
+}
+.nav-link:hover { background: var(--surface-2); color: var(--text-primary); }
+.nav-link.is-active { background: var(--surface-2); color: var(--text-primary); font-weight: 600; }
+.nav-icon { width: 17px; text-align: center; opacity: 0.85; }
+.nav-spacer { flex: 1; }
+
+.main { flex: 1; min-width: 0; padding: 24px 28px 64px; max-width: 1180px; }
+.page-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.page-subtitle { color: var(--text-secondary); font-size: 13.5px; margin-top: 3px; }
+
+/* ------------------------------------------------------------------ cards */
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.card + .card { margin-top: 16px; }
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+}
+
+.grid { display: grid; gap: 16px; }
+.grid-stats { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.grid-two { grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); }
+
+.stat { display: flex; flex-direction: column; gap: 4px; }
+.stat-label { font-size: 12.5px; color: var(--text-secondary); text-transform: none; }
+.stat-value { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
+.stat-value.is-income { color: var(--series-income); }
+.stat-value.is-expense { color: var(--series-expense); }
+.stat-value.is-net { color: var(--series-net); }
+.stat-value.is-negative { color: var(--critical); }
+.stat-foot { font-size: 12.5px; color: var(--text-muted); }
+
+/* ----------------------------------------------------------------- charts */
+
+.chart { display: block; overflow: visible; }
+.grid-line { stroke: var(--grid); stroke-width: 1; }
+.axis-line { stroke: var(--axis); stroke-width: 1; }
+.zero-line { stroke: var(--axis); stroke-width: 1; stroke-dasharray: 3 3; }
+.axis-label { fill: var(--text-muted); font-size: 11px; font-family: var(--font); font-variant-numeric: tabular-nums; }
+.mark-income { fill: var(--series-income); }
+.mark-expense { fill: var(--series-expense); }
+.hit-area { fill: transparent; cursor: pointer; }
+.line-net { fill: none; stroke: var(--series-net); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.area-net { fill: var(--series-net); opacity: 0.12; }
+.point-net { fill: var(--series-net); stroke: var(--surface-1); stroke-width: 2; }
+.sparkline { display: block; }
+.spark-line { fill: none; stroke: var(--series-net); stroke-width: 2; stroke-linecap: round; }
+
+.legend { display: flex; gap: 16px; list-style: none; margin: 10px 0 0; padding: 0; }
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text-secondary); }
+.swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+.swatch-income { background: var(--series-income); }
+.swatch-expense { background: var(--series-expense); }
+.swatch-net { background: var(--series-net); }
+
+.chart-tooltip {
+  position: fixed; top: 0; left: 0; z-index: 90;
+  background: var(--surface-1); color: var(--text-primary);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 9px 11px; font-size: 12.5px; box-shadow: var(--shadow);
+  pointer-events: none; opacity: 0; transition: opacity 0.1s ease;
+  display: flex; flex-direction: column; gap: 3px; min-width: 130px;
+}
+.chart-tooltip.is-visible { opacity: 1; }
+.tt-row { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.tt-net { color: var(--text-primary); font-weight: 600; }
+
+/* --------------------------------------------------------------- bar list */
+
+.bar-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.bar-row {
+  display: grid; grid-template-columns: minmax(130px, 1.3fr) minmax(60px, 2fr) auto 38px;
+  gap: 12px; align-items: center; cursor: pointer; border-radius: 8px;
+  padding: 3px 4px; margin: -3px -4px;
+}
+.bar-row:hover, .bar-row:focus-visible { background: var(--surface-2); outline: none; }
+.bar-label { font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { background: var(--surface-2); border-radius: 4px; height: 10px; overflow: hidden; }
+.bar-fill { display: block; height: 100%; border-radius: 4px; background: var(--series-expense); }
+.bar-value { font-size: 13px; font-variant-numeric: tabular-nums; }
+.bar-share { font-size: 12.5px; color: var(--text-muted); text-align: right; font-variant-numeric: tabular-nums; }
+.bar-list.is-income .bar-fill { background: var(--series-income); }
+
+.meter { background: var(--surface-2); border-radius: 999px; height: 12px; overflow: hidden; }
+.meter-fill { height: 100%; background: var(--series-net); border-radius: 999px; }
+
+/* --------------------------------------------------------------- controls */
+
+button, .btn {
+  font: inherit; font-size: 13.5px; font-weight: 500;
+  border-radius: 9px; border: 1px solid var(--border);
+  background: var(--surface-1); color: var(--text-primary);
+  padding: 8px 13px; cursor: pointer;
+}
+button:hover, .btn:hover { background: var(--surface-2); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); border-color: transparent; color: #fff; }
+.btn-primary:hover { filter: brightness(1.07); background: var(--accent); }
+.btn-danger { color: var(--critical); border-color: var(--critical); background: transparent; }
+.btn-danger:hover { background: rgba(208, 59, 59, 0.1); }
+.btn-ghost { border-color: transparent; background: transparent; color: var(--text-secondary); }
+.btn-small { padding: 5px 9px; font-size: 12.5px; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+input, select, textarea {
+  font: inherit; font-size: 13.5px;
+  padding: 8px 10px; border-radius: 9px;
+  border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+label { font-size: 12.5px; color: var(--text-secondary); display: block; margin-bottom: 5px; }
+.field { margin-bottom: 13px; }
+.field-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.field-row > .field { flex: 1 1 150px; margin-bottom: 0; }
+.checkbox { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--text-primary); margin-bottom: 11px; }
+.checkbox input { width: auto; }
+
+.segmented { display: inline-flex; background: var(--surface-2); border-radius: 9px; padding: 3px; gap: 2px; }
+.segmented button { border: none; background: transparent; padding: 5px 11px; border-radius: 7px; font-size: 13px; color: var(--text-secondary); }
+.segmented button.is-active { background: var(--surface-1); color: var(--text-primary); font-weight: 600; box-shadow: var(--shadow); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; padding: 2px 8px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-secondary); white-space: nowrap;
+}
+.pill-good { color: var(--good); }
+.pill-warn { color: var(--warning); }
+.pill-bad { color: var(--critical); }
+
+/* ----------------------------------------------------------------- tables */
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th {
+  text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--surface-2); }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.amount-in { color: var(--series-income); font-weight: 600; }
+.amount-out { color: var(--text-primary); }
+.row-excluded td { opacity: 0.45; text-decoration: line-through; }
+.cell-desc { max-width: 380px; }
+.cell-desc small { display: block; color: var(--text-muted); font-size: 11.5px; }
+td select { padding: 4px 6px; font-size: 12.5px; min-width: 130px; }
+
+.empty { color: var(--text-muted); font-size: 13.5px; padding: 8px 0; }
+
+/* ------------------------------------------------------------------- lock */
+
+.lock-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 24px; background: var(--plane);
+}
+.lock-card { width: 100%; max-width: 420px; }
+.lock-head { text-align: center; margin-bottom: 22px; }
+.lock-head .brand-mark { width: 40px; height: 40px; border-radius: 12px; margin: 0 auto 12px; }
+.lock-note { font-size: 12.5px; color: var(--text-secondary); margin-top: 14px; line-height: 1.55; }
+.strength { display: flex; gap: 4px; margin-top: 7px; }
+.strength span { height: 4px; flex: 1; border-radius: 2px; background: var(--surface-2); }
+.strength span.on-1 { background: var(--critical); }
+.strength span.on-2 { background: var(--warning); }
+.strength span.on-3 { background: var(--series-income); }
+.strength span.on-4 { background: var(--good); }
+.error { color: var(--critical); font-size: 13px; margin-top: 10px; }
+.notice {
+  background: var(--surface-2); border-left: 3px solid var(--accent);
+  padding: 11px 13px; border-radius: 8px; font-size: 13px;
+  color: var(--text-secondary); margin-bottom: 14px;
+}
+.notice-warn { border-left-color: var(--warning); }
+.notice-bad { border-left-color: var(--critical); }
+
+/* ----------------------------------------------------------------- import */
+
+.dropzone {
+  border: 1.5px dashed var(--axis); border-radius: var(--radius);
+  padding: 38px 20px; text-align: center; color: var(--text-secondary);
+  background: var(--surface-1); cursor: pointer;
+}
+.dropzone.is-over { border-color: var(--accent); background: var(--surface-2); }
+.dropzone strong { display: block; color: var(--text-primary); margin-bottom: 4px; font-size: 15px; }
+
+.preview-table { font-size: 12.5px; }
+.preview-table td { padding: 6px 8px; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+
+.toast {
+  position: fixed; right: 20px; bottom: 20px; z-index: 100;
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 15px; box-shadow: var(--shadow); font-size: 13.5px; max-width: 340px;
+}
+.toast-bad { border-left: 3px solid var(--critical); }
+.toast-good { border-left: 3px solid var(--good); }
+
+.saving-dot { font-size: 11.5px; color: var(--text-muted); padding: 0 10px; }
+
+@media (max-width: 820px) {
+  .app { flex-direction: column; }
+  .sidebar {
+    width: 100%; flex: none; height: auto; position: static;
+    flex-direction: row; overflow-x: auto; padding: 10px; gap: 4px; align-items: center;
+  }
+  .brand { padding: 0 8px 0 4px; }
+  .brand-name { display: none; }
+  .nav-link { white-space: nowrap; padding: 7px 10px; }
+  .nav-spacer { display: none; }
+  .main { padding: 16px 14px 48px; }
+  .bar-row { grid-template-columns: minmax(80px, 1fr) 2fr auto; }
+  .bar-share { display: none; }
+}
+
+@media print {
+  .sidebar, .chart-tooltip { display: none; }
+}
+
+</style>
+</head>
+<body>
+<!-- Built by finance/build.py - a single offline file, no external requests. -->
+<div id="app"></div>
+<noscript>This app runs entirely in your browser, so it needs JavaScript enabled.</noscript>
+<script>
+(function () {
+'use strict';
+const __factories = {};
+const __cache = {};
+function __require(id) {
+  if (__cache[id]) return __cache[id];
+  const __exports = {};
+  __cache[id] = __exports;
+  __factories[id](__exports, __require);
+  return __exports;
+}
+__factories["charts.js"] = function (__exports, __require) {
+/**
+ * Hand-rolled SVG charts.
+ *
+ * Colours come from CSS custom properties (see styles.css) so light and dark
+ * are two selected palettes rather than an automatic flip. The three series
+ * hues are the validated categorical slots 1-3.
+ */
+const { svg, el } = __require("dom.js");
+const { formatMoney, formatCompact } = __require("lib/money.js");
+const PAD = { top: 16, right: 16, bottom: 28, left: 56 };
+const BAR_GAP = 2; // surface gap between adjacent bars
+
+let tooltip = null;
+
+function ensureTooltip() {
+  if (!tooltip) {
+    tooltip = el('div', { class: 'chart-tooltip', role: 'status', 'aria-live': 'polite' });
+    document.body.appendChild(tooltip);
+  }
+  return tooltip;
+}
+
+function showTooltip(event, html) {
+  const node = ensureTooltip();
+  node.innerHTML = html;
+  node.classList.add('is-visible');
+  const rect = node.getBoundingClientRect();
+  const x = Math.min(window.innerWidth - rect.width - 8, Math.max(8, event.clientX + 12));
+  const y = Math.max(8, event.clientY - rect.height - 12);
+  node.style.transform = `translate(${x}px, ${y}px)`;
+}
+
+function hideTooltip() {
+  if (tooltip) tooltip.classList.remove('is-visible');
+}
+
+function niceTicks(max, count = 4) {
+  if (max <= 0) return [0];
+  const rough = max / count;
+  const magnitude = 10 ** Math.floor(Math.log10(rough));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * magnitude).find((s) => s >= rough) || magnitude * 10;
+  const ticks = [];
+  for (let value = 0; value <= max + step / 2; value += step) ticks.push(value);
+  return ticks;
+}
+
+/** Bar with rounded top corners, anchored to the baseline. */
+function barPath(x, y, width, height, radius = 4) {
+  const r = Math.max(0, Math.min(radius, width / 2, height));
+  if (height <= 0) return '';
+  return `M${x},${y + height} L${x},${y + r} Q${x},${y} ${x + r},${y} L${x + width - r},${y} Q${x + width},${y} ${x + width},${y + r} L${x + width},${y + height} Z`;
+}
+
+function axisLayer(width, height, ticks, scale, currency, locale) {
+  const parts = [];
+  for (const tick of ticks) {
+    const y = scale(tick);
+    parts.push(svg('line', {
+      class: 'grid-line', x1: PAD.left, x2: width - PAD.right, y1: y, y2: y,
+    }));
+    parts.push(svg('text', {
+      class: 'axis-label', x: PAD.left - 8, y: y + 4, 'text-anchor': 'end',
+    }, formatCompact(tick, currency, locale)));
+  }
+  parts.push(svg('line', {
+    class: 'axis-line', x1: PAD.left, x2: width - PAD.right, y1: height - PAD.bottom, y2: height - PAD.bottom,
+  }));
+  return parts;
+}
+
+/**
+ * Income vs spending per period, side by side.
+ * @param {Array<{key,label,incomeCents,expenseCents,netCents}>} periods
+ */
+function incomeExpenseChart(periods, { width = 720, height = 260, currency = 'EUR', locale, onSelect } = {}) {
+  if (periods.length === 0) return emptyChart(width, height, 'No transactions yet');
+
+  const max = Math.max(...periods.map((p) => Math.max(p.incomeCents, p.expenseCents)), 1);
+  const ticks = niceTicks(max);
+  const top = ticks[ticks.length - 1];
+  const plotHeight = height - PAD.top - PAD.bottom;
+  const scale = (value) => height - PAD.bottom - (value / top) * plotHeight;
+  const plotWidth = width - PAD.left - PAD.right;
+  const slot = plotWidth / periods.length;
+  const barWidth = Math.max(3, Math.min(26, (slot - 10) / 2 - BAR_GAP / 2));
+
+  const marks = [];
+  const labels = [];
+  const labelEvery = Math.ceil(periods.length / Math.max(2, Math.floor(plotWidth / 64)));
+
+  periods.forEach((period, index) => {
+    const centre = PAD.left + slot * index + slot / 2;
+    const incomeX = centre - barWidth - BAR_GAP / 2;
+    const expenseX = centre + BAR_GAP / 2;
+    const incomeY = scale(period.incomeCents);
+    const expenseY = scale(period.expenseCents);
+
+    marks.push(svg('path', {
+      class: 'mark mark-income',
+      d: barPath(incomeX, incomeY, barWidth, height - PAD.bottom - incomeY),
+    }));
+    marks.push(svg('path', {
+      class: 'mark mark-expense',
+      d: barPath(expenseX, expenseY, barWidth, height - PAD.bottom - expenseY),
+    }));
+
+    // One generous hit target per period.
+    marks.push(svg('rect', {
+      class: 'hit-area',
+      x: PAD.left + slot * index,
+      y: PAD.top,
+      width: slot,
+      height: plotHeight,
+      onmousemove: (event) => showTooltip(event, `
+        <strong>${period.label}</strong>
+        <span class="tt-row"><i class="swatch swatch-income"></i>In ${formatMoney(period.incomeCents, currency, locale)}</span>
+        <span class="tt-row"><i class="swatch swatch-expense"></i>Out ${formatMoney(period.expenseCents, currency, locale)}</span>
+        <span class="tt-row tt-net">Net ${formatMoney(period.netCents, currency, locale)}</span>`),
+      onmouseleave: hideTooltip,
+      onclick: () => onSelect?.(period),
+    }));
+
+    if (index % labelEvery === 0 || index === periods.length - 1) {
+      labels.push(svg('text', {
+        class: 'axis-label', x: centre, y: height - PAD.bottom + 16, 'text-anchor': 'middle',
+      }, period.label));
+    }
+  });
+
+  return svg('svg', {
+    class: 'chart', viewBox: `0 0 ${width} ${height}`, width: '100%', height,
+    role: 'img', 'aria-label': `Income and spending per period, ${periods.length} periods`,
+  }, [...axisLayer(width, height, ticks, scale, currency, locale), ...marks, ...labels]);
+}
+
+/** Cumulative net cash flow. */
+function cumulativeChart(points, { width = 720, height = 200, currency = 'EUR', locale } = {}) {
+  if (points.length < 2) return emptyChart(width, height, 'Not enough history yet');
+
+  const values = points.map((p) => p.cumulativeCents);
+  const min = Math.min(0, ...values);
+  const max = Math.max(0, ...values);
+  const span = max - min || 1;
+  const plotHeight = height - PAD.top - PAD.bottom;
+  const plotWidth = width - PAD.left - PAD.right;
+  const scaleY = (value) => PAD.top + plotHeight - ((value - min) / span) * plotHeight;
+  const scaleX = (index) => PAD.left + (plotWidth * index) / (points.length - 1);
+
+  const line = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${scaleX(i).toFixed(1)},${scaleY(p.cumulativeCents).toFixed(1)}`).join(' ');
+  const area = `${line} L${scaleX(points.length - 1).toFixed(1)},${scaleY(Math.max(0, min))} L${scaleX(0).toFixed(1)},${scaleY(Math.max(0, min))} Z`;
+
+  const ticks = niceTicks(max, 3);
+  const marks = [
+    svg('path', { class: 'area-net', d: area }),
+    svg('path', { class: 'line-net', d: line }),
+  ];
+
+  if (min < 0) {
+    marks.unshift(svg('line', {
+      class: 'zero-line', x1: PAD.left, x2: width - PAD.right, y1: scaleY(0), y2: scaleY(0),
+    }));
+  }
+
+  points.forEach((point, index) => {
+    marks.push(svg('rect', {
+      class: 'hit-area',
+      x: scaleX(index) - plotWidth / points.length / 2,
+      y: PAD.top,
+      width: plotWidth / points.length,
+      height: plotHeight,
+      onmousemove: (event) => showTooltip(event, `
+        <strong>${point.label || point.key}</strong>
+        <span class="tt-row tt-net">Saved so far ${formatMoney(point.cumulativeCents, currency, locale)}</span>`),
+      onmouseleave: hideTooltip,
+    }));
+  });
+
+  const lastPoint = points[points.length - 1];
+  marks.push(svg('circle', {
+    class: 'point-net', cx: scaleX(points.length - 1), cy: scaleY(lastPoint.cumulativeCents), r: 4.5,
+  }));
+
+  return svg('svg', {
+    class: 'chart', viewBox: `0 0 ${width} ${height}`, width: '100%', height,
+    role: 'img', 'aria-label': 'Cumulative money kept over time',
+  }, [
+    ...axisLayer(width, height, ticks.filter((t) => t <= max), scaleY, currency, locale),
+    ...marks,
+    svg('text', { class: 'axis-label', x: PAD.left, y: height - 8 }, points[0].label || points[0].key),
+    svg('text', { class: 'axis-label', x: width - PAD.right, y: height - 8, 'text-anchor': 'end' }, lastPoint.label || lastPoint.key),
+  ]);
+}
+
+/**
+ * Where the money goes: ranked horizontal bars in a single hue, each with its
+ * own label and value, so nothing depends on colour alone.
+ */
+function categoryBars(items, { currency = 'EUR', locale, limit = 10, onSelect } = {}) {
+  if (items.length === 0) return el('p', { class: 'empty', text: 'Nothing to show for this period.' });
+  const shown = items.slice(0, limit);
+  const max = Math.max(...shown.map((item) => item.cents), 1);
+
+  return el('ul', { class: 'bar-list' }, shown.map((item) => el('li', {
+    class: 'bar-row',
+    tabindex: '0',
+    role: onSelect ? 'button' : null,
+    onclick: () => onSelect?.(item),
+    onkeydown: (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onSelect?.(item);
+      }
+    },
+  }, [
+    el('span', { class: 'bar-label', text: item.category || item.label }),
+    el('span', { class: 'bar-track' }, [
+      el('span', {
+        class: 'bar-fill',
+        style: `width: ${Math.max(2, (item.cents / max) * 100)}%`,
+      }),
+    ]),
+    el('span', { class: 'bar-value', text: formatMoney(item.cents, currency, locale) }),
+    el('span', { class: 'bar-share', text: item.share !== undefined ? `${(item.share * 100).toFixed(0)}%` : `${item.count}×` }),
+  ])));
+}
+
+/** Small inline trend line, no axes. */
+function sparkline(values, { width = 120, height = 32 } = {}) {
+  if (values.length < 2) return svg('svg', { class: 'sparkline', width, height });
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = max - min || 1;
+  const points = values.map((value, index) => {
+    const x = (width * index) / (values.length - 1);
+    const y = height - 3 - ((value - min) / span) * (height - 6);
+    return `${index === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return svg('svg', {
+    class: 'sparkline', viewBox: `0 0 ${width} ${height}`, width, height, 'aria-hidden': 'true',
+  }, [svg('path', { class: 'spark-line', d: points })]);
+}
+
+/** Goal progress meter. */
+function progressMeter(progress, { label = '' } = {}) {
+  const percent = Math.max(0, Math.min(1, progress)) * 100;
+  return el('div', {
+    class: 'meter',
+    role: 'progressbar',
+    'aria-valuenow': percent.toFixed(0),
+    'aria-valuemin': '0',
+    'aria-valuemax': '100',
+    'aria-label': label,
+  }, [el('div', { class: 'meter-fill', style: `width: ${percent}%` })]);
+}
+
+function emptyChart(width, height, message) {
+  return svg('svg', { class: 'chart', viewBox: `0 0 ${width} ${height}`, width: '100%', height }, [
+    svg('text', {
+      class: 'axis-label', x: width / 2, y: height / 2, 'text-anchor': 'middle',
+    }, message),
+  ]);
+}
+
+/** Legend - always present when two or more series share a chart. */
+function legend(entries) {
+  return el('ul', { class: 'legend' }, entries.map((entry) => el('li', { class: 'legend-item' }, [
+    el('i', { class: `swatch swatch-${entry.key}` }),
+    el('span', { text: entry.label }),
+  ])));
+}
+
+  Object.assign(__exports, { hideTooltip, incomeExpenseChart, cumulativeChart, categoryBars, sparkline, progressMeter, legend });
+};
+__factories["crypto.js"] = function (__exports, __require) {
+/**
+ * Vault encryption.
+ *
+ * Everything the app stores about your money is encrypted with a key derived
+ * from your passphrase alone. There is no server, no key escrow and no
+ * recovery: lose the passphrase and the data is gone, which is the point.
+ *
+ *   passphrase --PBKDF2-SHA256(600k, 16-byte salt)--> 256-bit key
+ *   plaintext JSON --AES-256-GCM(12-byte random IV)--> ciphertext
+ *
+ * A fresh IV is generated for every single write.
+ */
+
+const KDF_ITERATIONS = 600000;
+const SALT_BYTES = 16;
+const IV_BYTES = 12;
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+function randomBytes(length) {
+  return crypto.getRandomValues(new Uint8Array(length));
+}
+
+function toBase64(bytes) {
+  let binary = '';
+  const view = new Uint8Array(bytes);
+  for (let i = 0; i < view.length; i += 1) binary += String.fromCharCode(view[i]);
+  return btoa(binary);
+}
+
+function fromBase64(text) {
+  const binary = atob(text);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+/** @returns {Promise<CryptoKey>} non-extractable AES-GCM key */
+async function deriveKey(passphrase, salt, iterations = KDF_ITERATIONS) {
+  const material = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(passphrase.normalize('NFKC')),
+    'PBKDF2',
+    false,
+    ['deriveKey'],
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
+    material,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt'],
+  );
+}
+
+function newSalt() {
+  return randomBytes(SALT_BYTES);
+}
+
+const KDF_PARAMS = { name: 'PBKDF2', hash: 'SHA-256', iterations: KDF_ITERATIONS };
+
+/**
+ * Encrypt a JSON-serialisable value.
+ * @returns {Promise<{iv:string, data:string}>} base64 parts
+ */
+async function encryptJSON(key, value) {
+  const iv = randomBytes(IV_BYTES);
+  const plaintext = encoder.encode(JSON.stringify(value));
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
+  plaintext.fill(0);
+  return { iv: toBase64(iv), data: toBase64(new Uint8Array(ciphertext)) };
+}
+
+/** Throws if the passphrase is wrong or the payload was tampered with. */
+async function decryptJSON(key, payload) {
+  const iv = fromBase64(payload.iv);
+  const data = fromBase64(payload.data);
+  const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+  return JSON.parse(decoder.decode(plaintext));
+}
+
+/** Rough strength meter for the passphrase field (0-4). */
+function passphraseStrength(passphrase) {
+  const value = passphrase || '';
+  let score = 0;
+  if (value.length >= 10) score += 1;
+  if (value.length >= 16) score += 1;
+  if (value.length >= 24) score += 1;
+  if (/[a-z]/.test(value) && /[A-Z0-9]/.test(value)) score += 1;
+  if (/\s/.test(value) && value.trim().split(/\s+/).length >= 4) score = Math.max(score, 3);
+  if (value.length < 8) score = 0;
+  return Math.min(4, score);
+}
+
+  Object.assign(__exports, { randomBytes, toBase64, fromBase64, deriveKey, newSalt, KDF_PARAMS, encryptJSON, decryptJSON, passphraseStrength });
+};
+__factories["dom.js"] = function (__exports, __require) {
+/** Tiny DOM helpers - the app builds elements directly, no framework. */
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function el(tag, props = {}, children = []) {
+  const node = document.createElement(tag);
+  applyProps(node, props);
+  append(node, children);
+  return node;
+}
+
+function svg(tag, props = {}, children = []) {
+  const node = document.createElementNS(SVG_NS, tag);
+  for (const [key, value] of Object.entries(props)) {
+    if (value === null || value === undefined || value === false) continue;
+    if (key.startsWith('on') && typeof value === 'function') node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value);
+  }
+  append(node, children);
+  return node;
+}
+
+function applyProps(node, props) {
+  for (const [key, value] of Object.entries(props)) {
+    if (value === null || value === undefined || value === false) continue;
+    if (key === 'class') node.className = value;
+    else if (key === 'text') node.textContent = value;
+    else if (key === 'html') node.innerHTML = value;
+    else if (key === 'dataset') Object.assign(node.dataset, value);
+    else if (key.startsWith('on') && typeof value === 'function') {
+      node.addEventListener(key.slice(2), value);
+    } else if (key in node && key !== 'list' && key !== 'form' && key !== 'type') {
+      node[key] = value;
+    } else {
+      node.setAttribute(key, value === true ? '' : value);
+    }
+  }
+}
+
+function append(node, children) {
+  const list = Array.isArray(children) ? children : [children];
+  for (const child of list) {
+    if (child === null || child === undefined || child === false) continue;
+    node.appendChild(typeof child === 'string' || typeof child === 'number'
+      ? document.createTextNode(String(child))
+      : child);
+  }
+}
+
+function clear(node) {
+  while (node.firstChild) node.removeChild(node.firstChild);
+}
+
+function mount(node, children) {
+  clear(node);
+  append(node, children);
+  return node;
+}
+
+  Object.assign(__exports, { el, svg, clear, mount });
+};
+__factories["lib/analytics.js"] = function (__exports, __require) {
+/**
+ * All the number crunching: period rollups, category and merchant breakdowns,
+ * recurring-payment detection, trends and savings-goal projection.
+ *
+ * Amounts are integer minor units (cents) throughout; negative = money out.
+ */
+const { periodKey, periodStart, daysBetween, addDays, addMonths, todayISO } = __require("lib/dates.js");
+const { categoryKind, DEFAULT_CATEGORIES } = __require("lib/categorize.js");
+const DEFAULTS = {
+  granularity: 'month',
+  weekStart: 1,
+  includeTransfers: false,
+  categories: DEFAULT_CATEGORIES,
+};
+
+/** Transactions that count towards income/expense statistics. */
+function activeTransactions(transactions, options = {}) {
+  const { includeTransfers, categories } = { ...DEFAULTS, ...options };
+  return transactions.filter((tx) => {
+    if (tx.excluded) return false;
+    if (!includeTransfers && categoryKind(tx.category, categories) === 'transfer') return false;
+    return true;
+  });
+}
+
+function inRange(transactions, from, to) {
+  return transactions.filter((tx) => (!from || tx.date >= from) && (!to || tx.date <= to));
+}
+
+/**
+ * Group into periods.
+ * @returns {Array<{key, start, incomeCents, expenseCents, netCents, count}>}
+ */
+function byPeriod(transactions, options = {}) {
+  const { granularity, weekStart } = { ...DEFAULTS, ...options };
+  const buckets = new Map();
+  for (const tx of activeTransactions(transactions, options)) {
+    const key = periodKey(tx.date, granularity, weekStart);
+    let bucket = buckets.get(key);
+    if (!bucket) {
+      bucket = { key, start: periodStart(key, weekStart), incomeCents: 0, expenseCents: 0, netCents: 0, count: 0 };
+      buckets.set(key, bucket);
+    }
+    if (tx.amountCents >= 0) bucket.incomeCents += tx.amountCents;
+    else bucket.expenseCents += -tx.amountCents;
+    bucket.netCents += tx.amountCents;
+    bucket.count += 1;
+  }
+  return [...buckets.values()].sort((a, b) => a.start.localeCompare(b.start));
+}
+
+function totals(transactions, options = {}) {
+  let incomeCents = 0;
+  let expenseCents = 0;
+  let count = 0;
+  for (const tx of activeTransactions(transactions, options)) {
+    if (tx.amountCents >= 0) incomeCents += tx.amountCents;
+    else expenseCents += -tx.amountCents;
+    count += 1;
+  }
+  const netCents = incomeCents - expenseCents;
+  return {
+    incomeCents,
+    expenseCents,
+    netCents,
+    count,
+    savingsRate: incomeCents > 0 ? netCents / incomeCents : null,
+  };
+}
+
+/**
+ * Spending (or income) split by category, biggest first.
+ * @param {'out'|'in'} direction
+ */
+function byCategory(transactions, direction = 'out', options = {}) {
+  const buckets = new Map();
+  let total = 0;
+  for (const tx of activeTransactions(transactions, options)) {
+    const isOut = tx.amountCents < 0;
+    if ((direction === 'out') !== isOut) continue;
+    const cents = Math.abs(tx.amountCents);
+    const name = tx.category || 'Uncategorised';
+    const bucket = buckets.get(name) || { category: name, cents: 0, count: 0 };
+    bucket.cents += cents;
+    bucket.count += 1;
+    buckets.set(name, bucket);
+    total += cents;
+  }
+  return [...buckets.values()]
+    .map((b) => ({ ...b, share: total > 0 ? b.cents / total : 0 }))
+    .sort((a, b) => b.cents - a.cents);
+}
+
+/** Where the money actually went, by merchant. */
+function byMerchant(transactions, direction = 'out', options = {}) {
+  const buckets = new Map();
+  for (const tx of activeTransactions(transactions, options)) {
+    const isOut = tx.amountCents < 0;
+    if ((direction === 'out') !== isOut) continue;
+    const key = tx.merchantKey || tx.description || 'unknown';
+    const bucket = buckets.get(key) || {
+      key,
+      label: tx.merchantLabel || tx.description || 'Unknown',
+      category: tx.category,
+      cents: 0,
+      count: 0,
+      lastDate: tx.date,
+    };
+    bucket.cents += Math.abs(tx.amountCents);
+    bucket.count += 1;
+    if (tx.date > bucket.lastDate) bucket.lastDate = tx.date;
+    buckets.set(key, bucket);
+  }
+  return [...buckets.values()].sort((a, b) => b.cents - a.cents);
+}
+
+/** Running balance of net cash flow over time, for the trend chart. */
+function cumulativeNet(periods) {
+  let running = 0;
+  return periods.map((p) => {
+    running += p.netCents;
+    return { key: p.key, start: p.start, cumulativeCents: running };
+  });
+}
+
+function cadenceFor(days) {
+  if (days >= 5 && days <= 9) return { cadence: 'weekly', perMonth: 52 / 12 };
+  if (days >= 12 && days <= 16) return { cadence: 'fortnightly', perMonth: 26 / 12 };
+  if (days >= 25 && days <= 35) return { cadence: 'monthly', perMonth: 1 };
+  if (days >= 58 && days <= 70) return { cadence: 'every 2 months', perMonth: 0.5 };
+  if (days >= 85 && days <= 100) return { cadence: 'quarterly', perMonth: 1 / 3 };
+  if (days >= 350 && days <= 380) return { cadence: 'yearly', perMonth: 1 / 12 };
+  return null;
+}
+
+function median(values) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+/**
+ * Subscriptions and other repeating charges: same merchant, similar amount,
+ * regular interval, at least three times.
+ */
+function detectRecurring(transactions, options = {}) {
+  const groups = new Map();
+  for (const tx of activeTransactions(transactions, options)) {
+    if (tx.amountCents >= 0) continue;
+    const key = tx.merchantKey || tx.description;
+    if (!key) continue;
+    const group = groups.get(key) || { key, label: tx.merchantLabel || tx.description, items: [] };
+    group.items.push(tx);
+    groups.set(key, group);
+  }
+
+  const found = [];
+  for (const group of groups.values()) {
+    const items = group.items.slice().sort((a, b) => a.date.localeCompare(b.date));
+    if (items.length < 3) continue;
+
+    const gaps = [];
+    for (let i = 1; i < items.length; i += 1) gaps.push(daysBetween(items[i - 1].date, items[i].date));
+    const typicalGap = median(gaps);
+    const cadence = cadenceFor(typicalGap);
+    if (!cadence) continue;
+    // Intervals must be reasonably regular.
+    const regular = gaps.filter((g) => Math.abs(g - typicalGap) <= Math.max(4, typicalGap * 0.35)).length;
+    if (regular / gaps.length < 0.6) continue;
+
+    const amounts = items.map((tx) => Math.abs(tx.amountCents));
+    const typicalAmount = median(amounts);
+    const stable = amounts.filter((a) => Math.abs(a - typicalAmount) <= Math.max(100, typicalAmount * 0.25)).length;
+    if (stable / amounts.length < 0.6) continue;
+
+    const last = items[items.length - 1];
+    found.push({
+      key: group.key,
+      label: group.label,
+      category: last.category,
+      cadence: cadence.cadence,
+      intervalDays: Math.round(typicalGap),
+      count: items.length,
+      typicalCents: Math.round(typicalAmount),
+      monthlyCents: Math.round(typicalAmount * cadence.perMonth),
+      yearlyCents: Math.round(typicalAmount * cadence.perMonth * 12),
+      firstDate: items[0].date,
+      lastDate: last.date,
+      nextExpected: addDays(last.date, Math.round(typicalGap)),
+    });
+  }
+  return found.sort((a, b) => b.monthlyCents - a.monthlyCents);
+}
+
+/**
+ * Compare the latest period against the average of the ones before it and
+ * return the categories that moved the most.
+ */
+function categoryTrends(transactions, options = {}) {
+  const { granularity, weekStart } = { ...DEFAULTS, ...options };
+  const active = activeTransactions(transactions, options).filter((tx) => tx.amountCents < 0);
+  const keys = [...new Set(active.map((tx) => periodKey(tx.date, granularity, weekStart)))]
+    .sort((a, b) => periodStart(a, weekStart).localeCompare(periodStart(b, weekStart)));
+  if (keys.length < 2) return [];
+
+  const current = keys[keys.length - 1];
+  const previous = keys.slice(Math.max(0, keys.length - 4), keys.length - 1);
+  const sum = new Map();
+  const baseline = new Map();
+
+  for (const tx of active) {
+    const key = periodKey(tx.date, granularity, weekStart);
+    const cents = Math.abs(tx.amountCents);
+    const name = tx.category || 'Uncategorised';
+    if (key === current) sum.set(name, (sum.get(name) || 0) + cents);
+    else if (previous.includes(key)) baseline.set(name, (baseline.get(name) || 0) + cents);
+  }
+
+  const names = new Set([...sum.keys(), ...baseline.keys()]);
+  const result = [];
+  for (const name of names) {
+    const now = sum.get(name) || 0;
+    const before = (baseline.get(name) || 0) / Math.max(1, previous.length);
+    result.push({
+      category: name,
+      currentCents: now,
+      averageCents: Math.round(before),
+      deltaCents: Math.round(now - before),
+      deltaRatio: before > 0 ? (now - before) / before : null,
+    });
+  }
+  return result.sort((a, b) => Math.abs(b.deltaCents) - Math.abs(a.deltaCents));
+}
+
+/** Average monthly spend/income over the whole data set (for projections). */
+function monthlyAverages(transactions, options = {}) {
+  const periods = byPeriod(transactions, { ...options, granularity: 'month' });
+  if (periods.length === 0) return { incomeCents: 0, expenseCents: 0, netCents: 0, months: 0 };
+  // Ignore the newest month when it is obviously partial data.
+  const months = periods.length;
+  const sum = periods.reduce((acc, p) => ({
+    incomeCents: acc.incomeCents + p.incomeCents,
+    expenseCents: acc.expenseCents + p.expenseCents,
+    netCents: acc.netCents + p.netCents,
+  }), { incomeCents: 0, expenseCents: 0, netCents: 0 });
+  return {
+    incomeCents: Math.round(sum.incomeCents / months),
+    expenseCents: Math.round(sum.expenseCents / months),
+    netCents: Math.round(sum.netCents / months),
+    months,
+  };
+}
+
+/**
+ * Savings-goal progress.
+ * Saved so far = net cash flow since the goal's start date, plus any opening amount.
+ */
+function goalProgress(goal, transactions, options = {}) {
+  const since = inRange(activeTransactions(transactions, options), goal.startDate, null);
+  const net = since.reduce((acc, tx) => acc + tx.amountCents, 0);
+  const savedCents = (goal.startCents || 0) + Math.max(0, net);
+  const targetCents = goal.targetCents || 0;
+  const remainingCents = Math.max(0, targetCents - savedCents);
+  const monthly = monthlyAverages(since, options).netCents;
+  const monthsNeeded = monthly > 0 ? Math.ceil(remainingCents / monthly) : null;
+
+  let requiredMonthly = null;
+  let onTrack = null;
+  if (goal.targetDate) {
+    const monthsLeft = Math.max(
+      0,
+      Math.round(daysBetween(todayISO(), goal.targetDate) / 30.44),
+    );
+    requiredMonthly = monthsLeft > 0 ? Math.ceil(remainingCents / monthsLeft) : remainingCents;
+    onTrack = monthly >= requiredMonthly;
+  }
+
+  return {
+    savedCents,
+    targetCents,
+    remainingCents,
+    progress: targetCents > 0 ? Math.min(1, savedCents / targetCents) : 0,
+    monthlyNetCents: monthly,
+    monthsNeeded,
+    projectedDate: monthsNeeded === null ? null : addMonths(todayISO(), monthsNeeded),
+    requiredMonthlyCents: requiredMonthly,
+    onTrack,
+  };
+}
+
+/**
+ * One-line highlights for the dashboard.
+ * `options.formatMoney` lets the UI pass its currency formatter in.
+ */
+function insights(transactions, options = {}) {
+  const format = options.formatMoney || ((cents) => (cents / 100).toFixed(0));
+  const out = [];
+  const months = byPeriod(transactions, { ...options, granularity: 'month' });
+  if (months.length === 0) return out;
+
+  const latest = months[months.length - 1];
+  const spend = byCategory(inRange(transactions, latest.start, null), 'out', options);
+  if (spend.length > 0) {
+    out.push({
+      kind: 'top-category',
+      text: `${spend[0].category} is your biggest spend this month at ${(spend[0].share * 100).toFixed(0)}% of everything you spent.`,
+      category: spend[0].category,
+      cents: spend[0].cents,
+    });
+  }
+
+  const trends = categoryTrends(transactions, { ...options, granularity: 'month' });
+  const riser = trends.find((t) => t.deltaRatio !== null && t.deltaRatio > 0.25 && t.deltaCents > 2000);
+  if (riser) {
+    out.push({
+      kind: 'rising',
+      text: `${riser.category} is up ${(riser.deltaRatio * 100).toFixed(0)}% versus your recent average.`,
+      category: riser.category,
+      cents: riser.deltaCents,
+    });
+  }
+
+  const recurring = detectRecurring(transactions, options);
+  if (recurring.length > 0) {
+    const monthly = recurring.reduce((acc, r) => acc + r.monthlyCents, 0);
+    out.push({
+      kind: 'recurring',
+      text: `${recurring.length} payments repeat every month and cost about ${format(monthly)} of that.`,
+      cents: monthly,
+    });
+  }
+
+  if (latest.incomeCents > 0) {
+    const rate = latest.netCents / latest.incomeCents;
+    out.push({
+      kind: 'savings-rate',
+      text: rate >= 0
+        ? `You kept ${(rate * 100).toFixed(0)}% of what came in this month.`
+        : `You spent ${Math.abs(rate * 100).toFixed(0)}% more than you earned this month.`,
+      cents: latest.netCents,
+    });
+  }
+  return out;
+}
+
+  Object.assign(__exports, { activeTransactions, inRange, byPeriod, totals, byCategory, byMerchant, cumulativeNet, detectRecurring, categoryTrends, monthlyAverages, goalProgress, insights });
+};
+__factories["lib/categorize.js"] = function (__exports, __require) {
+/**
+ * Rule-based categorisation.
+ *
+ * Matching order: the user's own rules (top to bottom), then the built-in
+ * keyword rules, then a fallback based on the direction of the money.
+ * A manual choice on a single transaction always wins and is never overwritten
+ * by a re-run.
+ */
+const { normalizeMerchant } = __require("lib/text.js");
+/** kind drives the analytics: transfers are movements, not income or spending. */
+const DEFAULT_CATEGORIES = [
+  { name: 'Salary', kind: 'income' },
+  { name: 'Other income', kind: 'income' },
+  { name: 'Refunds', kind: 'income' },
+  { name: 'Housing & rent', kind: 'expense' },
+  { name: 'Utilities', kind: 'expense' },
+  { name: 'Internet & phone', kind: 'expense' },
+  { name: 'Groceries', kind: 'expense' },
+  { name: 'Eating out', kind: 'expense' },
+  { name: 'Transport', kind: 'expense' },
+  { name: 'Fuel & car', kind: 'expense' },
+  { name: 'Travel', kind: 'expense' },
+  { name: 'Shopping', kind: 'expense' },
+  { name: 'Subscriptions', kind: 'expense' },
+  { name: 'Entertainment', kind: 'expense' },
+  { name: 'Health', kind: 'expense' },
+  { name: 'Sport & fitness', kind: 'expense' },
+  { name: 'Education', kind: 'expense' },
+  { name: 'Kids', kind: 'expense' },
+  { name: 'Pets', kind: 'expense' },
+  { name: 'Insurance', kind: 'expense' },
+  { name: 'Taxes', kind: 'expense' },
+  { name: 'Fees & interest', kind: 'expense' },
+  { name: 'Cash', kind: 'expense' },
+  { name: 'Gifts & donations', kind: 'expense' },
+  { name: 'Transfers', kind: 'transfer' },
+  { name: 'Savings & investments', kind: 'transfer' },
+  { name: 'Uncategorised', kind: 'expense' },
+];
+
+const CATEGORY_NAMES = DEFAULT_CATEGORIES.map((c) => c.name);
+
+/** Built-in keyword rules. Keywords are matched case-insensitively. */
+const BUILTIN = [
+  ['Salary', ['salary', 'payroll', 'wages', 'maas', 'maaş', 'gehalt', 'salaire', 'employer', 'bordro']],
+  ['Refunds', ['refund', 'reimbursement', 'iade', 'chargeback', 'rückerstattung']],
+  ['Housing & rent', ['rent', 'landlord', 'mortgage', 'kira', 'miete', 'loyer', 'hoa', 'aidat', 'property management']],
+  ['Utilities', ['electric', 'energy', 'gas bill', 'water', 'utility', 'elektrik', 'dogalgaz', 'doğalgaz', 'su fatura', 'stadtwerke', 'edf', 'engie', 'enerji']],
+  ['Internet & phone', ['vodafone', 'turkcell', 'turk telekom', 'türk telekom', 'o2', 'three', 'ee ', 'orange', 'telekom', 'internet', 'broadband', 'mobile', 'sfr', 'bouygues', 'giffgaff', 'lyca']],
+  ['Groceries', ['supermarket', 'grocery', 'migros', 'bim', 'a101', 'sok market', 'şok', 'carrefour', 'tesco', 'sainsbury', 'aldi', 'lidl', 'asda', 'waitrose', 'rewe', 'edeka', 'kaufland', 'auchan', 'leclerc', 'monoprix', 'whole foods', 'trader joe', 'kroger', 'walmart', 'market']],
+  ['Eating out', ['restaurant', 'cafe', 'café', 'coffee', 'starbucks', 'costa', 'pret', 'mcdonald', 'burger', 'kfc', 'pizza', 'domino', 'subway', 'kebab', 'sushi', 'bistro', 'bakery', 'firin', 'fırın', 'kahve', 'lokanta', 'deliveroo', 'ubereats', 'uber eats', 'just eat', 'yemeksepeti', 'getir yemek', 'glovo', 'wolt', 'doordash', 'grubhub']],
+  ['Transport', ['uber', 'bolt', 'lyft', 'taxi', 'metro', 'transport', 'tfl', 'oyster', 'railway', 'trainline', 'sncf', 'db bahn', 'deutsche bahn', 'istanbulkart', 'bitaksi', 'bus ', 'tram', 'ferry', 'blablacar', 'citymapper']],
+  ['Fuel & car', ['shell', 'bp ', 'esso', 'total energies', 'totalenergies', 'petrol', 'opet', 'aytemiz', 'gasoline', 'fuel', 'parking', 'otopark', 'car wash', 'garage', 'mot ', 'tyre', 'lastik', 'autoroute', 'toll', 'hgs', 'ogs']],
+  ['Travel', ['airline', 'airways', 'ryanair', 'easyjet', 'lufthansa', 'turkish airlines', 'thy', 'pegasus', 'wizz', 'booking.com', 'airbnb', 'hotel', 'hostel', 'expedia', 'trivago', 'skyscanner', 'flight', 'otel']],
+  ['Shopping', ['amazon', 'ebay', 'etsy', 'zara', 'h&m', 'hm ', 'uniqlo', 'nike', 'adidas', 'decathlon', 'ikea', 'mediamarkt', 'currys', 'argos', 'trendyol', 'hepsiburada', 'n11', 'aliexpress', 'temu', 'shein', 'asos', 'zalando', 'apple store', 'lc waikiki', 'defacto', 'bershka', 'mango']],
+  ['Subscriptions', ['netflix', 'spotify', 'disney', 'hbo', 'hulu', 'youtube premium', 'apple.com/bill', 'icloud', 'google storage', 'google one', 'dropbox', 'adobe', 'microsoft 365', 'office 365', 'patreon', 'substack', 'medium', 'chatgpt', 'openai', 'anthropic', 'claude.ai', 'notion', 'canva', 'prime video', 'blinkist', 'audible', 'duolingo', 'subscription', 'abonelik', 'abonnement']],
+  ['Entertainment', ['cinema', 'sinema', 'theatre', 'theater', 'concert', 'ticketmaster', 'biletix', 'steam', 'playstation', 'xbox', 'nintendo', 'twitch', 'bar ', 'pub ', 'club ', 'bowling', 'museum', 'muze', 'müze']],
+  ['Health', ['pharmacy', 'eczane', 'apotheke', 'boots', 'chemist', 'doctor', 'dentist', 'dis hekim', 'diş hekim', 'hospital', 'hastane', 'clinic', 'klinik', 'optician', 'laboratuvar', 'medical', 'saglik', 'sağlık', 'doctolib']],
+  ['Sport & fitness', ['gym', 'fitness', 'macfit', 'basic fit', 'basic-fit', 'puregym', 'yoga', 'pilates', 'swim', 'spor', 'strava', 'classpass', 'sportsdirect']],
+  ['Education', ['university', 'universite', 'üniversite', 'school', 'okul', 'tuition', 'course', 'udemy', 'coursera', 'kurs', 'kitap', 'books', 'waterstones', 'library']],
+  ['Kids', ['nursery', 'kindergarten', 'kres', 'kreş', 'daycare', 'toys', 'oyuncak', 'babyshop', 'child']],
+  ['Pets', ['vet', 'veteriner', 'petshop', 'pet shop', 'zooplus', 'mama ', 'kedi', 'kopek', 'köpek']],
+  ['Insurance', ['insurance', 'sigorta', 'assurance', 'versicherung', 'allianz', 'axa', 'aviva', 'zurich', 'anadolu sigorta']],
+  ['Taxes', ['tax', 'vergi', 'hmrc', 'finanzamt', 'impots', 'impôts', 'irs ', 'council tax', 'stamp duty', 'sgk']],
+  ['Fees & interest', ['fee', 'charge', 'commission', 'komisyon', 'masraf', 'interest', 'faiz', 'overdraft', 'bsmv', 'kkdf', 'service charge', 'atm fee', 'exchange fee']],
+  ['Cash', ['atm', 'cash withdrawal', 'nakit', 'bankomat', 'cash point', 'withdrawal']],
+  ['Gifts & donations', ['donation', 'bagis', 'bağış', 'charity', 'gofundme', 'unicef', 'ahbap', 'kizilay', 'kızılay', 'gift']],
+  ['Savings & investments', ['savings', 'birikim', 'vadeli', 'investment', 'yatirim', 'yatırım', 'trading212', 'trade republic', 'degiro', 'etoro', 'coinbase', 'binance', 'revolut vault', 'pension', 'bes ', 'isa ']],
+  ['Transfers', ['transfer', 'havale', 'eft ', 'fast ', 'sepa', 'own account', 'kendi hesab', 'internal', 'virement', 'überweisung', 'zelle', 'venmo', 'paypal transfer', 'wise', 'revolut']],
+];
+
+const BUILTIN_RULES = BUILTIN.flatMap(([category, keywords]) =>
+  keywords.map((keyword) => ({
+    id: `builtin:${category}:${keyword}`,
+    builtin: true,
+    field: 'description',
+    type: 'contains',
+    value: keyword,
+    category,
+  })));
+
+function categoryKind(name, categories = DEFAULT_CATEGORIES) {
+  return categories.find((c) => c.name === name)?.kind || 'expense';
+}
+
+function fieldValue(tx, field) {
+  if (field === 'merchant') return tx.merchantKey || normalizeMerchant(tx.description || '');
+  return tx.description || '';
+}
+
+/** Does a single rule match a transaction? */
+function ruleMatches(rule, tx) {
+  if (rule.direction === 'in' && tx.amountCents <= 0) return false;
+  if (rule.direction === 'out' && tx.amountCents >= 0) return false;
+  if (rule.minCents !== undefined && rule.minCents !== null
+    && Math.abs(tx.amountCents) < rule.minCents) return false;
+  if (rule.maxCents !== undefined && rule.maxCents !== null
+    && Math.abs(tx.amountCents) > rule.maxCents) return false;
+
+  const haystack = fieldValue(tx, rule.field || 'description').toLowerCase();
+  const needle = String(rule.value ?? '').toLowerCase().trim();
+  if (needle === '') return false;
+
+  switch (rule.type) {
+    case 'equals':
+      return haystack === needle;
+    case 'startsWith':
+      return haystack.startsWith(needle);
+    case 'regex':
+      try {
+        return new RegExp(rule.value, 'i').test(fieldValue(tx, rule.field || 'description'));
+      } catch {
+        return false;
+      }
+    case 'contains':
+    default:
+      return haystack.includes(needle);
+  }
+}
+
+/**
+ * @returns {{category:string, source:'rule'|'builtin'|'fallback', ruleId:string|null}}
+ */
+function categorizeOne(tx, userRules = [], { useBuiltins = true } = {}) {
+  for (const rule of userRules) {
+    if (rule.enabled === false) continue;
+    if (ruleMatches(rule, tx)) return { category: rule.category, source: 'rule', ruleId: rule.id };
+  }
+  if (useBuiltins) {
+    // Longer keywords are more specific, so try them first.
+    for (const rule of BUILTIN_RULES_SORTED) {
+      if (ruleMatches(rule, tx)) return { category: rule.category, source: 'builtin', ruleId: rule.id };
+    }
+  }
+  return {
+    category: tx.amountCents > 0 ? 'Other income' : 'Uncategorised',
+    source: 'fallback',
+    ruleId: null,
+  };
+}
+
+const BUILTIN_RULES_SORTED = [...BUILTIN_RULES].sort((a, b) => b.value.length - a.value.length);
+
+/**
+ * Apply rules to a list of transactions, leaving manual choices untouched.
+ * Mutates nothing: returns new objects.
+ */
+function applyRules(transactions, userRules = [], options = {}) {
+  return transactions.map((tx) => {
+    if (tx.categorySource === 'manual') return tx;
+    const result = categorizeOne(tx, userRules, options);
+    if (tx.category === result.category && tx.categorySource === result.source) return tx;
+    return { ...tx, category: result.category, categorySource: result.source, ruleId: result.ruleId };
+  });
+}
+
+/** Build a user rule from a manual correction ("always call this X"). */
+function ruleFromTransaction(tx, category) {
+  return {
+    id: `rule_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+    field: 'merchant',
+    type: 'equals',
+    value: tx.merchantKey || normalizeMerchant(tx.description || ''),
+    category,
+    enabled: true,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+  Object.assign(__exports, { DEFAULT_CATEGORIES, CATEGORY_NAMES, BUILTIN_RULES, categoryKind, ruleMatches, categorizeOne, applyRules, ruleFromTransaction });
+};
+__factories["lib/csv.js"] = function (__exports, __require) {
+/**
+ * Minimal RFC 4180 CSV/TSV reader.
+ *
+ * Zero dependencies on purpose: this file runs in the browser over the user's
+ * bank statement, so the less third-party code touching that data, the better.
+ */
+
+const DELIMITERS = [',', ';', '\t', '|'];
+
+/** Count delimiter occurrences that sit outside of quoted sections. */
+function countOutsideQuotes(line, delimiter) {
+  let count = 0;
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') i += 1;
+      else inQuotes = !inQuotes;
+    } else if (ch === delimiter && !inQuotes) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+/**
+ * Guess the delimiter by looking for the one that splits the sample lines into
+ * the same number of fields most consistently.
+ */
+function detectDelimiter(text) {
+  const sample = text
+    .split(/\r?\n/)
+    .filter((line) => line.trim() !== '')
+    .slice(0, 25);
+  if (sample.length === 0) return ',';
+
+  let best = ',';
+  let bestScore = -Infinity;
+  for (const delimiter of DELIMITERS) {
+    const counts = sample.map((line) => countOutsideQuotes(line, delimiter));
+    const mean = counts.reduce((a, b) => a + b, 0) / counts.length;
+    if (mean < 0.5) continue;
+    const variance = counts.reduce((a, b) => a + (b - mean) ** 2, 0) / counts.length;
+    // Favour many fields, punish inconsistent field counts.
+    const score = mean - variance * 2;
+    if (score > bestScore) {
+      bestScore = score;
+      best = delimiter;
+    }
+  }
+  return best;
+}
+
+/** Parse CSV text into an array of string arrays. Handles quotes and CRLF. */
+function parseCSV(text, delimiter) {
+  const input = text.replace(/^﻿/, '');
+  const sep = delimiter || detectDelimiter(input);
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < input.length; i += 1) {
+    const ch = input[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (input[i + 1] === '"') {
+          field += '"';
+          i += 1;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field += ch;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inQuotes = true;
+    } else if (ch === sep) {
+      row.push(field);
+      field = '';
+    } else if (ch === '\n') {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = '';
+    } else if (ch === '\r') {
+      // handled by the \n branch
+    } else {
+      field += ch;
+    }
+  }
+  row.push(field);
+  rows.push(row);
+
+  // Drop trailing blank lines produced by a final newline.
+  while (rows.length > 0) {
+    const last = rows[rows.length - 1];
+    if (last.length === 1 && last[0].trim() === '') rows.pop();
+    else break;
+  }
+  return rows.map((r) => r.map((cell) => cell.trim()));
+}
+
+/**
+ * Bank exports often start with a preamble ("Account: ...", blank lines) before
+ * the real table. Find the first row that matches the dominant column count.
+ */
+function findTableStart(rows) {
+  const counts = new Map();
+  for (const row of rows) {
+    const width = row.filter((c) => c !== '').length;
+    if (width < 2) continue;
+    counts.set(row.length, (counts.get(row.length) || 0) + 1);
+  }
+  if (counts.size === 0) return 0;
+  let modal = 0;
+  let modalHits = 0;
+  for (const [width, hits] of counts) {
+    if (hits > modalHits || (hits === modalHits && width > modal)) {
+      modal = width;
+      modalHits = hits;
+    }
+  }
+  return rows.findIndex((row) => row.length === modal && row.filter((c) => c !== '').length >= 2);
+}
+
+  Object.assign(__exports, { detectDelimiter, parseCSV, findTableStart });
+};
+__factories["lib/dates.js"] = function (__exports, __require) {
+/** Date parsing (bank exports are inconsistent) and period bucketing. */
+
+const MONTH_NAMES = {
+  jan: 1, ocak: 1, janvier: 1, ene: 1,
+  feb: 2, şub: 2, sub: 2, fev: 2, fevrier: 2, février: 2,
+  mar: 3, mart: 3, mars: 3, marz: 3, märz: 3,
+  apr: 4, nis: 4, avr: 4, abr: 4,
+  may: 5, mai: 5, mayıs: 5, mayis: 5, mayo: 5,
+  jun: 6, haz: 6, juin: 6, jun_: 6,
+  jul: 7, tem: 7, juil: 7,
+  aug: 8, ağu: 8, agu: 8, aout: 8, août: 8, ago: 8,
+  sep: 9, eyl: 9, set: 9,
+  oct: 10, eki: 10, okt: 10, out: 10,
+  nov: 11, kas: 11, nou: 11,
+  dec: 12, ara: 12, dez: 12, dic: 12,
+};
+
+function pad(n) {
+  return String(n).padStart(2, '0');
+}
+
+function iso(year, month, day) {
+  if (!year || !month || !day) return null;
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+  let fullYear = year;
+  if (fullYear < 100) fullYear += fullYear > 70 ? 1900 : 2000;
+  if (fullYear < 1900 || fullYear > 2200) return null;
+  const date = new Date(Date.UTC(fullYear, month - 1, day));
+  if (date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
+  return `${fullYear}-${pad(month)}-${pad(day)}`;
+}
+
+/**
+ * Parse a date cell to `YYYY-MM-DD`.
+ * `order` disambiguates numeric dates: 'DMY' (default) or 'MDY'.
+ */
+function parseDate(raw, order = 'DMY') {
+  if (raw === null || raw === undefined) return null;
+  if (raw instanceof Date) return iso(raw.getUTCFullYear(), raw.getUTCMonth() + 1, raw.getUTCDate());
+
+  const text = String(raw).trim().replace(/ /g, ' ');
+  if (text === '') return null;
+
+  // Strip a trailing time component: "2024-03-01 14:22:10", "01/03/2024T00:00"
+  const core = text.split(/[T ]/)[0].trim() || text;
+
+  let m = core.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (m) return iso(+m[1], +m[2], +m[3]);
+
+  m = core.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/);
+  if (m) {
+    const a = +m[1];
+    const b = +m[2];
+    const year = +m[3];
+    if (a > 12 && b <= 12) return iso(year, b, a);
+    if (b > 12 && a <= 12) return iso(year, a, b);
+    return order === 'MDY' ? iso(year, a, b) : iso(year, b, a);
+  }
+
+  m = core.match(/^(\d{8})$/);
+  if (m) return iso(+m[1].slice(0, 4), +m[1].slice(4, 6), +m[1].slice(6, 8));
+
+  // "12 Mar 2024", "12-Mar-24", "Mar 12, 2024"
+  m = text.match(/^(\d{1,2})[\s-]*([\p{L}]{3,})\.?[\s-]*(\d{2,4})$/u);
+  if (m) {
+    const month = MONTH_NAMES[m[2].slice(0, 3).toLowerCase()];
+    if (month) return iso(+m[3], month, +m[1]);
+  }
+  m = text.match(/^([\p{L}]{3,})\.?[\s-]*(\d{1,2}),?[\s-]*(\d{2,4})$/u);
+  if (m) {
+    const month = MONTH_NAMES[m[1].slice(0, 3).toLowerCase()];
+    if (month) return iso(+m[3], month, +m[2]);
+  }
+  return null;
+}
+
+/**
+ * Look at a whole column of dates and decide whether they are day-first or
+ * month-first. Returns 'DMY', 'MDY' or null when it cannot be told apart.
+ */
+function detectDateOrder(samples) {
+  let dayFirst = 0;
+  let monthFirst = 0;
+  for (const sample of samples) {
+    const m = String(sample ?? '').trim().split(/[T ]/)[0].match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/);
+    if (!m) continue;
+    const a = +m[1];
+    const b = +m[2];
+    if (a > 12 && b <= 12) dayFirst += 1;
+    else if (b > 12 && a <= 12) monthFirst += 1;
+  }
+  if (dayFirst > monthFirst) return 'DMY';
+  if (monthFirst > dayFirst) return 'MDY';
+  return null;
+}
+
+function isValidISODate(value) {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function toUTCDate(isoDate) {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+}
+
+function monthKey(isoDate) {
+  return isoDate.slice(0, 7);
+}
+
+function yearKey(isoDate) {
+  return isoDate.slice(0, 4);
+}
+
+/** ISO-8601 week key, e.g. `2024-W09`. `weekStart` is 1 (Mon) or 0 (Sun). */
+function weekKey(isoDate, weekStart = 1) {
+  const date = toUTCDate(isoDate);
+  const day = (date.getUTCDay() - weekStart + 7) % 7;
+  date.setUTCDate(date.getUTCDate() - day + 3); // Thursday of this week
+  const year = date.getUTCFullYear();
+  const firstThursday = new Date(Date.UTC(year, 0, 4));
+  const firstDay = (firstThursday.getUTCDay() - weekStart + 7) % 7;
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDay + 3);
+  const week = 1 + Math.round((date - firstThursday) / (7 * 24 * 3600 * 1000));
+  return `${year}-W${String(week).padStart(2, '0')}`;
+}
+
+function periodKey(isoDate, granularity, weekStart = 1) {
+  if (granularity === 'week') return weekKey(isoDate, weekStart);
+  if (granularity === 'year') return yearKey(isoDate);
+  return monthKey(isoDate);
+}
+
+/** Start date (inclusive) of a period key, used for sorting and ranges. */
+function periodStart(key, weekStart = 1) {
+  if (/^\d{4}$/.test(key)) return `${key}-01-01`;
+  if (/^\d{4}-\d{2}$/.test(key)) return `${key}-01`;
+  const m = key.match(/^(\d{4})-W(\d{2})$/);
+  if (m) {
+    const year = +m[1];
+    const week = +m[2];
+    const firstThursday = new Date(Date.UTC(year, 0, 4));
+    const offset = (firstThursday.getUTCDay() - weekStart + 7) % 7;
+    firstThursday.setUTCDate(firstThursday.getUTCDate() - offset);
+    firstThursday.setUTCDate(firstThursday.getUTCDate() + (week - 1) * 7);
+    return firstThursday.toISOString().slice(0, 10);
+  }
+  return key;
+}
+
+function addMonths(isoDate, count) {
+  const date = toUTCDate(isoDate);
+  const day = date.getUTCDate();
+  date.setUTCDate(1);
+  date.setUTCMonth(date.getUTCMonth() + count);
+  const lastDay = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
+  date.setUTCDate(Math.min(day, lastDay));
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(isoDate, count) {
+  return new Date(toUTCDate(isoDate).getTime() + count * 86400000).toISOString().slice(0, 10);
+}
+
+function daysBetween(a, b) {
+  return Math.round((toUTCDate(b) - toUTCDate(a)) / 86400000);
+}
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** Human label for a period key: "Mar 2024", "Week of 4 Mar 2024", "2024". */
+function periodLabel(key, locale = undefined, weekStart = 1) {
+  if (/^\d{4}$/.test(key)) return key;
+  if (/^\d{4}-\d{2}$/.test(key)) {
+    const date = toUTCDate(`${key}-01`);
+    return date.toLocaleDateString(locale, { month: 'short', year: 'numeric', timeZone: 'UTC' });
+  }
+  if (/^\d{4}-W\d{2}$/.test(key)) {
+    const start = periodStart(key, weekStart);
+    const date = toUTCDate(start);
+    return date.toLocaleDateString(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  }
+  return key;
+}
+
+  Object.assign(__exports, { parseDate, detectDateOrder, isValidISODate, toUTCDate, monthKey, yearKey, weekKey, periodKey, periodStart, addMonths, addDays, daysBetween, todayISO, periodLabel });
+};
+__factories["lib/detect.js"] = function (__exports, __require) {
+/**
+ * Works out what the columns of an unknown bank CSV mean, then turns rows into
+ * transactions. Everything is a guess the user can override in the import
+ * preview - detection only has to be right often enough to save typing.
+ */
+const { parseAmount } = __require("lib/money.js");
+const { parseDate, detectDateOrder } = __require("lib/dates.js");
+const PATTERNS = {
+  date: /\b(date|datum|fecha|data|tarih|posted|booking|value\s*date|transaction\s*date|islem\s*tarihi|işlem\s*tarihi)\b/i,
+  description: /\b(description|details|detail|memo|payee|narrative|reference|merchant|name|beneficiary|counterparty|concepto|libell|verwendungszweck|buchungstext|aciklama|açıklama)\b/i,
+  amount: /\b(amount|betrag|montant|importe|valore|valor|tutar|value|sum|net)\b/i,
+  debit: /\b(debit|withdrawal|withdrawals|paid\s*out|money\s*out|outflow|expense|soll|borc|borç|gider|charge)\b/i,
+  credit: /\b(credit|deposit|deposits|paid\s*in|money\s*in|inflow|income|haben|alacak|gelir)\b/i,
+  balance: /\b(balance|saldo|solde|kontostand|bakiye|running\s*total)\b/i,
+  currency: /\b(currency|ccy|waehrung|währung|devise|para\s*birimi)\b/i,
+  type: /\b(type|transaction\s*type|dc|d\/c|debit\/credit|kind|direction|islem\s*turu|işlem\s*türü)\b/i,
+  account: /\b(account|konto|compte|cuenta|hesap|iban|card)\b/i,
+};
+
+function scoreColumn(rows, index, test) {
+  let hits = 0;
+  let seen = 0;
+  for (const row of rows) {
+    const cell = row[index];
+    if (cell === undefined || cell === '') continue;
+    seen += 1;
+    if (test(cell)) hits += 1;
+  }
+  return seen === 0 ? 0 : hits / seen;
+}
+
+function averageLength(rows, index) {
+  let total = 0;
+  let seen = 0;
+  for (const row of rows) {
+    const cell = row[index];
+    if (!cell) continue;
+    total += cell.length;
+    seen += 1;
+  }
+  return seen === 0 ? 0 : total / seen;
+}
+
+/**
+ * @param {string[]} headers
+ * @param {string[][]} rows sample data rows (without the header)
+ * @returns {{date:number|null, description:number[], amount:number|null,
+ *   debit:number|null, credit:number|null, balance:number|null,
+ *   currency:number|null, type:number|null, dateOrder:string}}
+ */
+function detectColumns(headers, rows) {
+  const used = new Set();
+  const byHeader = (key) => {
+    const index = headers.findIndex((h, i) => !used.has(i) && PATTERNS[key].test(h || ''));
+    if (index >= 0) used.add(index);
+    return index >= 0 ? index : null;
+  };
+
+  // Header names win; content analysis fills the gaps.
+  let date = byHeader('date');
+  const debit = byHeader('debit');
+  const credit = byHeader('credit');
+  const balance = byHeader('balance');
+  let amount = byHeader('amount');
+  const currency = byHeader('currency');
+  const type = byHeader('type');
+  let description = byHeader('description');
+
+  const numericCols = headers
+    .map((_, i) => i)
+    .filter((i) => i !== balance && scoreColumn(rows, i, (c) => parseAmount(c) !== null) > 0.8);
+
+  if (date === null) {
+    let best = null;
+    let bestScore = 0.6;
+    headers.forEach((_, i) => {
+      const score = scoreColumn(rows, i, (c) => parseDate(c) !== null);
+      if (score > bestScore) {
+        bestScore = score;
+        best = i;
+      }
+    });
+    date = best;
+    if (date !== null) used.add(date);
+  }
+
+  if (amount === null && debit === null && credit === null) {
+    const candidates = numericCols.filter((i) => i !== date && !used.has(i));
+    // An amount column usually contains both positive and negative values, or
+    // at least varies more than a running balance.
+    let best = null;
+    let bestScore = -1;
+    for (const i of candidates) {
+      const values = rows.map((r) => parseAmount(r[i])).filter((v) => v !== null);
+      if (values.length === 0) continue;
+      const hasNegative = values.some((v) => v < 0);
+      const distinct = new Set(values).size / values.length;
+      const score = (hasNegative ? 2 : 0) + distinct;
+      if (score > bestScore) {
+        bestScore = score;
+        best = i;
+      }
+    }
+    amount = best;
+    if (amount !== null) used.add(amount);
+  }
+
+  if (description === null) {
+    let best = null;
+    let bestLength = 3;
+    headers.forEach((_, i) => {
+      if (used.has(i) || i === date || i === amount) return;
+      if (scoreColumn(rows, i, (c) => parseAmount(c) !== null) > 0.5) return;
+      const length = averageLength(rows, i);
+      if (length > bestLength) {
+        bestLength = length;
+        best = i;
+      }
+    });
+    description = best;
+  }
+
+  const descriptions = description === null ? [] : [description];
+  // A second text column (payee + memo) often carries useful detail.
+  headers.forEach((_, i) => {
+    if (descriptions.includes(i) || used.has(i) || i === date || i === amount) return;
+    if (!PATTERNS.description.test(headers[i] || '')) return;
+    descriptions.push(i);
+  });
+
+  const dateOrder = date === null ? 'DMY' : detectDateOrder(rows.map((r) => r[date])) || 'DMY';
+
+  return { date, description: descriptions, amount, debit, credit, balance, currency, type, dateOrder };
+}
+
+const CREDIT_WORDS = /\b(credit|cr|deposit|in|income|alacak|gelir|haben|incoming)\b/i;
+const DEBIT_WORDS = /\b(debit|dr|db|withdrawal|out|payment|expense|borc|borç|gider|soll|outgoing)\b/i;
+
+/**
+ * Decide the sign convention of a single amount column.
+ * Returns true when expenses are recorded as positive numbers.
+ */
+function detectExpensesArePositive(rows, mapping) {
+  if (mapping.amount === null || mapping.amount === undefined) return false;
+  const values = rows.map((r) => parseAmount(r[mapping.amount])).filter((v) => v !== null && v !== 0);
+  if (values.length === 0) return false;
+  const negatives = values.filter((v) => v < 0).length;
+  if (negatives > 0) return false; // mixed signs: the file already tells us
+  // All positive: a type column decides, otherwise assume the file lists spending.
+  if (mapping.type !== null && mapping.type !== undefined) {
+    const debits = rows.filter((r) => DEBIT_WORDS.test(r[mapping.type] || '')).length;
+    const credits = rows.filter((r) => CREDIT_WORDS.test(r[mapping.type] || '')).length;
+    if (debits + credits > 0) return false; // signs come from the type column
+  }
+  return true;
+}
+
+/**
+ * Turn raw rows into draft transactions using a mapping.
+ * @returns {{rows:Array, skipped:Array<{row:string[], reason:string}>}}
+ */
+function mapRows(rows, mapping) {
+  const out = [];
+  const skipped = [];
+  const order = mapping.dateOrder || 'DMY';
+
+  for (const row of rows) {
+    const rawDate = mapping.date === null ? '' : row[mapping.date];
+    const date = parseDate(rawDate, order);
+    if (!date) {
+      if (row.some((c) => c !== '')) skipped.push({ row, reason: 'no readable date' });
+      continue;
+    }
+
+    let amount = null;
+    if (mapping.debit !== null && mapping.debit !== undefined
+      || mapping.credit !== null && mapping.credit !== undefined) {
+      const debit = mapping.debit === null || mapping.debit === undefined
+        ? null : parseAmount(row[mapping.debit]);
+      const credit = mapping.credit === null || mapping.credit === undefined
+        ? null : parseAmount(row[mapping.credit]);
+      if (debit !== null && debit !== 0) amount = -Math.abs(debit);
+      else if (credit !== null && credit !== 0) amount = Math.abs(credit);
+    } else if (mapping.amount !== null && mapping.amount !== undefined) {
+      amount = parseAmount(row[mapping.amount]);
+      if (amount !== null) {
+        if (mapping.expensesArePositive) amount = -amount;
+        if (mapping.type !== null && mapping.type !== undefined) {
+          const typeCell = row[mapping.type] || '';
+          if (DEBIT_WORDS.test(typeCell) && !CREDIT_WORDS.test(typeCell)) amount = -Math.abs(amount);
+          else if (CREDIT_WORDS.test(typeCell) && !DEBIT_WORDS.test(typeCell)) amount = Math.abs(amount);
+        }
+      }
+    }
+
+    if (amount === null) {
+      skipped.push({ row, reason: 'no readable amount' });
+      continue;
+    }
+
+    const description = (mapping.description || [])
+      .map((i) => row[i])
+      .filter((part) => part && part.trim() !== '')
+      .join(' · ');
+
+    out.push({
+      date,
+      amount,
+      description: description || '(no description)',
+      currency: mapping.currency === null || mapping.currency === undefined
+        ? null : (row[mapping.currency] || '').trim().toUpperCase() || null,
+      type: mapping.type === null || mapping.type === undefined ? null : row[mapping.type] || null,
+    });
+  }
+  return { rows: out, skipped };
+}
+
+  Object.assign(__exports, { detectColumns, detectExpensesArePositive, mapRows });
+};
+__factories["lib/hash.js"] = function (__exports, __require) {
+/**
+ * Fast non-cryptographic hash (FNV-1a, 64-bit) used only for transaction
+ * identity/deduplication - never for secrets.
+ */
+function fnv1a(text) {
+  let h1 = 0x811c9dc5;
+  let h2 = 0x01000193;
+  for (let i = 0; i < text.length; i += 1) {
+    const code = text.charCodeAt(i);
+    h1 ^= code;
+    h1 = Math.imul(h1, 0x01000193) >>> 0;
+    h2 ^= code + i;
+    h2 = Math.imul(h2, 0x85ebca6b) >>> 0;
+  }
+  return (h1 >>> 0).toString(16).padStart(8, '0') + (h2 >>> 0).toString(16).padStart(8, '0');
+}
+
+/** Identity of a transaction: same date, same amount, same merchant, same account. */
+function transactionKey({ date, amountCents, merchantKey, account }) {
+  return fnv1a([date, amountCents, merchantKey, account || ''].join('|'));
+}
+
+  Object.assign(__exports, { fnv1a, transactionKey });
+};
+__factories["lib/import.js"] = function (__exports, __require) {
+/**
+ * The import pipeline: raw file text -> preview -> deduplicated transactions.
+ * Pure functions only, so the tricky parts are testable without a browser.
+ */
+const { parseCSV, findTableStart, detectDelimiter } = __require("lib/csv.js");
+const { detectColumns, mapRows, detectExpensesArePositive } = __require("lib/detect.js");
+const { looksLikeOFX, parseOFX } = __require("lib/ofx.js");
+const { redact, normalizeMerchant, merchantLabel, collapse } = __require("lib/text.js");
+const { transactionKey } = __require("lib/hash.js");
+const { toCents } = __require("lib/money.js");
+const { applyRules } = __require("lib/categorize.js");
+/**
+ * Read a statement file into a preview the user can correct before importing.
+ * @returns {{kind:'csv'|'ofx', headers:string[], sample:string[][], mapping:object,
+ *   rows:Array, skipped:Array}}
+ */
+function readStatement(text, { dateOrder } = {}) {
+  if (looksLikeOFX(text)) {
+    const parsed = parseOFX(text);
+    return {
+      kind: 'ofx',
+      headers: ['Date', 'Description', 'Amount'],
+      sample: parsed.rows.slice(0, 8).map((r) => [r.date, r.description, String(r.amount)]),
+      mapping: { dateOrder: 'ISO', expensesArePositive: false, currency: parsed.currency },
+      rows: parsed.rows,
+      skipped: parsed.skipped,
+    };
+  }
+
+  const delimiter = detectDelimiter(text);
+  const table = parseCSV(text, delimiter);
+  const start = findTableStart(table);
+  const headers = table[start] || [];
+  const body = table.slice(start + 1).filter((row) => row.some((cell) => cell !== ''));
+  const mapping = detectColumns(headers, body.slice(0, 50));
+  if (dateOrder) mapping.dateOrder = dateOrder;
+  mapping.expensesArePositive = detectExpensesArePositive(body, mapping);
+  mapping.delimiter = delimiter;
+  mapping.headerRow = start;
+
+  const mapped = mapRows(body, mapping);
+  return {
+    kind: 'csv',
+    headers,
+    sample: body.slice(0, 8),
+    body,
+    mapping,
+    rows: mapped.rows,
+    skipped: mapped.skipped,
+  };
+}
+
+/** Re-run the mapping after the user tweaks it in the preview. */
+function remap(body, mapping) {
+  return mapRows(body, mapping);
+}
+
+/**
+ * Turn mapped rows into stored transactions.
+ * @param {object} options currency, account, redactPII, importId
+ */
+function buildTransactions(rows, options = {}) {
+  const {
+    currency = 'EUR', account = '', redactPII = true, importId = 'manual',
+  } = options;
+  return rows.map((row, index) => {
+    const cleaned = collapse(redactPII ? redact(row.description) : row.description);
+    const merchantKey = normalizeMerchant(cleaned);
+    const amountCents = toCents(row.amount);
+    return {
+      id: `tx_${importId}_${index}`,
+      date: row.date,
+      amountCents,
+      description: cleaned,
+      merchantKey,
+      merchantLabel: merchantLabel(cleaned),
+      currency: row.currency || currency,
+      account,
+      category: 'Uncategorised',
+      categorySource: 'fallback',
+      ruleId: null,
+      excluded: false,
+      note: '',
+      importId,
+      key: transactionKey({ date: row.date, amountCents, merchantKey, account }),
+    };
+  });
+}
+
+/**
+ * Drop rows already present from an earlier upload.
+ *
+ * Identical repeat purchases on one day are legitimate, so identity is counted
+ * rather than set-based: if the vault already holds two matching rows and the
+ * new file has three, exactly one is added.
+ *
+ * @returns {{added:Array, duplicates:Array}}
+ */
+function deduplicate(incoming, existing) {
+  const counts = new Map();
+  for (const tx of existing) counts.set(tx.key, (counts.get(tx.key) || 0) + 1);
+
+  const seen = new Map();
+  const added = [];
+  const duplicates = [];
+  for (const tx of incoming) {
+    const index = (seen.get(tx.key) || 0) + 1;
+    seen.set(tx.key, index);
+    if (index <= (counts.get(tx.key) || 0)) duplicates.push(tx);
+    else added.push(tx);
+  }
+  return { added, duplicates };
+}
+
+/**
+ * Full pipeline for a parsed file.
+ * @returns {{added:Array, duplicates:Array, skipped:Array}}
+ */
+function prepareImport(rows, existing, rules, options = {}) {
+  const built = buildTransactions(rows, options);
+  const { added, duplicates } = deduplicate(built, existing);
+  return { added: applyRules(added, rules, options), duplicates };
+}
+
+  Object.assign(__exports, { readStatement, remap, buildTransactions, deduplicate, prepareImport });
+};
+__factories["lib/money.js"] = function (__exports, __require) {
+/** Amount parsing and formatting for messy bank-export numbers. */
+
+const CURRENCY_CHARS = /[^\d.,\-+()\s]/g;
+
+/**
+ * Parse an amount cell into a number.
+ *
+ * Handles: "1.234,56", "1,234.56", "-12.50", "12.50-", "(12.50)", "€ 12,50",
+ * "12,50 TL", "1 234,56", "12.50 CR" / "12.50 DR".
+ * Returns null when the cell holds no usable number.
+ */
+function parseAmount(raw) {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw === 'number') return Number.isFinite(raw) ? raw : null;
+
+  let text = String(raw).replace(/ /g, ' ').trim();
+  if (text === '') return null;
+
+  let sign = 1;
+  const upper = text.toUpperCase();
+  // Credit/debit markers used by some banks instead of a minus sign.
+  if (/\b(DR|DB|DEBIT)\b/.test(upper)) sign = -1;
+  if (/\b(CR|CREDIT)\b/.test(upper)) sign = 1;
+  if (/^\(.*\)$/.test(text)) {
+    sign = -1;
+    text = text.slice(1, -1);
+  }
+  if (/-\s*$/.test(text)) {
+    sign = -1;
+    text = text.replace(/-\s*$/, '');
+  }
+
+  text = text.replace(CURRENCY_CHARS, '').replace(/\s/g, '').replace(/[()]/g, '');
+  if (text.startsWith('-')) {
+    sign = -1;
+    text = text.slice(1);
+  } else if (text.startsWith('+')) {
+    text = text.slice(1);
+  }
+  if (text === '' || !/\d/.test(text)) return null;
+
+  const lastComma = text.lastIndexOf(',');
+  const lastDot = text.lastIndexOf('.');
+  let normalized;
+  if (lastComma >= 0 && lastDot >= 0) {
+    // Whichever separator comes last is the decimal one.
+    const decimalSep = lastComma > lastDot ? ',' : '.';
+    const thousandSep = decimalSep === ',' ? '.' : ',';
+    normalized = text.split(thousandSep).join('').replace(decimalSep, '.');
+  } else if (lastComma >= 0 || lastDot >= 0) {
+    const sep = lastComma >= 0 ? ',' : '.';
+    const idx = lastComma >= 0 ? lastComma : lastDot;
+    const decimals = text.length - idx - 1;
+    const occurrences = text.split(sep).length - 1;
+    if (occurrences > 1 || decimals === 3) {
+      // "1.234.567" or "1,234" -> grouping separator, not a decimal point.
+      normalized = text.split(sep).join('');
+    } else {
+      normalized = text.replace(sep, '.');
+    }
+  } else {
+    normalized = text;
+  }
+
+  const value = Number.parseFloat(normalized);
+  if (!Number.isFinite(value)) return null;
+  return sign * value;
+}
+
+/** Money is stored as integer minor units to keep sums exact. */
+function toCents(value) {
+  return Math.round(value * 100);
+}
+
+function fromCents(cents) {
+  return cents / 100;
+}
+
+function formatMoney(cents, currency = 'EUR', locale = undefined) {
+  const value = fromCents(cents);
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 2,
+    }).format(value);
+  } catch {
+    return `${value.toFixed(2)} ${currency}`;
+  }
+}
+
+/** Compact form for chart axes: 12.4k, 1.2M. */
+function formatCompact(cents, currency = 'EUR', locale = undefined) {
+  const value = fromCents(cents);
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value);
+  } catch {
+    return `${Math.round(value)}`;
+  }
+}
+
+  Object.assign(__exports, { parseAmount, toCents, fromCents, formatMoney, formatCompact });
+};
+__factories["lib/ofx.js"] = function (__exports, __require) {
+/** Reader for OFX / QFX statement files (SGML 1.x and XML 2.x variants). */
+const { parseAmount } = __require("lib/money.js");
+const { parseDate } = __require("lib/dates.js");
+function tagValue(block, tag) {
+  const match = block.match(new RegExp(`<${tag}>([^<\\r\\n]*)`, 'i'));
+  return match ? match[1].trim() : '';
+}
+
+function parseOFXDate(value) {
+  const digits = String(value).replace(/[^\d]/g, '');
+  if (digits.length >= 8) return parseDate(digits.slice(0, 8));
+  return null;
+}
+
+function looksLikeOFX(text) {
+  return /<(OFX|STMTTRN)\b/i.test(text) || /^OFXHEADER/im.test(text);
+}
+
+/** @returns {{rows:Array, skipped:Array, currency:string|null}} */
+function parseOFX(text) {
+  const rows = [];
+  const skipped = [];
+  const currency = tagValue(text, 'CURDEF') || null;
+  const blocks = text.match(/<STMTTRN>[\s\S]*?<\/STMTTRN>/gi) || [];
+
+  for (const block of blocks) {
+    const date = parseOFXDate(tagValue(block, 'DTPOSTED') || tagValue(block, 'DTUSER'));
+    const amount = parseAmount(tagValue(block, 'TRNAMT'));
+    if (!date || amount === null) {
+      skipped.push({ row: [block.slice(0, 120)], reason: 'incomplete OFX record' });
+      continue;
+    }
+    const name = tagValue(block, 'NAME');
+    const memo = tagValue(block, 'MEMO');
+    const unique = [...new Set([name, memo].filter(Boolean))];
+    rows.push({
+      date,
+      amount,
+      description: unique.join(' · ') || '(no description)',
+      currency,
+      type: tagValue(block, 'TRNTYPE') || null,
+    });
+  }
+  return { rows, skipped, currency };
+}
+
+  Object.assign(__exports, { looksLikeOFX, parseOFX });
+};
+__factories["lib/text.js"] = function (__exports, __require) {
+/**
+ * Description clean-up: redaction of identifiers, and merchant normalisation
+ * used for grouping, deduplication and recurring-payment detection.
+ */
+
+const NOISE_PREFIXES = [
+  'card payment to', 'card payment', 'pos payment', 'pos purchase', 'purchase at',
+  'direct debit', 'standing order', 'bank transfer', 'sepa direct debit',
+  'sepa credit transfer', 'sepa', 'faster payment', 'bacs', 'ach debit', 'ach credit',
+  'payment to', 'payment from', 'transfer to', 'transfer from', 'debit card',
+  'credit card', 'contactless', 'visa', 'mastercard', 'maestro', 'iban',
+  'kartli islem', 'kartli işlem', 'para transferi', 'havale', 'eft', 'odeme', 'ödeme',
+];
+
+const NOISE_TOKENS = /\b(x{2,}\d*|ref|reference|trn|trans|transaction|auth|authorisation|authorization|no|nr|id|tid|mid|inv|invoice|order|ord|receipt|value|date|on|pos|atm|eur|usd|gbp|try|tl)\b/gi;
+
+/**
+ * Mask things that identify a person or an account. Runs on every imported
+ * description so the stored data set stays free of account identifiers even
+ * though it never leaves the device.
+ */
+function redact(text) {
+  if (!text) return '';
+  let out = String(text);
+  // IBAN, written either compactly or in groups of four. The digit guard stops
+  // an ordinary word after a token like "GB29" from being eaten.
+  const maskIban = (match, prefix, rest) => {
+    const compact = (prefix + rest).replace(/\s/g, '');
+    if (compact.length < 14 || compact.replace(/\D/g, '').length < 8) return match;
+    return `${prefix}•••${compact.slice(-4)}`;
+  };
+  out = out.replace(/\b([A-Z]{2}\d{2})([A-Z0-9]{10,30})\b/g, maskIban);
+  out = out.replace(/\b([A-Z]{2}\d{2})((?: [A-Z0-9]{4}){2,7}(?: [A-Z0-9]{1,3})?)\b/g, maskIban);
+  // Card numbers, 13-19 digits with optional separators: keep the last 4.
+  out = out.replace(/\b(?:\d[ -]?){12,18}\d\b/g, (match) => `••••${match.replace(/\D/g, '').slice(-4)}`);
+  // Any other long identifier (account/customer/national id numbers).
+  out = out.replace(/\b\d{9,}\b/g, (match) => `••••${match.slice(-4)}`);
+  out = out.replace(/\b[\w.+-]+@[\w-]+\.[\w.]{2,}\b/g, '•••@•••');
+  return out.replace(/\s{2,}/g, ' ').trim();
+}
+
+/** Loose key used to group the same merchant across statements. */
+function normalizeMerchant(description) {
+  if (!description) return '';
+  let out = String(description).toLowerCase();
+  out = out.replace(/[•]/g, ' ');
+  for (const prefix of NOISE_PREFIXES) {
+    if (out.startsWith(prefix)) {
+      out = out.slice(prefix.length);
+      break;
+    }
+  }
+  out = out
+    .replace(/\b[a-z]{2}\d{2}\b/g, ' ') // IBAN country+check remnant, e.g. "gb29"
+    .replace(/\b[a-z]*\d{4,}[a-z]*\b/g, ' ') // long reference numbers
+    .replace(/\d{1,2}[-/.]\d{1,2}([-/.]\d{2,4})?/g, ' ') // embedded dates
+    .replace(/\*/g, ' ')
+    .replace(/[^\p{L}\p{N}&' ]+/gu, ' ')
+    .replace(NOISE_TOKENS, ' ')
+    .replace(/\b\d+\b/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  // Keep the first few meaningful words - the tail is usually reference noise.
+  const words = out.split(' ').filter(Boolean).slice(0, 4);
+  return words.join(' ');
+}
+
+/** Title-cased merchant label for display. */
+function merchantLabel(description) {
+  const key = normalizeMerchant(description);
+  if (!key) return 'Unknown';
+  return key.replace(/\b[\p{L}]/gu, (c) => c.toUpperCase());
+}
+
+function collapse(text) {
+  return String(text ?? '').replace(/\s+/g, ' ').trim();
+}
+
+  Object.assign(__exports, { redact, normalizeMerchant, merchantLabel, collapse });
+};
+__factories["main.js"] = function (__exports, __require) {
+/**
+ * Entry point. Shows the lock screen until the vault is open, then the app.
+ *
+ * Nothing in this app makes a network request - the page's Content-Security-Policy
+ * blocks outbound connections entirely, which is why there are no third-party
+ * scripts, fonts or analytics anywhere in the bundle.
+ */
+const { store } = __require("state.js");
+const { renderLock } = __require("ui/lock.js");
+const { renderShell } = __require("ui/shell.js");
+const { applyTheme } = __require("ui/settings.js");
+const root = document.getElementById('app');
+let shell = null;
+
+function showLock() {
+  if (shell) {
+    shell.destroy();
+    shell = null;
+  }
+  renderLock(root, { onUnlocked: showApp });
+}
+
+function showApp() {
+  applyTheme(store.prefs.theme);
+  shell = renderShell(root, { onLocked: showLock });
+}
+
+applyTheme(store.prefs.theme);
+showLock();
+
+// Warn before a refresh loses an in-flight save.
+window.addEventListener('beforeunload', (event) => {
+  if (store.saving) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+
+  Object.assign(__exports, {  });
+};
+__factories["state.js"] = function (__exports, __require) {
+/**
+ * In-memory application state and the actions that change it.
+ *
+ * The decrypted data only ever lives in this module's memory. Every mutation
+ * re-encrypts and writes the whole vault; locking drops the key and the data.
+ */
+const { DEFAULT_CATEGORIES, applyRules, ruleFromTransaction } = __require("lib/categorize.js");
+const { prepareImport } = __require("lib/import.js");
+const { deriveKey, newSalt } = __require("crypto.js");
+const { loadVaultRecord, saveVaultRecord, sealVault, unsealVault, createVault, destroyVault, loadPrefs, savePrefs, VAULT_FORMAT } = __require("storage.js");
+const DATA_VERSION = 1;
+
+function emptyData() {
+  return {
+    version: DATA_VERSION,
+    createdAt: new Date().toISOString(),
+    settings: {
+      currency: 'EUR',
+      locale: '',
+      weekStart: 1,
+      includeTransfers: false,
+      redactPII: true,
+      autoLockMinutes: 10,
+    },
+    categories: DEFAULT_CATEGORIES,
+    transactions: [],
+    rules: [],
+    goals: [],
+    imports: [],
+  };
+}
+
+const listeners = new Set();
+
+const store = {
+  locked: true,
+  data: null,
+  key: null,
+  salt: null,
+  prefs: loadPrefs(),
+  saving: false,
+  lastError: null,
+};
+
+function subscribe(listener) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function emit() {
+  for (const listener of listeners) listener(store);
+}
+
+function options() {
+  const settings = store.data?.settings || emptyData().settings;
+  return {
+    weekStart: settings.weekStart,
+    includeTransfers: settings.includeTransfers,
+    categories: store.data?.categories || DEFAULT_CATEGORIES,
+  };
+}
+
+let saveTimer = null;
+let waiters = [];
+let inFlight = null;
+
+/**
+ * Re-encrypt and persist, coalescing a burst of edits into one write.
+ * Every caller gets a promise that settles when their data has actually landed.
+ */
+function persist({ immediate = false } = {}) {
+  if (store.locked || !store.key) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    waiters.push({ resolve, reject });
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(runSave, immediate ? 0 : 400);
+  });
+}
+
+async function runSave() {
+  saveTimer = null;
+  const settled = waiters;
+  waiters = [];
+  if (store.locked || !store.key) {
+    settled.forEach((waiter) => waiter.resolve());
+    return;
+  }
+  // Serialise writes so an older snapshot can never land after a newer one.
+  const previous = inFlight;
+  inFlight = (async () => {
+    if (previous) await previous.catch(() => {});
+    store.saving = true;
+    emit();
+    try {
+      const record = await sealVault(store.key, store.salt, store.data);
+      await saveVaultRecord(record);
+      store.lastError = null;
+      settled.forEach((waiter) => waiter.resolve());
+    } catch (error) {
+      store.lastError = error.message || String(error);
+      settled.forEach((waiter) => waiter.reject(error));
+    } finally {
+      store.saving = false;
+      emit();
+    }
+  })();
+  await inFlight;
+}
+
+/** Mutate the data and save. */
+function update(mutator) {
+  if (!store.data) return;
+  mutator(store.data);
+  emit();
+  persist().catch(() => { /* surfaced through store.lastError */ });
+}
+
+async function vaultExists() {
+  return (await loadVaultRecord()) !== null;
+}
+
+async function createNewVault(passphrase) {
+  const data = emptyData();
+  const { key, salt } = await createVault(passphrase, data);
+  store.key = key;
+  store.salt = salt;
+  store.data = data;
+  store.locked = false;
+  emit();
+}
+
+async function unlock(passphrase) {
+  const record = await loadVaultRecord();
+  if (!record) throw new Error('No vault on this device yet.');
+  const { key, salt, data } = await unsealVault(record, passphrase);
+  store.key = key;
+  store.salt = salt;
+  store.data = migrate(data);
+  store.locked = false;
+  emit();
+}
+
+function lock() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = null;
+  waiters.forEach((waiter) => waiter.resolve());
+  waiters = [];
+  store.locked = true;
+  store.data = null;
+  store.key = null;
+  store.salt = null;
+  emit();
+}
+
+function migrate(data) {
+  const base = emptyData();
+  return {
+    ...base,
+    ...data,
+    settings: { ...base.settings, ...(data.settings || {}) },
+    categories: data.categories?.length ? data.categories : base.categories,
+    version: DATA_VERSION,
+  };
+}
+
+function setPref(key, value) {
+  store.prefs = { ...store.prefs, [key]: value };
+  savePrefs(store.prefs);
+  emit();
+}
+
+/* ---------------------------------------------------------------- actions */
+
+/** @returns {{added:number, duplicates:number, skipped:number}} */
+function importStatement(rows, { filename, skipped = 0, account = '' }) {
+  const importId = `imp_${Date.now().toString(36)}`;
+  const settings = store.data.settings;
+  const result = prepareImport(rows, store.data.transactions, store.data.rules, {
+    currency: settings.currency,
+    account,
+    redactPII: settings.redactPII,
+    importId,
+  });
+
+  update((data) => {
+    data.transactions = data.transactions.concat(result.added);
+    data.transactions.sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
+    data.imports.unshift({
+      id: importId,
+      filename,
+      importedAt: new Date().toISOString(),
+      added: result.added.length,
+      duplicates: result.duplicates.length,
+      skipped,
+      account,
+    });
+  });
+
+  return { added: result.added.length, duplicates: result.duplicates.length, skipped };
+}
+
+function undoImport(importId) {
+  update((data) => {
+    data.transactions = data.transactions.filter((tx) => tx.importId !== importId);
+    data.imports = data.imports.filter((entry) => entry.id !== importId);
+  });
+}
+
+function setCategory(txId, category, { alsoCreateRule = false } = {}) {
+  update((data) => {
+    const tx = data.transactions.find((t) => t.id === txId);
+    if (!tx) return;
+    tx.category = category;
+    tx.categorySource = 'manual';
+    if (alsoCreateRule) {
+      const rule = ruleFromTransaction(tx, category);
+      data.rules = [rule, ...data.rules.filter((r) => !(r.field === rule.field && r.value === rule.value))];
+      data.transactions = applyRules(data.transactions, data.rules);
+      const again = data.transactions.find((t) => t.id === txId);
+      if (again) {
+        again.category = category;
+        again.categorySource = 'manual';
+      }
+    }
+  });
+}
+
+function setExcluded(txId, excluded) {
+  update((data) => {
+    const tx = data.transactions.find((t) => t.id === txId);
+    if (tx) tx.excluded = excluded;
+  });
+}
+
+function setNote(txId, note) {
+  update((data) => {
+    const tx = data.transactions.find((t) => t.id === txId);
+    if (tx) tx.note = note;
+  });
+}
+
+function addRule(rule) {
+  update((data) => {
+    data.rules = [{ enabled: true, createdAt: new Date().toISOString(), ...rule }, ...data.rules];
+    data.transactions = applyRules(data.transactions, data.rules);
+  });
+}
+
+function updateRule(id, patch) {
+  update((data) => {
+    data.rules = data.rules.map((rule) => (rule.id === id ? { ...rule, ...patch } : rule));
+    data.transactions = applyRules(data.transactions, data.rules);
+  });
+}
+
+function deleteRule(id) {
+  update((data) => {
+    data.rules = data.rules.filter((rule) => rule.id !== id);
+    data.transactions = data.transactions.map((tx) => (
+      tx.ruleId === id ? { ...tx, categorySource: 'fallback', ruleId: null } : tx
+    ));
+    data.transactions = applyRules(data.transactions, data.rules);
+  });
+}
+
+/** Re-run every rule, optionally clearing manual overrides too. */
+function recategorizeAll({ includeManual = false } = {}) {
+  update((data) => {
+    const source = includeManual
+      ? data.transactions.map((tx) => ({ ...tx, categorySource: 'fallback' }))
+      : data.transactions;
+    data.transactions = applyRules(source, data.rules);
+  });
+}
+
+function saveGoal(goal) {
+  update((data) => {
+    const id = goal.id || `goal_${Date.now().toString(36)}`;
+    const existing = data.goals.findIndex((g) => g.id === id);
+    const value = { ...goal, id };
+    if (existing >= 0) data.goals[existing] = value;
+    else data.goals.push(value);
+  });
+}
+
+function deleteGoal(id) {
+  update((data) => {
+    data.goals = data.goals.filter((goal) => goal.id !== id);
+  });
+}
+
+function updateSettings(patch) {
+  update((data) => {
+    data.settings = { ...data.settings, ...patch };
+  });
+}
+
+async function changePassphrase(currentPassphrase, nextPassphrase) {
+  const record = await loadVaultRecord();
+  if (!record) throw new Error('No vault to re-key.');
+  await unsealVault(record, currentPassphrase); // verifies the current passphrase
+  const salt = newSalt();
+  const key = await deriveKey(nextPassphrase, salt);
+  const next = await sealVault(key, salt, store.data);
+  await saveVaultRecord(next);
+  store.key = key;
+  store.salt = salt;
+  emit();
+}
+
+async function wipeEverything() {
+  await destroyVault();
+  lock();
+}
+
+/* ------------------------------------------------------------ backup / export */
+
+/** Encrypted backup: the same sealed blob, safe to store anywhere. */
+async function exportEncryptedBackup() {
+  const record = await sealVault(store.key, store.salt, store.data);
+  return JSON.stringify(record, null, 2);
+}
+
+async function restoreEncryptedBackup(json, passphrase) {
+  const record = JSON.parse(json);
+  if (record.format !== VAULT_FORMAT) throw new Error('This is not a finance tracker backup file.');
+  const { key, salt, data } = await unsealVault(record, passphrase);
+  store.key = key;
+  store.salt = salt;
+  store.data = migrate(data);
+  store.locked = false;
+  await saveVaultRecord(record);
+  emit();
+}
+
+/** Plain CSV export - unencrypted by definition, the UI warns about it. */
+function exportCSV(transactions = store.data.transactions) {
+  const header = ['date', 'description', 'merchant', 'category', 'amount', 'currency', 'account', 'excluded', 'note'];
+  const escape = (value) => {
+    const text = String(value ?? '');
+    return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  };
+  const lines = [header.join(',')];
+  for (const tx of transactions) {
+    lines.push([
+      tx.date, tx.description, tx.merchantLabel, tx.category,
+      (tx.amountCents / 100).toFixed(2), tx.currency, tx.account,
+      tx.excluded ? 'yes' : 'no', tx.note,
+    ].map(escape).join(','));
+  }
+  return lines.join('\n');
+}
+
+/* ------------------------------------------------------------- auto-lock */
+
+let idleTimer = null;
+
+function noteActivity() {
+  if (store.locked) return;
+  if (idleTimer) clearTimeout(idleTimer);
+  const minutes = store.data?.settings?.autoLockMinutes ?? 10;
+  if (!minutes) return;
+  idleTimer = setTimeout(() => {
+    persist({ immediate: true }).finally(lock);
+  }, minutes * 60 * 1000);
+}
+
+function stopIdleTimer() {
+  if (idleTimer) clearTimeout(idleTimer);
+  idleTimer = null;
+}
+
+  Object.assign(__exports, { DATA_VERSION, emptyData, store, subscribe, emit, options, persist, update, vaultExists, createNewVault, unlock, lock, setPref, importStatement, undoImport, setCategory, setExcluded, setNote, addRule, updateRule, deleteRule, recategorizeAll, saveGoal, deleteGoal, updateSettings, changePassphrase, wipeEverything, exportEncryptedBackup, restoreEncryptedBackup, exportCSV, noteActivity, stopIdleTimer });
+};
+__factories["storage.js"] = function (__exports, __require) {
+/**
+ * Local persistence. The encrypted vault lives in IndexedDB on this device;
+ * only non-sensitive UI preferences are stored in the clear.
+ */
+const { encryptJSON, decryptJSON, deriveKey, newSalt, toBase64, fromBase64, KDF_PARAMS } = __require("crypto.js");
+const DB_NAME = 'finance-tracker';
+const DB_VERSION = 1;
+const STORE = 'vault';
+const VAULT_KEY = 'main';
+const PREFS_KEY = 'finance-tracker.prefs';
+
+const VAULT_FORMAT = 'finance-tracker-vault';
+const VAULT_VERSION = 1;
+
+const VAULT_FALLBACK_KEY = 'finance-tracker.vault';
+
+/**
+ * Some browsers refuse IndexedDB on file:// pages. The vault is a single
+ * encrypted blob, so localStorage is an acceptable fallback - same ciphertext,
+ * same device, just a different drawer.
+ */
+const fallback = {
+  get() {
+    try {
+      const raw = localStorage.getItem(VAULT_FALLBACK_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  },
+  put(record) {
+    localStorage.setItem(VAULT_FALLBACK_KEY, JSON.stringify(record));
+  },
+  remove() {
+    try {
+      localStorage.removeItem(VAULT_FALLBACK_KEY);
+    } catch {
+      /* nothing to remove */
+    }
+  },
+};
+
+let useFallback = false;
+
+function openDB() {
+  if (useFallback || typeof indexedDB === 'undefined') return Promise.reject(new Error('no indexeddb'));
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function tx(db, mode, run) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(STORE, mode);
+    const store = transaction.objectStore(STORE);
+    const request = run(store);
+    transaction.oncomplete = () => resolve(request?.result);
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error);
+  });
+}
+
+/** @returns {Promise<object|null>} the stored (still encrypted) vault record */
+async function loadVaultRecord() {
+  let db;
+  try {
+    db = await openDB();
+  } catch {
+    useFallback = true;
+    return fallback.get();
+  }
+  try {
+    return (await tx(db, 'readonly', (store) => store.get(VAULT_KEY))) || null;
+  } catch {
+    useFallback = true;
+    return fallback.get();
+  } finally {
+    db.close();
+  }
+}
+
+async function saveVaultRecord(record) {
+  let db;
+  try {
+    db = await openDB();
+  } catch {
+    useFallback = true;
+    fallback.put(record);
+    return;
+  }
+  try {
+    await tx(db, 'readwrite', (store) => store.put(record, VAULT_KEY));
+  } catch (error) {
+    useFallback = true;
+    fallback.put(record);
+  } finally {
+    db.close();
+  }
+}
+
+async function destroyVault() {
+  fallback.remove();
+  let db;
+  try {
+    db = await openDB();
+  } catch {
+    return;
+  }
+  try {
+    await tx(db, 'readwrite', (store) => store.delete(VAULT_KEY));
+  } finally {
+    db.close();
+  }
+}
+
+async function hasVault() {
+  return (await loadVaultRecord()) !== null;
+}
+
+/** Build an encrypted vault record from plain data. */
+async function sealVault(key, salt, data) {
+  const payload = await encryptJSON(key, data);
+  return {
+    format: VAULT_FORMAT,
+    version: VAULT_VERSION,
+    kdf: { ...KDF_PARAMS, salt: toBase64(salt) },
+    cipher: 'AES-GCM',
+    iv: payload.iv,
+    data: payload.data,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Derive the key from a passphrase for an existing record and decrypt it.
+ * @returns {Promise<{key:CryptoKey, salt:Uint8Array, data:object}>}
+ */
+async function unsealVault(record, passphrase) {
+  const salt = fromBase64(record.kdf.salt);
+  const key = await deriveKey(passphrase, salt, record.kdf.iterations);
+  const data = await decryptJSON(key, { iv: record.iv, data: record.data });
+  return { key, salt, data };
+}
+
+/** Create a brand new vault for a passphrase. */
+async function createVault(passphrase, data) {
+  const salt = newSalt();
+  const key = await deriveKey(passphrase, salt);
+  const record = await sealVault(key, salt, data);
+  await saveVaultRecord(record);
+  return { key, salt, record };
+}
+
+/** Non-sensitive preferences (theme, auto-lock delay) kept outside the vault. */
+function loadPrefs() {
+  try {
+    return JSON.parse(localStorage.getItem(PREFS_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function savePrefs(prefs) {
+  try {
+    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  } catch {
+    /* storage may be disabled; preferences are optional */
+  }
+}
+
+  Object.assign(__exports, { VAULT_FORMAT, VAULT_VERSION, loadVaultRecord, saveVaultRecord, destroyVault, hasVault, sealVault, unsealVault, createVault, loadPrefs, savePrefs });
+};
+__factories["ui/common.js"] = function (__exports, __require) {
+/** Shared UI pieces: formatting bound to the user's settings, tiles, toasts. */
+const { el } = __require("dom.js");
+const { formatMoney } = __require("lib/money.js");
+const { periodLabel } = __require("lib/dates.js");
+const { store } = __require("state.js");
+function settings() {
+  return store.data?.settings || { currency: 'EUR', locale: '', weekStart: 1 };
+}
+
+function money(cents) {
+  const { currency, locale } = settings();
+  return formatMoney(cents, currency || 'EUR', locale || undefined);
+}
+
+function label(periodKeyValue) {
+  const { locale, weekStart } = settings();
+  return periodLabel(periodKeyValue, locale || undefined, weekStart);
+}
+
+function formatDate(isoDate) {
+  const { locale } = settings();
+  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString(locale || undefined, {
+    day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC',
+  });
+}
+
+function card(title, children, actions = null) {
+  return el('section', { class: 'card' }, [
+    title || actions
+      ? el('div', { class: 'card-head' }, [
+        title ? el('h2', { text: title }) : el('span'),
+        actions,
+      ])
+      : null,
+    ...(Array.isArray(children) ? children : [children]),
+  ]);
+}
+
+function stat(labelText, value, { tone = '', foot = '' } = {}) {
+  return el('div', { class: 'card stat' }, [
+    el('span', { class: 'stat-label', text: labelText }),
+    el('span', { class: `stat-value ${tone}`, text: value }),
+    foot ? el('span', { class: 'stat-foot', text: foot }) : null,
+  ]);
+}
+
+function field(labelText, control) {
+  return el('div', { class: 'field' }, [el('label', { text: labelText }), control]);
+}
+
+function segmented(optionList, current, onChange) {
+  return el('div', { class: 'segmented', role: 'tablist' }, optionList.map((option) => el('button', {
+    class: option.value === current ? 'is-active' : '',
+    role: 'tab',
+    'aria-selected': String(option.value === current),
+    text: option.label,
+    onclick: () => onChange(option.value),
+  })));
+}
+
+let toastTimer = null;
+
+function toast(message, tone = 'good') {
+  document.querySelectorAll('.toast').forEach((node) => node.remove());
+  const node = el('div', { class: `toast toast-${tone}`, text: message, role: 'status' });
+  document.body.appendChild(node);
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => node.remove(), 4200);
+}
+
+/** Download data as a file, entirely client-side (no upload anywhere). */
+function downloadFile(filename, content, type = 'application/json') {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = el('a', { href: url, download: filename });
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function categorySelect(value, onChange, { className = '' } = {}) {
+  const categories = store.data?.categories || [];
+  return el('select', {
+    class: className,
+    onchange: (event) => onChange(event.target.value),
+  }, categories.map((category) => el('option', {
+    value: category.name,
+    text: category.name,
+    selected: category.name === value,
+  })));
+}
+
+function tone(cents) {
+  return cents >= 0 ? 'is-net' : 'is-negative';
+}
+
+  Object.assign(__exports, { settings, money, label, formatDate, card, stat, field, segmented, toast, downloadFile, categorySelect, tone });
+};
+__factories["ui/dashboard.js"] = function (__exports, __require) {
+/** The overview: money in, money out, where it went, and what it is doing over time. */
+const { el } = __require("dom.js");
+const { store, options, setPref } = __require("state.js");
+const { byPeriod, byCategory, byMerchant, totals, cumulativeNet, inRange, insights, detectRecurring, categoryTrends, monthlyAverages, activeTransactions } = __require("lib/analytics.js");
+const { addMonths, todayISO, monthKey } = __require("lib/dates.js");
+const { incomeExpenseChart, cumulativeChart, categoryBars, legend } = __require("charts.js");
+const { card, stat, money, label, segmented, tone, formatDate } = __require("ui/common.js");
+const RANGES = [
+  { value: 'this-month', label: 'This month' },
+  { value: '3m', label: '3 months' },
+  { value: '12m', label: '12 months' },
+  { value: 'ytd', label: 'This year' },
+  { value: 'all', label: 'All time' },
+];
+
+function rangeBounds(range) {
+  const today = todayISO();
+  switch (range) {
+    case 'this-month': return { from: `${monthKey(today)}-01`, to: null };
+    case '3m': return { from: addMonths(today, -3), to: null };
+    case '12m': return { from: addMonths(today, -12), to: null };
+    case 'ytd': return { from: `${today.slice(0, 4)}-01-01`, to: null };
+    default: return { from: null, to: null };
+  }
+}
+
+function renderDashboard(navigate) {
+  const granularity = store.prefs.granularity || 'month';
+  const range = store.prefs.range || '12m';
+  const opts = { ...options(), granularity };
+  const all = store.data.transactions;
+  const { from, to } = rangeBounds(range);
+  const scoped = inRange(all, from, to);
+
+  if (all.length === 0) return emptyState(navigate);
+
+  const periods = byPeriod(scoped, opts);
+  const periodsWithLabels = periods.map((period) => ({ ...period, label: label(period.key) }));
+  const summary = totals(scoped, opts);
+  const spending = byCategory(scoped, 'out', opts);
+  const earning = byCategory(scoped, 'in', opts);
+  const merchants = byMerchant(scoped, 'out', opts);
+  const trail = cumulativeNet(periods).map((point) => ({ ...point, label: label(point.key) }));
+  const averages = monthlyAverages(scoped, opts);
+  const recurring = detectRecurring(all, opts);
+  const trends = categoryTrends(scoped, { ...opts, granularity: 'month' });
+  const highlights = insights(scoped, { ...opts, formatMoney: money });
+  const counted = activeTransactions(scoped, opts).length;
+
+  const periodWord = granularity === 'week' ? 'week' : granularity === 'year' ? 'year' : 'month';
+  const latest = periodsWithLabels[periodsWithLabels.length - 1];
+
+  return el('div', {}, [
+    el('div', { class: 'page-head' }, [
+      el('div', {}, [
+        el('h1', { text: 'Overview' }),
+        el('p', {
+          class: 'page-subtitle',
+          text: `${counted} transactions${from ? ` since ${formatDate(from)}` : ''}`
+            + `${store.data.settings.includeTransfers ? '' : ' · transfers excluded'}`,
+        }),
+      ]),
+      el('div', { class: 'btn-row' }, [
+        segmented(RANGES, range, (value) => setPref('range', value)),
+        segmented([
+          { value: 'week', label: 'Weekly' },
+          { value: 'month', label: 'Monthly' },
+          { value: 'year', label: 'Yearly' },
+        ], granularity, (value) => setPref('granularity', value)),
+      ]),
+    ]),
+
+    el('div', { class: 'grid grid-stats' }, [
+      stat('Money in', money(summary.incomeCents), {
+        tone: 'is-income',
+        foot: `${money(averages.incomeCents)} per month on average`,
+      }),
+      stat('Money out', money(summary.expenseCents), {
+        tone: 'is-expense',
+        foot: `${money(averages.expenseCents)} per month on average`,
+      }),
+      stat('Kept', money(summary.netCents), {
+        tone: tone(summary.netCents),
+        foot: summary.savingsRate === null
+          ? 'No income recorded in this range'
+          : `${(summary.savingsRate * 100).toFixed(0)}% of everything that came in`,
+      }),
+      stat(`Latest ${periodWord}`, latest ? money(latest.netCents) : '—', {
+        tone: latest ? tone(latest.netCents) : '',
+        foot: latest ? `${latest.label}: in ${money(latest.incomeCents)}, out ${money(latest.expenseCents)}` : '',
+      }),
+    ]),
+
+    el('div', { style: 'height:16px' }),
+
+    card('Income vs spending', [
+      incomeExpenseChart(periodsWithLabels, {
+        width: 760,
+        currency: store.data.settings.currency,
+        locale: store.data.settings.locale || undefined,
+        onSelect: (period) => navigate('transactions', { period: period.key, granularity }),
+      }),
+      legend([
+        { key: 'income', label: 'Money in' },
+        { key: 'expense', label: 'Money out' },
+      ]),
+      el('p', { class: 'stat-foot', style: 'margin-top:8px', text: `Click a ${periodWord} to see its transactions.` }),
+    ]),
+
+    el('div', { class: 'grid grid-two', style: 'margin-top:16px' }, [
+      card('Where your money goes', [
+        categoryBars(spending, {
+          currency: store.data.settings.currency,
+          locale: store.data.settings.locale || undefined,
+          limit: 10,
+          onSelect: (item) => navigate('transactions', { category: item.category, from, to }),
+        }),
+      ], spending.length > 10 ? el('span', { class: 'pill', text: `top 10 of ${spending.length}` }) : null),
+
+      card('What you kept over time', [
+        cumulativeChart(trail, {
+          width: 480,
+          currency: store.data.settings.currency,
+          locale: store.data.settings.locale || undefined,
+        }),
+        el('p', { class: 'stat-foot', style: 'margin-top:6px', text: 'Running total of money in minus money out across the range.' }),
+      ]),
+    ]),
+
+    el('div', { class: 'grid grid-two', style: 'margin-top:16px' }, [
+      card('Biggest places your money went', [
+        categoryBars(merchants.slice(0, 8).map((m) => ({ ...m, category: m.label })), {
+          currency: store.data.settings.currency,
+          locale: store.data.settings.locale || undefined,
+          limit: 8,
+          onSelect: (item) => navigate('transactions', { search: item.label, from, to }),
+        }),
+      ]),
+      card('Worth knowing', [
+        highlights.length === 0
+          ? el('p', { class: 'empty', text: 'Import another month to unlock trends.' })
+          : el('ul', { style: 'margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px' },
+            highlights.map((item) => el('li', { class: 'stat-foot', style: 'font-size:13.5px; color:var(--text-secondary)', text: item.text }))),
+        trends.length > 0 ? el('div', { style: 'margin-top:14px' }, [
+          el('h3', { text: 'Moved most vs your recent average' }),
+          el('div', { class: 'table-wrap', style: 'margin-top:8px' }, [
+            el('table', {}, [
+              el('tbody', {}, trends.slice(0, 5).map((row) => el('tr', {}, [
+                el('td', { text: row.category }),
+                el('td', { class: 'num', text: money(row.currentCents) }),
+                el('td', { class: 'num' }, [
+                  el('span', {
+                    class: `pill ${row.deltaCents > 0 ? 'pill-bad' : 'pill-good'}`,
+                    text: `${row.deltaCents > 0 ? '+' : ''}${money(row.deltaCents)}`,
+                  }),
+                ]),
+              ]))),
+            ]),
+          ]),
+        ]) : null,
+      ]),
+    ]),
+
+    recurring.length > 0 ? el('div', { style: 'margin-top:16px' }, [
+      card('Regular payments', [
+        el('p', { class: 'stat-foot', style: 'margin-bottom:10px', text: `${recurring.length} payments repeat on a schedule — about ${money(recurring.reduce((acc, r) => acc + r.monthlyCents, 0))} a month, ${money(recurring.reduce((acc, r) => acc + r.yearlyCents, 0))} a year.` }),
+        el('div', { class: 'table-wrap' }, [
+          el('table', {}, [
+            el('thead', {}, [el('tr', {}, [
+              el('th', { text: 'Payment' }), el('th', { text: 'Category' }), el('th', { text: 'Every' }),
+              el('th', { class: 'num', text: 'Typical' }), el('th', { class: 'num', text: 'Per month' }),
+              el('th', { text: 'Next expected' }),
+            ])]),
+            el('tbody', {}, recurring.slice(0, 8).map((item) => el('tr', {}, [
+              el('td', { text: item.label }),
+              el('td', {}, [el('span', { class: 'pill', text: item.category })]),
+              el('td', { text: item.cadence }),
+              el('td', { class: 'num', text: money(item.typicalCents) }),
+              el('td', { class: 'num', text: money(item.monthlyCents) }),
+              el('td', { text: formatDate(item.nextExpected) }),
+            ]))),
+          ]),
+        ]),
+      ], el('button', { class: 'btn-small', text: 'See all transactions', onclick: () => navigate('transactions') })),
+    ]) : null,
+
+    earning.length > 1 ? el('div', { style: 'margin-top:16px' }, [
+      card('Where your money comes from', [
+        el('div', { class: 'bar-list-wrap' }, [
+          (() => {
+            const node = categoryBars(earning, {
+              currency: store.data.settings.currency,
+              locale: store.data.settings.locale || undefined,
+              limit: 6,
+              onSelect: (item) => navigate('transactions', { category: item.category, from, to }),
+            });
+            node.classList.add('is-income');
+            return node;
+          })(),
+        ]),
+      ]),
+    ]) : null,
+  ]);
+}
+
+function emptyState(navigate) {
+  return el('div', {}, [
+    el('div', { class: 'page-head' }, [
+      el('div', {}, [
+        el('h1', { text: 'Overview' }),
+        el('p', { class: 'page-subtitle', text: 'Nothing imported yet.' }),
+      ]),
+    ]),
+    card(null, [
+      el('div', { class: 'dropzone', onclick: () => navigate('import') }, [
+        el('strong', { text: 'Start with one bank statement' }),
+        el('p', { text: 'Export a CSV (or OFX/QFX) from your bank and drop it in. It is read here in your browser — it never leaves this device.' }),
+        el('div', { style: 'height:14px' }),
+        el('button', { class: 'btn-primary', text: 'Import a statement' }),
+      ]),
+    ]),
+  ]);
+}
+
+  Object.assign(__exports, { rangeBounds, renderDashboard });
+};
+__factories["ui/goals.js"] = function (__exports, __require) {
+/** Savings goals: how far along, and whether the current pace gets there. */
+const { el, mount } = __require("dom.js");
+const { store, options, saveGoal, deleteGoal } = __require("state.js");
+const { goalProgress } = __require("lib/analytics.js");
+const { toCents } = __require("lib/money.js");
+const { todayISO, monthKey } = __require("lib/dates.js");
+const { progressMeter } = __require("charts.js");
+const { card, field, money, formatDate, toast } = __require("ui/common.js");
+function renderGoals() {
+  const container = el('div');
+  const listSlot = el('div');
+  const formSlot = el('div');
+
+  const redraw = () => {
+    mount(listSlot, store.data.goals.length === 0
+      ? card(null, [el('p', { class: 'empty', text: 'No goal yet. Set one below and every import updates your progress.' })])
+      : el('div', { class: 'grid grid-two' }, store.data.goals.map((goal) => goalCard(goal, redraw))));
+    mount(formSlot, goalForm(redraw));
+  };
+
+  mount(container, [
+    el('div', { class: 'page-head' }, [
+      el('div', {}, [
+        el('h1', { text: 'Goals' }),
+        el('p', { class: 'page-subtitle', text: 'Progress is measured from what you actually keep — money in minus money out since the goal started.' }),
+      ]),
+    ]),
+    listSlot,
+    el('div', { style: 'height:16px' }),
+    formSlot,
+  ]);
+
+  redraw();
+  return container;
+}
+
+function goalCard(goal, redraw) {
+  const progress = goalProgress(goal, store.data.transactions, options());
+  const percent = (progress.progress * 100).toFixed(0);
+
+  let verdict;
+  if (progress.remainingCents === 0) {
+    verdict = el('span', { class: 'pill pill-good', text: 'Reached 🎉' });
+  } else if (progress.onTrack === true) {
+    verdict = el('span', { class: 'pill pill-good', text: 'On track' });
+  } else if (progress.onTrack === false) {
+    verdict = el('span', { class: 'pill pill-bad', text: 'Behind pace' });
+  } else {
+    verdict = el('span', { class: 'pill', text: 'No deadline set' });
+  }
+
+  return card(goal.name, [
+    el('div', { style: 'display:flex; align-items:baseline; gap:10px; flex-wrap:wrap' }, [
+      el('span', { class: 'stat-value is-net', text: money(progress.savedCents) }),
+      el('span', { class: 'stat-foot', text: `of ${money(progress.targetCents)} · ${percent}%` }),
+    ]),
+    el('div', { style: 'height:10px' }),
+    progressMeter(progress.progress, { label: `${goal.name} progress` }),
+    el('div', { style: 'height:14px' }),
+    el('table', {}, [el('tbody', {}, [
+      row('Still to go', money(progress.remainingCents)),
+      row('You keep, per month', money(progress.monthlyNetCents)),
+      goal.targetDate ? row('Needed per month', money(progress.requiredMonthlyCents || 0)) : null,
+      goal.targetDate ? row('Deadline', formatDate(goal.targetDate)) : null,
+      row('At this pace', progress.projectedDate && progress.remainingCents > 0
+        ? `${formatDate(progress.projectedDate)} (${progress.monthsNeeded} months)`
+        : progress.remainingCents === 0 ? 'Done' : 'Not saving anything yet'),
+      row('Counting from', formatDate(goal.startDate)),
+    ].filter(Boolean))]),
+    el('div', { class: 'btn-row', style: 'margin-top:14px' }, [
+      verdict,
+      el('span', { style: 'flex:1' }),
+      el('button', {
+        class: 'btn-small btn-danger',
+        text: 'Delete',
+        onclick: () => {
+          if (window.confirm(`Delete the goal "${goal.name}"?`)) {
+            deleteGoal(goal.id);
+            redraw();
+          }
+        },
+      }),
+    ]),
+  ]);
+}
+
+function row(labelText, value) {
+  return el('tr', {}, [
+    el('td', { class: 'stat-foot', text: labelText }),
+    el('td', { class: 'num', text: value }),
+  ]);
+}
+
+function goalForm(redraw) {
+  const name = el('input', { placeholder: 'e.g. Emergency fund, deposit, trip' });
+  const target = el('input', { type: 'number', step: '0.01', min: '0', placeholder: '10000' });
+  const startAmount = el('input', { type: 'number', step: '0.01', min: '0', placeholder: '0' });
+  const startDate = el('input', { type: 'date', value: `${monthKey(todayISO())}-01` });
+  const targetDate = el('input', { type: 'date' });
+
+  return card('Add a goal', [
+    el('form', {
+      onsubmit: (event) => {
+        event.preventDefault();
+        const amount = Number.parseFloat(target.value);
+        if (!name.value.trim() || !Number.isFinite(amount) || amount <= 0) {
+          toast('Give the goal a name and a target amount.', 'bad');
+          return;
+        }
+        saveGoal({
+          name: name.value.trim(),
+          targetCents: toCents(amount),
+          startCents: toCents(Number.parseFloat(startAmount.value) || 0),
+          startDate: startDate.value || todayISO(),
+          targetDate: targetDate.value || null,
+        });
+        name.value = '';
+        target.value = '';
+        startAmount.value = '';
+        targetDate.value = '';
+        toast('Goal saved.');
+        redraw();
+      },
+    }, [
+      el('div', { class: 'field-row' }, [
+        field('Goal', name),
+        field(`Target amount (${store.data.settings.currency})`, target),
+        field('Already saved', startAmount),
+      ]),
+      el('div', { class: 'field-row' }, [
+        field('Count savings from', startDate),
+        field('Target date (optional)', targetDate),
+      ]),
+      el('div', { style: 'height:14px' }),
+      el('button', { class: 'btn-primary', type: 'submit', text: 'Save goal' }),
+    ]),
+  ]);
+}
+
+  Object.assign(__exports, { renderGoals });
+};
+__factories["ui/import.js"] = function (__exports, __require) {
+/**
+ * Statement import: drop a file, check what the app understood, confirm.
+ * The file is read with FileReader in this tab - it is never sent anywhere.
+ */
+const { el, mount } = __require("dom.js");
+const { store, importStatement, undoImport } = __require("state.js");
+const { readStatement, remap, buildTransactions } = __require("lib/import.js");
+const { applyRules } = __require("lib/categorize.js");
+const { card, field, money, toast, formatDate } = __require("ui/common.js");
+const ACCEPTED = '.csv,.tsv,.txt,.ofx,.qfx';
+
+let current = null; // { filename, parsed, mapping }
+
+function renderImport(navigate) {
+  const container = el('div');
+  const previewSlot = el('div');
+
+  function refreshPreview() {
+    mount(previewSlot, current ? previewCard(refreshPreview, navigate) : null);
+  }
+
+  async function handleFile(file) {
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      toast('That file is larger than 20 MB — is it really a statement?', 'bad');
+      return;
+    }
+    const text = await file.text();
+    try {
+      const parsed = readStatement(text);
+      if (parsed.rows.length === 0) {
+        toast('No transactions could be read from that file. Check the column mapping below.', 'bad');
+      }
+      current = { filename: file.name, parsed, mapping: { ...parsed.mapping } };
+      refreshPreview();
+      previewSlot.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (error) {
+      toast(`Could not read that file: ${error.message}`, 'bad');
+    }
+  }
+
+  const fileInput = el('input', {
+    type: 'file', accept: ACCEPTED, style: 'display:none',
+    onchange: (event) => handleFile(event.target.files?.[0]),
+  });
+
+  const dropzone = el('div', {
+    class: 'dropzone',
+    tabindex: '0',
+    role: 'button',
+    onclick: () => fileInput.click(),
+    onkeydown: (event) => { if (event.key === 'Enter') fileInput.click(); },
+    ondragover: (event) => { event.preventDefault(); dropzone.classList.add('is-over'); },
+    ondragleave: () => dropzone.classList.remove('is-over'),
+    ondrop: (event) => {
+      event.preventDefault();
+      dropzone.classList.remove('is-over');
+      handleFile(event.dataTransfer?.files?.[0]);
+    },
+  }, [
+    el('strong', { text: 'Drop this month’s statement here' }),
+    el('p', { text: 'CSV, TSV, OFX or QFX — whatever your bank exports. Excel files: save as CSV first.' }),
+    el('div', { style: 'height:12px' }),
+    el('button', { class: 'btn-primary', type: 'button', text: 'Choose a file' }),
+    fileInput,
+  ]);
+
+  mount(container, [
+    el('div', { class: 'page-head' }, [
+      el('div', {}, [
+        el('h1', { text: 'Import a statement' }),
+        el('p', { class: 'page-subtitle', text: 'Every month: export from your bank, drop it here. Repeats from an overlapping statement are detected and skipped.' }),
+      ]),
+    ]),
+    el('div', { class: 'notice' }, [
+      'The file is parsed inside this browser tab. Nothing is uploaded, and account numbers, IBANs and card numbers are masked out of the descriptions before anything is stored.',
+    ]),
+    dropzone,
+    previewSlot,
+    historyCard(),
+  ]);
+
+  refreshPreview();
+  return container;
+}
+
+function columnSelect(headers, value, onChange, { allowNone = true } = {}) {
+  return el('select', {
+    onchange: (event) => onChange(event.target.value === '' ? null : Number(event.target.value)),
+  }, [
+    allowNone ? el('option', { value: '', text: '— none —', selected: value === null || value === undefined }) : null,
+    ...headers.map((header, index) => el('option', {
+      value: String(index),
+      text: `${index + 1}. ${header || '(unnamed)'}`,
+      selected: value === index,
+    })),
+  ]);
+}
+
+function previewCard(refresh, navigate) {
+  const { parsed, mapping, filename } = current;
+  const isCSV = parsed.kind === 'csv';
+  const mapped = isCSV ? remap(parsed.body, mapping) : { rows: parsed.rows, skipped: parsed.skipped };
+  const preview = applyRules(
+    buildTransactions(mapped.rows.slice(0, 8), {
+      currency: store.data.settings.currency,
+      redactPII: store.data.settings.redactPII,
+      importId: 'preview',
+    }),
+    store.data.rules,
+  );
+
+  const set = (patch) => {
+    current.mapping = { ...current.mapping, ...patch };
+    refresh();
+  };
+
+  const controls = isCSV ? el('div', {}, [
+    el('div', { class: 'field-row' }, [
+      field('Date column', columnSelect(parsed.headers, mapping.date, (value) => set({ date: value }), { allowNone: false })),
+      field('Date order', el('select', {
+        onchange: (event) => set({ dateOrder: event.target.value }),
+      }, [
+        el('option', { value: 'DMY', text: 'Day first (31/01/2026)', selected: mapping.dateOrder === 'DMY' }),
+        el('option', { value: 'MDY', text: 'Month first (01/31/2026)', selected: mapping.dateOrder === 'MDY' }),
+      ])),
+      field('Description column', columnSelect(parsed.headers, mapping.description?.[0] ?? null, (value) => set({ description: value === null ? [] : [value] }))),
+    ]),
+    el('div', { class: 'field-row' }, [
+      field('Amount column', columnSelect(parsed.headers, mapping.amount, (value) => set({ amount: value }))),
+      field('Money out column', columnSelect(parsed.headers, mapping.debit, (value) => set({ debit: value }))),
+      field('Money in column', columnSelect(parsed.headers, mapping.credit, (value) => set({ credit: value }))),
+    ]),
+    mapping.amount !== null && mapping.amount !== undefined
+      ? el('label', { class: 'checkbox' }, [
+        el('input', {
+          type: 'checkbox',
+          checked: !!mapping.expensesArePositive,
+          onchange: (event) => set({ expensesArePositive: event.target.checked }),
+        }),
+        el('span', { text: 'Spending is written as a positive number in this file' }),
+      ])
+      : null,
+  ]) : el('p', { class: 'stat-foot', text: 'OFX files carry their own structure, so there is nothing to map.' });
+
+  const accountInput = el('input', {
+    placeholder: 'e.g. Main current account',
+    value: current.account || '',
+    oninput: (event) => { current.account = event.target.value; },
+  });
+
+  const readable = mapped.rows.length;
+  const skipped = mapped.skipped.length;
+
+  return card(`Check before importing — ${filename}`, [
+    el('p', {
+      class: readable === 0 ? 'notice notice-bad' : 'notice',
+      text: readable === 0
+        ? 'No rows could be read. Pick the right columns below and the preview will update.'
+        : `${readable} transactions read${skipped ? `, ${skipped} lines ignored (headers, totals or blanks)` : ''}. Check that the first rows look right.`,
+    }),
+    controls,
+    field('Which account is this? (optional)', accountInput),
+    el('div', { class: 'table-wrap' }, [
+      el('table', { class: 'preview-table' }, [
+        el('thead', {}, [el('tr', {}, [
+          el('th', { text: 'Date' }), el('th', { text: 'Description (masked)' }),
+          el('th', { text: 'Category' }), el('th', { class: 'num', text: 'Amount' }),
+        ])]),
+        el('tbody', {}, preview.length === 0
+          ? [el('tr', {}, [el('td', { colspan: '4', class: 'empty', text: 'Nothing to preview yet.' })])]
+          : preview.map((tx) => el('tr', {}, [
+            el('td', { text: formatDate(tx.date) }),
+            el('td', { text: tx.description }),
+            el('td', {}, [el('span', { class: 'pill', text: tx.category })]),
+            el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}`, text: money(tx.amountCents) }),
+          ]))),
+      ]),
+    ]),
+    el('div', { class: 'btn-row', style: 'margin-top:16px' }, [
+      el('button', {
+        class: 'btn-primary',
+        disabled: readable === 0,
+        text: `Import ${readable} transactions`,
+        onclick: () => {
+          const result = importStatement(mapped.rows, {
+            filename,
+            skipped,
+            account: current.account || '',
+          });
+          current = null;
+          toast(result.duplicates > 0
+            ? `Imported ${result.added} new transactions. ${result.duplicates} were already in your vault and were skipped.`
+            : `Imported ${result.added} transactions.`);
+          navigate('dashboard');
+        },
+      }),
+      el('button', { class: 'btn-ghost', text: 'Cancel', onclick: () => { current = null; refresh(); } }),
+    ]),
+  ]);
+}
+
+function historyCard() {
+  const imports = store.data.imports;
+  if (imports.length === 0) return null;
+  return el('div', { style: 'margin-top:16px' }, [
+    card('Import history', [
+      el('div', { class: 'table-wrap' }, [
+        el('table', {}, [
+          el('thead', {}, [el('tr', {}, [
+            el('th', { text: 'File' }), el('th', { text: 'When' }), el('th', { text: 'Account' }),
+            el('th', { class: 'num', text: 'Added' }), el('th', { class: 'num', text: 'Skipped as duplicate' }), el('th', {}),
+          ])]),
+          el('tbody', {}, imports.map((entry) => el('tr', {}, [
+            el('td', { text: entry.filename }),
+            el('td', { text: new Date(entry.importedAt).toLocaleString() }),
+            el('td', { text: entry.account || '—' }),
+            el('td', { class: 'num', text: String(entry.added) }),
+            el('td', { class: 'num', text: String(entry.duplicates) }),
+            el('td', { class: 'num' }, [
+              el('button', {
+                class: 'btn-small btn-danger',
+                text: 'Undo',
+                onclick: () => {
+                  if (window.confirm(`Remove the ${entry.added} transactions imported from ${entry.filename}?`)) {
+                    undoImport(entry.id);
+                    toast('Import undone.');
+                  }
+                },
+              }),
+            ]),
+          ]))),
+        ]),
+      ]),
+    ]),
+  ]);
+}
+
+  Object.assign(__exports, { renderImport });
+};
+__factories["ui/lock.js"] = function (__exports, __require) {
+/** First-run setup and the unlock screen. */
+const { el, mount } = __require("dom.js");
+const { passphraseStrength } = __require("crypto.js");
+const { createNewVault, unlock, restoreEncryptedBackup, vaultExists } = __require("state.js");
+const { field } = __require("ui/common.js");
+const STRENGTH_WORDS = ['too short', 'weak', 'fair', 'good', 'strong'];
+
+async function renderLock(root, { onUnlocked }) {
+  const exists = await vaultExists();
+  mount(root, exists ? unlockView(onUnlocked) : setupView(onUnlocked));
+}
+
+function head(title, subtitle) {
+  return el('div', { class: 'lock-head' }, [
+    el('div', { class: 'brand-mark' }),
+    el('h1', { text: title }),
+    el('p', { class: 'page-subtitle', text: subtitle }),
+  ]);
+}
+
+function setupView(onUnlocked) {
+  const passphrase = el('input', { type: 'password', autocomplete: 'new-password', placeholder: 'A long phrase you will remember' });
+  const confirm = el('input', { type: 'password', autocomplete: 'new-password', placeholder: 'Type it again' });
+  const meter = el('div', { class: 'strength' }, [0, 1, 2, 3].map(() => el('span')));
+  const hint = el('p', { class: 'stat-foot', text: 'Four random words make a strong, memorable passphrase.' });
+  const error = el('p', { class: 'error' });
+  const submit = el('button', { class: 'btn-primary', type: 'submit', text: 'Create my vault' });
+
+  passphrase.addEventListener('input', () => {
+    const score = passphraseStrength(passphrase.value);
+    meter.querySelectorAll('span').forEach((bar, index) => {
+      bar.className = index < score ? `on-${score}` : '';
+    });
+    hint.textContent = passphrase.value
+      ? `Passphrase strength: ${STRENGTH_WORDS[score]}`
+      : 'Four random words make a strong, memorable passphrase.';
+  });
+
+  const form = el('form', {
+    onsubmit: async (event) => {
+      event.preventDefault();
+      error.textContent = '';
+      if (passphrase.value.length < 8) {
+        error.textContent = 'Use at least 8 characters - longer is much better.';
+        return;
+      }
+      if (passphrase.value !== confirm.value) {
+        error.textContent = 'The two passphrases do not match.';
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = 'Encrypting…';
+      try {
+        await createNewVault(passphrase.value);
+        onUnlocked();
+      } catch (err) {
+        error.textContent = err.message || 'Could not create the vault.';
+        submit.disabled = false;
+        submit.textContent = 'Create my vault';
+      }
+    },
+  }, [
+    field('Choose a passphrase', passphrase),
+    meter,
+    hint,
+    el('div', { style: 'height:12px' }),
+    field('Confirm passphrase', confirm),
+    submit,
+    error,
+    el('p', { class: 'lock-note' }, [
+      'Your statements are read and stored ',
+      el('strong', { text: 'only on this device' }),
+      ', encrypted with this passphrase (AES-256-GCM). Nothing is uploaded, and there is no account and no password reset — if you forget the passphrase the data cannot be recovered by anyone, including you.',
+    ]),
+  ]);
+
+  return el('div', { class: 'lock-screen' }, [
+    el('div', { class: 'card lock-card' }, [
+      head('Set up your money vault', 'One passphrase, stored nowhere, protects everything.'),
+      form,
+      restoreBlock(onUnlocked),
+    ]),
+  ]);
+}
+
+function unlockView(onUnlocked) {
+  const passphrase = el('input', { type: 'password', autocomplete: 'current-password', placeholder: 'Your passphrase', autofocus: true });
+  const error = el('p', { class: 'error' });
+  const submit = el('button', { class: 'btn-primary', type: 'submit', text: 'Unlock' });
+
+  const form = el('form', {
+    onsubmit: async (event) => {
+      event.preventDefault();
+      error.textContent = '';
+      submit.disabled = true;
+      submit.textContent = 'Decrypting…';
+      try {
+        await unlock(passphrase.value);
+        onUnlocked();
+      } catch {
+        error.textContent = 'That passphrase does not open this vault.';
+        submit.disabled = false;
+        submit.textContent = 'Unlock';
+        passphrase.select();
+      }
+    },
+  }, [field('Passphrase', passphrase), submit, error]);
+
+  return el('div', { class: 'lock-screen' }, [
+    el('div', { class: 'card lock-card' }, [
+      head('Welcome back', 'Your data stays encrypted until you unlock it.'),
+      form,
+      restoreBlock(onUnlocked),
+    ]),
+  ]);
+}
+
+/** Restore from an encrypted backup file (e.g. on a new device). */
+function restoreBlock(onUnlocked) {
+  const fileInput = el('input', { type: 'file', accept: '.json,application/json', style: 'display:none' });
+  const error = el('p', { class: 'error' });
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const passphrase = window.prompt('Passphrase for this backup file:');
+    if (!passphrase) return;
+    try {
+      await restoreEncryptedBackup(text, passphrase);
+      onUnlocked();
+    } catch (err) {
+      error.textContent = err.message?.includes('not a finance tracker')
+        ? err.message
+        : 'Could not open that backup with that passphrase.';
+    }
+    fileInput.value = '';
+  });
+
+  return el('details', { style: 'margin-top:16px' }, [
+    el('summary', { class: 'stat-foot', style: 'cursor:pointer', text: 'Restore from an encrypted backup' }),
+    el('p', { class: 'lock-note', text: 'Pick a backup file you exported earlier. It is decrypted here on this device.' }),
+    el('button', { class: 'btn-small', type: 'button', text: 'Choose backup file', onclick: () => fileInput.click() }),
+    fileInput,
+    error,
+  ]);
+}
+
+  Object.assign(__exports, { renderLock });
+};
+__factories["ui/rules.js"] = function (__exports, __require) {
+/** Categorisation rules: the user's own on top of the built-in keyword list. */
+const { el, mount } = __require("dom.js");
+const { store, options, addRule, updateRule, deleteRule, recategorizeAll } = __require("state.js");
+const { byCategory } = __require("lib/analytics.js");
+const { card, field, money, toast, categorySelect } = __require("ui/common.js");
+function renderRules(navigate) {
+  const container = el('div');
+  const slot = el('div');
+  const redraw = () => mount(slot, [rulesCard(redraw), el('div', { style: 'height:16px' }), uncategorisedCard(navigate)]);
+
+  mount(container, [
+    el('div', { class: 'page-head' }, [
+      el('div', {}, [
+        el('h1', { text: 'Categories & rules' }),
+        el('p', { class: 'page-subtitle', text: 'Your rules run first, then a built-in list of a few hundred common merchants.' }),
+      ]),
+      el('div', { class: 'btn-row' }, [
+        el('button', {
+          class: 'btn-small',
+          text: 'Re-apply rules',
+          onclick: () => { recategorizeAll(); toast('Rules re-applied.'); redraw(); },
+        }),
+        el('button', {
+          class: 'btn-small btn-danger',
+          text: 'Re-apply, overwriting manual edits',
+          onclick: () => {
+            if (window.confirm('This clears the categories you set by hand and re-runs every rule. Continue?')) {
+              recategorizeAll({ includeManual: true });
+              toast('Everything re-categorised.');
+              redraw();
+            }
+          },
+        }),
+      ]),
+    ]),
+    newRuleCard(redraw),
+    el('div', { style: 'height:16px' }),
+    slot,
+  ]);
+
+  redraw();
+  return container;
+}
+
+function newRuleCard(redraw) {
+  let category = store.data.categories[0]?.name || 'Uncategorised';
+  const value = el('input', { placeholder: 'e.g. migros, uber, landlord' });
+  const type = el('select', {}, [
+    el('option', { value: 'contains', text: 'contains' }),
+    el('option', { value: 'startsWith', text: 'starts with' }),
+    el('option', { value: 'equals', text: 'is exactly' }),
+    el('option', { value: 'regex', text: 'matches regex' }),
+  ]);
+  const direction = el('select', {}, [
+    el('option', { value: 'any', text: 'in or out' }),
+    el('option', { value: 'out', text: 'money out only' }),
+    el('option', { value: 'in', text: 'money in only' }),
+  ]);
+  const picker = categorySelect(category, (next) => { category = next; });
+
+  return card('Add a rule', [
+    el('form', {
+      onsubmit: (event) => {
+        event.preventDefault();
+        if (!value.value.trim()) {
+          toast('Type the text to look for.', 'bad');
+          return;
+        }
+        addRule({
+          id: `rule_${Date.now().toString(36)}`,
+          field: 'description',
+          type: type.value,
+          value: value.value.trim(),
+          direction: direction.value === 'any' ? undefined : direction.value,
+          category,
+        });
+        value.value = '';
+        toast('Rule added and applied to everything already imported.');
+        redraw();
+      },
+    }, [
+      el('div', { class: 'field-row' }, [
+        field('When the description', type),
+        field('this text', value),
+        field('and it is', direction),
+        field('put it in', picker),
+      ]),
+      el('div', { style: 'height:14px' }),
+      el('button', { class: 'btn-primary', type: 'submit', text: 'Add rule' }),
+    ]),
+  ]);
+}
+
+function rulesCard(redraw) {
+  const rules = store.data.rules;
+  return card(`Your rules (${rules.length})`, [
+    rules.length === 0
+      ? el('p', { class: 'empty', text: 'No rules of your own yet. Use “Remember” on a transaction, or add one above.' })
+      : el('div', { class: 'table-wrap' }, [
+        el('table', {}, [
+          el('thead', {}, [el('tr', {}, [
+            el('th', { text: 'Match' }), el('th', { text: 'Text' }), el('th', { text: 'Category' }),
+            el('th', { text: 'Active' }), el('th', {}),
+          ])]),
+          el('tbody', {}, rules.map((rule) => el('tr', {}, [
+            el('td', { text: `${rule.field === 'merchant' ? 'merchant' : 'description'} ${rule.type}` }),
+            el('td', { text: rule.value }),
+            el('td', {}, [categorySelect(rule.category, (value) => {
+              updateRule(rule.id, { category: value });
+              redraw();
+            })]),
+            el('td', {}, [el('input', {
+              type: 'checkbox',
+              checked: rule.enabled !== false,
+              style: 'width:auto',
+              onchange: (event) => { updateRule(rule.id, { enabled: event.target.checked }); redraw(); },
+            })]),
+            el('td', { class: 'num' }, [el('button', {
+              class: 'btn-small btn-danger',
+              text: 'Delete',
+              onclick: () => { deleteRule(rule.id); redraw(); },
+            })]),
+          ]))),
+        ]),
+      ]),
+  ]);
+}
+
+/** What still has no home - the fastest way to improve the numbers. */
+function uncategorisedCard(navigate) {
+  const opts = options();
+  const uncategorised = store.data.transactions.filter((tx) => tx.category === 'Uncategorised' && !tx.excluded);
+  const groups = new Map();
+  for (const tx of uncategorised) {
+    const key = tx.merchantKey || tx.description;
+    const group = groups.get(key) || { label: tx.merchantLabel || tx.description, cents: 0, count: 0 };
+    group.cents += Math.abs(tx.amountCents);
+    group.count += 1;
+    groups.set(key, group);
+  }
+  const ranked = [...groups.values()].sort((a, b) => b.cents - a.cents).slice(0, 12);
+  const totalUncategorised = byCategory(store.data.transactions, 'out', opts)
+    .find((c) => c.category === 'Uncategorised');
+
+  return card('Still uncategorised', [
+    uncategorised.length === 0
+      ? el('p', { class: 'empty', text: 'Everything has a category. Nice.' })
+      : el('div', {}, [
+        el('p', {
+          class: 'stat-foot',
+          style: 'margin-bottom:12px',
+          text: `${uncategorised.length} transactions worth ${money(totalUncategorised?.cents || 0)} have no category yet. Sorting the biggest ones makes the charts much more useful.`,
+        }),
+        el('div', { class: 'table-wrap' }, [
+          el('table', {}, [
+            el('thead', {}, [el('tr', {}, [
+              el('th', { text: 'Merchant' }), el('th', { class: 'num', text: 'Times' }),
+              el('th', { class: 'num', text: 'Total' }), el('th', {}),
+            ])]),
+            el('tbody', {}, ranked.map((group) => el('tr', {}, [
+              el('td', { text: group.label }),
+              el('td', { class: 'num', text: String(group.count) }),
+              el('td', { class: 'num', text: money(group.cents) }),
+              el('td', { class: 'num' }, [el('button', {
+                class: 'btn-small',
+                text: 'Sort these',
+                onclick: () => navigate('transactions', { search: group.label, category: 'Uncategorised' }),
+              })]),
+            ]))),
+          ]),
+        ]),
+      ]),
+  ]);
+}
+
+  Object.assign(__exports, { renderRules });
+};
+__factories["ui/settings.js"] = function (__exports, __require) {
+/** Preferences, security controls and backups. */
+const { el, mount } = __require("dom.js");
+const { store, updateSettings, setPref, changePassphrase, exportEncryptedBackup, exportCSV, wipeEverything, lock, recategorizeAll } = __require("state.js");
+const { card, field, toast, downloadFile } = __require("ui/common.js");
+const CURRENCIES = ['EUR', 'USD', 'GBP', 'TRY', 'CHF', 'SEK', 'NOK', 'DKK', 'PLN', 'CAD', 'AUD', 'JPY'];
+
+function renderSettings(navigate, onLocked) {
+  const container = el('div');
+  const settings = store.data.settings;
+
+  mount(container, [
+    el('div', { class: 'page-head' }, [
+      el('div', {}, [
+        el('h1', { text: 'Settings' }),
+        el('p', { class: 'page-subtitle', text: 'Everything here applies to this device only.' }),
+      ]),
+    ]),
+
+    card('How your money is shown', [
+      el('div', { class: 'field-row' }, [
+        field('Currency', el('select', {
+          onchange: (event) => { updateSettings({ currency: event.target.value }); toast('Currency updated.'); },
+        }, CURRENCIES.map((code) => el('option', {
+          value: code, text: code, selected: settings.currency === code,
+        })))),
+        field('Number & date format', el('select', {
+          onchange: (event) => { updateSettings({ locale: event.target.value }); toast('Format updated.'); },
+        }, [
+          el('option', { value: '', text: 'Match my browser', selected: !settings.locale }),
+          ...['en-GB', 'en-US', 'de-DE', 'fr-FR', 'tr-TR', 'es-ES', 'nl-NL'].map((code) => el('option', {
+            value: code, text: code, selected: settings.locale === code,
+          })),
+        ])),
+        field('Weeks start on', el('select', {
+          onchange: (event) => updateSettings({ weekStart: Number(event.target.value) }),
+        }, [
+          el('option', { value: '1', text: 'Monday', selected: settings.weekStart === 1 }),
+          el('option', { value: '0', text: 'Sunday', selected: settings.weekStart === 0 }),
+        ])),
+        field('Appearance', el('select', {
+          onchange: (event) => {
+            setPref('theme', event.target.value);
+            applyTheme(event.target.value);
+          },
+        }, [
+          el('option', { value: '', text: 'Match my system', selected: !store.prefs.theme }),
+          el('option', { value: 'light', text: 'Light', selected: store.prefs.theme === 'light' }),
+          el('option', { value: 'dark', text: 'Dark', selected: store.prefs.theme === 'dark' }),
+        ])),
+      ]),
+      el('label', { class: 'checkbox' }, [
+        el('input', {
+          type: 'checkbox',
+          checked: settings.includeTransfers,
+          onchange: (event) => updateSettings({ includeTransfers: event.target.checked }),
+        }),
+        el('span', { text: 'Count transfers and savings moves as income/spending (off by default, so moving money between your own accounts does not inflate the totals)' }),
+      ]),
+    ]),
+
+    card('Security', [
+      el('div', { class: 'notice' }, [
+        'Your vault is encrypted with AES-256-GCM. The key is derived from your passphrase with PBKDF2-SHA256 (600,000 rounds) and never leaves this device — there is no server and no account.',
+      ]),
+      el('div', { class: 'field-row' }, [
+        field('Lock automatically after', el('select', {
+          onchange: (event) => updateSettings({ autoLockMinutes: Number(event.target.value) }),
+        }, [
+          { value: 1, text: '1 minute' }, { value: 5, text: '5 minutes' },
+          { value: 10, text: '10 minutes' }, { value: 30, text: '30 minutes' },
+          { value: 0, text: 'Never (not recommended)' },
+        ].map((option) => el('option', {
+          value: String(option.value), text: option.text, selected: settings.autoLockMinutes === option.value,
+        })))),
+      ]),
+      el('label', { class: 'checkbox' }, [
+        el('input', {
+          type: 'checkbox',
+          checked: settings.redactPII,
+          onchange: (event) => {
+            updateSettings({ redactPII: event.target.checked });
+            toast('Applies to statements you import from now on.');
+          },
+        }),
+        el('span', { text: 'Mask IBANs, card and account numbers in descriptions when importing' }),
+      ]),
+      el('div', { class: 'btn-row' }, [
+        el('button', { text: 'Lock now', onclick: () => { lock(); onLocked(); } }),
+        el('button', { text: 'Change passphrase', onclick: () => changePassphraseFlow() }),
+      ]),
+    ]),
+
+    card('Backups', [
+      el('p', { class: 'stat-foot', style: 'margin-bottom:12px' }, [
+        'Browser storage can be cleared by the browser itself. Export an encrypted backup now and then — it is the same sealed blob, useless to anyone without your passphrase, so it is safe in cloud storage or on a USB stick.',
+      ]),
+      el('div', { class: 'btn-row' }, [
+        el('button', {
+          class: 'btn-primary',
+          text: 'Download encrypted backup',
+          onclick: async () => {
+            const json = await exportEncryptedBackup();
+            downloadFile(`finance-vault-${new Date().toISOString().slice(0, 10)}.json`, json);
+            toast('Encrypted backup downloaded.');
+          },
+        }),
+        el('button', {
+          text: 'Download plain CSV',
+          onclick: () => {
+            if (!window.confirm('A CSV export is NOT encrypted — anyone who opens the file sees your transactions. Continue?')) return;
+            downloadFile(`transactions-${new Date().toISOString().slice(0, 10)}.csv`, exportCSV(), 'text/csv');
+            toast('Plain CSV downloaded — store it carefully.', 'bad');
+          },
+        }),
+      ]),
+    ]),
+
+    card('Data', [
+      el('p', { class: 'stat-foot', style: 'margin-bottom:12px', text: `${store.data.transactions.length} transactions, ${store.data.rules.length} rules, ${store.data.imports.length} imports, ${store.data.goals.length} goals.` }),
+      el('div', { class: 'btn-row' }, [
+        el('button', {
+          text: 'Re-categorise everything',
+          onclick: () => { recategorizeAll(); toast('Done.'); },
+        }),
+        el('button', {
+          class: 'btn-danger',
+          text: 'Delete the vault on this device',
+          onclick: async () => {
+            if (!window.confirm('This permanently deletes every transaction, rule and goal stored in this browser. Without a backup file it cannot be undone. Continue?')) return;
+            if (!window.confirm('Really delete everything?')) return;
+            await wipeEverything();
+            onLocked();
+          },
+        }),
+      ]),
+    ]),
+  ]);
+
+  return container;
+}
+
+function applyTheme(theme) {
+  if (theme) document.documentElement.dataset.theme = theme;
+  else delete document.documentElement.dataset.theme;
+}
+
+async function changePassphraseFlow() {
+  const current = window.prompt('Current passphrase:');
+  if (!current) return;
+  const next = window.prompt('New passphrase (at least 8 characters):');
+  if (!next) return;
+  if (next.length < 8) {
+    toast('That new passphrase is too short.', 'bad');
+    return;
+  }
+  const confirmed = window.prompt('Type the new passphrase again:');
+  if (confirmed !== next) {
+    toast('The new passphrases did not match.', 'bad');
+    return;
+  }
+  try {
+    await changePassphrase(current, next);
+    toast('Passphrase changed. Older backup files still need the old one.');
+  } catch {
+    toast('That current passphrase is not right.', 'bad');
+  }
+}
+
+  Object.assign(__exports, { renderSettings, applyTheme });
+};
+__factories["ui/shell.js"] = function (__exports, __require) {
+/** Navigation shell: sidebar, routing and the auto-lock activity watch. */
+const { el, mount } = __require("dom.js");
+const { store, subscribe, noteActivity, stopIdleTimer, lock, persist } = __require("state.js");
+const { hideTooltip } = __require("charts.js");
+const { renderDashboard } = __require("ui/dashboard.js");
+const { renderImport } = __require("ui/import.js");
+const { renderTransactions, setTransactionFilters } = __require("ui/transactions.js");
+const { renderGoals } = __require("ui/goals.js");
+const { renderRules } = __require("ui/rules.js");
+const { renderSettings } = __require("ui/settings.js");
+const ROUTES = [
+  { id: 'dashboard', label: 'Overview', icon: '◎', autoRefresh: true },
+  { id: 'import', label: 'Import', icon: '↑' },
+  { id: 'transactions', label: 'Transactions', icon: '≡' },
+  { id: 'goals', label: 'Goals', icon: '◆' },
+  { id: 'rules', label: 'Categories', icon: '⌥' },
+  { id: 'settings', label: 'Settings', icon: '⚙' },
+];
+
+function renderShell(root, { onLocked }) {
+  let route = 'dashboard';
+  const viewSlot = el('main', { class: 'main' });
+  const savingNote = el('span', { class: 'saving-dot' });
+
+  const navigate = (next, params) => {
+    route = next;
+    if (next === 'transactions') setTransactionFilters(params || {});
+    hideTooltip();
+    draw();
+    window.scrollTo({ top: 0 });
+  };
+
+  function drawView() {
+    switch (route) {
+      case 'import': return renderImport(navigate);
+      case 'transactions': return renderTransactions(navigate);
+      case 'goals': return renderGoals(navigate);
+      case 'rules': return renderRules(navigate);
+      case 'settings': return renderSettings(navigate, onLocked);
+      default: return renderDashboard(navigate);
+    }
+  }
+
+  function draw() {
+    mount(viewSlot, drawView());
+    root.querySelectorAll('.nav-link').forEach((link) => {
+      link.classList.toggle('is-active', link.dataset.route === route);
+    });
+  }
+
+  const sidebar = el('nav', { class: 'sidebar', 'aria-label': 'Sections' }, [
+    el('div', { class: 'brand' }, [
+      el('div', { class: 'brand-mark' }),
+      el('span', { class: 'brand-name', text: 'My Money' }),
+    ]),
+    ...ROUTES.map((entry) => el('button', {
+      class: 'nav-link',
+      dataset: { route: entry.id },
+      onclick: () => navigate(entry.id),
+    }, [
+      el('span', { class: 'nav-icon', text: entry.icon }),
+      el('span', { text: entry.label }),
+    ])),
+    el('div', { class: 'nav-spacer' }),
+    savingNote,
+    el('button', {
+      class: 'nav-link',
+      onclick: async () => {
+        await persist({ immediate: true }).catch(() => {});
+        lock();
+        onLocked();
+      },
+    }, [
+      el('span', { class: 'nav-icon', text: '⏻' }),
+      el('span', { text: 'Lock' }),
+    ]),
+  ]);
+
+  mount(root, [el('div', { class: 'app' }, [sidebar, viewSlot])]);
+  draw();
+
+  const unsubscribe = subscribe(() => {
+    savingNote.textContent = store.saving ? 'Saving…' : (store.lastError ? `Save failed: ${store.lastError}` : '');
+    if (store.locked) {
+      unsubscribe();
+      detachActivity();
+      onLocked();
+      return;
+    }
+    const entry = ROUTES.find((r) => r.id === route);
+    if (entry?.autoRefresh) draw();
+  });
+
+  const activity = () => noteActivity();
+  const events = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+  events.forEach((name) => window.addEventListener(name, activity, { passive: true }));
+  const onHidden = () => {
+    if (document.visibilityState === 'hidden') persist({ immediate: true }).catch(() => {});
+  };
+  document.addEventListener('visibilitychange', onHidden);
+  noteActivity();
+
+  function detachActivity() {
+    events.forEach((name) => window.removeEventListener(name, activity));
+    document.removeEventListener('visibilitychange', onHidden);
+    stopIdleTimer();
+  }
+
+  return { navigate, destroy: () => { unsubscribe(); detachActivity(); } };
+}
+
+  Object.assign(__exports, { renderShell });
+};
+__factories["ui/transactions.js"] = function (__exports, __require) {
+/** The full ledger: search, filter, fix categories, exclude one-offs. */
+const { el, mount } = __require("dom.js");
+const { store, options, setCategory, setExcluded, setNote, exportCSV } = __require("state.js");
+const { periodKey } = __require("lib/dates.js");
+const { categoryKind } = __require("lib/categorize.js");
+const { card, money, formatDate, categorySelect, toast, downloadFile, field } = __require("ui/common.js");
+const PAGE_SIZE = 150;
+
+let filters = { search: '', category: '', direction: 'all', from: '', to: '', account: '', period: null, granularity: 'month' };
+let visible = PAGE_SIZE;
+
+function setTransactionFilters(params = {}) {
+  filters = {
+    search: params.search || '',
+    category: params.category || '',
+    direction: params.direction || 'all',
+    from: params.from || '',
+    to: params.to || '',
+    account: params.account || '',
+    period: params.period || null,
+    granularity: params.granularity || 'month',
+  };
+  visible = PAGE_SIZE;
+}
+
+function matches(tx) {
+  const { weekStart } = store.data.settings;
+  if (filters.period && periodKey(tx.date, filters.granularity, weekStart) !== filters.period) return false;
+  if (filters.category && tx.category !== filters.category) return false;
+  if (filters.account && tx.account !== filters.account) return false;
+  if (filters.from && tx.date < filters.from) return false;
+  if (filters.to && tx.date > filters.to) return false;
+  if (filters.direction === 'in' && tx.amountCents < 0) return false;
+  if (filters.direction === 'out' && tx.amountCents >= 0) return false;
+  if (filters.search) {
+    const needle = filters.search.toLowerCase();
+    const haystack = `${tx.description} ${tx.merchantLabel} ${tx.category} ${tx.note}`.toLowerCase();
+    if (!haystack.includes(needle)) return false;
+  }
+  return true;
+}
+
+function renderTransactions(navigate) {
+  const container = el('div');
+  const listSlot = el('div');
+
+  const redraw = () => mount(listSlot, listCard(redraw));
+
+  const searchInput = el('input', {
+    type: 'search', placeholder: 'Search description, merchant or note…', value: filters.search,
+    oninput: (event) => {
+      filters.search = event.target.value;
+      visible = PAGE_SIZE;
+      redraw();
+    },
+  });
+
+  const categoryFilter = el('select', {
+    onchange: (event) => { filters.category = event.target.value; redraw(); },
+  }, [
+    el('option', { value: '', text: 'All categories', selected: filters.category === '' }),
+    ...(store.data.categories).map((category) => el('option', {
+      value: category.name, text: category.name, selected: filters.category === category.name,
+    })),
+  ]);
+
+  const directionFilter = el('select', {
+    onchange: (event) => { filters.direction = event.target.value; redraw(); },
+  }, [
+    el('option', { value: 'all', text: 'In and out', selected: filters.direction === 'all' }),
+    el('option', { value: 'out', text: 'Money out only', selected: filters.direction === 'out' }),
+    el('option', { value: 'in', text: 'Money in only', selected: filters.direction === 'in' }),
+  ]);
+
+  const fromInput = el('input', {
+    type: 'date', value: filters.from,
+    onchange: (event) => { filters.from = event.target.value; redraw(); },
+  });
+  const toInput = el('input', {
+    type: 'date', value: filters.to,
+    onchange: (event) => { filters.to = event.target.value; redraw(); },
+  });
+
+  mount(container, [
+    el('div', { class: 'page-head' }, [
+      el('div', {}, [
+        el('h1', { text: 'Transactions' }),
+        el('p', { class: 'page-subtitle', text: 'Fix a category once and the app can remember it for next time.' }),
+      ]),
+      el('div', { class: 'btn-row' }, [
+        el('button', {
+          class: 'btn-small',
+          text: 'Clear filters',
+          onclick: () => { setTransactionFilters({}); navigate('transactions'); },
+        }),
+        el('button', {
+          class: 'btn-small',
+          text: 'Export shown as CSV',
+          onclick: () => {
+            const rows = store.data.transactions.filter(matches);
+            downloadFile(`transactions-${new Date().toISOString().slice(0, 10)}.csv`, exportCSV(rows), 'text/csv');
+            toast('Exported as plain CSV — that file is not encrypted, keep it somewhere safe.', 'bad');
+          },
+        }),
+      ]),
+    ]),
+    card(null, [
+      el('div', { class: 'field-row' }, [
+        field('Search', searchInput),
+        field('Category', categoryFilter),
+        field('Direction', directionFilter),
+        field('From', fromInput),
+        field('To', toInput),
+      ]),
+      filters.period ? el('p', { class: 'stat-foot', text: `Showing period ${filters.period}.` }) : null,
+    ]),
+    listSlot,
+  ]);
+
+  redraw();
+  return container;
+}
+
+function listCard(redraw) {
+  const rows = store.data.transactions.filter(matches);
+  const shown = rows.slice(0, visible);
+  const opts = options();
+  const sums = rows.reduce((acc, tx) => {
+    if (tx.excluded) return acc;
+    if (!opts.includeTransfers && categoryKind(tx.category, opts.categories) === 'transfer') return acc;
+    if (tx.amountCents >= 0) acc.in += tx.amountCents;
+    else acc.out += -tx.amountCents;
+    return acc;
+  }, { in: 0, out: 0 });
+
+  return card(null, [
+    el('div', { class: 'card-head' }, [
+      el('h2', { text: `${rows.length} transactions` }),
+      el('span', { class: 'stat-foot', text: `In ${money(sums.in)} · Out ${money(sums.out)} · Net ${money(sums.in - sums.out)}` }),
+    ]),
+    rows.length === 0
+      ? el('p', { class: 'empty', text: 'Nothing matches these filters.' })
+      : el('div', { class: 'table-wrap' }, [
+        el('table', {}, [
+          el('thead', {}, [el('tr', {}, [
+            el('th', { text: 'Date' }),
+            el('th', { text: 'Description' }),
+            el('th', { text: 'Category' }),
+            el('th', { class: 'num', text: 'Amount' }),
+            el('th', {}),
+          ])]),
+          el('tbody', {}, shown.map((tx) => transactionRow(tx, redraw))),
+        ]),
+      ]),
+    rows.length > visible
+      ? el('div', { class: 'btn-row', style: 'margin-top:14px; justify-content:center' }, [
+        el('button', {
+          text: `Show ${Math.min(PAGE_SIZE, rows.length - visible)} more`,
+          onclick: () => { visible += PAGE_SIZE; redraw(); },
+        }),
+      ])
+      : null,
+  ]);
+}
+
+function transactionRow(tx, redraw) {
+  return el('tr', { class: tx.excluded ? 'row-excluded' : '' }, [
+    el('td', { text: formatDate(tx.date) }),
+    el('td', { class: 'cell-desc' }, [
+      el('span', { text: tx.description }),
+      el('small', { text: `${tx.merchantLabel}${tx.account ? ` · ${tx.account}` : ''}${tx.note ? ` · ${tx.note}` : ''}` }),
+    ]),
+    el('td', {}, [
+      categorySelect(tx.category, (value) => {
+        setCategory(tx.id, value, { alsoCreateRule: false });
+        redraw();
+      }),
+      tx.categorySource === 'manual'
+        ? el('span', { class: 'pill', style: 'margin-left:6px', text: 'manual' })
+        : null,
+    ]),
+    el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}`, text: money(tx.amountCents) }),
+    el('td', { class: 'num' }, [
+      el('div', { class: 'btn-row', style: 'justify-content:flex-end; flex-wrap:nowrap' }, [
+        el('button', {
+          class: 'btn-small btn-ghost',
+          title: `Always put "${tx.merchantLabel}" in ${tx.category}`,
+          text: 'Remember',
+          onclick: () => {
+            setCategory(tx.id, tx.category, { alsoCreateRule: true });
+            toast(`From now on, "${tx.merchantLabel}" goes to ${tx.category}.`);
+            redraw();
+          },
+        }),
+        el('button', {
+          class: 'btn-small btn-ghost',
+          title: 'Leave this out of the totals (e.g. a one-off you moved between your own accounts)',
+          text: tx.excluded ? 'Include' : 'Ignore',
+          onclick: () => { setExcluded(tx.id, !tx.excluded); redraw(); },
+        }),
+        el('button', {
+          class: 'btn-small btn-ghost',
+          text: 'Note',
+          onclick: () => {
+            const note = window.prompt('Note for this transaction:', tx.note || '');
+            if (note !== null) {
+              setNote(tx.id, note);
+              redraw();
+            }
+          },
+        }),
+      ]),
+    ]),
+  ]);
+}
+
+  Object.assign(__exports, { setTransactionFilters, renderTransactions });
+};
+__require("main.js");
+})();
+</script>
+</body>
+</html>
