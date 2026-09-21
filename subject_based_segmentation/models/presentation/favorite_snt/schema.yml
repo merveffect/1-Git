@@ -11,7 +11,7 @@ models:
       schedule) until it catches up to user_embedding.
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: snt_id
         description: A predicted SNT id.
       - name: snt_name
@@ -29,7 +29,7 @@ models:
       MPC-rolled-up SNT predictions.
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: predicted_mpc_subjects
         description: Deduplicated array of MPC subject ids that this user's top-10 SNTs rolled up to (direct match on the SNT->MKTP mapping table, or fallback match against its 6 hierarchy levels).
 
@@ -73,7 +73,7 @@ models:
       sense given the actual reading-behaviour inputs across all 3 channels.
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: journal_ids
         description: Comma-separated list of journal ids this user has any relationship signal with.
       - name: journal_titles

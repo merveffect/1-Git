@@ -70,7 +70,7 @@ models:
       reading-relationship signal for. No embedding cost.
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: embedding
         description: Per-user average of the SNT embeddings for all journals linked to them (equal weight per distinct journal-SNT pair).
 
@@ -79,7 +79,7 @@ models:
       Long-format (snid, keyword_id) pairs, mirroring users_and_journal_ids.
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: keyword_id
         description: MD5(keyword) of a keyword this user is associated with.
 
@@ -91,7 +91,7 @@ models:
       confidence has been backfilled so far.
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: embedding
         description: Per-user confidence-weighted average of their keyword embeddings.
 
@@ -143,7 +143,7 @@ models:
       Long-format (snid, collection_id) pairs, mirroring users_and_keywords.
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: collection_id
         description: A Snail collection id recommended to this user.
 
@@ -154,7 +154,7 @@ models:
       nearest_snt distance from collection_snt_confidence, floored at 0.05).
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: embedding
         description: Per-user confidence-weighted average of their recommended collections' embeddings.
 
@@ -168,6 +168,6 @@ models:
       user's top-N favorite SNTs.
     columns:
       - name: snid
-        description: snid.
+        description: SN ID.
       - name: embedding
         description: Final combined reading-behaviour embedding — equal-weight average of whichever of the 3 channels (journal/keyword/collection) this user has.
