@@ -20,6 +20,12 @@ models:
         tests:
           - not_null
           - dbt_utils.accepted_range: {min_value: 0, max_value: 1.2, inclusive: true}
+      - name: role_source
+        tests:
+          - not_null
+          - accepted_values: {values: "{{ source_keys() }}"}
+      - name: role_detail
+        description: role_detailed_inferred'in 2. parcasi.
       - name: derived_from_role
         description: Roll-up ile geldiyse kaynak rol (orn. pharmacist -> hcp).
     tests:

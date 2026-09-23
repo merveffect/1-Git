@@ -63,6 +63,7 @@ presentation/     dim_researcher_role_flags   (kisi basina genis gorunum)
                   fct_role_audience           (consent ile audience)
                   fct_role_audience_summary   (bulunan / ulasilabilir)
                   rpt_title_review_queue      (insan review kuyrugu)
+                  ⭐ fct_braze_contact_roles  (Braze data contract ciktisi)
 ```
 
 ### Karar kademeleri
@@ -139,3 +140,58 @@ dbt boru hatti **tek basina calisir**; agent zorunlu degil. Agent iki is yapar:
    ister**. Kendi basina calistirmaz.
 
 Agent 204.000 satira dokunmaz; sadece sozlugu ve mart'lari okur.
+
+
+---
+
+## Braze data contract
+
+`marts.fct_braze_contact_roles` - bir satir = bir contact.
+
+| alan | ornek |
+|---|---|
+| `contact_email` | xx@xcv.com |
+| `snid` | 1233 |
+| `role_inferred` | `['Head of Faculty', 'Healthcare Professional']` |
+| `role_detailed_inferred` | `['Head of Faculty - University', 'Healthcare Professional - Practitioner']` |
+| `role_inferred_data_source` | `['Orcid', 'Orcid + Web scraping']` |
+| `role_inferred_data_source_last_updated` | `[ts, ts]` |
+
+### Dizi hizalamasi
+
+Dort dizi **pozisyonel** olarak hizali olmak zorunda: `role_inferred[i]`
+ile `role_inferred_data_source[i]` ayni role ait olmali. Braze bu
+hizalamayi dogrulayamaz - bozulursa yanlis kisi yanlis segmente duser
+ve kimse fark etmez.
+
+Bu yuzden dort dizi de **tek bir siralanmis kaynaktan**, ayni `ORDER BY`
+ile turetilir. Ayrica her build'de iki test kosar:
+
+- `assert_contract_arrays_aligned` - dizi uzunluklari esit mi
+- `assert_detailed_prefix_matches_role` - `detailed[i]` gercekten
+  `role_inferred[i]` ile mi basliyor
+
+Kanonik form `roles_struct` kolonunda da tutulur (dizi yerine nesne
+dizisi) - hata ayiklarken buraya bak.
+
+### Ayarlar - `dbt_project.yml` -> `vars.contract`
+
+| ayar | secenekler | not |
+|---|---|---|
+| `consent_basis` | `marketing_opt_in` / `legitimate_interest` / `both` | DPO karari; varsayilan guvenli secenek |
+| `include_labels` | `['CONFIRMED']` / `+ 'PROBABLE'` | PROBABLE eklenirse hacim ~2x |
+| `array_order` | `alphabetical` / `score` | contract alfabetik diyor; `score` daha kullanisli |
+| `detail_separator` | `' - '` | |
+
+### Gorunen isimler
+
+`role_inferred` degerleri `vars.roles.<rol>.display_name`'den gelir ve
+**MPC 'role' alanindaki yazimla birebir ayni olmali**. Farkli yazim =
+segmentlerin ikiye bolunmesi. Degistirmeden once MPC'deki degerleri
+dogrula.
+
+### Yeni veri kaynagi eklemek
+
+`vars.sources` altina blok ekle (`web_scraping: {enabled: true}`),
+`fct_researcher_roles`'a UNION ALL ile besle. Contract kirilmaz -
+`role_inferred_data_source` otomatik `'Orcid + Web scraping'` uretir.

@@ -36,6 +36,21 @@ seeds:
     config:
       column_types: {role_key: STRING, signal_type: STRING, pattern: STRING, degree_score: FLOAT64, note: STRING}
 
+  - name: role_detail_map
+    description: >
+      role_detailed_inferred'in 2. parcasini belirleyen kurallar.
+      match_type='title' -> unvan regex'i, match_type='org_type' -> ROR
+      kurum tipi. En dusuk priority kazanir.
+    config:
+      column_types: {role_key: STRING, match_type: STRING, match_value: STRING, detail_label: STRING, priority: INT64, note: STRING}
+    columns:
+      - name: role_key
+        tests:
+          - accepted_values: {values: "{{ role_keys() }}"}
+      - name: match_type
+        tests:
+          - accepted_values: {values: ['title', 'org_type']}
+
   - name: role_title_overrides
     description: >
       INSAN KARARLARI. Her zaman vektor ve LLM kararlarini ezer.

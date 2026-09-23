@@ -25,3 +25,23 @@ models:
     description: >
       Insan review kuyrugu, frekansa gore sirali. En yuksek getirili adim:
       en sik gecen birkac yuz unvani gozden gecirmek on binlerce kisiyi kapsar.
+
+  - name: fct_braze_contact_roles
+    description: >
+      ⭐ BRAZE DATA CONTRACT. Bir satir = bir contact.
+      Dort dizi POZISYONEL olarak hizali; hepsi tek siralanmis kaynaktan
+      turetilir. Hizalama tests/assert_contract_arrays_aligned.sql ile
+      her build'de dogrulanir.
+    columns:
+      - name: snid
+        tests: [unique, not_null]
+      - name: role_inferred
+        description: "orn. ['Head of Faculty', 'Healthcare Professional']"
+        tests: [not_null]
+      - name: role_detailed_inferred
+        description: "orn. ['Head of Faculty - University', 'Healthcare Professional - Practitioner']"
+      - name: role_inferred_data_source
+        description: "orn. ['Orcid', 'Orcid + Web scraping'] - pazarlama araclarina gitmez"
+      - name: consent_basis
+        tests:
+          - accepted_values: {values: ['marketing_opt_in', 'legitimate_interest']}

@@ -29,11 +29,20 @@ with base as (
         emp.evidence_dept,
         emp.ror_id,
         emp.country_code,
-        emp.is_current
+        emp.is_current,
+        det.detail_label,
+
+        -- Braze contract: kaynak izlenebilirligi. Web scraping eklendiginde
+        -- burasi UNION ALL ile genisler, contract kirilmaz.
+        'orcid'                             as role_source,
+        current_timestamp()                 as source_last_updated
     from {{ ref('int_employment_scored') }} emp
     left join {{ ref('int_education_scored') }} edu
            on emp.snid = edu.snid
           and emp.role_key = edu.role_key
+    left join {{ ref('int_role_detail') }} det
+           on emp.snid = det.snid
+          and emp.role_key = det.role_key
 
 ),
 
@@ -65,7 +74,9 @@ labelled as (
         ror_id,
         country_code,
         is_current,
-        cast(null as string)                        as role_bucket,
+        detail_label                                as role_detail,
+        role_source,
+        source_last_updated,
         cast(null as string)                        as derived_from_role
     from scored
 
@@ -85,9 +96,9 @@ qualified as (
 with_parents as (
 
     select
-        snid, role_key, role_bucket, role_final_score, role_label,
+        snid, role_key, role_detail, role_final_score, role_label,
         evidence_title, evidence_org, evidence_dept, country_code,
-        is_current, derived_from_role
+        is_current, role_source, source_last_updated, derived_from_role
     from qualified
 
     {{ parent_rollup_union('qualified') }}
@@ -97,7 +108,7 @@ with_parents as (
 select
     snid,
     role_key,
-    role_bucket,
+    role_detail,
     role_label,
     role_final_score,
     evidence_title,
@@ -105,6 +116,8 @@ select
     evidence_dept,
     country_code,
     is_current,
+    role_source,
+    source_last_updated,
     derived_from_role,
     current_date()  as scored_date
 from with_parents

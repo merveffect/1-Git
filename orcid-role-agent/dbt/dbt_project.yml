@@ -57,6 +57,10 @@ vars:
   roles:
 
     hcp:
+      # Braze contract: role_inferred bu ismi tasir. MPC 'role' alanindaki
+      # yazimla BIREBIR ayni olmali - yoksa segmentler ikiye boluner.
+      display_name: 'Healthcare Professional'
+      detail_dimension: bucket     # role_detailed_inferred'in 2. parcasi
       enabled: true
       label: 'Healthcare Professional'
       axis: profession
@@ -71,6 +75,10 @@ vars:
       buckets: ['PRACTITIONER', 'HCP_RESEARCHER', 'ADMINISTRATOR']
 
     pharmacist:
+      # Braze contract: role_inferred bu ismi tasir. MPC 'role' alanindaki
+      # yazimla BIREBIR ayni olmali - yoksa segmentler ikiye boluner.
+      display_name: 'Pharmacist'
+      detail_dimension: setting     # role_detailed_inferred'in 2. parcasi
       enabled: true
       label: 'Pharmacist'
       axis: profession
@@ -86,6 +94,10 @@ vars:
       current_only:    false
 
     librarian:
+      # Braze contract: role_inferred bu ismi tasir. MPC 'role' alanindaki
+      # yazimla BIREBIR ayni olmali - yoksa segmentler ikiye boluner.
+      display_name: 'Librarian'
+      detail_dimension: org_type     # role_detailed_inferred'in 2. parcasi
       enabled: true
       label: 'Librarian / Information Professional'
       axis: profession
@@ -101,6 +113,10 @@ vars:
       current_only:    true           # kurumsal satis icin GUNCEL gorev sart
 
     researcher:
+      # Braze contract: role_inferred bu ismi tasir. MPC 'role' alanindaki
+      # yazimla BIREBIR ayni olmali - yoksa segmentler ikiye boluner.
+      display_name: 'Researcher'
+      detail_dimension: org_type     # role_detailed_inferred'in 2. parcasi
       enabled: true
       label: 'Researcher (all fields)'
       axis: position
@@ -114,6 +130,10 @@ vars:
       current_only:    false
 
     faculty_head:
+      # Braze contract: role_inferred bu ismi tasir. MPC 'role' alanindaki
+      # yazimla BIREBIR ayni olmali - yoksa segmentler ikiye boluner.
+      display_name: 'Head of Faculty'
+      detail_dimension: org_type     # role_detailed_inferred'in 2. parcasi
       enabled: true
       label: 'Head of Faculty / Department'
       axis: position
@@ -127,6 +147,10 @@ vars:
 
     # ─── SONRA EKLENECEKLER ────────────────────────────────────────────
     lecturer:
+      # Braze contract: role_inferred bu ismi tasir. MPC 'role' alanindaki
+      # yazimla BIREBIR ayni olmali - yoksa segmentler ikiye boluner.
+      display_name: 'Lecturer'
+      detail_dimension: org_type     # role_detailed_inferred'in 2. parcasi
       enabled: false                  # <-- true yap, dbt run, biter
       label: 'Lecturer / Teaching Academic'
       axis: position
@@ -140,7 +164,46 @@ vars:
       current_only:    false
 
   # ───────────────────────────────────────────────────────────────────────
-  # 4. NORMALIZASYON — kisaltma acma kurallari
+  # 4. BRAZE DATA CONTRACT
+  # ───────────────────────────────────────────────────────────────────────
+  contract:
+    # Hangi hukuki dayanakla contact'a cikilacak.
+    #   'marketing_opt_in'     -> sadece mkt_pref_opt_in = TRUE  (~%22)
+    #   'legitimate_interest'  -> CDP'deki tum contact'lar        (~%99)
+    #   'both'                 -> ikisi de, consent_basis kolonu ayirir
+    # DPO karari beklenirken guvenli varsayilan: marketing_opt_in.
+    consent_basis: 'marketing_opt_in'
+
+    # role_inferred dizisine hangi etiketler girer.
+    include_labels: ['CONFIRMED']         # 'PROBABLE' eklenirse hacim ~2x
+
+    # Dizilerin siralamasi. 4 dizi de AYNI siradan turetilir.
+    #   'alphabetical' -> contract'ta belirtilen baslangic noktasi
+    #   'score'        -> en guvenilir rol basta (tavsiye edilen)
+    array_order: 'alphabetical'
+
+    # role_detailed_inferred birlestirici. Contract ornegi iki farkli
+    # format gosteriyordu; tek formatta sabitledik.
+    detail_separator: ' - '
+
+    # Ayni rol birden fazla kaynaktan geldiginde source hucresi
+    detail_source_separator: ' + '
+
+  # ───────────────────────────────────────────────────────────────────────
+  # 5. VERI KAYNAKLARI (role_inferred_data_source)
+  # ───────────────────────────────────────────────────────────────────────
+  sources:
+    orcid:
+      display_name: 'Orcid'
+      enabled: true
+      priority: 1
+    web_scraping:
+      display_name: 'Web scraping'
+      enabled: false        # <-- hazir oldugunda true; contract kirilmaz
+      priority: 2
+
+  # ───────────────────────────────────────────────────────────────────────
+  # 6. NORMALIZASYON — kisaltma acma kurallari
   #    Sirali uygulanir. Yeni kural = yeni satir.
   # ───────────────────────────────────────────────────────────────────────
   abbreviations:

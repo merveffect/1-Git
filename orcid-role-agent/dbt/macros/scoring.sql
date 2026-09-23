@@ -72,7 +72,7 @@
     SELECT
         snid,
         '{{ m.parent }}'                       AS role_key,
-        '{{ m.bucket }}'                       AS role_bucket,
+        '{{ m.bucket_label }}'                 AS role_detail,
         role_final_score,
         role_label,
         evidence_title,
@@ -80,6 +80,8 @@
         evidence_dept,
         country_code,
         is_current,
+        role_source,
+        source_last_updated,
         '{{ m.child }}'                        AS derived_from_role
     FROM {{ cte_name }}
     WHERE role_key = '{{ m.child }}'
