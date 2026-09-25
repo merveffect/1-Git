@@ -4,11 +4,16 @@ models:
   - name: snts_full_list
     description: >
       Clean pass-through of ae_metadata.snts_full_list (SNT taxonomy) — one row
-      per SNT id with its name, with null/empty/literal-"NULL"-string
-      snt_id and label values filtered out. All downstream SNT-name
-      consumers (snt_embeddings) build on this instead of the raw source.
+      per SNT id with its name. 
     columns:
       - name: snt_id
-        description: Unique identifier of an SNT (S&T taxonomy) code, as a string.
+        description: Unique identifier of an SNT code, as a string.
+        tests:
+          - not_null
+          - unique
+      
       - name: snt_name
-        description: Human-readable name of the SNT (e.g. "Coral Reefs", "Machine Learning").
+        description: Human-readable name of the SNT
+        tests:
+          - not_null
+          - unique

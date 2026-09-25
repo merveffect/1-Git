@@ -9,7 +9,7 @@ WITH target_snids AS (
   SELECT snid
   FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
   WHERE snid IS NOT NULL
-    AND (advertising_opt_in = TRUE OR mkt_pref_opt_in = TRUE)
+    AND (advertising_opt_in = TRUE OR mkt_pref_opt_in = TRUE OR is_legitimate_interest_author_opted_in = TRUE)
 ),
 
 raw AS (
@@ -25,7 +25,7 @@ raw AS (
       interested_journal_ids_90
   FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
   WHERE snid IS NOT NULL
-    AND (advertising_opt_in = TRUE OR mkt_pref_opt_in = TRUE)
+    AND (advertising_opt_in = TRUE OR mkt_pref_opt_in = TRUE OR is_legitimate_interest_author_opted_in = TRUE)
 ),
 
 unpivoted AS (

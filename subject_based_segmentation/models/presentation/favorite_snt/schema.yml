@@ -5,31 +5,48 @@ models:
     description: >
       Top-10 favorite SNTs per user — nearest SNTs (by cosine distance) to
       their reading-behaviour embedding (user_embedding), ranked 1 (most
-      favorite) to 10 via favorite_rank. This is the real product output: an
-      SNT-level prediction, not rolled up to MPC. Incremental (merge on
-      snid+snt_id), capped at 5k users per run — re-run repeatedly (or on a
-      schedule) until it catches up to user_embedding.
+      favorite) to 10 via favorite_rank.
     columns:
       - name: snid
-        description: SN ID.
+        description: SN id.
+        tests:
+          - not_null
       - name: snt_id
         description: A predicted SNT id.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('snt_embeddings')
+                field: snt_id
       - name: snt_name
         description: Name of the predicted SNT.
+        tests:
+          - not_null
       - name: distance
         description: Cosine distance between the user's embedding and this SNT's embedding — lower means a stronger match.
+        tests:
+          - not_null
       - name: favorite_rank
         description: 1 (most favorite, lowest distance) to 10 (least favorite among the top-10), via ROW_NUMBER ordered by distance.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                quote: false
 
   - name: favorite_snt_predictions_rolled_up_mpc
     description: >
       Each user's top-10 predicted SNTs, rolled up to MPC subject ids via the
       SNT->MKTP mapping table. Exists only to enable
-      favorite_snt_evaluation_metrics — there's no other use for
-      MPC-rolled-up SNT predictions.
+      favorite_snt_evaluation_metrics — there's no other use
     columns:
       - name: snid
-        description: SN ID.
+        description: User id.
+        tests:
+          - not_null
+          - unique
       - name: predicted_mpc_subjects
         description: Deduplicated array of MPC subject ids that this user's top-10 SNTs rolled up to (direct match on the SNT->MKTP mapping table, or fallback match against its 6 hierarchy levels).
 
@@ -43,6 +60,9 @@ models:
     columns:
       - name: run_id
         description: Unique id for this dbt run (the run's invocation_id) — the incremental unique_key.
+        tests:
+          - not_null
+          - unique
       - name: run_ts
         description: Timestamp this row was computed. Partition field.
       - name: run_date
@@ -73,7 +93,10 @@ models:
       sense given the actual reading-behaviour inputs across all 3 channels.
     columns:
       - name: snid
-        description: SN ID.
+        description: SN id.
+        tests:
+          - not_null
+          - unique
       - name: journal_ids
         description: Comma-separated list of journal ids this user has any relationship signal with.
       - name: journal_titles
@@ -90,3 +113,26 @@ models:
         description: Comma-separated list of the SNT names those collections resolved to (via collection_snt_confidence).
       - name: predicted_snt_names
         description: Comma-separated list of the predicted top-10 SNT names, ordered from most to least favorite (favorite_rank 1 to 10).
+
+  - name: inferred_snts
+    description: >
+      Final output for the CDI pipeline: Top-10 favorite SNTs per user — nearest SNTs (by cosine distance) to
+      their reading-behaviour embedding (user_embedding), ranked 1 (most
+      favorite) to 10 via favorite_rank.
+    columns:
+      - name: snid
+        description: SN id.
+        tests:
+          - not_null
+      - name: inferred_snt_id
+        description: A predicted SNT id for this user.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('snt_embeddings')
+                field: snt_id
+      - name: inferred_snt_name
+        description: Name of the predicted SNT.
+        tests:
+          - not_null

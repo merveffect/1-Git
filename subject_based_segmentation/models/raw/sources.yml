@@ -31,7 +31,13 @@ sources:
     database: snproject-cbb9ca25
     schema: subject_based_segmentation
     tables:
-      - name: SNTS-MKTPS_MAPPED_FINAL
+      - name: snts_mktps_mapped_final
+        # The physical table really is called SNTS-MKTPS_MAPPED_FINAL, but a
+        # dbt source NAME containing hyphens breaks unit tests: dbt builds a
+        # mock CTE named after the source, and a hyphenated CTE alias is
+        # invalid SQL in BigQuery. identifier keeps the real table name while
+        # giving dbt a hyphen-free handle.
+        identifier: SNTS-MKTPS_MAPPED_FINAL
         description: >
           SNT (S&T taxonomy, ~3000 codes) -> MPC (marketing preference center,
           46 subjects) mapping table, with 6 taxonomy hierarchy levels used as

@@ -21,10 +21,10 @@ mapped as (
         ) as mpc_id
     from predictions p
 
-    left join {{ source('subject_based_segmentation', 'SNTS-MKTPS_MAPPED_FINAL') }} direct_map
+    left join {{ source('subject_based_segmentation', 'snts_mktps_mapped_final') }} direct_map
         on p.snt_id = direct_map.marketing_preference_id
 
-    left join {{ source('subject_based_segmentation', 'SNTS-MKTPS_MAPPED_FINAL') }} fallback_map
+    left join {{ source('subject_based_segmentation', 'snts_mktps_mapped_final') }} fallback_map
         on p.snt_id in unnest(
             array_concat(
                 ifnull(fallback_map.level_1_id, []),

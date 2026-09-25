@@ -1,0 +1,136 @@
+version: 2
+
+# dbt native unit tests (dbt-core 1.8+): mock inputs -> assert exact output
+# rows, no warehouse data touched. Run with:
+#   dbt test --select test_type:unit
+#
+# These 4 models were picked because they contain real logic worth
+# protecting (not just pass-through selects):
+#   - journal_snt_codes: SNT_Hierarchy fallback-only logic (the bug we fixed)
+#   - distinct_keywords: custom \term\,\term\ regex parsing
+#   - distinct_collections: HTML stripping + title/description concat
+#   - favorite_snt_predictions_rolled_up_mpc: direct + hierarchy-fallback
+#     mapping, including the NULL-vs-empty-array ARRAY_AGG gotcha we hit
+#     while debugging (see comment below)
+
+unit_tests:
+
+  - name: journal_snt_codes_uses_hierarchy_only_as_fallback
+    description: >
+      A journal WITH snt_discipline_code must use only that — its
+      SNT_Hierarchy1-4 values must be ignored even if populated. A journal
+      WITHOUT snt_discipline_code must fall back to whatever
+      SNT_Hierarchy1-4 values it has.
+    model: journal_snt_codes
+    given:
+      - input: source('ae_metadata', 'journal_metadata')
+        rows:
+          - journal_id: 100
+            snt_discipline_code: '111;222'
+            SNT_Hierarchy1: '999'
+            SNT_Hierarchy2: null
+            SNT_Hierarchy3: null
+            SNT_Hierarchy4: null
+          - journal_id: 200
+            snt_discipline_code: null
+            SNT_Hierarchy1: '333'
+            SNT_Hierarchy2: '444'
+            SNT_Hierarchy3: null
+            SNT_Hierarchy4: null
+    expect:
+      rows:
+        - journal_id: '100'
+          snt_id: '111'
+        - journal_id: '100'
+          snt_id: '222'
+        - journal_id: '200'
+          snt_id: '333'
+        - journal_id: '200'
+          snt_id: '444'
+
+  - name: distinct_keywords_handles_comma_inside_a_keyword
+    description: >
+      A keyword containing a literal comma (e.g. "Emergency Service,
+      Hospital") must NOT be split at that comma — only at the \...\
+      delimiters. Also checks dedup: "Machine Learning" appears for two
+      users but should be exactly one output row.
+    model: distinct_keywords
+    given:
+      - input: ref('users_with_content_signal')
+        rows:
+          # backslashes doubled: BigQuery string literals treat \ as an
+          # escape character, so a literal single backslash in the actual
+          # data needs to be written as \\ here
+          - snid: 'user_1'
+            keywords_last_60d: '\\Emergency Service, Hospital\\,\\Machine Learning\\'
+          - snid: 'user_2'
+            keywords_last_60d: '\\Machine Learning\\'
+    expect:
+      rows:
+        - keyword: 'Emergency Service, Hospital'
+        - keyword: 'Machine Learning'
+
+  - name: distinct_collections_strips_html_and_builds_collection_text
+    description: >
+      HTML tags in description must be replaced with spaces (not deleted
+      outright, to avoid words running together), and collection_text must
+      combine title + cleaned description. A collection with no description
+      falls back to title alone (no ". " suffix, description_clean stays NULL).
+    model: distinct_collections
+    given:
+      - input: ref('users_and_collection_recommendations')
+        rows:
+          - snid: 'user_1'
+            collection_id: 'c1'
+            title: 'AI in Healthcare'
+            description: '<p>Deep learning models</p>'
+          - snid: 'user_2'
+            collection_id: 'c2'
+            title: 'Ocean Studies'
+            description: null
+    expect:
+      rows:
+        - collection_id: 'c1'
+          title: 'AI in Healthcare'
+          description_clean: ' Deep learning models '
+          collection_text: 'AI in Healthcare.  Deep learning models '
+        - collection_id: 'c2'
+          title: 'Ocean Studies'
+          description_clean: null
+          collection_text: 'Ocean Studies'
+
+  - name: rolled_up_mpc_direct_and_fallback_and_no_match
+    description: >
+      3 scenarios in one: (1) an SNT that IS an MPC id directly -> direct
+      match; (2) an SNT that only appears inside another MPC's hierarchy
+      levels -> fallback match; (3) an SNT that matches neither -> NULL
+      (not an empty array — BigQuery's ARRAY_AGG(... IGNORE NULLS) returns
+      NULL, not [], when every input row is NULL — this bit us for real
+      while debugging, see the top-3-MPC-match analysis).
+    model: favorite_snt_predictions_rolled_up_mpc
+    given:
+      - input: ref('favorite_snt_predictions')
+        rows:
+          - snid: 'userA'
+            snt_id: '500'
+          - snid: 'userB'
+            snt_id: '999'
+          - snid: 'userC'
+            snt_id: '111'
+      - input: source('subject_based_segmentation', 'snts_mktps_mapped_final')
+        # unused level_x_id columns are left out entirely (not set to []) —
+        # the model already does IFNULL(level_x_id, []) itself, and empty
+        # array literals here tripped up dbt's type inference
+        rows:
+          - marketing_preference_id: '500'
+            level_1_id: ['500']
+          - marketing_preference_id: '700'
+            level_2_id: ['999']
+    expect:
+      rows:
+        - snid: 'userA'
+          predicted_mpc_subjects: ['500']
+        - snid: 'userB'
+          predicted_mpc_subjects: ['700']
+        - snid: 'userC'
+          predicted_mpc_subjects: null

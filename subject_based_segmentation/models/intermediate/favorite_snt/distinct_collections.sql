@@ -3,7 +3,6 @@
 -- Every distinct collection recommended to any user, deduplicated once.
 -- Title + description (HTML-stripped) combined into one text field to
 -- embed downstream — title is always present, description (when present)
--- often carries an explicit "Keywords:" list and is far more specific.
 
 WITH deduped AS (
   SELECT

@@ -3,8 +3,7 @@
 -- Every distinct keyword across the target audience, deduplicated once so
 -- keyword_embeddings only ever embeds each unique keyword one time instead
 -- of once per (user, keyword) occurrence (~1.8M distinct vs far more rows).
--- keyword_id is a hash of the keyword text so it's stable across runs and
--- usable as a merge key even for very long keyword strings.
+
 
 WITH parsed AS (
   SELECT
