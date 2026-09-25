@@ -1,0 +1,39 @@
+version: 2
+
+unit_tests:
+  - name: int_ga_data_channel_keeps_subject_alert_source_specific
+    description: >
+      A subject-alert lookup row must not become a generic email rule and
+      duplicate every email touchpoint.
+    model: int_ga_data_channel
+    overrides:
+      vars:
+        mis_start_date: '2026-05-01'
+        mis_end_date: '2026-05-31'
+        ga_lookback_months: 6
+    given:
+      - input: ref('int_ga_data')
+        rows:
+          - user_pseudo_id: generic-email-user
+            event_date: '2026-05-10'
+            campaign: generic-email-campaign
+            clean_campaign: generic-email-campaign
+            medium: email
+            source: newsletter
+            journal_id: 123
+            marmind_code: ABCDE
+      - input: ref('stg_channel_groupings')
+        rows:
+          - source: null
+            medium: email
+            main_channels: Email
+            sub_channels: email
+          - source: rct_subjectalert
+            medium: email
+            main_channels: Email
+            sub_channels: subject alert
+    expect:
+      rows:
+        - user_pseudo_id: generic-email-user
+          main_channels: Email
+          sub_channels: email

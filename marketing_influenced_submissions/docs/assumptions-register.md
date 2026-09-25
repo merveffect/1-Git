@@ -43,6 +43,7 @@ Legend: [DEFAULT] = current model behaviour · [VERIFIED] = checked on BigQuery 
 | C4 | Channel groupings source | `ae_metadata.channel_groupings_native` | **Confirmed** [CONFIRMED] — Anup Mane (2026-07-15): correct cross-project source; AE team owns table; sheet updated quarterly. Open: native refresh job cadence (daily copy vs on-change); confirm `journal_table_native` same pattern |
 | C5 | RM workspace filter | `%Authors%`/`%India%`/`%New Launches%`/`hpaut`/`letpb`/`naver` | [CONFIRMED] Giorgia 2026-08-04 — New Launches added wherever workspace filter applies (except Collections) |
 | C6 | Marmind source | `prod_marmind_presentation.marmind_analytics` | [CONFIRMED] Giorgia 2026-08-04 — replaces discontinued `marmind_fnd.marmind_data`; no `channels_categories`/`channel_groupings`; Colab hardcodes `'N/A'` and matches flags on `main_channels` only |
+| C7 | Email source exceptions | Keep `rct_subjectalert` source-specific before generic email matching | [CONFIRMED from Colab + Jul reconciliation, 2026-09-25] Omitting this Colab branch made the subject-alert lookup generic and duplicated every email touchpoint |
 
 ## D. Combination + collections (Phases 5-6)
 
@@ -213,3 +214,27 @@ to +0.61%** and lifts `int_email_clientid` from -7% to +1.4% vs prod. This mirro
   difference upstream (`mis_input_data_collections_emails_2` / collections activity), not an
   attribution or identity-coverage issue. All identity-driven channel flags (email, sea, external
   display, paid social) are now within ±2.5% of prod, mostly slightly above.
+
+### Jul-2026 MIS3+ / `email_rm` investigation (2026-09-25)
+
+Giorgia's Jul/Aug comparison showed dbt MIS3+ about +10.2k in both months. The available dev
+presentation table contains Jul only; direct Jul comparison reproduced **10,174** manual=0/dbt=1
+MIS3+ submissions, with `email_rm` **+21,356** on that cohort (median **+2**).
+
+Root cause: the dbt port omitted the Colab's source-specific `rct_subjectalert` branch in
+`int_ga_data_channel`. Its lookup row therefore fell through to generic email matching, so ordinary
+email touchpoints matched both `Email / email` and `Email / subject alert`; `int_ga_activity`
+correctly summed both input rows. This was not an MIS3+ formula, Marmind, or identity-map defect.
+
+Simulating the restored exception across all **239,186** joined Jul SNAPP submissions:
+
+| Metric | Before | Corrected simulation |
+|---|---:|---:|
+| Manual=0 / dbt=1 MIS3+ | 10,174 | **271** |
+| Manual=1 / dbt=0 MIS3+ | — | **11** |
+| Total `email_rm` delta vs manual | +370,558 | **+2,128** |
+| Median submission-level `email_rm` delta | — | **0** |
+| Exact submission-level `email_rm` matches | — | **238,503 / 239,186 (99.7%)** |
+
+The residual net MIS3+ difference is **+260**, comparable to the already accepted MIS1+ tolerance
+and no longer a systematic +10k defect.

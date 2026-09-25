@@ -5,7 +5,9 @@
 -- SN-REVIEW (C4): uses the NATIVE channel-groupings table via stg_channel_groupings
 -- (the Colab points at ae_metadata.channel_groupings, the Drive-backed sheet). The
 -- email-source nulling exceptions and the google+cpc External Display exclusion are
--- ported verbatim. Processes the whole lookback window (prod accumulates monthly).
+-- ported verbatim, including rct_subjectalert: without that source-specific exception,
+-- its lookup row becomes generic and duplicates every email touchpoint. Processes the
+-- whole lookback window (prod accumulates monthly).
 
 {{ config(materialized='table', tags=['ga']) }}
 
@@ -53,6 +55,7 @@ from (
                     when lower(medium) = 'email' and lower(source) = 'researchgate' then 'researchgate'
                     when lower(medium) in ('email', 'e-mail') and lower(source) = 'chatgpt.com' then 'chatgpt.com'
                     when lower(medium) = 'email' and lower(source) = 'etoc' then 'etoc'
+                    when lower(medium) = 'email' and lower(source) = 'rct_subjectalert' then 'rct_subjectalert'
                     when lower(medium) = 'email' and lower(source) in ('peeref.com', 'letpub.com', 'growkudos.com') then lower(source)
                     when lower(medium) = 'email' then null
                     else lower(source)
