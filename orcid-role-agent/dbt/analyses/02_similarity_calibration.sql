@@ -1,173 +1,228 @@
 /*
     ============================================================================
-    BENZERLIK ESIGI KALIBRASYONU  ***  SIRADAKI KRITIK ADIM  ***
+    BENZERLIK ESIGI KALIBRASYONU
     ============================================================================
-    Test 1b sonucu:
-        cardiologue                0.928
-        Facharzt fur Kardiologie   0.795
-        kardiyolog                 0.760
-        librarian                  0.572   <-- ALAKASIZ terim
-                                                 ama yine de 0.572!
+    Her sorgu TEK BASINA calisir. TEMP TABLE yok, dbt tablosu yok -
+    hicbir sey BigQuery'de olusturulmus olmak zorunda degil.
+    Konsola yapistir, calistir.
 
-    Bu modelin TABAN benzerligi yuksek. Alakasiz iki terim bile 0.57
-    aliyor. Yani benim varsayilan esiklerim (0.90 / 0.55) YANLIS:
-    0.55 esigi her seyi kabul ederdi.
-
-    Asagidaki sorgu gercek pozitif ve gercek negatif orneklerle
-    dagilimi olcup dogru esikleri buluyor.
+    NEDEN: Test 1b'de alakasiz iki terim ("cardiologist" vs "librarian")
+    bile 0.572 benzerlik aldi. Bu modelin TABAN benzerligi yuksek;
+    esikleri gozlemle degil olcumle koymamiz lazim.
     ============================================================================
 */
 
-DECLARE MODEL_PATH STRING DEFAULT
-    'datasn-rm-live.institution_disambiguation.embedding_model';
 
--- ---------------------------------------------------------------------------
--- Bilerek secilmis test seti: her rol icin DOGRU ve YANLIS ornekler
--- ---------------------------------------------------------------------------
-CREATE TEMP TABLE test_pairs AS
-SELECT * FROM UNNEST([
-  -- (unvan, rol, beklenen)  --------------------------------------------
-  STRUCT('consultant cardiologist'      AS title, 'hcp' AS role_key, TRUE  AS should_match),
-  STRUCT('kardiyolog',                        'hcp', TRUE),
-  STRUCT('Oberarztin Kardiologie',            'hcp', TRUE),
-  STRUCT('medecin generaliste',               'hcp', TRUE),
-  STRUCT('registered nurse',                  'hcp', TRUE),
-  STRUCT('clinical fellow',                   'hcp', TRUE),
-  STRUCT('data consultant',                   'hcp', FALSE),
-  STRUCT('software engineer',                 'hcp', FALSE),
-  STRUCT('head of marketing',                 'hcp', FALSE),
-  STRUCT('professor of physics',              'hcp', FALSE),
-  STRUCT('financial analyst',                 'hcp', FALSE),
+-- ###########################################################################
+-- SORGU 1 - DETAY: her test unvani icin en iyi rol, marj, dogru mu?
+-- ###########################################################################
+WITH anchor_input AS (
+  SELECT * FROM UNNEST([
+    STRUCT('hcp' AS role_key, 'include' AS polarity, 'physician' AS term),
+    ('hcp','include','medical doctor'), ('hcp','include','surgeon'),
+    ('hcp','include','cardiologist'),   ('hcp','include','oncologist'),
+    ('hcp','include','registered nurse'),('hcp','include','general practitioner'),
+    ('hcp','include','consultant physician'),('hcp','include','arzt'),
+    ('hcp','include','medecin'),        ('hcp','include','clinical fellow'),
+    ('hcp','exclude','data consultant'),('hcp','exclude','it consultant'),
+    ('hcp','exclude','software engineer'),('hcp','exclude','medical writer'),
 
-  STRUCT('subject librarian',                 'librarian', TRUE),
-  STRUCT('bibliothekar',                      'librarian', TRUE),
-  STRUCT('kutuphaneci',                       'librarian', TRUE),
-  STRUCT('scholarly communications manager',  'librarian', TRUE),
-  STRUCT('repository manager',                'librarian', TRUE),
-  STRUCT('data engineer',                     'librarian', FALSE),
-  STRUCT('archaeologist',                     'librarian', FALSE),
-  STRUCT('professor of history',              'librarian', FALSE),
+    ('pharmacist','include','pharmacist'),('pharmacist','include','clinical pharmacist'),
+    ('pharmacist','include','hospital pharmacist'),('pharmacist','include','apotheker'),
+    ('pharmacist','include','eczaci'),  ('pharmacist','include','pharmacien'),
+    ('pharmacist','exclude','pharmacologist'),('pharmacist','exclude','pharmacy technician'),
 
-  STRUCT('dean of engineering',               'faculty_head', TRUE),
-  STRUCT('dekan',                             'faculty_head', TRUE),
-  STRUCT('head of department',                'faculty_head', TRUE),
-  STRUCT('bolum baskani',                     'faculty_head', TRUE),
-  STRUCT('head of laboratory',                'faculty_head', FALSE),
-  STRUCT('project manager',                   'faculty_head', FALSE),
-  STRUCT('phd student',                       'faculty_head', FALSE),
+    ('librarian','include','librarian'),('librarian','include','academic librarian'),
+    ('librarian','include','subject librarian'),('librarian','include','information specialist'),
+    ('librarian','include','repository manager'),('librarian','include','bibliothekar'),
+    ('librarian','include','kutuphaneci'),('librarian','include','scholarly communications librarian'),
+    ('librarian','exclude','data engineer'),
 
-  STRUCT('postdoctoral researcher',           'researcher', TRUE),
-  STRUCT('wissenschaftlicher mitarbeiter',    'researcher', TRUE),
-  STRUCT('principal investigator',            'researcher', TRUE),
-  STRUCT('research fellow',                   'researcher', TRUE),
-  STRUCT('market research analyst',           'researcher', FALSE),
-  STRUCT('hr manager',                        'researcher', FALSE),
+    ('researcher','include','research scientist'),('researcher','include','postdoctoral researcher'),
+    ('researcher','include','principal investigator'),('researcher','include','research fellow'),
+    ('researcher','include','research associate'),('researcher','include','wissenschaftlicher mitarbeiter'),
+    ('researcher','include','chercheur'),('researcher','include','arastirmaci'),
+    ('researcher','exclude','market research analyst'),('researcher','exclude','research administrator'),
 
-  STRUCT('hospital pharmacist',               'pharmacist', TRUE),
-  STRUCT('eczaci',                            'pharmacist', TRUE),
-  STRUCT('apotheker',                         'pharmacist', TRUE),
-  STRUCT('pharmacologist',                    'pharmacist', FALSE),
-  STRUCT('pharmacy technician',               'pharmacist', FALSE)
-]);
-
--- ---------------------------------------------------------------------------
--- VECTOR_SEARCH gercek TABLO ister (CTE kabul etmiyor - Test 2 bu yuzden
--- hata verdi). O yuzden embedding'leri once TEMP TABLE'a yaziyoruz.
--- ---------------------------------------------------------------------------
-CREATE TEMP TABLE anchor_emb AS
-SELECT role_key, polarity, anchor_term, ml_generate_embedding_result AS embedding
-FROM ML.GENERATE_EMBEDDING(
-  MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
-  (SELECT role_key, polarity, anchor_term, anchor_term AS content
-   FROM `researcher-360-prod-e7fd74be.orcid_role_agent_seeds.role_anchors`)
-);
-
-CREATE TEMP TABLE title_emb AS
-SELECT title, role_key AS expected_role, should_match,
-       ml_generate_embedding_result AS embedding
-FROM ML.GENERATE_EMBEDDING(
-  MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
-  (SELECT title, role_key, should_match, title AS content FROM test_pairs)
-);
-
--- ---------------------------------------------------------------------------
--- 1. HER (unvan, rol) cifti icin en iyi benzerlik
--- ---------------------------------------------------------------------------
-CREATE TEMP TABLE scored AS
-SELECT
-    t.title,
-    t.expected_role,
-    t.should_match,
-    a.role_key                                  AS matched_role,
-    MAX(1 - ML.DISTANCE(t.embedding, a.embedding, 'COSINE')) AS similarity
-FROM title_emb t CROSS JOIN anchor_emb a
-WHERE a.polarity = 'include'
-GROUP BY 1,2,3,4;
-
--- ---------------------------------------------------------------------------
--- 2. ⭐ DAGILIM - dogru ve yanlis eslesmeler nerede duruyor?
---    Ideal: should_match=TRUE'nun MIN'i, FALSE'un MAX'inin UZERINDE olmali.
---    Ortusuyorsa tek bir esikle ayirmak mumkun degil.
--- ---------------------------------------------------------------------------
-SELECT
-    should_match                                AS dogru_eslesme_mi,
-    COUNT(*)                                    AS adet,
-    ROUND(MIN(similarity), 3)                   AS min,
-    ROUND(APPROX_QUANTILES(similarity, 100)[OFFSET(10)], 3)  AS p10,
-    ROUND(AVG(similarity), 3)                   AS ortalama,
-    ROUND(APPROX_QUANTILES(similarity, 100)[OFFSET(90)], 3)  AS p90,
-    ROUND(MAX(similarity), 3)                   AS max
-FROM scored
-WHERE expected_role = matched_role
-GROUP BY should_match;
-
--- ---------------------------------------------------------------------------
--- 3. ⭐ MARJ TESTI - mutlak esik yerine GORECELI fark
---    Taban benzerlik yuksek oldugunda mutlak esik kirilgan olur.
---    Daha saglam soru: "en iyi rol, ikinciyi ne kadar geride birakti?"
--- ---------------------------------------------------------------------------
-WITH ranked AS (
-  SELECT
-      title, expected_role, should_match, matched_role, similarity,
-      ROW_NUMBER() OVER (PARTITION BY title ORDER BY similarity DESC) AS rnk
-  FROM scored
+    ('faculty_head','include','dean'),  ('faculty_head','include','dean of faculty'),
+    ('faculty_head','include','head of department'),('faculty_head','include','department chair'),
+    ('faculty_head','include','dekan'),('faculty_head','include','bolum baskani'),
+    ('faculty_head','include','head of school'),('faculty_head','include','provost'),
+    ('faculty_head','exclude','head of laboratory'),('faculty_head','exclude','head of marketing')
+  ])
 ),
-margins AS (
+title_input AS (
+  SELECT * FROM UNNEST([
+    STRUCT('consultant cardiologist' AS title, 'hcp' AS expected_role, TRUE AS should_match),
+    ('kardiyolog','hcp',TRUE), ('Oberarztin Kardiologie','hcp',TRUE),
+    ('medecin generaliste','hcp',TRUE), ('registered nurse','hcp',TRUE),
+    ('clinical fellow','hcp',TRUE),
+    ('data consultant','hcp',FALSE), ('software engineer','hcp',FALSE),
+    ('head of marketing','hcp',FALSE), ('professor of physics','hcp',FALSE),
+    ('financial analyst','hcp',FALSE),
+
+    ('subject librarian','librarian',TRUE), ('bibliothekar','librarian',TRUE),
+    ('kutuphaneci','librarian',TRUE), ('scholarly communications manager','librarian',TRUE),
+    ('repository manager','librarian',TRUE),
+    ('data engineer','librarian',FALSE), ('archaeologist','librarian',FALSE),
+    ('professor of history','librarian',FALSE),
+
+    ('dean of engineering','faculty_head',TRUE), ('dekan','faculty_head',TRUE),
+    ('head of department','faculty_head',TRUE), ('bolum baskani','faculty_head',TRUE),
+    ('head of laboratory','faculty_head',FALSE), ('project manager','faculty_head',FALSE),
+    ('phd student','faculty_head',FALSE),
+
+    ('postdoctoral researcher','researcher',TRUE), ('wissenschaftlicher mitarbeiter','researcher',TRUE),
+    ('principal investigator','researcher',TRUE), ('research fellow','researcher',TRUE),
+    ('market research analyst','researcher',FALSE), ('hr manager','researcher',FALSE),
+
+    ('hospital pharmacist','pharmacist',TRUE), ('eczaci','pharmacist',TRUE),
+    ('apotheker','pharmacist',TRUE),
+    ('pharmacologist','pharmacist',FALSE), ('pharmacy technician','pharmacist',FALSE)
+  ])
+),
+anchor_emb AS (
+  SELECT role_key, polarity, term, ml_generate_embedding_result AS v
+  FROM ML.GENERATE_EMBEDDING(
+    MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
+    (SELECT role_key, polarity, term, term AS content FROM anchor_input))
+),
+title_emb AS (
+  SELECT title, expected_role, should_match, ml_generate_embedding_result AS v
+  FROM ML.GENERATE_EMBEDDING(
+    MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
+    (SELECT title, expected_role, should_match, title AS content FROM title_input))
+),
+per_role AS (
   SELECT
-      title,
-      MAX(IF(rnk = 1, matched_role, NULL))      AS best_role,
-      MAX(IF(rnk = 1, similarity,  NULL))       AS best_sim,
-      MAX(IF(rnk = 2, similarity,  NULL))       AS second_sim,
-      MAX(expected_role)                        AS expected_role,
-      MAX(CAST(should_match AS INT64)) = 1      AS should_match
-  FROM ranked WHERE rnk <= 2 GROUP BY title
+      t.title, t.expected_role, t.should_match, a.role_key,
+      MAX(IF(a.polarity='include', 1 - ML.DISTANCE(t.v, a.v, 'COSINE'), NULL)) AS inc_sim,
+      MAX(IF(a.polarity='exclude', 1 - ML.DISTANCE(t.v, a.v, 'COSINE'), NULL)) AS exc_sim
+  FROM title_emb t CROSS JOIN anchor_emb a
+  GROUP BY 1,2,3,4
+),
+ranked AS (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY title ORDER BY inc_sim DESC) AS rnk
+  FROM per_role
 )
 SELECT
-    title                                       AS unvan,
-    expected_role                               AS beklenen_rol,
-    should_match                                AS dogru_mu,
-    best_role                                   AS bulunan_rol,
-    ROUND(best_sim, 3)                          AS en_iyi,
-    ROUND(second_sim, 3)                        AS ikinci,
-    ROUND(best_sim - second_sim, 3)             AS marj,
-    best_role = expected_role                   AS rol_dogru_mu
-FROM margins
-ORDER BY should_match DESC, best_sim DESC;
+    r1.title                                    AS unvan,
+    r1.expected_role                            AS beklenen,
+    r1.should_match                             AS dogru_mu,
+    r1.role_key                                 AS bulunan,
+    r1.role_key = r1.expected_role              AS rol_isabetli,
+    ROUND(r1.inc_sim, 3)                        AS en_iyi,
+    ROUND(r2.inc_sim, 3)                        AS ikinci,
+    ROUND(r1.inc_sim - r2.inc_sim, 3)           AS marj,
+    ROUND(r1.exc_sim, 3)                        AS exclude_sim,
+    r1.exc_sim > r1.inc_sim                     AS exclude_bloklardi
+FROM ranked r1
+LEFT JOIN ranked r2 ON r1.title = r2.title AND r2.rnk = 2
+WHERE r1.rnk = 1
+ORDER BY r1.should_match DESC, r1.inc_sim DESC;
 
 /*
-    SONUCU NASIL OKUYACAGIZ:
+    NASIL OKUNUR:
+      rol_isabetli = FALSE       -> anchor eksigi, role_anchors.csv'ye terim ekle
+      dogru_mu=TRUE  en_iyi min  -> kabul esiginin USTU olamaz
+      dogru_mu=FALSE en_iyi max  -> kabul esiginin ALTI olmali
+      Ikisi ortusuyorsa mutlak esik yetmez -> marj sutununa bak
+      exclude_bloklardi = TRUE   -> exclude anchor'i ise yariyor
+*/
 
-    Sorgu 2'de:
-      - TRUE min  ile FALSE max  arasinda BOSLUK varsa
-        -> esik ikisinin arasina konur, is biter
-      - Ortusuyorsa
-        -> mutlak esik yetmez, marj (sorgu 3) veya LLM hakemi gerekir
 
-    Sorgu 3'te:
-      - rol_dogru_mu = FALSE olan satirlar -> anchor eksigi var,
-        role_anchors.csv'ye terim eklenmeli
-      - marj kucuk olanlar -> belirsiz bolge, insan review'a gider
+-- ###########################################################################
+-- SORGU 2 - OZET: dogru ve yanlis eslesmelerin dagilimi
+-- Yukaridaki CTE'lerin AYNISI; sadece son SELECT farkli.
+-- ###########################################################################
+WITH anchor_input AS (
+  SELECT * FROM UNNEST([
+    STRUCT('hcp' AS role_key, 'include' AS polarity, 'physician' AS term),
+    ('hcp','include','medical doctor'), ('hcp','include','surgeon'),
+    ('hcp','include','cardiologist'),   ('hcp','include','oncologist'),
+    ('hcp','include','registered nurse'),('hcp','include','general practitioner'),
+    ('hcp','include','consultant physician'),('hcp','include','arzt'),
+    ('hcp','include','medecin'),        ('hcp','include','clinical fellow'),
+    ('pharmacist','include','pharmacist'),('pharmacist','include','clinical pharmacist'),
+    ('pharmacist','include','hospital pharmacist'),('pharmacist','include','apotheker'),
+    ('pharmacist','include','eczaci'),  ('pharmacist','include','pharmacien'),
+    ('librarian','include','librarian'),('librarian','include','academic librarian'),
+    ('librarian','include','subject librarian'),('librarian','include','information specialist'),
+    ('librarian','include','repository manager'),('librarian','include','bibliothekar'),
+    ('librarian','include','kutuphaneci'),
+    ('researcher','include','research scientist'),('researcher','include','postdoctoral researcher'),
+    ('researcher','include','principal investigator'),('researcher','include','research fellow'),
+    ('researcher','include','wissenschaftlicher mitarbeiter'),('researcher','include','arastirmaci'),
+    ('faculty_head','include','dean'),  ('faculty_head','include','dean of faculty'),
+    ('faculty_head','include','head of department'),('faculty_head','include','department chair'),
+    ('faculty_head','include','dekan'),('faculty_head','include','bolum baskani')
+  ])
+),
+title_input AS (
+  SELECT * FROM UNNEST([
+    STRUCT('consultant cardiologist' AS title, 'hcp' AS expected_role, TRUE AS should_match),
+    ('kardiyolog','hcp',TRUE), ('Oberarztin Kardiologie','hcp',TRUE),
+    ('medecin generaliste','hcp',TRUE), ('registered nurse','hcp',TRUE),
+    ('clinical fellow','hcp',TRUE),
+    ('data consultant','hcp',FALSE), ('software engineer','hcp',FALSE),
+    ('head of marketing','hcp',FALSE), ('professor of physics','hcp',FALSE),
+    ('financial analyst','hcp',FALSE),
+    ('subject librarian','librarian',TRUE), ('bibliothekar','librarian',TRUE),
+    ('kutuphaneci','librarian',TRUE), ('scholarly communications manager','librarian',TRUE),
+    ('repository manager','librarian',TRUE),
+    ('data engineer','librarian',FALSE), ('archaeologist','librarian',FALSE),
+    ('professor of history','librarian',FALSE),
+    ('dean of engineering','faculty_head',TRUE), ('dekan','faculty_head',TRUE),
+    ('head of department','faculty_head',TRUE), ('bolum baskani','faculty_head',TRUE),
+    ('head of laboratory','faculty_head',FALSE), ('project manager','faculty_head',FALSE),
+    ('phd student','faculty_head',FALSE),
+    ('postdoctoral researcher','researcher',TRUE), ('wissenschaftlicher mitarbeiter','researcher',TRUE),
+    ('principal investigator','researcher',TRUE), ('research fellow','researcher',TRUE),
+    ('market research analyst','researcher',FALSE), ('hr manager','researcher',FALSE),
+    ('hospital pharmacist','pharmacist',TRUE), ('eczaci','pharmacist',TRUE),
+    ('apotheker','pharmacist',TRUE),
+    ('pharmacologist','pharmacist',FALSE), ('pharmacy technician','pharmacist',FALSE)
+  ])
+),
+anchor_emb AS (
+  SELECT role_key, term, ml_generate_embedding_result AS v
+  FROM ML.GENERATE_EMBEDDING(
+    MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
+    (SELECT role_key, term, term AS content FROM anchor_input))
+),
+title_emb AS (
+  SELECT title, expected_role, should_match, ml_generate_embedding_result AS v
+  FROM ML.GENERATE_EMBEDDING(
+    MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
+    (SELECT title, expected_role, should_match, title AS content FROM title_input))
+),
+matched AS (
+  SELECT
+      t.title, t.should_match,
+      MAX(1 - ML.DISTANCE(t.v, a.v, 'COSINE')) AS sim
+  FROM title_emb t
+  JOIN anchor_emb a ON a.role_key = t.expected_role
+  GROUP BY 1,2
+)
+SELECT
+    should_match                                             AS dogru_eslesme_mi,
+    COUNT(*)                                                 AS adet,
+    ROUND(MIN(sim), 3)                                       AS min,
+    ROUND(APPROX_QUANTILES(sim, 100)[OFFSET(25)], 3)         AS p25,
+    ROUND(AVG(sim), 3)                                       AS ortalama,
+    ROUND(APPROX_QUANTILES(sim, 100)[OFFSET(75)], 3)         AS p75,
+    ROUND(MAX(sim), 3)                                       AS max
+FROM matched
+GROUP BY should_match
+ORDER BY should_match DESC;
 
-    Cikan degerler dbt_project.yml -> sim_auto_accept / sim_judge_floor /
-    sim_review_floor / sim_min_margin alanlarina yazilacak.
+/*
+    ARADIGIMIZ SEY:
+        dogru_eslesme_mi=TRUE   min = 0.74
+        dogru_eslesme_mi=FALSE  max = 0.68
+                                       ^^^^ BOSLUK VAR -> esik 0.71 olur
+
+    Ortusuyorsa (TRUE.min < FALSE.max) tek bir mutlak esik yetmiyor
+    demektir; o zaman sorgu 1'deki MARJ sutunu belirleyici olur veya
+    LLM hakemi gerekir.
 */

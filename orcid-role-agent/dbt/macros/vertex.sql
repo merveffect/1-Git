@@ -58,7 +58,7 @@
         upper(trim(ml_generate_text_llm_result)) like 'YES%'  as judge_accepted,
         nullif(ml_generate_text_status, '')                   as judge_status
     from ML.GENERATE_TEXT(
-        MODEL `{{ var('gcp_project') }}.{{ target.schema }}.{{ judge_model_name() }}`,
+        MODEL `{{ var('target_project') }}.{{ target.schema }}.{{ judge_model_name() }}`,
         (select *, {{ prompt_col }} as prompt from {{ source_relation }}),
         STRUCT(
             0.0   AS temperature,      -- deterministik olsun

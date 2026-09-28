@@ -57,24 +57,33 @@ by_ror_id as (
 ),
 
 /*
-    YOL 2: diger kimlik sistemleri (RINGGOLD %32 + GRID %8 + FUNDREF %4)
-    ROR kayitlari bu kimlikleri external_ids alaninda tasiyor.
-    !! ROR semasi dogrulandiktan sonra acilacak - kolon adi surume gore
-       degisiyor (external_ids / relationships / ids).
+    YOL 2: diger kimlik sistemleri uzerinden kopru
+    RINGGOLD %31.7 + GRID %7.8 + FUNDREF %4.0 = %43.5
+    ROR bu kimlikleri external_ids icinde tasiyor.
 */
 by_external_id as (
 
     select
         o.organisation,
         o.org_id,
-        cast(null as string)    as ror_id,
-        cast(null as string)    as canonical_name,
-        cast(null as array<string>) as ror_types,
-        cast(null as string)    as ror_country_code,
-        'EXTERNAL_ID'           as resolution_method,
-        0.95                    as resolution_confidence
+        r.ror_id,
+        r.canonical_name,
+        r.ror_types,
+        r.ror_country_code,
+        concat('EXTERNAL_ID_', o.org_id_source)     as resolution_method,
+        0.95                                        as resolution_confidence
     from employment_orgs o
-    where false     -- TODO: ROR external_ids semasi netlesince ac
+    join {{ ref('stg_ror__external_ids') }} x
+      on x.id_type  = o.org_id_source
+     and x.id_value = o.org_id
+    join ror r
+      on r.ror_id = x.ror_id
+    where o.org_id_source != 'ROR'
+      and not exists (
+          select 1 from by_ror_id b
+          where b.organisation = o.organisation
+            and b.org_id is not distinct from o.org_id
+      )
 
 ),
 
@@ -97,6 +106,11 @@ by_name as (
         select 1 from by_ror_id b
         where b.organisation = o.organisation
           and b.org_id is not distinct from o.org_id
+    )
+    and not exists (
+        select 1 from by_external_id x
+        where x.organisation = o.organisation
+          and x.org_id is not distinct from o.org_id
     )
 
 ),

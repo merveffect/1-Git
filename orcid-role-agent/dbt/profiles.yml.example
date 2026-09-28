@@ -1,21 +1,28 @@
 # ~/.dbt/profiles.yml icine kopyala
+#
+# OKUMA projeleri (kaynaklar) ayri; burasi sadece YAZMA hedefi.
+#   researcher-360-prod-e7fd74be   ORCID + CDP      (okuma izni gerekli)
+#   ri-data-engineering-dd4c0eca   ROR registry     (okuma izni gerekli)
+#   datasn-rm-live                 embedding modeli (okuma izni gerekli)
+
 orcid_role_agent:
   target: dev
   outputs:
     dev:
       type: bigquery
-      method: oauth              # veya service-account
-      project: researcher-360-prod-e7fd74be
-      dataset: orcid_role_agent_dev
-      location: EU              # vertex_ai_conn ile AYNI bolge olmali
+      method: oauth
+      project: dat-analytics-eng-ec869189
+      dataset: orcid_role_agent_dev      # -> orcid_role_agent_dev_raw, _staging ...
+      location: EU
       threads: 8
       priority: interactive
       job_execution_timeout_seconds: 1800
+
     prod:
       type: bigquery
       method: service-account
       keyfile: /path/to/keyfile.json
-      project: researcher-360-prod-e7fd74be
-      dataset: orcid_role_agent
+      project: dat-analytics-eng-ec869189
+      dataset: orcid_role_agent          # -> orcid_role_agent_raw, _staging ...
       location: EU
       threads: 16

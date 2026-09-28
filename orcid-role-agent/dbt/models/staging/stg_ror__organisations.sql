@@ -35,6 +35,10 @@ select
     -- types bir DIZI: universite hastanesi hem Education hem Healthcare
     types                                       as ror_types,
 
-    country.country_code                        as ror_country_code
+    country.country_code                        as ror_country_code,
+
+    -- ROR disi kimlikler: RINGGOLD / GRID / FUNDREF / ISNI ...
+    -- stg_ror__external_ids bunu duzlestiriyor
+    external_ids
 
 from {{ ref('raw_ror_data_refresh') }}
