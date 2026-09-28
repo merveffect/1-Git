@@ -40,6 +40,12 @@ vars:
   embedding_model:    'text-multilingual-embedding-002'
   judge_model:        'gemini-2.5-flash'
 
+  # BigQuery'de LLM cagirma yolu. Ikisi de AYNI Vertex baglantisini kullanir.
+  #   'ai_generate_bool'  -> AI.GENERATE_BOOL, sade ama bolge destegi degisken
+  #   'ml_generate_text'  -> ML.GENERATE_TEXT, her yerde calisir (guvenli liman)
+  # setup/03_test_access.sql ile hangisinin calistigini test et.
+  judge_function:     'ai_generate_bool'
+
   # Benzerlik eşikleri. Institution matching'de 1.0 kullanmıştık; burada
   # "doğru cevap" tek bir şey olmadığı icin kademeli gidiyoruz.
   sim_auto_accept:  0.90    # >= bu   -> otomatik kabul, LLM'e sorulmaz

@@ -29,13 +29,64 @@
 
 
 {#-
-    LLM hakem cagrisi. Prompt'u cagiran model kurar.
-    Cikti kolonu: judge_result (BOOL), judge_status (STRING)
+    LLM HAKEM CAGRISI - IKI YOL
+
+    BigQuery'de LLM cagirmanin iki yolu var ve ikisi de AYNI Vertex
+    baglantisini kullanir. Fark sadece SQL sozdiziminde:
+
+      'ai_generate_bool'  AI.GENERATE_BOOL(...)  - skaler, sade
+                          yeni fonksiyon, bolge destegi degisken
+
+      'ml_generate_text'  ML.GENERATE_TEXT(...)  - tablo fonksiyonu
+                          eski ve her yerde calisir, guvenli liman
+
+    Hangisinin calistigini setup/03_test_access.sql ile test et,
+    sonucu dbt_project.yml -> judge_function'a yaz.
+
+    Iki yol da (title_key, role_key, judge_accepted, judge_status)
+    donduruyor - modeller farki gormuyor.
 -#}
-{% macro ai_generate_bool(prompt_expr) %}
-    AI.GENERATE_BOOL(
-        {{ prompt_expr }},
-        connection_id => '{{ var("vertex_connection") }}',
-        endpoint      => '{{ var("judge_model") }}'
+
+{% macro judge_titles(source_relation, prompt_col='judge_prompt') %}
+
+{%- set fn = var('judge_function', 'ai_generate_bool') -%}
+
+{%- if fn == 'ai_generate_bool' -%}
+
+    select
+        *,
+        judge_struct.result     as judge_accepted,
+        judge_struct.status     as judge_status
+    from (
+        select
+            *,
+            AI.GENERATE_BOOL(
+                {{ prompt_col }},
+                connection_id => '{{ var("vertex_connection") }}',
+                endpoint      => '{{ var("judge_model") }}'
+            )                   as judge_struct
+        from {{ source_relation }}
     )
+
+{%- elif fn == 'ml_generate_text' -%}
+
+    select
+        * except (ml_generate_text_llm_result, ml_generate_text_status),
+        -- model 'YES' / 'NO' donuyor; bool'a cevir
+        upper(trim(ml_generate_text_llm_result)) like 'YES%'  as judge_accepted,
+        nullif(ml_generate_text_status, '')                   as judge_status
+    from ML.GENERATE_TEXT(
+        MODEL `{{ var('gcp_project') }}.{{ target.schema }}.{{ judge_model_name() }}`,
+        (select *, {{ prompt_col }} as prompt from {{ source_relation }}),
+        STRUCT(
+            0.0   AS temperature,      -- deterministik olsun
+            8     AS max_output_tokens,
+            TRUE  AS flatten_json_output
+        )
+    )
+
+{%- else -%}
+    {{ exceptions.raise_compiler_error("Bilinmeyen judge_function: " ~ fn) }}
+{%- endif -%}
+
 {% endmacro %}

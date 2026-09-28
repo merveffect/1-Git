@@ -55,7 +55,8 @@ prompted as (
             'ROL TANIMI: ', d.role_label, ' - ', d.role_description, ' ',
             'SORU: "', j.title, '" is unvanina sahip bir kisi bu role girer mi? ',
             'Sadece unvana bak; emin degilsen HAYIR de. ',
-            'Yonetim/danismanlik unvanlari ilgili alanda degilse HAYIR.'
+            'Yonetim/danismanlik unvanlari ilgili alanda degilse HAYIR. ',
+            'Sadece YES veya NO yaz, baska hicbir sey yazma.'
         )                                                   as judge_prompt
     from to_judge j
     join role_definitions d using (role_key)
@@ -64,11 +65,7 @@ prompted as (
 
 judged as (
 
-    -- AI.GENERATE_BOOL TEK kez cagrilir; struct acilarak kolonlara yayilir
-    select
-        *,
-        {{ ai_generate_bool('judge_prompt') }}  as judge_result
-    from prompted
+    {{ judge_titles(source_relation='prompted', prompt_col='judge_prompt') }}
 
 )
 
@@ -80,7 +77,8 @@ select
     include_similarity,
     matched_anchors,
     judge_prompt,
-    judge_result.result     as judge_accepted,
-    judge_result.status     as judge_status,
-    current_timestamp()     as judged_at
+    judge_accepted,
+    judge_status,
+    '{{ var("judge_model") }}'      as model_name,
+    current_timestamp()             as judged_at
 from judged
