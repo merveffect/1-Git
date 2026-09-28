@@ -1,34 +1,43 @@
 {{ config(materialized='view') }}
 
 /*
-    ORCID education kayitlari. Phase-1'deki gibi kisi basina EN GUNCEL
-    kayit kullanilir; egitim yalnizca bonus olarak skora girer.
-
-    !! KOLON ADLARI DOGRULANACAK !!
+    educations[] duzlestirilir. Egitim SADECE bonus olarak skora girer;
+    tek basina rol kazandirmaz (Phase-1 ile ayni ilke).
 */
 
-with source as (
+with researchers as (
 
-    select * from {{ source('researcher_profiles', 'v_orcid_researchers') }}
+    select snid, orcid_id, educations
+    from {{ source('researcher_profiles', 'orcid_researchers') }}
+    where snid is not null
 
 ),
 
-renamed as (
+flattened as (
 
     select
-        snid,
-        education_degree                                as degree_raw,
-        education_department                            as edu_department_raw,
+        r.snid,
+        r.orcid_id,
+        d.visibility,
+        d.ordering,
 
-        {{ normalize_title('education_degree') }}       as degree,
-        {{ normalize_title('education_department') }}   as edu_department,
+        d.degree                                        as degree_raw,
+        d.department_name                               as edu_department_raw,
+        d.organisation_name                             as edu_organisation_raw,
 
-        education_start_date                            as start_date,
-        education_end_date                              as end_date
+        {{ normalize_title('d.degree') }}               as degree,
+        {{ normalize_title('d.department_name') }}      as edu_department,
+        {{ normalize_title('d.organisation_name') }}    as edu_organisation,
 
-    from source
-    where snid is not null
-      and education_degree is not null
+        d.disambiguated_organisation_id                 as disambiguated_org_id,
+        upper(d.disambiguated_organisation_source)      as disambiguated_org_source,
+        d.organisation_address_country_code             as country_code,
+
+        d.full_start_date                               as start_date,
+        d.full_end_date                                 as end_date
+
+    from researchers r,
+    unnest(r.educations) d
 
 ),
 
@@ -38,10 +47,17 @@ ranked as (
         *,
         row_number() over (
             partition by snid
-            order by end_date desc nulls last, start_date desc nulls last
+            order by end_date desc nulls last,
+                     start_date desc nulls last,
+                     ordering asc nulls last
         ) as recency_rank
-    from renamed
+    from flattened
 
 )
 
-select * from ranked where recency_rank = 1
+select * from ranked
+where recency_rank = 1
+  and (degree is not null or edu_department is not null)
+  {% if var('public_visibility_only', true) %}
+  and upper(visibility) = 'PUBLIC'
+  {% endif %}

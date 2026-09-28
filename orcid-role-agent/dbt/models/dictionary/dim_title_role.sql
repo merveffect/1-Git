@@ -47,6 +47,7 @@ combined as (
         m.exclude_similarity,
         m.matched_anchors,
         m.match_decision,
+        m.frequency_tier,
         m.needs_human_review,
         j.judge_accepted,
         o.human_decision,
@@ -54,15 +55,16 @@ combined as (
 
         case
             when o.human_decision is not null then o.human_decision = 'ACCEPT'
-            when m.match_decision = 'AUTO_ACCEPT' then true
+            when m.match_decision in ('AUTO_ACCEPT', 'AUTO_ACCEPT_TAIL') then true
             when m.match_decision = 'NEEDS_JUDGE' then coalesce(j.judge_accepted, false)
             else false
         end                                          as is_role_member,
 
         case
-            when o.human_decision is not null then 'HUMAN'
-            when m.match_decision = 'AUTO_ACCEPT' then 'VECTOR'
-            when m.match_decision = 'NEEDS_JUDGE' then 'LLM_JUDGE'
+            when o.human_decision is not null          then 'HUMAN'
+            when m.match_decision = 'AUTO_ACCEPT'      then 'VECTOR'
+            when m.match_decision = 'AUTO_ACCEPT_TAIL' then 'VECTOR_TAIL'
+            when m.match_decision = 'NEEDS_JUDGE'      then 'LLM_JUDGE'
             else 'REJECTED'
         end                                          as decision_source
 
@@ -81,8 +83,10 @@ select
     */
     case
         when not is_role_member then 0.0
-        when decision_source = 'HUMAN'  then 1.0
-        when decision_source = 'VECTOR' then 1.0
+        when decision_source = 'HUMAN'       then 1.0
+        when decision_source = 'VECTOR'      then 1.0
+        -- nadir unvan, LLM dogrulamasi yok: biraz cezalandir
+        when decision_source = 'VECTOR_TAIL' then 0.85
         else least(1.0, 0.60 + (include_similarity - {{ var('sim_judge_floor') }}))
     end                                              as role_score
 from combined

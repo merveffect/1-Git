@@ -2,28 +2,37 @@ version: 2
 
 sources:
   - name: researcher_profiles
-    project: "{{ var('gcp_project') }}"
-    dataset: "{{ var('source_dataset') }}"
-    description: ORCID tabanli arastirmaci profilleri (mevcut Phase-1 kaynagi).
+    database: researcher-360-prod-e7fd74be
+    schema: researcher_profiles
+    description: ORCID arastirmaci profilleri. Ic ice (nested/repeated) sema.
     tables:
-      - name: v_orcid_researchers
+      - name: orcid_researchers
         description: >
-          Kisi x employment/education kaydi. Kolon adlari DOGRULANACAK -
-          asagidaki isimler Phase-1 dokumanindan tahmin edildi.
+          Bir satir = bir kisi. employments / educations / publications /
+          keywords / peer_reviews REPEATED STRUCT olarak tutulur.
+          Rol bilgisi: employments[].role  (serbest metin, cok dilli)
         columns:
           - name: snid
             description: Springer Nature kullanici tanimlayicisi.
             tests: [not_null]
-
-      # TODO: ROR eslestirme tablon - adini dbt_project.yml:vars.ror_mapping_table'a yaz
-      - name: TODO_ror_mapping_table
-        description: >
-          Dagitik kurum isimlerinin ROR standart isimlerine eslendigi mevcut
-          tablo. org_score'u regex yerine buradan uretecegiz.
+          - name: orcid_id
+            tests: [not_null]
 
   - name: cdp
-    project: "{{ var('gcp_project') }}"
-    dataset: "{{ var('source_dataset') }}"
+    database: researcher-360-prod-e7fd74be
+    schema: researcher_profiles
     tables:
       - name: audience_builder_big
         description: CDP opt-in populasyonu ve consent bayraklari.
+
+  - name: ror
+    database: ri-data-engineering-dd4c0eca
+    schema: ror
+    description: >
+      ROR kurum kayit defteri. AYRI PROJE - cross-project okuma izni gerekir.
+    tables:
+      - name: ror_data_refresh
+        description: >
+          ROR registry dump. Kurum tipi (Education / Healthcare / Company /
+          Archive / Nonprofit / Government / Facility / Other) buradan gelir.
+          !! Kolon adlari dogrulanacak - ROR semasi surumlere gore degisiyor.

@@ -72,19 +72,34 @@ select
     coalesce(exclude_similarity, 0) > coalesce(include_similarity, 0)
         as blocked_by_exclusion,
 
+    /*
+        355.803 farkli unvan var - hepsini LLM'e yollamak gereksiz.
+        Belirsiz bolgedeki unvan SADECE yeterince sik geciyorsa hakeme
+        gider. Nadir unvanlar sadece vektorle karara baglanir.
+    */
+    case
+        when frequency >= {{ var('tier_a_min_frequency') }} then 'A'
+        when frequency >= {{ var('tier_b_min_frequency') }} then 'B'
+        else 'C'
+    end                                                  as frequency_tier,
+
     case
         when coalesce(exclude_similarity, 0) > coalesce(include_similarity, 0)
             then 'REJECTED_EXCLUSION'
         when include_similarity >= {{ var('sim_auto_accept') }}
             then 'AUTO_ACCEPT'
         when include_similarity >= {{ var('sim_judge_floor') }}
+         and frequency >= {{ var('tier_b_min_frequency') }}
             then 'NEEDS_JUDGE'
+        when include_similarity >= {{ var('sim_review_floor') }}
+            then 'AUTO_ACCEPT_TAIL'    -- nadir ama benzerligi yuksek
         else 'REJECTED_LOW_SIMILARITY'
     end                                                  as match_decision,
 
     -- insan review kuyrugu: belirsiz VE cok kisiyi etkileyen unvanlar
     (     include_similarity >= {{ var('sim_judge_floor') }}
-      and include_similarity <  {{ var('sim_review_floor') }} ) as needs_human_review
+      and include_similarity <  {{ var('sim_review_floor') }}
+      and frequency          >= {{ var('tier_a_min_frequency') }} ) as needs_human_review
 
 from best_per_role
 where include_similarity is not null

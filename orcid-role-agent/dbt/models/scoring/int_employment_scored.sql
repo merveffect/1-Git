@@ -22,16 +22,19 @@ with employment as (
 ),
 
 -- 1) kurumu ROR uzerinden canonical tipe cevir
-with_org_type as (
+--    ORCID zaten ROR kimligi tasiyorsa dogrudan; yoksa isim eslestirme
+with_org as (
 
     select
         e.*,
-        r.ror_id,
-        r.canonical_name                    as org_canonical_name,
-        coalesce(r.ror_type, 'UNKNOWN')     as org_type
+        o.ror_id,
+        o.canonical_name        as org_canonical_name,
+        o.ror_types,
+        o.resolution_method     as org_resolution_method
     from employment e
-    left join {{ ref('stg_ror__institutions') }} r
-           on e.organisation = r.organisation
+    left join {{ ref('int_org_resolved') }} o
+           on e.organisation = o.organisation
+          and e.disambiguated_org_id is not distinct from o.disambiguated_org_id
 
 ),
 
@@ -42,23 +45,37 @@ with_roles as (
         o.*,
         t.role_key,
         t.role_score
-    from with_org_type o
+    from with_org o
     join {{ ref('dim_title_role') }} t
       on to_hex(md5(o.role_title)) = t.title_key
     where t.is_role_member
 
 ),
 
--- 3) org skoru: (rol, kurum tipi) ciftinden
+/*
+    3) org skoru: (rol, kurum tipi) ciftinden.
+
+    ROR 'types' bir DIZI - universite hastanesi hem Education hem
+    Healthcare olabilir. Rol icin EN YUKSEK skoru veren tipi aliyoruz:
+    tip cakismasi bilgi kaybi degil, avantaj.
+*/
 with_org_score as (
 
     select
         w.*,
-        coalesce(s.org_score, 0.0)          as org_score
+        coalesce((
+            select max(s.org_score)
+            from unnest(coalesce(w.ror_types, ['UNKNOWN'])) as t
+            join {{ ref('org_type_scores') }} s
+              on s.role_key = w.role_key
+             and s.org_type = t
+        ), (
+            -- ROR eslesmesi yok: UNKNOWN satirindan dusuk skor
+            select s.org_score from {{ ref('org_type_scores') }} s
+            where s.role_key = w.role_key and s.org_type = 'UNKNOWN'
+        ), 0.0)                             as org_score,
+        coalesce(w.ror_types[safe_offset(0)], 'UNKNOWN')  as org_type
     from with_roles w
-    left join {{ ref('org_type_scores') }} s
-           on w.role_key = s.role_key
-          and w.org_type = s.org_type
 
 ),
 
@@ -77,6 +94,7 @@ with_dept_score as (
         any_value(w.org_canonical_name)     as evidence_org_canonical,
         any_value(w.org_type)               as org_type,
         any_value(w.ror_id)                 as ror_id,
+        any_value(w.org_resolution_method)  as org_resolution_method,
         any_value(w.country_code)           as country_code,
         max(w.is_current)                   as is_current,
         min(w.recency_rank)                 as recency_rank
