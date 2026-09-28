@@ -5,24 +5,6 @@
     Model degistirmek = tek satir var degisikligi.
 -#}
 
-{#- Bir kolonu embed eder. Girdi CTE'sinde kolon adi 'content' OLMALI. -#}
-{% macro generate_embedding(source_relation, content_col='content') %}
-    SELECT
-        *,
-        ml_generate_embedding_result AS embedding
-    FROM ML.GENERATE_EMBEDDING(
-        MODEL `{{ var('gcp_project') }}.{{ target.schema }}.{{ embedding_model_name() }}`,
-        (SELECT *, {{ content_col }} AS content FROM {{ source_relation }}),
-        STRUCT(TRUE AS flatten_json_output, 'SEMANTIC_SIMILARITY' AS task_type)
-    )
-{% endmacro %}
-
-
-{% macro embedding_model_name() %}
-    {{ return('remote_' ~ var('embedding_model') | replace('-', '_')) }}
-{% endmacro %}
-
-
 {% macro judge_model_name() %}
     {{ return('remote_' ~ var('judge_model') | replace('-', '_') | replace('.', '_')) }}
 {% endmacro %}

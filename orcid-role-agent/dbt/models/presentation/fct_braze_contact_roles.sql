@@ -47,9 +47,9 @@ per_role as (
 
         -- birden fazla kaynak: "Orcid + Web scraping"
         string_agg(
-            distinct {{ source_display_name_expr('role_source') }},
+            distinct {{ source_display_name_expr('source_key') }},
             '{{ var("contract").detail_source_separator }}'
-            order by {{ source_display_name_expr('role_source') }}
+            order by {{ source_display_name_expr('source_key') }}
         )                                           as role_inferred_data_source,
 
         max(source_last_updated)                    as role_inferred_data_source_last_updated,

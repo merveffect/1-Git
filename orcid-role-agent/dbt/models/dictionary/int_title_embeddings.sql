@@ -1,15 +1,19 @@
 {{ config(
-    materialized = 'incremental',
-    unique_key   = 'title_key',
+    materialized     = 'incremental',
+    unique_key       = 'title_key',
     on_schema_change = 'append_new_columns'
 ) }}
 
 /*
-    SOZLUGUN 3. ADIMI - EMBEDDING
     Her benzersiz unvan BIR KEZ embed edilir.
 
-    incremental: yeni ORCID verisi geldiginde sadece YENI unvanlar
-    embed edilir. Eski 50.000 unvan tekrar para harcatmaz.
+    Mevcut remote model kullaniliyor (baska projede kurulu):
+        {{ var('embedding_model') }}
+    Yeni Vertex baglantisi kurmaya gerek yok - sadece o proje uzerinde
+    okuma izni gerekiyor.
+
+    incremental: yeni veri geldiginde sadece YENI unvanlar embed edilir.
+    Mevcut unvanlar tekrar para harcatmaz.
 */
 
 with titles_to_embed as (
@@ -28,10 +32,9 @@ select
     title,
     frequency,
     ml_generate_embedding_result    as embedding,
-    ml_generate_embedding_status    as embedding_status,
+    '{{ var("embedding_model") }}'  as model_name,
     current_timestamp()             as embedded_at
 from ml.generate_embedding(
-    model `{{ var('gcp_project') }}.{{ target.schema }}.{{ embedding_model_name() }}`,
-    (select *, title as content from titles_to_embed),
-    struct(true as flatten_json_output, 'SEMANTIC_SIMILARITY' as task_type)
+    model `{{ var('embedding_model') }}`,
+    (select title_key, title, frequency, title as content from titles_to_embed)
 )

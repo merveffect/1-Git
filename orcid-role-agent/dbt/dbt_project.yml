@@ -37,8 +37,13 @@ vars:
   # ───────────────────────────────────────────────────────────────────────
   # 2. VERTEX AI
   # ───────────────────────────────────────────────────────────────────────
-  vertex_connection:  'EU.vertex_ai_conn'
-  embedding_model:    'text-multilingual-embedding-002'
+  # Yeni baglanti kurmaya gerek yok - baska projede calisan remote model var.
+  # Cross-project okuma izni gerekir (datasn-rm-live).
+  # ⚠️ Bu modelin COK DILLI olup olmadigi test edilmeli:
+  #    setup/03_test_access.sql -> Test 1b. Ingilizce-only ise
+  #    "kardiyolog" / "Oberarztin" kacar ve baska model gerekir.
+  embedding_model:    'datasn-rm-live.institution_disambiguation.embedding_model'
+  vertex_connection:  'EU.vertex_ai_conn'   # sadece LLM hakemligi icin
   judge_model:        'gemini-2.5-flash'
 
   # BigQuery'de LLM cagirma yolu. Ikisi de AYNI Vertex baglantisini kullanir.
@@ -199,26 +204,33 @@ vars:
   # ───────────────────────────────────────────────────────────────────────
   # 5. VERI KAYNAKLARI (role_inferred_data_source)
   # ───────────────────────────────────────────────────────────────────────
+  # Rol bilgisi tasiyan TUM kaynaklar. Listede olan = aktif.
+  # Yeni kaynak eklemek: staging modelini yaz + buraya bir blok ekle.
+  #
+  # provides: bu kaynagin TASIYABILDIGI alanlar.
+  #   Listede olmayan alan NULL gelir VE o kaynak icin skor agirliklari
+  #   yeniden normalize edilir. Ornek: web scraping'de departman yoksa
+  #   hcp agirliklari 0.50/0.30/0.20 yerine 0.625/0.375/0 olur.
+  #   Boyle olmazsa sadece unvan tasiyan bir kaynak asla esigi gecemezdi.
+  #
+  # Garanti alanlar (her kaynakta olmak ZORUNDA): snid, role_title
   sources:
+
     orcid:
       display_name: 'Orcid'
-      enabled: true
-      priority: 1
-      # Bu kaynagin ortak semayi ureten staging modeli.
-      # stg_role_records butun aktif kaynaklari bu alandan bulup birlestirir.
       staging_model: 'stg_orcid__employment'
+      provides: ['organisation', 'department', 'org_id', 'country_code', 'dates']
 
-    web_scraping:
-      display_name: 'Web scraping'
-      enabled: false        # <-- hazir oldugunda true; contract kirilmaz
-      priority: 2
-      staging_model: 'stg_webscrape__role_records'
-
-    cdp_self_reported:
-      display_name: 'CDP'
-      enabled: false        # CDP'nin kendi role alani - ucuncu kaynak
-      priority: 3
-      staging_model: 'stg_cdp__role_records'
+    # Hazir oldugunda bu blogu ac - baska hicbir dosya degismez.
+    # web_scraping:
+    #   display_name: 'Web scraping'
+    #   staging_model: 'stg_webscrape__role_records'
+    #   provides: ['organisation']        # sadece snid + role + kurum
+    #
+    # cdp_self_reported:
+    #   display_name: 'CDP'
+    #   staging_model: 'stg_cdp__role_records'
+    #   provides: []                      # sadece snid + role
 
   # ───────────────────────────────────────────────────────────────────────
   # 6. NORMALIZASYON — kisaltma acma kurallari

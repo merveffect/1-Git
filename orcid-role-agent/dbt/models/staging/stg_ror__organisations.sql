@@ -20,6 +20,9 @@
 
     Bu tipleri org_type_scores.csv'deki skorlarla eslestiriyoruz.
 
+    ror_data_refresh = ROR'un KENDI registry dump'i (Merve'nin eski
+    eslestirme ciktisi degil) - dogrulandi.
+
     !! KOLON ADLARI DOGRULANACAK:
        bq show --schema ri-data-engineering-dd4c0eca:ror.ror_data_refresh
 */

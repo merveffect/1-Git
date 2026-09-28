@@ -32,23 +32,13 @@
 
 
 {#- kaynak anahtari -> contract'taki gorunen ad -#}
-{% macro source_display_name_expr(col='role_source') %}
+{% macro source_display_name_expr(col='source_key') %}
     CASE {{ col }}
-    {%- for k, v in var('sources').items() %}
-        WHEN '{{ k }}' THEN '{{ v.display_name }}'
+    {%- for k in source_keys() %}
+        WHEN '{{ k }}' THEN '{{ source_config(k).display_name }}'
     {%- endfor %}
         ELSE {{ col }}
     END
-{% endmacro %}
-
-
-{#- Aktif kaynak anahtarlari -#}
-{% macro source_keys() %}
-    {%- set keys = [] -%}
-    {%- for k, v in var('sources').items() -%}
-        {%- if v.get('enabled', true) -%}{%- do keys.append(k) -%}{%- endif -%}
-    {%- endfor -%}
-    {{ return(keys) }}
 {% endmacro %}
 
 

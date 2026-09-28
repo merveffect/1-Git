@@ -36,8 +36,7 @@ with flattened as (
         e.organisation_address_country_code             as country_code,
 
         e.full_start_date                               as start_date,
-        e.full_end_date                                 as end_date,
-        e.full_end_date is null                         as is_current
+        e.full_end_date                                 as end_date
 
     from {{ ref('raw_orcid_researchers') }} r,
     unnest(r.employments) e
@@ -45,7 +44,6 @@ with flattened as (
 )
 
 select
-    'orcid'                                             as source_key,
     snid,
     orcid_id,
     role_title_raw,
@@ -59,7 +57,6 @@ select
     country_code,
     start_date,
     end_date,
-    is_current,
     ordering,
     last_updated_at                                     as source_last_updated
 from flattened

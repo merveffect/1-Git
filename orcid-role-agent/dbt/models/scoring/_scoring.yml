@@ -20,7 +20,7 @@ models:
         tests:
           - not_null
           - dbt_utils.accepted_range: {min_value: 0, max_value: 1.2, inclusive: true}
-      - name: role_source
+      - name: source_key
         tests:
           - not_null
           - accepted_values: {values: "{{ source_keys() }}"}
@@ -30,4 +30,4 @@ models:
         description: Roll-up ile geldiyse kaynak rol (orn. pharmacist -> hcp).
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [snid, role_key]
+          combination_of_columns: [snid, role_key, source_key]
