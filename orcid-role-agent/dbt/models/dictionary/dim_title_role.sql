@@ -18,8 +18,18 @@ with matched as (
 
 judged as (
 
+    {% if var('use_llm_judge') %}
     select title_key, role_key, judge_accepted, judge_status
     from {{ ref('int_title_role_judged') }}
+    {% else %}
+    -- LLM hakemi kapali (Vertex baglantisi yok). Bos tablo.
+    select
+        cast(null as string) as title_key,
+        cast(null as string) as role_key,
+        cast(null as bool)   as judge_accepted,
+        cast(null as string) as judge_status
+    where false
+    {% endif %}
 
 ),
 
@@ -46,6 +56,8 @@ combined as (
         m.include_similarity,
         m.exclude_similarity,
         m.matched_anchors,
+        m.include_similarity,
+        m.role_margin,
         m.match_decision,
         m.frequency_tier,
         m.needs_human_review,

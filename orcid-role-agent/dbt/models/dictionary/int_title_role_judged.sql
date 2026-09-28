@@ -1,4 +1,5 @@
 {{ config(
+    enabled      = var('use_llm_judge', false),
     materialized = 'incremental',
     unique_key   = ['title_key', 'role_key']
 ) }}

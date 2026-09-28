@@ -3,11 +3,18 @@
 /*
     KURUM COZUMLEME - iki yollu.
 
-    ORCID kayitlari zaten kurum kimligi tasiyor (org_id)
-    (ROR / GRID / RINGGOLD / FUNDREF). Kaynak ROR ise eslestirmeye
-    HIC gerek yok - dogrudan join, %100 kesin.
+    GERCEK DAGILIM (38.6M employment kaydi uzerinden olculdu):
+        ROR       %35.3   -> dogrudan join, eslestirme yok
+        RINGGOLD  %31.7   -> ROR'un external_ids'inden koprulenir
+        kimliksiz %21.2   -> isim eslestirme
+        GRID      % 7.8   -> ROR GRID'den turedi, external_ids'te var
+        FUNDREF   % 4.0   -> external_ids
+        LEI       % 0.0
 
-    Kalanlar icin isim eslestirme (Merve'nin daha once yaptigi is).
+    organisation_name ise %100 dolu - yani isim eslestirme her zaman
+    yedek yol olarak duruyor.
+
+    Sirasiyla denenir, ilk tutan kazanir.
 
     Cikti: (organisation, org_id) -> ror_id + ror_types
 */
@@ -49,7 +56,29 @@ by_ror_id as (
 
 ),
 
--- YOL 2: isim eslestirme (ROR kimligi yoksa)
+/*
+    YOL 2: diger kimlik sistemleri (RINGGOLD %32 + GRID %8 + FUNDREF %4)
+    ROR kayitlari bu kimlikleri external_ids alaninda tasiyor.
+    !! ROR semasi dogrulandiktan sonra acilacak - kolon adi surume gore
+       degisiyor (external_ids / relationships / ids).
+*/
+by_external_id as (
+
+    select
+        o.organisation,
+        o.org_id,
+        cast(null as string)    as ror_id,
+        cast(null as string)    as canonical_name,
+        cast(null as array<string>) as ror_types,
+        cast(null as string)    as ror_country_code,
+        'EXTERNAL_ID'           as resolution_method,
+        0.95                    as resolution_confidence
+    from employment_orgs o
+    where false     -- TODO: ROR external_ids semasi netlesince ac
+
+),
+
+-- YOL 3: isim eslestirme (kimlik yoksa; organisation_name %100 dolu)
 by_name as (
 
     select
@@ -74,6 +103,8 @@ by_name as (
 
 combined as (
     select * from by_ror_id
+    union all
+    select * from by_external_id
     union all
     select * from by_name
 )

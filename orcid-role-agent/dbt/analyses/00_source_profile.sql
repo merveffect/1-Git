@@ -138,3 +138,55 @@ FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
 UNNEST(r.employments) e
 WHERE e.role IS NOT NULL
 GROUP BY unvan ORDER BY kayit DESC LIMIT 100;
+
+
+-- ===========================================================================
+-- I. ⭐ EN ONEMLI SORGU - GERCEK CALISMA EVRENI
+--
+--    Tablo 24.8M kisi iceriyor ama sadece 1.76M'sinde snid var.
+--    snid'siz kisiye ulasamayiz -> pipeline'a hic girmemeli.
+--    355.803 distinct unvan TUM tablodan olculmustu; snid'lilerde
+--    cok daha az olacak ve maliyet buna gore dusecek.
+-- ===========================================================================
+WITH scoped AS (
+  SELECT
+      r.snid,
+      TRIM(REGEXP_REPLACE(
+        REGEXP_REPLACE(LOWER(NORMALIZE_AND_CASEFOLD(e.role, NFKC)),
+          r'[^\p{L}\p{N}\s&/+-]', ' '), r'\s+', ' ')) AS norm_role
+  FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
+  UNNEST(r.employments) e
+  WHERE r.snid IS NOT NULL
+    AND UPPER(e.visibility) = 'PUBLIC'
+    AND e.role IS NOT NULL AND TRIM(e.role) != ''
+)
+SELECT
+    COUNT(*)                        AS employment_kaydi,
+    COUNT(DISTINCT snid)            AS kisi,
+    COUNT(DISTINCT norm_role)       AS distinct_unvan,
+    ROUND(COUNT(*) / COUNT(DISTINCT norm_role), 1) AS unvan_basina_kayit
+FROM scoped;
+
+
+-- ===========================================================================
+-- J. Ayni evrende frekans dagilimi - katman esiklerini bu belirler
+-- ===========================================================================
+WITH scoped AS (
+  SELECT TRIM(REGEXP_REPLACE(
+           REGEXP_REPLACE(LOWER(NORMALIZE_AND_CASEFOLD(e.role, NFKC)),
+             r'[^\p{L}\p{N}\s&/+-]', ' '), r'\s+', ' ')) AS norm_role
+  FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
+  UNNEST(r.employments) e
+  WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
+    AND e.role IS NOT NULL AND TRIM(e.role) != ''
+),
+freq AS (
+  SELECT norm_role, COUNT(*) n, ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) rnk
+  FROM scoped GROUP BY norm_role
+),
+cum AS (SELECT *, SUM(n) OVER (ORDER BY rnk) / SUM(n) OVER () AS kapsama FROM freq)
+SELECT
+    esik AS ilk_n_unvan,
+    (SELECT ROUND(MAX(kapsama), 4) FROM cum WHERE rnk <= esik) AS kayit_kapsamasi
+FROM UNNEST([100, 500, 1000, 2000, 5000, 10000, 25000, 50000]) AS esik
+ORDER BY esik;
