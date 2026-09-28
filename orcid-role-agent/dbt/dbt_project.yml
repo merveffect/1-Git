@@ -13,6 +13,7 @@ clean-targets: ["target", "dbt_packages"]
 models:
   orcid_role_agent:
     +persist_docs: {relation: true, columns: true}
+    raw:          {+materialized: view,  +schema: raw}
     staging:      {+materialized: view,  +schema: staging}
     dictionary:   {+materialized: table, +schema: dictionary}
     scoring:      {+materialized: table, +schema: scoring}
@@ -203,10 +204,21 @@ vars:
       display_name: 'Orcid'
       enabled: true
       priority: 1
+      # Bu kaynagin ortak semayi ureten staging modeli.
+      # stg_role_records butun aktif kaynaklari bu alandan bulup birlestirir.
+      staging_model: 'stg_orcid__employment'
+
     web_scraping:
       display_name: 'Web scraping'
       enabled: false        # <-- hazir oldugunda true; contract kirilmaz
       priority: 2
+      staging_model: 'stg_webscrape__role_records'
+
+    cdp_self_reported:
+      display_name: 'CDP'
+      enabled: false        # CDP'nin kendi role alani - ucuncu kaynak
+      priority: 3
+      staging_model: 'stg_cdp__role_records'
 
   # ───────────────────────────────────────────────────────────────────────
   # 6. NORMALIZASYON — kisaltma acma kurallari

@@ -14,7 +14,7 @@
 with employment as (
 
     select role_title, organisation, department
-    from {{ ref('stg_orcid__employment') }}
+    from {{ ref('stg_role_records') }}
     where role_title is not null
 
 ),

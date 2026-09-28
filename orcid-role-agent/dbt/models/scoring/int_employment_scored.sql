@@ -16,7 +16,7 @@
 
 with employment as (
 
-    select * from {{ ref('stg_orcid__employment') }}
+    select * from {{ ref('stg_role_records') }}
     where role_title is not null
 
 ),
@@ -34,7 +34,7 @@ with_org as (
     from employment e
     left join {{ ref('int_org_resolved') }} o
            on e.organisation = o.organisation
-          and e.disambiguated_org_id is not distinct from o.disambiguated_org_id
+          and e.org_id is not distinct from o.org_id
 
 ),
 

@@ -21,7 +21,7 @@ cdp as (
         mkt_pref_opt_in,
         advertising_opt_in,
         true as in_cdp
-    from {{ source('cdp', 'audience_builder_big') }}
+    from {{ ref('raw_audience_builder_big') }}
 
 )
 

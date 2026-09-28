@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: stg_role_records
+    description: >
+      ⭐ Tum kaynaklarin birlestigi tek nokta. Ustteki katmanlar verinin
+      nereden geldigini bilmez. Yeni kaynak = yeni staging modeli +
+      dbt_project.yml sources bloguna bir satir.
+    columns:
+      - name: snid
+        tests: [not_null]
+      - name: source_key
+        tests:
+          - not_null
+          - accepted_values: {values: "{{ source_keys() }}"}
+      - name: role_title
+        tests: [not_null]
+
+  - name: stg_orcid__employment
+    description: ORCID employments[] -> ortak rol kaydi semasi.
+
+  - name: stg_orcid__education
+    description: Kisi basina en guncel egitim kaydi (bonus sinyali).
+    columns:
+      - name: snid
+        tests: [unique, not_null]
+
+  - name: stg_ror__organisations
+    description: >
+      ROR kurum kayit defteri. Kurum TIPI (Education / Healthcare /
+      Company ...) buradan gelir; org skorlamasi bu tipe dayanir.

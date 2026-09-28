@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: researcher_profiles
+    database: researcher-360-prod-e7fd74be
+    schema: researcher_profiles
+    tables:
+      - name: orcid_researchers
+        description: >
+          ORCID profilleri. Bir satir = bir kisi.
+          employments / educations / publications / keywords / peer_reviews
+          REPEATED STRUCT. Her kaydin kendi visibility'si var.
+      - name: audience_builder_big
+        description: CDP opt-in populasyonu ve consent bayraklari.
+
+  - name: ror
+    database: ri-data-engineering-dd4c0eca
+    schema: ror
+    description: AYRI PROJE - cross-project okuma izni gerekir.
+    tables:
+      - name: ror_data_refresh
+        description: ROR kurum kayit defteri.

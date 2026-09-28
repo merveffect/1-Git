@@ -3,22 +3,22 @@
 /*
     KURUM COZUMLEME - iki yollu.
 
-    ORCID kayitlari zaten disambiguated_organisation_id tasiyor
+    ORCID kayitlari zaten kurum kimligi tasiyor (org_id)
     (ROR / GRID / RINGGOLD / FUNDREF). Kaynak ROR ise eslestirmeye
     HIC gerek yok - dogrudan join, %100 kesin.
 
     Kalanlar icin isim eslestirme (Merve'nin daha once yaptigi is).
 
-    Cikti: (organisation, disambiguated_org_id) -> ror_id + ror_types
+    Cikti: (organisation, org_id) -> ror_id + ror_types
 */
 
 with employment_orgs as (
 
     select distinct
         organisation,
-        disambiguated_org_id,
-        disambiguated_org_source
-    from {{ ref('stg_orcid__employment') }}
+        org_id,
+        org_id_source
+    from {{ ref('stg_role_records') }}
     where organisation is not null
 
 ),
@@ -35,7 +35,7 @@ by_ror_id as (
 
     select
         o.organisation,
-        o.disambiguated_org_id,
+        o.org_id,
         r.ror_id,
         r.canonical_name,
         r.ror_types,
@@ -44,8 +44,8 @@ by_ror_id as (
         1.0                 as resolution_confidence
     from employment_orgs o
     join ror r
-      on o.disambiguated_org_source = 'ROR'
-     and o.disambiguated_org_id = r.ror_id
+      on o.org_id_source = 'ROR'
+     and o.org_id = r.ror_id
 
 ),
 
@@ -54,7 +54,7 @@ by_name as (
 
     select
         o.organisation,
-        o.disambiguated_org_id,
+        o.org_id,
         r.ror_id,
         r.canonical_name,
         r.ror_types,
@@ -67,7 +67,7 @@ by_name as (
     where not exists (
         select 1 from by_ror_id b
         where b.organisation = o.organisation
-          and b.disambiguated_org_id is not distinct from o.disambiguated_org_id
+          and b.org_id is not distinct from o.org_id
     )
 
 ),
@@ -80,7 +80,7 @@ combined as (
 
 select
     organisation,
-    disambiguated_org_id,
+    org_id,
     ror_id,
     canonical_name,
     ror_types,
@@ -89,6 +89,6 @@ select
     resolution_confidence
 from combined
 qualify row_number() over (
-    partition by organisation, disambiguated_org_id
+    partition by organisation, org_id
     order by resolution_confidence desc
 ) = 1
