@@ -26,13 +26,35 @@ seeds:
 vars:
 
   # ───────────────────────────────────────────────────────────────────────
-  # 1. SOURCES
+  # 1. PROJELER
+  #
+  #   OKUMA (kaynaklar models/raw/_sources.yml icinde tanimli):
+  #     researcher-360-prod-e7fd74be   ORCID + CDP
+  #     ri-data-engineering-dd4c0eca   ROR registry
+  #     datasn-rm-live                 embedding modeli
+  #
+  #   YAZMA (profiles.yml -> project / dataset):
+  #     dat-analytics-eng-ec869189 . orcid_role_agent
+  #       -> orcid_role_agent_raw / _staging / _dictionary
+  #          _scoring / _presentation / _seeds
   # ───────────────────────────────────────────────────────────────────────
-  gcp_project:      'researcher-360-prod-e7fd74be'
-  source_dataset:   'researcher_profiles'
-  orcid_view:       'v_orcid_researchers'
-  ror_mapping_table: 'TODO_ror_mapping_table'      # <-- senin mevcut ROR eşleme tablon
-  cdp_table:        'audience_builder_big'
+  target_project:   'dat-analytics-eng-ec869189'
+
+  # ⚠️ ORCID alan bazli gorunurluk tasir: PUBLIC / LIMITED /
+  # REGISTERED_ONLY / PRIVATE. Filtre raw katmaninda uygulaniyor.
+  # false yapmadan once hukuk onayi al.
+  public_visibility_only: true
+
+  # ───────────────────────────────────────────────────────────────────────
+  # MALIYET KATMANLARI
+  # Frekans dagilimi cok dengesiz; hepsine ayni islem gereksiz.
+  #   A: sik gecen  -> tam islem + insan review kuyrugu
+  #   B: orta       -> tam islem
+  #   C: uzun kuyruk-> sadece vektor, review kuyruguna girmez
+  # Esikler analyses/00_source_profile.sql sorgu J'den sonra ayarlanacak.
+  # ───────────────────────────────────────────────────────────────────────
+  tier_a_min_frequency: 50
+  tier_b_min_frequency: 3
 
   # ───────────────────────────────────────────────────────────────────────
   # 2. VERTEX AI
@@ -52,12 +74,41 @@ vars:
   # setup/03_test_access.sql ile hangisinin calistigini test et.
   judge_function:     'ai_generate_bool'
 
-  # Benzerlik eşikleri. Institution matching'de 1.0 kullanmıştık; burada
-  # "doğru cevap" tek bir şey olmadığı icin kademeli gidiyoruz.
-  sim_auto_accept:  0.90    # >= bu   -> otomatik kabul, LLM'e sorulmaz
-  sim_judge_floor:  0.55    # >= bu   -> LLM hakemliğine gider
-  sim_review_floor: 0.70    # bunun altindakiler ayrica insan review kuyruguna
-                            # <  sim_judge_floor -> reddedilir
+  # ───────────────────────────────────────────────────────────────────────
+  # ESIKLER - analyses/02_similarity_calibration.sql ile KALIBRE EDILDI
+  #
+  # BULGU: mutlak benzerlik tek basina AYIRMIYOR.
+  #   dogru eslesmeler   0.682 - 1.000
+  #   yanlis eslesmeler  0.519 - 0.953      <-- buyuk ortusme
+  #
+  # AYIRAN SEY: DISTRACTOR MARJI. Unvanin hedef role benzerligi,
+  # hedef-disi yaygin mesleklere ('__distractor' anchor'lari)
+  # benzerliginden ne kadar fazla?
+  #   dogru eslesmelerde  en dusuk marj   +0.13
+  #   yanlis eslesmelerde cogu NEGATIF, en yuksegi +0.12
+  # Esik ikisinin arasina konuldu.
+  # ───────────────────────────────────────────────────────────────────────
+
+  # ASIL KARAR OLCUSU: hedef rol benzerligi - distractor benzerligi
+  sim_min_margin:   0.13
+
+  # Taban filtre. Marj zaten isi yapiyor; bu sadece cok dusuk
+  # benzerlikleri baştan eler.
+  sim_floor:        0.65
+
+  # COK ETIKETLILIK BANDI
+  # "Professor of Cardiology" hem hcp hem researcher olmali.
+  # En iyi rolun bu kadar yakinindaki TUM roller kabul edilir.
+  # Ikinci rolu cezalandirmiyoruz - ayni anda dogru olabilirler.
+  sim_tie_band:     0.12
+
+  # Marj bu degerin altindaysa karar kirilgan -> insan review kuyrugu
+  sim_review_margin: 0.18
+
+  # LLM hakemligi OPSIYONEL. Bu projede Vertex baglantisi yok
+  # (Test 3: "Not found: Connection vertex_ai_conn"), varsayilan KAPALI.
+  # Pipeline sadece vektorle calisiyor. Baglanti kurulursa true yap.
+  use_llm_judge:    false
 
   # ───────────────────────────────────────────────────────────────────────
   # 3. ROL KAYIT DEFTERİ  ⭐

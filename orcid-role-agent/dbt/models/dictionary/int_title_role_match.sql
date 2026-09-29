@@ -1,17 +1,29 @@
 {{ config(materialized='table') }}
 
 /*
+    ============================================================================
     VECTOR SEARCH SONUCU + KARAR
+    ============================================================================
+    Kalibrasyon (analyses/02) sunu gosterdi:
 
-    Her unvan, her rolun anchor'larina karsi aranir.
+      MUTLAK BENZERLIK TEK BASINA AYIRMIYOR
+        dogru eslesmeler   0.682 - 1.000
+        yanlis eslesmeler  0.519 - 0.953     <-- buyuk ortusme
+        "pharmacologist" eczaciya 0.953 benziyor ama eczaci DEGIL.
 
-    IKI OLCU KULLANIYORUZ:
-      1. MUTLAK benzerlik  - "bu unvan bu role ne kadar yakin?"
-      2. MARJ              - "en iyi rol, ikinciyi ne kadar geride birakti?"
+      AYIRAN SEY: DISTRACTOR MARJI
+        '__distractor' = hedef rollerimizden hicbiri olmayan yaygin
+        meslekler (software engineer, hr manager, lawyer, ...).
+        Soru artik "bu unvan role ne kadar benziyor" degil:
+        "bu unvan role, hedef-disi mesleklere oldugundan NE KADAR
+         DAHA FAZLA benziyor?"
+        dogru eslesmelerde min +0.13 / yanlislarda cogu NEGATIF.
 
-    Marj neden lazim: bu modelin taban benzerligi yuksek (alakasiz iki
-    terim bile 0.57 aliyor). Mutlak esik tek basina kirilgan kaliyor.
-    Marj taban kaymasindan etkilenmiyor.
+      COK ETIKETLILIK KORUNMALI
+        "Professor of Cardiology" hem hcp hem researcher. En iyi rolun
+        sim_tie_band kadar yakinindaki TUM roller kabul edilir; ikinci
+        rolu cezalandirmiyoruz cunku ayni anda dogru olabilirler.
+    ============================================================================
 */
 
 with matches as (
@@ -27,14 +39,14 @@ with matches as (
     from vector_search(
         table {{ ref('int_anchor_embeddings') }}, 'embedding',
         table {{ ref('int_title_embeddings') }},  'embedding',
-        top_k           => 10,
+        top_k           => 20,
         distance_type   => 'COSINE'
     )
 
 ),
 
--- include / exclude anchor'larini ayri ayri en iyi skora indir
-best_per_role as (
+-- hedef roller: include / exclude anchor'larinin en iyileri
+per_role as (
 
     select
         title_key,
@@ -48,27 +60,41 @@ best_per_role as (
             order by similarity desc limit 3
         )                                                as matched_anchors
     from matches
+    where role_key != '__distractor'
     group by title_key, title, frequency, role_key
 
 ),
 
--- unvan icinde roller arasi siralama -> marj
-with_margin as (
+-- referans noktasi: unvan hedef-disi mesleklere ne kadar benziyor?
+distractor as (
 
     select
-        *,
-        include_similarity - coalesce(
-            max(include_similarity) over (
-                partition by title_key
-                order by include_similarity desc
-                rows between 1 following and 1 following
-            ), 0.0
-        )                                                as role_margin,
-        row_number() over (
-            partition by title_key order by include_similarity desc
-        )                                                as role_rank
-    from best_per_role
-    where include_similarity is not null
+        title_key,
+        max(similarity)                                  as distractor_similarity,
+        array_agg(anchor_term order by similarity desc limit 2) as nearest_distractors
+    from matches
+    where role_key = '__distractor'
+    group by title_key
+
+),
+
+combined as (
+
+    select
+        r.*,
+        coalesce(d.distractor_similarity, 0.0)          as distractor_similarity,
+        d.nearest_distractors,
+
+        -- ⭐ ASIL OLCU
+        r.include_similarity
+            - coalesce(d.distractor_similarity, 0.0)    as distractor_margin,
+
+        -- unvan icinde en iyi rol (cok etiketlilik bandi icin)
+        max(r.include_similarity) over (partition by r.title_key) as best_role_similarity
+
+    from per_role r
+    left join distractor d using (title_key)
+    where r.include_similarity is not null
 
 )
 
@@ -79,60 +105,52 @@ select
     role_key,
     include_similarity,
     exclude_similarity,
-    role_margin,
-    role_rank,
+    distractor_similarity,
+    distractor_margin,
+    best_role_similarity,
+    nearest_distractors,
     matched_anchors,
 
-    /*
-        exclude anchor'i include'dan daha yakinsa bu bir tuzak.
-        Ornek: "data consultant" -> include:'consultant physician' 0.74
-                                    exclude:'data consultant'      0.97
-        Phase-1'deki exclusion kurallarinin vektor karsiligi.
-    */
-    coalesce(exclude_similarity, 0) > coalesce(include_similarity, 0)
-        as blocked_by_exclusion,
+    -- rol-ozel exclude anchor'i include'dan yakinsa bu bir tuzak
+    coalesce(exclude_similarity, 0) > include_similarity as blocked_by_exclusion,
 
-    -- 355.803 unvanin hepsine ayni islem gereksiz; frekans katmani
+    -- en iyi rolun bandi icinde mi? (cok etiketlilik)
+    include_similarity >= best_role_similarity - {{ var('sim_tie_band') }}
+                                                        as within_tie_band,
+
     case
         when frequency >= {{ var('tier_a_min_frequency') }} then 'A'
         when frequency >= {{ var('tier_b_min_frequency') }} then 'B'
         else 'C'
-    end                                                  as frequency_tier,
+    end                                                 as frequency_tier,
 
     case
-        when coalesce(exclude_similarity, 0) > coalesce(include_similarity, 0)
+        -- 1. rol-ozel exclude bloklar (kalibrasyonda 15 yanlistan 9'unu yakaladi)
+        when coalesce(exclude_similarity, 0) > include_similarity
             then 'REJECTED_EXCLUSION'
 
-        -- yuksek benzerlik VE net marj -> tartisma yok
-        when include_similarity >= {{ var('sim_auto_accept') }}
-         and role_margin        >= {{ var('sim_min_margin') }}
-            then 'AUTO_ACCEPT'
+        -- 2. taban filtre
+        when include_similarity < {{ var('sim_floor') }}
+            then 'REJECTED_LOW_SIMILARITY'
 
-        -- belirsiz bolge
-        when include_similarity >= {{ var('sim_judge_floor') }}
-            then
-            {%- if var('use_llm_judge') %}
-                case when frequency >= {{ var('tier_b_min_frequency') }}
-                     then 'NEEDS_JUDGE'
-                     else 'AUTO_ACCEPT_TAIL' end
-            {%- else %}
-                -- LLM hakemi kapali: marj yeterliyse kabul, degilse red
-                case when role_margin >= {{ var('sim_min_margin') }}
-                     then 'AUTO_ACCEPT_TAIL'
-                     else 'REJECTED_AMBIGUOUS' end
-            {%- endif %}
+        -- 3. hedef-disi mesleklere daha yakin veya marj yetersiz
+        when include_similarity - distractor_similarity < {{ var('sim_min_margin') }}
+            then 'REJECTED_DISTRACTOR'
 
-        else 'REJECTED_LOW_SIMILARITY'
-    end                                                  as match_decision,
+        -- 4. en iyi rolden cok uzak (baska bir rol acikca daha uygun)
+        when include_similarity < best_role_similarity - {{ var('sim_tie_band') }}
+            then 'REJECTED_BETTER_ROLE_EXISTS'
+
+        else 'ACCEPTED'
+    end                                                 as match_decision,
 
     /*
-        Insan review kuyrugu: belirsiz VE cok kisiyi etkileyen unvanlar.
-        LLM hakemi kapaliyken bu kuyruk daha da onemli - tek dogrulama
-        mekanizmasi bu.
+        Insan review kuyrugu: marj sinira yakinsa karar kirilgan.
+        LLM hakemi kapali oldugu icin tek dogrulama mekanizmasi bu -
+        ve sadece SIK gecen unvanlar icin (tier A).
     */
-    (     include_similarity >= {{ var('sim_judge_floor') }}
-      and (   include_similarity < {{ var('sim_review_floor') }}
-           or role_margin       < {{ var('sim_min_margin') }} )
-      and frequency >= {{ var('tier_a_min_frequency') }} )  as needs_human_review
+    (     include_similarity - distractor_similarity >= {{ var('sim_min_margin') }}
+      and include_similarity - distractor_similarity <  {{ var('sim_review_margin') }}
+      and frequency >= {{ var('tier_a_min_frequency') }} ) as needs_human_review
 
-from with_margin
+from combined

@@ -21,7 +21,7 @@ with seed_anchors as (
         language_code,
         'seed'                                  as anchor_source
     from {{ ref('role_anchors') }}
-    where role_key in ({{ sql_in_list(role_keys()) }})
+    where role_key in ({{ sql_in_list(role_keys()) }}, '__distractor')
 
 ),
 

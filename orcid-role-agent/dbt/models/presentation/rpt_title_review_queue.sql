@@ -17,6 +17,7 @@ select
     role_key,
     frequency,
     round(include_similarity, 3)    as similarity,
+    round(distractor_margin, 3)     as distractor_marj,
     matched_anchors,
     decision_source,
     is_role_member                  as current_decision,

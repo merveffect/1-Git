@@ -11,9 +11,15 @@ seeds:
       column_types: {role_key: STRING, anchor_term: STRING, polarity: STRING, language_code: STRING, note: STRING}
     columns:
       - name: role_key
+        description: >
+          Hedef roller + '__distractor'. Distractor sozde bir rol:
+          hedeflerimizden hicbiri olmayan yaygin meslekler. Bir unvanin
+          gercekten bizim rollerimizden biri olup olmadigini olcmek icin
+          referans noktasi gorevi goruyor.
         tests:
           - not_null
-          - accepted_values: {values: "{{ role_keys() }}"}
+          - accepted_values:
+              values: "{{ role_keys() + ['__distractor'] }}"
       - name: polarity
         tests:
           - accepted_values: {values: ['include', 'exclude']}

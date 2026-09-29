@@ -58,5 +58,28 @@ for k, v in roles.items():
     if v.get('enabled', True) and v.get('parent'):
         print(f"\nroll-up: {k} -> {v['parent']} / {v.get('parent_bucket')}")
 
+
+# ── tanimsiz var denetimi ────────────────────────────────────────────────
+# Gecmiste sessizce basarisiz olan duzenlemeler yuzunden modellerde
+# tanimsiz var() kalmisti; dbt run derleme hatasi veriyordu. Bu kontrol
+# onu build'den ONCE yakaliyor.
+import re
+cfg_text = open('dbt_project.yml').read()
+defined = set(re.findall(r"^\s{2}([a-z_]+):", cfg_text, re.M))
+used = {}
+for f in glob.glob('models/**/*.sql', recursive=True) + glob.glob('macros/*.sql') + glob.glob('tests/*.sql'):
+    for name, comma in re.findall(r"var\(\s*['\"]([a-z_]+)['\"]\s*(,)?", open(f).read()):
+        used.setdefault(name, False)
+        if comma:
+            used[name] = True
+missing = sorted(n for n, has_default in used.items() if n not in defined and not has_default)
+if missing:
+    ok = False
+    print("\nTANIMSIZ var() (varsayilani da yok):")
+    for n in missing:
+        print(f"  - {n}")
+else:
+    print(f"\nvar denetimi: {len(used)} var kullaniliyor, hepsi tanimli")
+
 print("\nOK" if ok else "\nHATA VAR")
 sys.exit(0 if ok else 1)

@@ -34,7 +34,7 @@ models:
           - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
       - name: decision_source
         tests:
-          - accepted_values: {values: ['HUMAN', 'VECTOR', 'VECTOR_TAIL', 'LLM_JUDGE', 'REJECTED']}
+          - accepted_values: {values: ['HUMAN', 'VECTOR', 'LLM_JUDGE', 'REJECTED']}
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns: [title_key, role_key]
