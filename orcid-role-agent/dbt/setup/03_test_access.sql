@@ -103,3 +103,26 @@ FROM ML.GENERATE_TEXT(
 -- LLM hakemligi sadece belirsiz bolgeye gider (~birkac bin) ama
 -- dakikalik limit dusukse job yavaslar ya da hata verir.
 -- Gerekirse quota artisi talep et - birkac gun surebilir.
+
+
+-- ---------------------------------------------------------------------------
+-- TEST 5: AGENT ICIN - Gemini uretim (generation) erisimi
+--
+-- Embedding calisiyor olmasi Gemini'nin de calistigi anlamina GELMEZ:
+-- ayni API, ayni IAM rolu, ama FARKLI model ve FARKLI quota havuzu.
+-- Agent'in beyni bu cagri - once burada dogrula.
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE MODEL
+  `researcher-360-prod-e7fd74be.orcid_role_agent.remote_gemini_2_5_flash`
+REMOTE WITH CONNECTION `researcher-360-prod-e7fd74be.EU.vertex_ai_conn`
+OPTIONS (ENDPOINT = 'gemini-2.5-flash');
+
+SELECT ml_generate_text_llm_result AS cevap
+FROM ML.GENERATE_TEXT(
+    MODEL `researcher-360-prod-e7fd74be.orcid_role_agent.remote_gemini_2_5_flash`,
+    (SELECT 'Reply with exactly one word: OK' AS prompt),
+    STRUCT(0.0 AS temperature, 8 AS max_output_tokens, TRUE AS flatten_json_output)
+);
+-- ✅ 'OK' donerse Gemini erisimi var -> agent icin ek izin GEREKMIYOR.
+-- ❌ Model bulunamadi / izin hatasi -> Vertex'te Gemini bu bolgede kapali.
+--    Bu durumda bolge degistir veya model erisimi talep et.
