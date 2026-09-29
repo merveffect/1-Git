@@ -103,7 +103,9 @@ FROM UNNEST(['consultant cardiologist', 'data consultant']) AS t;
     project, or reuse an existing one from another team. Then set
     use_llm_judge: true - no other change is needed.
 
-    Worth checking first: does the project that hosts the embedding model
-    also expose a text model?
-        SELECT * FROM `datasn-rm-live.institution_disambiguation.INFORMATION_SCHEMA.MODELS`;
+    We cannot list the models in datasn-rm-live - INFORMATION_SCHEMA is
+    not readable with our permissions. The embedding model itself IS
+    callable (Test 1 and 1b both passed), so the grant covers invoking
+    that specific model but not browsing the dataset. Whether a text
+    model also exists there has to be asked, not discovered.
 */

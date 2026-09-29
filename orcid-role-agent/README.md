@@ -184,7 +184,6 @@ WRITE  dat-analytics-eng-ec869189 . orcid_role_agent
 ### Still open
 
 - [ ] Verify column names: `bq show --schema ri-data-engineering-dd4c0eca:ror.ror_data_refresh`
-- [ ] Confirm the `contact_email` column in `audience_builder_big`
 - [ ] Confirm the display names match the MPC `role` field spellings exactly
 - [ ] Vertex AI connection (optional — enables the LLM judge)
 - [ ] Load ESCO and set `use_esco: true` (optional, widens multilingual anchors)
@@ -216,7 +215,7 @@ ORDER BY marketable DESC;
 
 | field | example |
 |---|---|
-| `contact_email` | xx@xcv.com |
+| `contact_email` | xx@xcv.com  (from `audience_builder_big.email`) |
 | `snid` | 1233 |
 | `role_inferred` | `['Head of Faculty', 'Healthcare Professional']` |
 | `role_detailed_inferred` | `['Head of Faculty - University', 'Healthcare Professional - Practitioner']` |

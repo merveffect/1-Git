@@ -20,6 +20,7 @@ cdp as (
 
     select
         snid,
+        email,
         mkt_pref_opt_in,
         advertising_opt_in,
         true as in_cdp
@@ -45,6 +46,7 @@ select
     r.evidence_dept,
 
     -- reachability
+    c.email                                 as contact_email,
     coalesce(c.in_cdp, false)               as in_cdp,
     coalesce(c.mkt_pref_opt_in, false)      as is_marketable,
     coalesce(c.advertising_opt_in, false)   as is_advertisable,

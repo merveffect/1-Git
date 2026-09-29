@@ -57,6 +57,7 @@ per_role as (
         max(role_final_score)                       as role_final_score,
         any_value(role_detail)                      as role_detail,
         any_value(country_code)                     as country_code,
+        any_value(contact_email)                    as contact_email,
         any_value(is_marketable)                    as is_marketable,
         any_value(is_advertisable)                  as is_advertisable,
         any_value(in_cdp)                           as in_cdp
@@ -106,6 +107,7 @@ contact as (
         )                                           as roles_struct,
 
         any_value(country_code)                     as country_code,
+        any_value(contact_email)                    as contact_email,
         max(is_marketable)                          as is_marketable,
         max(is_advertisable)                        as is_advertisable,
         max(in_cdp)                                 as in_cdp
@@ -116,12 +118,11 @@ contact as (
 
 select
     /*
-        contact_email comes from CDP - this pipeline does not hold email
-        addresses. ORCID emails are mostly PRIVATE and would be the wrong
-        source even where they exist.
-        TODO: confirm the email column name in audience_builder_big.
+        contact_email comes from CDP (audience_builder_big.email), not
+        from ORCID. ORCID emails are mostly PRIVATE and would be the
+        wrong source even where they exist.
     */
-    cast(null as string)                            as contact_email,   -- TODO
+    c.contact_email,
     c.snid,
     c.role_inferred,
     c.role_detailed_inferred,
