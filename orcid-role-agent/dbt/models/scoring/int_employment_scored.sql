@@ -60,10 +60,19 @@ with_org_score as (
         case
             when w.organisation is null then null      -- source carries no organisation
             else coalesce((
+                /*
+                    Case-insensitive on purpose. ROR v2 returns types
+                    lowercase ('healthcare'); the seed is written in
+                    title case. A case-sensitive join would match
+                    nothing and silently drop every organisation to
+                    UNKNOWN - worth 0.225 of an hcp score, which is
+                    enough to push borderline people under threshold.
+                */
                 select max(s.org_score)
                 from unnest(coalesce(w.ror_types, ['UNKNOWN'])) as t
                 join {{ ref('org_type_scores') }} s
-                  on s.role_key = w.role_key and s.org_type = t
+                  on s.role_key = w.role_key
+                 and upper(trim(s.org_type)) = upper(trim(t))
             ), (
                 select s.org_score from {{ ref('org_type_scores') }} s
                 where s.role_key = w.role_key and s.org_type = 'UNKNOWN'
