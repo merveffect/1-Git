@@ -11,7 +11,10 @@ sources:
           employments / educations / publications / keywords / peer_reviews
           are REPEATED STRUCTs. Each record carries its own visibility.
       - name: audience_builder_big
-        description: CDP opt-in population and consent flags.
+        description: >
+          CDP population and consent flags.
+          !! VERIFY the dataset - taken from the Phase-2 document, not
+          from a schema read.
 
   - name: ror
     database: ri-data-engineering-dd4c0eca
