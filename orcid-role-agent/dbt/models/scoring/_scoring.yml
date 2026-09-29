@@ -3,9 +3,9 @@ version: 2
 models:
   - name: fct_researcher_roles
     description: >
-      ⭐ TEK GERCEK MODEL. Bir satir = (snid, role_key). Multi-label:
-      bir kisi birden fazla rol tasiyabilir. Presentation katmaninin
-      tamami buradan beslenir.
+      ⭐ THE CORE MODEL. One row = (snid, role_key, source_key).
+      Multi-label: a person can hold several roles. The whole
+      presentation layer is built from this table.
     columns:
       - name: snid
         tests: [not_null]
@@ -13,6 +13,10 @@ models:
         tests:
           - not_null
           - accepted_values: {values: "{{ role_keys() }}"}
+      - name: source_key
+        tests:
+          - not_null
+          - accepted_values: {values: "{{ source_keys() }}"}
       - name: role_label
         tests:
           - accepted_values: {values: ['CONFIRMED', 'PROBABLE']}
@@ -20,14 +24,10 @@ models:
         tests:
           - not_null
           - dbt_utils.accepted_range: {min_value: 0, max_value: 1.2, inclusive: true}
-      - name: role_source
-        tests:
-          - not_null
-          - accepted_values: {values: "{{ source_keys() }}"}
       - name: role_detail
-        description: role_detailed_inferred'in 2. parcasi.
+        description: The second part of role_detailed_inferred.
       - name: derived_from_role
-        description: Roll-up ile geldiyse kaynak rol (orn. pharmacist -> hcp).
+        description: Source role when this row came from a roll-up (e.g. pharmacist -> hcp).
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [snid, role_key]
+          combination_of_columns: [snid, role_key, source_key]

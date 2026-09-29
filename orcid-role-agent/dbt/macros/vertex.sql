@@ -1,27 +1,9 @@
 {#-
-    VERTEX AI SARMALAYICILARI
-    -------------------------
-    Model adi / connection sadece dbt_project.yml'de durur.
-    Model degistirmek = tek satir var degisikligi.
+    VERTEX AI WRAPPERS
+    ------------------
+    Model names and connections live only in dbt_project.yml.
+    Switching models is a one-line var change.
 -#}
-
-{#- Bir kolonu embed eder. Girdi CTE'sinde kolon adi 'content' OLMALI. -#}
-{% macro generate_embedding(source_relation, content_col='content') %}
-    SELECT
-        *,
-        ml_generate_embedding_result AS embedding
-    FROM ML.GENERATE_EMBEDDING(
-        MODEL `{{ var('gcp_project') }}.{{ target.schema }}.{{ embedding_model_name() }}`,
-        (SELECT *, {{ content_col }} AS content FROM {{ source_relation }}),
-        STRUCT(TRUE AS flatten_json_output, 'SEMANTIC_SIMILARITY' AS task_type)
-    )
-{% endmacro %}
-
-
-{% macro embedding_model_name() %}
-    {{ return('remote_' ~ var('embedding_model') | replace('-', '_')) }}
-{% endmacro %}
-
 
 {% macro judge_model_name() %}
     {{ return('remote_' ~ var('judge_model') | replace('-', '_') | replace('.', '_')) }}
@@ -29,22 +11,22 @@
 
 
 {#-
-    LLM HAKEM CAGRISI - IKI YOL
+    LLM JUDGE - TWO ROUTES
 
-    BigQuery'de LLM cagirmanin iki yolu var ve ikisi de AYNI Vertex
-    baglantisini kullanir. Fark sadece SQL sozdiziminde:
+    There are two ways to call an LLM from BigQuery and both use the
+    SAME Vertex connection. Only the SQL syntax differs:
 
-      'ai_generate_bool'  AI.GENERATE_BOOL(...)  - skaler, sade
-                          yeni fonksiyon, bolge destegi degisken
+      'ai_generate_bool'  AI.GENERATE_BOOL(...)  scalar, concise,
+                          newer function, regional support varies
 
-      'ml_generate_text'  ML.GENERATE_TEXT(...)  - tablo fonksiyonu
-                          eski ve her yerde calisir, guvenli liman
+      'ml_generate_text'  ML.GENERATE_TEXT(...)  table function,
+                          older and available everywhere (safe harbour)
 
-    Hangisinin calistigini setup/03_test_access.sql ile test et,
-    sonucu dbt_project.yml -> judge_function'a yaz.
+    Run setup/03_test_access.sql to find out which one works here, then
+    set dbt_project.yml -> judge_function accordingly.
 
-    Iki yol da (title_key, role_key, judge_accepted, judge_status)
-    donduruyor - modeller farki gormuyor.
+    Both routes return (title_key, role_key, judge_accepted,
+    judge_status), so models never see the difference.
 -#}
 
 {% macro judge_titles(source_relation, prompt_col='judge_prompt') %}
@@ -72,21 +54,21 @@
 
     select
         * except (ml_generate_text_llm_result, ml_generate_text_status),
-        -- model 'YES' / 'NO' donuyor; bool'a cevir
+        -- the model answers 'YES' / 'NO'; cast to bool
         upper(trim(ml_generate_text_llm_result)) like 'YES%'  as judge_accepted,
         nullif(ml_generate_text_status, '')                   as judge_status
     from ML.GENERATE_TEXT(
-        MODEL `{{ var('gcp_project') }}.{{ target.schema }}.{{ judge_model_name() }}`,
+        MODEL `{{ var('target_project') }}.{{ target.schema }}.{{ judge_model_name() }}`,
         (select *, {{ prompt_col }} as prompt from {{ source_relation }}),
         STRUCT(
-            0.0   AS temperature,      -- deterministik olsun
+            0.0   AS temperature,      -- deterministic
             8     AS max_output_tokens,
             TRUE  AS flatten_json_output
         )
     )
 
 {%- else -%}
-    {{ exceptions.raise_compiler_error("Bilinmeyen judge_function: " ~ fn) }}
+    {{ exceptions.raise_compiler_error("Unknown judge_function: " ~ fn) }}
 {%- endif -%}
 
 {% endmacro %}

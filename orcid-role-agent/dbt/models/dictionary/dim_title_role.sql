@@ -1,13 +1,13 @@
 {{ config(materialized='table') }}
 
 /*
-    ⭐ SOZLUK - PROJENIN EN DEGERLI VARLIGI
+    ⭐ THE DICTIONARY - THE MOST VALUABLE ASSET IN THIS PROJECT
 
-    "Hangi is unvani hangi role ait?"  Bir satir = (unvan, rol) cifti.
-    Bir unvan birden fazla role ait OLABILIR (multi-label).
+    "Which job title belongs to which role?" One row = (title, role).
+    A title CAN belong to more than one role (multi-label).
 
-    Bir kez uretilir, sonra 204.000 kisilik tabloya sadece JOIN atilir.
-    Bu tablodan sonra hicbir yerde AI calismaz.
+    Built once, then joined onto the person-level table. After this
+    model no AI runs anywhere in the pipeline.
 */
 
 with matched as (
@@ -18,14 +18,24 @@ with matched as (
 
 judged as (
 
+    {% if var('use_llm_judge') %}
     select title_key, role_key, judge_accepted, judge_status
     from {{ ref('int_title_role_judged') }}
+    {% else %}
+    -- LLM judge disabled (no Vertex connection). Empty table.
+    select
+        cast(null as string) as title_key,
+        cast(null as string) as role_key,
+        cast(null as bool)   as judge_accepted,
+        cast(null as string) as judge_status
+    where false
+    {% endif %}
 
 ),
 
 overrides as (
 
-    -- Insan kararlari her zaman kazanir. Bos birakilabilir.
+    -- Human decisions always win. May be empty.
     select
         to_hex(md5({{ normalize_title('title') }}))  as title_key,
         role_key,
@@ -44,24 +54,26 @@ combined as (
         m.role_key,
         m.frequency,
         m.include_similarity,
-        m.exclude_similarity,
-        m.matched_anchors,
+        m.distractor_margin,
+        m.distractor_similarity,
         m.match_decision,
+        m.frequency_tier,
         m.needs_human_review,
+        m.matched_anchors,
         j.judge_accepted,
         o.human_decision,
         o.reviewer,
 
         case
-            when o.human_decision is not null then o.human_decision = 'ACCEPT'
-            when m.match_decision = 'AUTO_ACCEPT' then true
+            when o.human_decision is not null     then o.human_decision = 'ACCEPT'
+            when m.match_decision = 'ACCEPTED'    then true
             when m.match_decision = 'NEEDS_JUDGE' then coalesce(j.judge_accepted, false)
             else false
         end                                          as is_role_member,
 
         case
-            when o.human_decision is not null then 'HUMAN'
-            when m.match_decision = 'AUTO_ACCEPT' then 'VECTOR'
+            when o.human_decision is not null     then 'HUMAN'
+            when m.match_decision = 'ACCEPTED'    then 'VECTOR'
             when m.match_decision = 'NEEDS_JUDGE' then 'LLM_JUDGE'
             else 'REJECTED'
         end                                          as decision_source
@@ -75,16 +87,17 @@ combined as (
 select
     *,
     /*
-        Unvanin rol skoru (Phase-1'deki role_score'un karsiligi).
-        Ikili degil, dereceli - ciddi bir iyilestirme: "consultant
-        cardiologist" ile "clinical fellow" artik ayni skoru almiyor.
+        The title's role score (the equivalent of Phase-1's role_score).
+        Graded rather than binary - a real improvement, because
+        "consultant cardiologist" and "clinical fellow" no longer score
+        identically. Scaled by the distractor margin: titles that
+        separate cleanly score full marks, borderline ones score less.
     */
     case
-        when not is_role_member then 0.0
+        when not is_role_member         then 0.0
         when decision_source = 'HUMAN'  then 1.0
-        when decision_source = 'VECTOR' then 1.0
-        else least(1.0, 0.60 + (include_similarity - {{ var('sim_judge_floor') }}))
+        else least(1.0, 0.70 + (distractor_margin - {{ var('sim_min_margin') }}) * 2)
     end                                              as role_score
 from combined
 where is_role_member
-   or needs_human_review        -- review kuyrugu icin reddedilenler de kalir
+   or needs_human_review        -- rejected rows stay for the review queue

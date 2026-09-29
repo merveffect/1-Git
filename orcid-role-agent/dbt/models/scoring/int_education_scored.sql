@@ -1,10 +1,11 @@
 {{ config(materialized='table') }}
 
 /*
-    Egitim bonusu. Phase-1 ile ayni mantik:
+    Education bonus. Same logic as Phase-1:
         education_score = degree_score * 0.5 + edu_dept_score * 0.5
-    Tek basina rol kazandirmaz; sadece sinirdaki vakalari yukari iter.
-    Hangi rollerde sayilacagi dbt_project.yml:roles.*.education_bonus ile.
+    It never qualifies a role on its own; it only lifts borderline
+    cases. Which roles it counts for is set by
+    dbt_project.yml -> roles.*.education_bonus.
 */
 
 with education as (

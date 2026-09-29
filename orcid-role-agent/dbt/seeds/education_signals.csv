@@ -4,7 +4,7 @@ hcp,degree,\b(bds|dds|dmd|doctor of dental surgery)\b,1.00,
 hcp,degree,\b(bachelor of nursing|bsc nursing|msc nursing|registered nurse)\b,1.00,
 hcp,degree,\b(do|doctor of osteopath|md phd)\b,1.00,
 hcp,degree,\b(mph|master of public health)\b,0.60,
-hcp,degree,\b(phd|doctor of philosophy)\b,0.30,klinik olmayan doktora zayif sinyal
+hcp,degree,\b(phd|doctor of philosophy)\b,0.30,a non-clinical doctorate is a weak signal
 hcp,department,\b(medicine|surgery|nursing|dentistry|pharmacy|clinical|cardiolog|oncolog|radiolog|neurolog|psychiatr|paediatr|pediatr)\w*,1.00,
 hcp,department,\b(public health|biomedical|health science|life science)\w*,0.80,
 pharmacist,degree,\b(pharmd|pharm d|bpharm|b pharm|mpharm|m pharm|bachelor of pharmacy|master of pharmacy|doctor of pharmacy)\b,1.00,

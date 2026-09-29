@@ -1,15 +1,21 @@
 {{ config(materialized='table') }}
 
 /*
-    SOZLUGUN 2. ADIMI - ANCHOR'LAR
-    Her rol icin "bu role ait olan unvan nasil gorunur" ornekleri.
+    DICTIONARY STEP 2 - ANCHORS
+    Example titles showing what each role looks like in the wild.
 
-    Iki kaynaktan beslenir:
-      1. seeds/role_anchors.csv  - elle yazilmis cekirdek terimler (cok dilli)
-      2. ESCO occupations        - ISCO grubuna gore filtrelenmis, 27 dilde
-                                   preferredLabel + altLabels
+    Two inputs:
+      1. seeds/role_anchors.csv  - hand-written core terms, multilingual
+      2. ESCO occupations        - filtered to the relevant ISCO groups,
+                                   preferredLabel + altLabels in 27 languages
 
-    Institution matching'deki "standart isim listesi"nin karsiligi budur.
+    This is the equivalent of the "standard name list" used in
+    institution matching.
+
+    '__distractor' is a pseudo-role: common occupations that are NONE of
+    our target roles. Calibration showed that the deciding measure is not
+    "how similar is this title to the role" but "how much MORE similar is
+    it to the role than to unrelated occupations".
 */
 
 with seed_anchors as (
@@ -21,11 +27,11 @@ with seed_anchors as (
         language_code,
         'seed'                                  as anchor_source
     from {{ ref('role_anchors') }}
-    where role_key in ({{ sql_in_list(role_keys()) }})
+    where role_key in ({{ sql_in_list(role_keys()) }}, '__distractor')
 
 ),
 
-{# ESCO henuz yuklenmediyse bu blok bos doner - pipeline kirilmaz #}
+{# If ESCO has not been loaded yet this block returns nothing - the pipeline still runs #}
 esco_anchors as (
 
     {% if var('use_esco', false) %}
@@ -73,7 +79,8 @@ select
 from unioned
 where anchor_term is not null
   and role_key   is not null
--- ayni terim hem seed hem esco'dan gelirse: seed kazanir, exclude include'u ezer
+-- if the same term arrives from both seed and ESCO: seed wins,
+-- and exclude beats include
 qualify row_number() over (
     partition by role_key, anchor_term
     order by if(anchor_source = 'seed', 0, 1), if(polarity = 'exclude', 0, 1)

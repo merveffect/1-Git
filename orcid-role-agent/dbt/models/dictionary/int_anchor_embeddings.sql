@@ -4,9 +4,9 @@
 ) }}
 
 /*
-    SOZLUGUN 4. ADIMI - ANCHOR EMBEDDING'LERI
-    Arama yapilacak hedef vektorler. int_title_embeddings ile AYNI modeli
-    kullanmak zorunlu - farkli model = anlamsiz benzerlik skoru.
+    The target vectors we search against. Must use the SAME model as
+    int_title_embeddings - a different model makes the similarity
+    scores meaningless.
 */
 
 with anchors as (
@@ -29,7 +29,8 @@ select
     ml_generate_embedding_result    as embedding,
     current_timestamp()             as embedded_at
 from ml.generate_embedding(
-    model `{{ var('gcp_project') }}.{{ target.schema }}.{{ embedding_model_name() }}`,
-    (select *, anchor_term as content from anchors),
-    struct(true as flatten_json_output, 'SEMANTIC_SIMILARITY' as task_type)
+    model `{{ var('embedding_model') }}`,
+    (select anchor_key, role_key, anchor_term, polarity, language_code,
+            anchor_term as content
+     from anchors)
 )

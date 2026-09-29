@@ -5,19 +5,29 @@
 ) }}
 
 /*
-    ⭐ TEK GERCEK MODEL
+    ⭐ THE CORE MODEL
 
-    Bir satir = (snid, role_key). Bir kisi birden fazla rol tasiyabilir.
-    Presentation katmaninin TAMAMI buradan beslenir.
+    One row = (snid, role_key, source_key).
 
-    Yeni rol eklendiginde bu dosya DEGISMEZ - makrolar kayit defterini
-    okuyup SQL'i kendisi genisletir.
+    The third dimension is the SOURCE. If two sources say different
+    things about the same person, there are two rows:
+
+        88412 | hcp          | orcid         | CONFIRMED
+        88412 | faculty_head | web_scraping  | CONFIRMED
+
+    If they say the same thing there are still two rows, and the
+    presentation layer collapses them into one role with the sources
+    joined as 'Orcid + Web scraping'. No evidence is lost.
+
+    Adding a role OR a source changes nothing in this file - the macros
+    read the registries and expand the SQL themselves.
 */
 
 with base as (
 
     select
         emp.snid,
+        emp.source_key,
         emp.role_key,
         emp.role_score,
         emp.org_score,
@@ -30,12 +40,8 @@ with base as (
         emp.ror_id,
         emp.country_code,
         emp.is_current,
-        det.detail_label,
-
-        -- Braze contract: kaynak izlenebilirligi. Web scraping eklendiginde
-        -- burasi UNION ALL ile genisler, contract kirilmaz.
-        'orcid'                             as role_source,
-        current_timestamp()                 as source_last_updated
+        emp.source_last_updated,
+        det.detail_label
     from {{ ref('int_employment_scored') }} emp
     left join {{ ref('int_education_scored') }} edu
            on emp.snid = edu.snid
@@ -43,6 +49,7 @@ with base as (
     left join {{ ref('int_role_detail') }} det
            on emp.snid = det.snid
           and emp.role_key = det.role_key
+          and emp.source_key = det.source_key
 
 ),
 
@@ -60,7 +67,9 @@ labelled as (
 
     select
         snid,
+        source_key,
         role_key,
+        detail_label                                as role_detail,
         {{ role_label_expr('role_final_score') }}   as role_label,
         role_final_score,
         role_score,
@@ -74,8 +83,6 @@ labelled as (
         ror_id,
         country_code,
         is_current,
-        detail_label                                as role_detail,
-        role_source,
         source_last_updated,
         cast(null as string)                        as derived_from_role
     from scored
@@ -90,15 +97,15 @@ qualified as (
 ),
 
 /*
-    Ebeveyn roll-up: pharmacist olan kisi ayni zamanda hcp/PRACTITIONER
-    satiri da alir. Iliskiler dbt_project.yml'deki `parent:` alanindan.
+    Parent roll-up: a pharmacist also gets an hcp / PRACTITIONER row.
+    Relationships come from dbt_project.yml -> roles.*.parent
 */
 with_parents as (
 
     select
-        snid, role_key, role_detail, role_final_score, role_label,
+        snid, source_key, role_key, role_detail, role_final_score, role_label,
         evidence_title, evidence_org, evidence_dept, country_code,
-        is_current, role_source, source_last_updated, derived_from_role
+        is_current, source_last_updated, derived_from_role
     from qualified
 
     {{ parent_rollup_union('qualified') }}
@@ -108,6 +115,7 @@ with_parents as (
 select
     snid,
     role_key,
+    source_key,
     role_detail,
     role_label,
     role_final_score,
@@ -116,13 +124,12 @@ select
     evidence_dept,
     country_code,
     is_current,
-    role_source,
     source_last_updated,
     derived_from_role,
     current_date()  as scored_date
 from with_parents
--- ayni (snid, role) ikiden fazla kez gelirse en yuksek skoru tut
+-- if the same (person, role, source) appears more than once keep the best score
 qualify row_number() over (
-    partition by snid, role_key
+    partition by snid, role_key, source_key
     order by role_final_score desc, derived_from_role nulls first
 ) = 1

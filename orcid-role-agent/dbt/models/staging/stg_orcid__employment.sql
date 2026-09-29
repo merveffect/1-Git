@@ -1,60 +1,63 @@
 {{ config(materialized='view') }}
 
 /*
-    ORCID employment kayitlarinin duzlestirilmis hali.
-    Bir satir = bir kisi x bir employment kaydi.
+    ORCID employments[] -> COMMON ROLE RECORD SCHEMA
 
-    !! KOLON ADLARI DOGRULANACAK !!
-    Asagidaki isimler Phase-1 dokumanindaki cikti alanlarindan tahmin edildi.
-    `bq show --schema` ciktisina gore duzeltilecek.
+    This model is ORCID-specific, but its OUTPUT is source-agnostic:
+    every new source (web scraping, CDP self-reported, ...) produces the
+    same columns and they meet in stg_role_records.
+
+    The visibility filter was applied in the raw layer - not repeated here.
 */
 
-with source as (
-
-    select * from {{ source('researcher_profiles', 'v_orcid_researchers') }}
-
-),
-
-renamed as (
+with flattened as (
 
     select
-        snid,
-        orcid_id,
+        r.snid,
+        r.orcid_id,
+        r.last_updated_at,
+        e.ordering,
 
-        -- ham metinler (kanit/izlenebilirlik icin saklanir)
-        orcid_role                                      as role_title_raw,
-        orcid_organisation                              as organisation_raw,
-        orcid_department                                as department_raw,
-        country_code,
+        -- raw text, kept for evidence and traceability
+        e.role                                          as role_title_raw,
+        e.organisation_name                             as organisation_raw,
+        e.department_name                               as department_raw,
 
-        -- normalize edilmis metinler (butun eslestirme bunlarin uzerinden)
-        {{ normalize_title('orcid_role') }}             as role_title,
-        {{ normalize_title('orcid_organisation') }}     as organisation,
-        {{ normalize_title('orcid_department') }}       as department,
+        -- normalised text - all matching runs on these
+        {{ normalize_title('e.role') }}                 as role_title,
+        {{ normalize_title('e.organisation_name') }}    as organisation,
+        {{ normalize_title('e.department_name') }}      as department,
 
-        -- tarihler
-        employment_start_date                           as start_date,
-        employment_end_date                             as end_date,
-        coalesce(employment_end_date is null, false)    as is_current
+        -- ORCID's own organisation identifier: ROR / GRID / RINGGOLD
+        e.disambiguated_organisation_id                 as org_id,
+        upper(e.disambiguated_organisation_source)      as org_id_source,
 
-    from source
-    where snid is not null
+        -- per-record country, more accurate than the profile country
+        e.organisation_address_country_code             as country_code,
 
-),
+        e.full_start_date                               as start_date,
+        e.full_end_date                                 as end_date
 
-ranked as (
-
-    select
-        *,
-        -- en guncel kayit: once current olanlar, sonra en yeni baslangic
-        row_number() over (
-            partition by snid
-            order by is_current desc,
-                     start_date desc nulls last,
-                     end_date   desc nulls last
-        ) as recency_rank
-    from renamed
+    from {{ ref('raw_orcid_researchers') }} r,
+    unnest(r.employments) e
 
 )
 
-select * from ranked
+select
+    snid,
+    orcid_id,
+    role_title_raw,
+    role_title,
+    organisation_raw,
+    organisation,
+    department_raw,
+    department,
+    org_id,
+    org_id_source,
+    country_code,
+    start_date,
+    end_date,
+    ordering,
+    last_updated_at                                     as source_last_updated
+from flattened
+where role_title is not null

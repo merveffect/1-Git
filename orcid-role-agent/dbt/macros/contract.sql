@@ -1,15 +1,15 @@
 {#-
-    BRAZE DATA CONTRACT YARDIMCILARI
-    --------------------------------
+    BRAZE DATA CONTRACT HELPERS
+    ---------------------------
     role_inferred / role_detailed_inferred / role_inferred_data_source /
-    ..._last_updated dizileri POZISYONEL olarak hizali olmak zorunda.
+    ..._last_updated must stay POSITIONALLY aligned.
 
-    Bu yuzden dortu de TEK bir siralanmis kaynaktan turetilir. Ayri ayri
-    ARRAY_AGG yapmak sessiz hizalama hatasi uretir - contract'in en buyuk
-    riski budur.
+    That is why all four are derived from ONE ordered source. Writing
+    four independent ARRAY_AGGs would silently drift - the single
+    biggest risk in this contract.
 -#}
 
-{#- role_key -> contract'taki gorunen ad -#}
+{#- role_key -> the display name used in the contract -#}
 {% macro role_display_name_expr(col='role_key') %}
     CASE {{ col }}
     {%- for k in role_keys() %}
@@ -20,7 +20,7 @@
 {% endmacro %}
 
 
-{#- role_key -> detail boyutu ('bucket' | 'setting' | 'org_type' | 'none') -#}
+{#- role_key -> detail dimension ('bucket' | 'setting' | 'org_type' | 'none') -#}
 {% macro role_detail_dimension_expr(col='role_key') %}
     CASE {{ col }}
     {%- for k in role_keys() %}
@@ -31,29 +31,19 @@
 {% endmacro %}
 
 
-{#- kaynak anahtari -> contract'taki gorunen ad -#}
-{% macro source_display_name_expr(col='role_source') %}
+{#- source key -> the display name used in the contract -#}
+{% macro source_display_name_expr(col='source_key') %}
     CASE {{ col }}
-    {%- for k, v in var('sources').items() %}
-        WHEN '{{ k }}' THEN '{{ v.display_name }}'
+    {%- for k in source_keys() %}
+        WHEN '{{ k }}' THEN '{{ source_config(k).display_name }}'
     {%- endfor %}
         ELSE {{ col }}
     END
 {% endmacro %}
 
 
-{#- Aktif kaynak anahtarlari -#}
-{% macro source_keys() %}
-    {%- set keys = [] -%}
-    {%- for k, v in var('sources').items() -%}
-        {%- if v.get('enabled', true) -%}{%- do keys.append(k) -%}{%- endif -%}
-    {%- endfor -%}
-    {{ return(keys) }}
-{% endmacro %}
-
-
 {#-
-    Dizi siralama anahtari. 4 dizinin de ayni ORDER BY'i kullanmasi sart.
+    Array ordering key. All four arrays MUST use this same ORDER BY.
     contract.array_order: 'alphabetical' | 'score'
 -#}
 {% macro contract_array_order() %}
@@ -65,7 +55,7 @@
 {% endmacro %}
 
 
-{#- contract.consent_basis -> WHERE yuklemi -#}
+{#- contract.consent_basis -> WHERE predicate -#}
 {% macro consent_predicate() %}
     {%- set basis = var('contract').consent_basis -%}
     {%- if basis == 'marketing_opt_in' -%}
@@ -75,6 +65,6 @@
     {%- elif basis == 'both' -%}
         in_cdp
     {%- else -%}
-        {{ exceptions.raise_compiler_error("Bilinmeyen consent_basis: " ~ basis) }}
+        {{ exceptions.raise_compiler_error("Unknown consent_basis: " ~ basis) }}
     {%- endif -%}
 {% endmacro %}

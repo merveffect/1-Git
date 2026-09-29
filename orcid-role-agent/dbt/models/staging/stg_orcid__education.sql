@@ -1,47 +1,37 @@
 {{ config(materialized='view') }}
 
 /*
-    ORCID education kayitlari. Phase-1'deki gibi kisi basina EN GUNCEL
-    kayit kullanilir; egitim yalnizca bonus olarak skora girer.
-
-    !! KOLON ADLARI DOGRULANACAK !!
+    ORCID educations[] -> the most recent education record per person.
+    Education only ever acts as a BONUS; it never qualifies a role on
+    its own (same principle as Phase-1).
+    The visibility filter was applied in the raw layer.
 */
 
-with source as (
-
-    select * from {{ source('researcher_profiles', 'v_orcid_researchers') }}
-
-),
-
-renamed as (
+with flattened as (
 
     select
-        snid,
-        education_degree                                as degree_raw,
-        education_department                            as edu_department_raw,
+        r.snid,
+        d.ordering,
 
-        {{ normalize_title('education_degree') }}       as degree,
-        {{ normalize_title('education_department') }}   as edu_department,
+        d.degree                                        as degree_raw,
+        d.department_name                               as edu_department_raw,
 
-        education_start_date                            as start_date,
-        education_end_date                              as end_date
+        {{ normalize_title('d.degree') }}               as degree,
+        {{ normalize_title('d.department_name') }}      as edu_department,
 
-    from source
-    where snid is not null
-      and education_degree is not null
+        d.full_start_date                               as start_date,
+        d.full_end_date                                 as end_date
 
-),
-
-ranked as (
-
-    select
-        *,
-        row_number() over (
-            partition by snid
-            order by end_date desc nulls last, start_date desc nulls last
-        ) as recency_rank
-    from renamed
+    from {{ ref('raw_orcid_researchers') }} r,
+    unnest(r.educations) d
 
 )
 
-select * from ranked where recency_rank = 1
+select * from flattened
+where degree is not null or edu_department is not null
+qualify row_number() over (
+    partition by snid
+    order by end_date desc nulls last,
+             start_date desc nulls last,
+             ordering asc nulls last
+) = 1

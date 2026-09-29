@@ -1,6 +1,6 @@
 /*
-    role_detailed_inferred[i] her zaman role_inferred[i] ile BASLAMALI.
-    Dizi siralamalari kaymissa bu test yakalar.
+    role_detailed_inferred[i] must always start with role_inferred[i].
+    Catches array ordering drift between the two.
 */
 
 select

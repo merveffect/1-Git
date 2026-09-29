@@ -1,11 +1,13 @@
 {{ config(materialized='table', cluster_by=['role_key']) }}
 
 /*
-    AUDIENCE CIKTISI - agent'in ve pazarlama ekibinin okudugu tablo.
+    AUDIENCE OUTPUT - the table the agent and the marketing team read.
 
-    Consent bayraklari BURADA birlestirilir. Phase-1 analizinde gorulmustu:
-    tespit edilen HCP'lerin sadece %22'si marketing, %13'u advertising
-    izinli. Yani "kac kisi bulduk" degil, "kacina ULASABILIRIZ" onemli.
+    Consent flags are joined here. Measured on the real data:
+    1.76M people carry an SNID, 96% of them exist in CDP, but only 24%
+    have marketing consent and 19% advertising consent. So the number
+    that matters is not "how many did we find" but "how many can we
+    actually reach".
 */
 
 with roles as (
@@ -21,26 +23,28 @@ cdp as (
         mkt_pref_opt_in,
         advertising_opt_in,
         true as in_cdp
-    from {{ source('cdp', 'audience_builder_big') }}
+    from {{ ref('raw_audience_builder_big') }}
 
 )
 
 select
     r.snid,
     r.role_key,
-    r.role_bucket,
+    r.role_detail,
     r.role_label,
     r.role_final_score,
     r.country_code,
     r.is_current,
+    r.source_key,
+    r.source_last_updated,
     r.derived_from_role,
 
-    -- kanit zinciri: bu kisi listeye NEDEN girdi
+    -- evidence chain: WHY this person is in the list
     r.evidence_title,
     r.evidence_org,
     r.evidence_dept,
 
-    -- ulasilabilirlik
+    -- reachability
     coalesce(c.in_cdp, false)               as in_cdp,
     coalesce(c.mkt_pref_opt_in, false)      as is_marketable,
     coalesce(c.advertising_opt_in, false)   as is_advertisable,

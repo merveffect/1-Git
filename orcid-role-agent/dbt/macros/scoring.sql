@@ -1,37 +1,75 @@
 {#-
-    SKORLAMA
-    --------
-    Agirliklar / esikler SADECE dbt_project.yml'de. Buradaki makrolar
-    rol kayit defterinden okuyup SQL ifadesi uretir.
-    Yeni rol eklenince bu dosyada HICBIR sey degismez.
+    SCORING
+    -------
+    Weights and thresholds live ONLY in dbt_project.yml. These macros
+    read the registries and emit SQL. Adding a role or a source changes
+    nothing in this file.
 -#}
 
 {#-
-    role_score / org_score / dept_score / education_score kolonlari
-    mevcutken, rol bazli agirlikli kompozit skoru uretir.
+    PER-SOURCE WEIGHT RENORMALISATION
 
-    Formul (Phase-1 HCP dokumaninin genellestirilmis hali):
-        LEAST(1.0, role*w_role + org*w_org + dept*w_dept)
-          + education_score * education_bonus
+    Phase-1 formula: role*0.50 + org*0.30 + dept*0.20
+    But not every source carries all three fields. With fixed weights a
+    title-only source would top out at 0.50 and could NEVER cross the
+    0.60 threshold - the source would be dead weight.
+
+    Fix: redistribute the weights of the fields the source DOES carry
+    so they sum to 1.0.
+
+        orcid        (role+org+dept) -> 0.50 / 0.30 / 0.20
+        web_scraping (role+org)      -> 0.625 / 0.375 / -
+        cdp          (role only)     -> 1.00 / - / -
+
+    IMPORTANT DISTINCTION: an EMPTY department in ORCID and a source
+    that NEVER carries department are different things. The first is
+    genuine missing evidence and should lower the score (Phase-1
+    behaviour, preserved). The second is structural and is renormalised
+    here. This macro only corrects the second case.
+-#}
+{% macro normalized_weights(role_key, source_key) %}
+    {%- set w = role(role_key).weights -%}
+    {%- set has = source_provides(source_key) -%}
+    {%- set w_role = w.role -%}
+    {%- set w_org  = w.org  if 'organisation' in has else 0.0 -%}
+    {%- set w_dept = w.dept if 'department'   in has else 0.0 -%}
+    {%- set total  = w_role + w_org + w_dept -%}
+    {{ return({
+        'role': (w_role / total) | round(4),
+        'org':  (w_org  / total) | round(4),
+        'dept': (w_dept / total) | round(4)
+    }) }}
+{% endmacro %}
+
+
+{#-
+    Given role_score / org_score / dept_score / education_score columns,
+    emits the weighted composite score per (role x source).
 -#}
 {% macro composite_score_expr() %}
-    CASE role_key
+    CASE
     {%- for k in role_keys() %}
-        {%- set r = role(k) %}
-        WHEN '{{ k }}' THEN
+    {%- for s in source_keys() %}
+    {%- set w = normalized_weights(k, s) %}
+        WHEN role_key = '{{ k }}' AND source_key = '{{ s }}' THEN
             LEAST(1.0,
-                  COALESCE(role_score, 0.0)  * {{ r.weights.role }}
-                + COALESCE(org_score, 0.0)   * {{ r.weights.org }}
-                + COALESCE(dept_score, 0.0)  * {{ r.weights.dept }}
+                  COALESCE(role_score, 0.0)  * {{ w.role }}
+                {%- if w.org > 0 %}
+                + COALESCE(org_score, 0.0)   * {{ w.org }}
+                {%- endif %}
+                {%- if w.dept > 0 %}
+                + COALESCE(dept_score, 0.0)  * {{ w.dept }}
+                {%- endif %}
             )
-            + COALESCE(education_score, 0.0) * {{ r.get('education_bonus', 0.0) }}
+            + COALESCE(education_score, 0.0) * {{ role(k).get('education_bonus', 0.0) }}
+    {%- endfor %}
     {%- endfor %}
         ELSE NULL
     END
 {% endmacro %}
 
 
-{#- Rol bazli esiklerle CONFIRMED / PROBABLE / NOT_QUALIFIED -#}
+{#- CONFIRMED / PROBABLE / NOT_QUALIFIED using per-role thresholds -#}
 {% macro role_label_expr(score_col='role_final_score') %}
     CASE
     {%- for k in role_keys() %}
@@ -45,8 +83,8 @@
 
 
 {#-
-    current_only = true olan roller icin gecmis kayitlari eler.
-    WHERE cumlesinde kullanilir.
+    Drops historical records for roles configured as current_only.
+    Used in a WHERE clause.
 -#}
 {% macro current_only_predicate(is_current_col='is_current') %}
     {%- set keys = current_only_role_keys() -%}
@@ -59,9 +97,10 @@
 
 
 {#-
-    Ebeveyn roll-up satirlari.
-    Ornek: pharmacist -> ayni kisi hcp/PRACTITIONER olarak da yazilir.
-    Cagrildigi yerde <scored_cte> adinda bir CTE beklenir.
+    Parent roll-up rows.
+    Example: pharmacist -> the same person is also written as
+    hcp / PRACTITIONER. Relationships come from roles.*.parent.
+    Expects a CTE named <cte_name> at the call site.
 -#}
 {% macro parent_rollup_union(cte_name) %}
     {%- for m in roles_with_parent() %}
@@ -71,6 +110,7 @@
     -- {{ m.child }} -> {{ m.parent }} ({{ m.bucket }}) roll-up
     SELECT
         snid,
+        source_key,
         '{{ m.parent }}'                       AS role_key,
         '{{ m.bucket_label }}'                 AS role_detail,
         role_final_score,
@@ -80,7 +120,6 @@
         evidence_dept,
         country_code,
         is_current,
-        role_source,
         source_last_updated,
         '{{ m.child }}'                        AS derived_from_role
     FROM {{ cte_name }}
@@ -91,8 +130,8 @@
 
 
 {#-
-    Presentation katmani icin genis (wide) bayrak kolonlari uretir.
-    GROUP BY snid ile kullanilir.
+    Wide (pivoted) flag columns for the presentation layer.
+    Used with GROUP BY snid.
 -#}
 {% macro role_flag_columns(qualified_labels=['CONFIRMED', 'PROBABLE']) %}
     {%- for k in role_keys() %}
