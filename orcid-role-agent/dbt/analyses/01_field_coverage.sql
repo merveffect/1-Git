@@ -144,3 +144,40 @@ SELECT
     COUNT(DISTINCT p.journal_title)                             AS distinct_journals
 FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
 UNNEST(r.publications) p;
+
+
+-- ---------------------------------------------------------------------------
+-- 9. ROR ORGANISATION TYPES - verify the controlled vocabulary
+--
+--    We do NOT need to know every organisation in ROR. We only need the
+--    TYPE vocabulary, which is closed and small. seeds/org_type_scores.csv
+--    maps (role, type) -> score, so every value returned here must have a
+--    row in that seed or it silently falls through to UNKNOWN.
+--
+--    Also confirms the CASE of the values: ROR v2 returns them lowercase,
+--    the seed is written in title case, which is why the join is now
+--    case-insensitive.
+-- ---------------------------------------------------------------------------
+SELECT
+    org_type,
+    COUNT(*)                                        AS organisations,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 4)      AS share
+FROM `ri-data-engineering-dd4c0eca.ror.ror_data_refresh`,
+UNNEST(types) AS org_type
+GROUP BY org_type
+ORDER BY organisations DESC;
+-- Expect roughly 9 rows. Anything here that is NOT in
+-- seeds/org_type_scores.csv is scoring as UNKNOWN today.
+
+
+-- ---------------------------------------------------------------------------
+-- 10. How many organisations carry more than one type?
+--     A university hospital is both Education and Healthcare. We take the
+--     type that scores HIGHEST for the role, so overlap is an advantage.
+-- ---------------------------------------------------------------------------
+SELECT
+    ARRAY_LENGTH(types)                             AS type_count,
+    COUNT(*)                                        AS organisations
+FROM `ri-data-engineering-dd4c0eca.ror.ror_data_refresh`
+GROUP BY type_count
+ORDER BY type_count;

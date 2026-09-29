@@ -107,6 +107,13 @@ vars:
   # A margin below this makes the decision fragile -> human review queue
   sim_review_margin: 0.18
 
+  # Education bonus split. Phase-1 used an even 0.5 / 0.5, but the degree
+  # field mostly encodes academic LEVEL (phd, master, bachelor) rather
+  # than subject - measured over 23M records in
+  # analyses/04_degree_coverage.sql. The subject lives in the department.
+  education_degree_weight: 0.3
+  education_dept_weight:   0.7
+
   # The LLM judge is OPTIONAL. This project has no Vertex connection
   # (Test 3: "Not found: Connection vertex_ai_conn"), so it defaults to
   # off and the pipeline runs on vectors alone. Flip to true once a

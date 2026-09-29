@@ -1,14 +1,18 @@
 role_key,signal_type,pattern,degree_score,note
-hcp,degree,\b(md|m d|mbbs|mbbch|mb chb|mbchb|bm bch|doctor of medicine|doctor of dental)\b,1.00,
-hcp,degree,\b(bds|dds|dmd|doctor of dental surgery)\b,1.00,
-hcp,degree,\b(bachelor of nursing|bsc nursing|msc nursing|registered nurse)\b,1.00,
+hcp,degree,\b(md|m d|mbbs|mbbch|mb chb|mbchb|bm bch|bm|doctor of medicine|medical doctor|medical degree|bachelor of medicine|doctorate in medicine)\b,1.00,measured: "medical doctor" alone is 67k records and was previously missed
+hcp,degree,\b(dr med|doktor der medizin|staatsexamen medizin|approbation|facharzt)\b,1.00,DE
+hcp,degree,\b(docteur en medecine|doctorat en medecine|these de medecine)\b,1.00,FR
+hcp,degree,\b(licenciatura en medicina|medicina|medico cirujano|doutorado em medicina|laurea in medicina)\b,1.00,ES / PT / IT
+hcp,degree,\b(tip doktoru|tipta uzmanlik|tip fakultesi)\b,1.00,TR
+hcp,degree,\b(bds|dds|dmd|doctor of dental|dental surgery|zahnmedizin|dr med dent)\b,1.00,dentistry
+hcp,degree,\b(bachelor of nursing|bsc nursing|msc nursing|registered nurse|nursing degree|krankenpflege|hemsirelik)\b,1.00,nursing
 hcp,degree,\b(do|doctor of osteopath|md phd)\b,1.00,
-hcp,degree,\b(mph|master of public health)\b,0.60,
-hcp,degree,\b(phd|doctor of philosophy)\b,0.30,a non-clinical doctorate is a weak signal
-hcp,department,\b(medicine|surgery|nursing|dentistry|pharmacy|clinical|cardiolog|oncolog|radiolog|neurolog|psychiatr|paediatr|pediatr)\w*,1.00,
-hcp,department,\b(public health|biomedical|health science|life science)\w*,0.80,
-pharmacist,degree,\b(pharmd|pharm d|bpharm|b pharm|mpharm|m pharm|bachelor of pharmacy|master of pharmacy|doctor of pharmacy)\b,1.00,
-pharmacist,department,\b(pharmacy|pharmaceutical science|pharmaceutics)\b,1.00,
-pharmacist,department,\b(pharmacolog|medicinal chemistry)\w*,0.60,
-librarian,degree,\b(mlis|m l i s|mls|msc information|master of library|library and information science|information studies)\b,1.00,
-librarian,department,\b(library|information science|information studies|archival studies)\b,1.00,
+hcp,degree,\b(residency|resident physician|clinical residency|medical residency|internship medicine)\b,0.80,clinical training rather than a degree
+hcp,degree,\b(mph|master of public health)\b,0.50,adjacent but not clinical practice
+hcp,department,\b(medicine|medical|medizin|medecine|medicina|surgery|surgical|nursing|dentistry|dental|clinical|cardiolog|oncolog|radiolog|neurolog|psychiatr|paediatr|pediatr|anaesthe|anesthe|obstetric|gynaecolog|gynecolog|dermatolog|ophthalmolog|orthopaed|orthoped|urolog)\w*,1.00,⭐ the real signal - degrees mostly encode LEVEL not SUBJECT
+hcp,department,\b(public health|epidemiolog|biomedical|health science|health service|life science|physiotherap|pharmacolog)\w*,0.80,
+pharmacist,degree,\b(pharmd|pharm d|bpharm|b pharm|mpharm|m pharm|bachelor of pharmacy|master of pharmacy|doctor of pharmacy|pharmacy degree|eczacilik|apotheker|farmacia)\b,1.00,
+pharmacist,department,\b(pharmacy|pharmaceutical|pharmaceutics|eczacilik|pharmazie|farmacia)\w*,1.00,⭐ the real signal
+pharmacist,department,\b(pharmacolog|medicinal chemistry|drug discovery)\w*,0.60,
+librarian,degree,\b(mlis|m l i s|mls|msc information|master of library|library and information science|information studies|bibliothek|kutuphanecilik)\b,1.00,
+librarian,department,\b(library|librarian|information science|information studies|archival studies|bibliothek|kutuphanecilik)\w*,1.00,⭐ the real signal
