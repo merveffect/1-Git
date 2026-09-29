@@ -40,11 +40,11 @@ cte_snt_mktp AS (
   FROM cte_user_snt us
 
   -- direct map
-  LEFT JOIN {{source('subject_based_segmentation', 'SNTS-MKTPS_MAPPED_FINAL')}} direct_map
+  LEFT JOIN {{source('subject_based_segmentation', 'snts_mktps_mapped_final')}} direct_map
     ON us.snt_code = direct_map.marketing_preference_id
 
   -- fallback match
-  LEFT JOIN {{source('subject_based_segmentation', 'SNTS-MKTPS_MAPPED_FINAL')}} fallback_map
+  LEFT JOIN {{source('subject_based_segmentation', 'snts_mktps_mapped_final')}} fallback_map
     ON us.snt_code IN UNNEST(
       ARRAY_CONCAT(
         IFNULL(fallback_map.level_1_id, []),

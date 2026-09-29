@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: snts_full_list
+    description: >
+      Clean pass-through of ae_metadata.snts_full_list (SNT taxonomy) — one row
+      per SNT id with its name. 
+    columns:
+      - name: snt_id
+        description: Unique identifier of an SNT code, as a string.
+        tests:
+          - not_null
+          - unique
+      
+      - name: snt_name
+        description: Human-readable name of the SNT
+        tests:
+          - not_null
+          - unique

@@ -1,30 +1,76 @@
 version: 2
 
-sources:      
+sources:
   - name: prod_audience_explorer_analytics_dbt_presentation
     database: dat-analytics-eng-ec869189
     schema: prod_audience_explorer_analytics_dbt_presentation
-    tables: 
+    tables:
       - name: audience_builder_big
+        description: >
+          Per-SNID user table with reading-behaviour list columns (journals read,
+          eTOCs, submissions, pageviews, etc.) and, for advertising_opt_in=TRUE
+          users, the `subjects` column holding their actual opted-in MPC
+          (marketing preference center) subject IDs — the ground truth used by
+          evaluation_metrics.
 
   - name: ae_metadata
     database: dat-analytics-eng-ec869189
     schema: ae_metadata
-    tables: 
+    tables:
       - name: journal_metadata
+        description: Journal-level metadata, including SNT (S&T taxonomy) discipline code(s)/label(s) per journal.
+
+      - name: snts_full_list
+        description: >
+          Flat SNT taxonomy reference table — one row per SNT id with its label.
+          Columns: ct_id, snt_id, label (SNT name), label_length (unused),
+          url / url_link (unused). Source of SNT names for snt_embeddings.
 
 
   - name: subject_based_segmentation
     database: snproject-cbb9ca25
     schema: subject_based_segmentation
-    tables: 
-      - name: SNTS-MKTPS_MAPPED_FINAL
+    tables:
+      - name: snts_mktps_mapped_final
+        # The physical table really is called SNTS-MKTPS_MAPPED_FINAL, but a
+        # dbt source NAME containing hyphens breaks unit tests: dbt builds a
+        # mock CTE named after the source, and a hyphenated CTE alias is
+        # invalid SQL in BigQuery. identifier keeps the real table name while
+        # giving dbt a hyphen-free handle.
+        identifier: SNTS-MKTPS_MAPPED_FINAL
+        description: >
+          SNT (S&T taxonomy, ~3000 codes) -> MPC (marketing preference center,
+          46 subjects) mapping table, with 6 taxonomy hierarchy levels used as
+          fallback match keys when there's no direct SNT->MKTP match.
 
   - name: prod_mpc_dbt_presentation
     database: mpc-data-live-628749c5
     schema: prod_mpc_dbt_presentation
     tables:
       - name: snid_deletions
+        description: SNIDs to exclude from inferred-subject outputs (e.g. deleted/opted-out users).
+
+  - name: prod_mdt_dbt_presentation
+    database: braze-3f553fdf
+    schema: prod_mdt_dbt_presentation
+    tables:
+      - name: snail_recommendation_journals
+        description: >
+          Snail's per-SNID journal recommendations. One row per snid;
+          `recommendations` is directly a native ARRAY<STRUCT<id, title,
+          description, ...>> (not JSON, and not nested under another
+          "recommendations" field despite how it renders in a spreadsheet
+          paste — just UNNEST(recommendations) directly).
+          `id` values are real journal_metadata.journal_id (validated 100%
+          match as of 2026-09) — resolved via journal_snt_codes, no embedding
+          needed.
+
+      - name: snail_recommendation_collections
+        description: >
+          Snail's per-SNID collection recommendations. Same shape as
+          snail_recommendation_journals. Collection ids have no existing SNT
+          tagging, so title + description are embedded to get a topical
+          signal (~9.5k distinct collections).
 
 
 

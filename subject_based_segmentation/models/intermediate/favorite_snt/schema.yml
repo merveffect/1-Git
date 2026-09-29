@@ -1,0 +1,257 @@
+version: 2
+
+models:
+  - name: snt_embeddings
+    description: >
+      One embedding vector per SNT name, generated via
+      the shared Vertex AI embedding model.
+    columns:
+      - name: snt_id
+        description: SNT id, as a string.
+        tests:
+          - not_null
+          - unique
+      - name: snt_name
+        description: SNT name, as embedded.
+        tests:
+          - not_null
+      - name: embedding
+        description: Embedding vector of snt_name.
+        tests:
+          - not_null
+
+  - name: distinct_keywords
+    description: >
+      Every distinct keyword across the target audience, deduplicated
+      once. keyword_id is MD5(keyword) — stable across runs, safe as a merge key.
+    columns:
+      - name: keyword_id
+        description: MD5(keyword), used as a stable join/merge key.
+        tests:
+          - not_null
+          - unique
+      - name: keyword
+        description: The raw keyword text.
+        tests:
+          - not_null
+
+  - name: keyword_embeddings
+    description: >
+      Embedding of every distinct keyword. Incremental (merge on keyword_id),
+      capped at 100k new keywords per run.
+    columns:
+      - name: keyword_id
+        description: MD5(keyword), matches distinct_keywords.
+        tests:
+          - not_null
+          - unique
+      - name: keyword
+        description: The raw keyword text, as embedded.
+        tests:
+          - not_null
+      - name: embedding
+        description: Embedding vector (ARRAY<FLOAT64>) of the keyword.
+        tests:
+          - not_null
+
+  - name: keyword_snt_confidence
+    description: >
+      Nearest-SNT distance per keyword (top_k=1 VECTOR_SEARCH against
+      snt_embeddings). Used as a confidence weight when averaging keyword
+      embeddings into a user embedding
+    columns:
+      - name: keyword_id
+        description: MD5(keyword), matches keyword_embeddings.
+        tests:
+          - not_null
+          - unique
+      - name: keyword
+        description: The raw keyword text.
+        tests:
+          - not_null
+      - name: nearest_snt_id
+        description: Id of the SNT closest to this keyword's embedding.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('snt_embeddings')
+                field: snt_id
+      - name: nearest_snt_name
+        description: Name of the nearest SNT.
+        tests:
+          - not_null
+      - name: distance
+        description: Cosine distance to the nearest SNT 
+        tests:
+          - not_null
+
+  - name: user_journal_snt_vector
+    description: >
+      Journal-based signal per user: average embedding across every SNT
+      linked (via journal_snt_codes) to a journal the user has any
+      reading-relationship signal for. No embedding cost.
+    columns:
+      - name: snid
+        description: User id.
+        tests:
+          - not_null
+          - unique
+      - name: embedding
+        description: Per-user average of the SNT embeddings for all journals linked to them (equal weight per distinct journal-SNT pair).
+        tests:
+          - not_null
+
+  - name: users_and_keywords
+    description: >
+      Long-format (snid, keyword_id) pairs, mirroring users_and_journal_ids.
+      Uniqueness of (snid, keyword_id) is checked by
+      tests/assert_users_and_keywords_unique_snid_keyword_id.sql.
+    columns:
+      - name: snid
+        description: User id.
+        tests:
+          - not_null
+      - name: keyword_id
+        description: MD5(keyword) of a keyword this user is associated with.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('distinct_keywords')
+                field: keyword_id
+              config:
+                severity: warn
+
+
+  - name: user_keyword_vector
+    description: >
+      Keyword-based signal per user: confidence-weighted average embedding
+      across the user's own keywords (weight = 1 - nearest_snt distance from
+      keyword_snt_confidence, floored at 0.05). 
+    columns:
+      - name: snid
+        description: User id.
+        tests:
+          - not_null
+          - unique
+      - name: embedding
+        description: Per-user confidence-weighted average of their keyword embeddings.
+        tests:
+          - not_null
+
+  - name: distinct_collections
+    description: >
+      Every distinct Snail-recommended collection (~9.5k), deduplicated once.
+
+    columns:
+      - name: collection_id
+        description: Snail collection id.
+        tests:
+          - not_null
+          - unique
+      - name: title
+        description: Collection title.
+        tests:
+          - not_null
+      - name: description_clean
+        description: HTML-stripped description (NULL if the source had none).
+      - name: collection_text
+        description: title + ". " + description_clean (if present) — the actual text embedded downstream in collection_embeddings.
+        tests:
+          - not_null
+
+  - name: collection_embeddings
+    description: >
+      Embedding of every distinct collection's collection_text. Small scale
+      (~9.5k) — no batching needed, unlike keyword_embeddings.
+    columns:
+      - name: collection_id
+        description: Snail collection id, matches distinct_collections.
+        tests:
+          - not_null
+          - unique
+      - name: collection_text
+        description: The text that was embedded (title + description).
+        tests:
+          - not_null
+      - name: embedding
+        description: Embedding vector (ARRAY<FLOAT64>) of collection_text.
+        tests:
+          - not_null
+
+  - name: collection_snt_confidence
+    description: >
+      Nearest-SNT distance per collection (top_k=1 VECTOR_SEARCH against
+      snt_embeddings), same purpose as keyword_snt_confidence.
+    columns:
+      - name: collection_id
+        description: Snail collection id, matches collection_embeddings.
+        tests:
+          - not_null
+          - unique
+      - name: nearest_snt_id
+        description: Id of the SNT closest to this collection's embedding.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('snt_embeddings')
+                field: snt_id
+      - name: nearest_snt_name
+        description: Name of the nearest SNT.
+        tests:
+          - not_null
+      - name: distance
+        description: Cosine distance to the nearest SNT 
+        tests:
+          - not_null
+
+  - name: users_and_collections
+    description: >
+      Long-format (snid, collection_id) pairs, mirroring users_and_keywords.
+    columns:
+      - name: snid
+        description: User id.
+        tests:
+          - not_null
+      - name: collection_id
+        description: A Snail collection id recommended to this user.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('distinct_collections')
+                field: collection_id
+
+  - name: user_collection_vector
+    description: >
+      Collection-based signal per user: confidence-weighted average
+      embedding across the user's recommended collections (weight = 1 -
+      nearest_snt distance from collection_snt_confidence, floored at 0.05).
+    columns:
+      - name: snid
+        description: User id.
+        tests:
+          - not_null
+          - unique
+      - name: embedding
+        description: Per-user confidence-weighted average of their recommended collections' embeddings.
+        tests:
+          - not_null
+
+  - name: user_embedding
+    description: >
+      Final per-user embedding — channel-level average of
+      user_journal_snt_vector, user_keyword_vector, and
+      user_collection_vector.
+    columns:
+      - name: snid
+        description: User id.
+        tests:
+          - not_null
+          - unique
+      - name: embedding
+        description: Final combined reading-behaviour embedding — equal-weight average of whichever of the 3 channels (journal/keyword/collection) this user has.
+        tests:
+          - not_null

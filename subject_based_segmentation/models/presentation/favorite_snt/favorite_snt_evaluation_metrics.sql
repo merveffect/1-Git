@@ -12,6 +12,14 @@
   )
 }}
 
+-- Precision/recall/F1 of favorite_snt's top-10 SNT predictions, rolled up to
+-- MPC subjects (favorite_snt_predictions_rolled_up_mpc), against the same
+-- MPC ground truth used by favorite_mpc_subject/evaluation_metrics.sql
+-- (advertising_opt_in=TRUE users' actual opted-in subjects). This is an
+-- INDIRECT validation — there is no SNT-level ground truth to compare
+-- against directly, so we can only check whether the SNTs we predicted are
+-- topically consistent with the MPC subjects a user actually chose.
+
 WITH ground_truth AS (
   SELECT
     snid,
@@ -25,9 +33,7 @@ WITH ground_truth AS (
 ),
 
 filtered_ground_truth AS (
-  SELECT
-    snid,
-    actual
+  SELECT snid, actual
   FROM ground_truth
   WHERE ARRAY_LENGTH(actual) <= 6
 ),
@@ -37,10 +43,9 @@ predictions AS (
     snid,
     ARRAY(
       SELECT DISTINCT id
-      FROM UNNEST(SPLIT(REPLACE(top_3_marketing_pref_ids, ';', ','))) AS id
-      WHERE TRIM(id) != ''
+      FROM UNNEST(predicted_mpc_subjects) AS id
     ) AS predicted
-  FROM {{ ref('snid_to_mktps_step2') }}
+  FROM {{ ref('favorite_snt_predictions_rolled_up_mpc') }}
 ),
 
 per_user AS (
@@ -67,10 +72,10 @@ agg AS (
 )
 
 SELECT
-  -- Her dbt run için benzersiz id (unique_key)
+  -- Unique id per dbt run (unique_key)
   '{{ invocation_id }}' AS run_id,
 
-  -- Partition alanı
+  -- Partition field
   CURRENT_TIMESTAMP() AS run_ts,
   CURRENT_DATE() AS run_date,
 
