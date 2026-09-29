@@ -1,17 +1,7 @@
 {{ config(materialized='table') }}
 
 /*
-    Role / org / dept sub-scores per person x role x SOURCE.
-
-    Why the source dimension exists:
-    ORCID may say "Professor of Cardiology" while web scraping says
-    "Dean of Medicine" about the same person. If they point at different
-    roles, BOTH are kept (the person really is both). If they point at
-    the same role, the presentation layer merges them and records the
-    sources as 'Orcid + Web scraping'.
-
-    Fields a source does not carry arrive as NULL; the weights are
-    renormalised for that source (macros/scoring.sql -> normalized_weights).
+    Role / org / dept sub-scores per person x role.
 
     Two improvements over Phase-1:
       - role_score comes from the dictionary instead of hundreds of
@@ -89,7 +79,6 @@ with_dept_score as (
 
     select
         w.snid,
-        w.source_key,
         w.role_key,
         w.role_score,
         w.org_score,
@@ -103,6 +92,7 @@ with_dept_score as (
         any_value(w.ror_id)                 as ror_id,
         any_value(w.org_resolution_method)  as org_resolution_method,
         any_value(w.country_code)           as country_code,
+        any_value(w.source_key)             as source_key,
         max(w.is_current)                   as is_current,
         min(w.recency_rank)                 as recency_rank,
         max(w.source_last_updated)          as source_last_updated
@@ -110,17 +100,17 @@ with_dept_score as (
     left join {{ ref('dept_signals') }} d
            on w.role_key = d.role_key
           and regexp_contains(coalesce(w.department, ''), d.dept_pattern)
-    group by w.snid, w.source_key, w.role_key, w.role_score, w.org_score
+    group by w.snid, w.role_key, w.role_score, w.org_score
 
 )
 
 /*
-    One record per person + role + source: current posts first, then the
-    highest score. (Phase-1's "most recent employment record, preferring
-    current roles".)
+    One record per person + role: current posts first, then the highest
+    score. (Phase-1's "most recent employment record, preferring current
+    roles".)
 */
 select * from with_dept_score
 qualify row_number() over (
-    partition by snid, source_key, role_key
+    partition by snid, role_key
     order by is_current desc, role_score desc, recency_rank asc
 ) = 1

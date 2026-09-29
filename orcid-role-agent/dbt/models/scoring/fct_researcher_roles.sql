@@ -7,27 +7,17 @@
 /*
     ⭐ THE CORE MODEL
 
-    One row = (snid, role_key, source_key).
+    One row = (snid, role_key). A person can hold several roles, so
+    several rows. The whole presentation layer is built from this table.
 
-    The third dimension is the SOURCE. If two sources say different
-    things about the same person, there are two rows:
-
-        88412 | hcp          | orcid         | CONFIRMED
-        88412 | faculty_head | web_scraping  | CONFIRMED
-
-    If they say the same thing there are still two rows, and the
-    presentation layer collapses them into one role with the sources
-    joined as 'Orcid + Web scraping'. No evidence is lost.
-
-    Adding a role OR a source changes nothing in this file - the macros
-    read the registries and expand the SQL themselves.
+    Adding a role changes nothing here - the macros read the registry
+    and expand the SQL themselves.
 */
 
 with base as (
 
     select
         emp.snid,
-        emp.source_key,
         emp.role_key,
         emp.role_score,
         emp.org_score,
@@ -40,6 +30,7 @@ with base as (
         emp.ror_id,
         emp.country_code,
         emp.is_current,
+        emp.source_key,
         emp.source_last_updated,
         det.detail_label
     from {{ ref('int_employment_scored') }} emp
@@ -49,7 +40,6 @@ with base as (
     left join {{ ref('int_role_detail') }} det
            on emp.snid = det.snid
           and emp.role_key = det.role_key
-          and emp.source_key = det.source_key
 
 ),
 
@@ -67,7 +57,6 @@ labelled as (
 
     select
         snid,
-        source_key,
         role_key,
         detail_label                                as role_detail,
         {{ role_label_expr('role_final_score') }}   as role_label,
@@ -83,6 +72,7 @@ labelled as (
         ror_id,
         country_code,
         is_current,
+        source_key,
         source_last_updated,
         cast(null as string)                        as derived_from_role
     from scored
@@ -103,9 +93,9 @@ qualified as (
 with_parents as (
 
     select
-        snid, source_key, role_key, role_detail, role_final_score, role_label,
+        snid, role_key, role_detail, role_final_score, role_label,
         evidence_title, evidence_org, evidence_dept, country_code,
-        is_current, source_last_updated, derived_from_role
+        is_current, source_key, source_last_updated, derived_from_role
     from qualified
 
     {{ parent_rollup_union('qualified') }}
@@ -115,7 +105,6 @@ with_parents as (
 select
     snid,
     role_key,
-    source_key,
     role_detail,
     role_label,
     role_final_score,
@@ -124,12 +113,13 @@ select
     evidence_dept,
     country_code,
     is_current,
+    source_key,
     source_last_updated,
     derived_from_role,
     current_date()  as scored_date
 from with_parents
--- if the same (person, role, source) appears more than once keep the best score
+-- if the same (person, role) appears more than once keep the best score
 qualify row_number() over (
-    partition by snid, role_key, source_key
+    partition by snid, role_key
     order by role_final_score desc, derived_from_role nulls first
 ) = 1

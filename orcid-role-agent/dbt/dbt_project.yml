@@ -252,36 +252,13 @@ vars:
     detail_source_separator: ' + '
 
   # ───────────────────────────────────────────────────────────────────────
-  # 5. DATA SOURCES (role_inferred_data_source)
+  # 5. DATA SOURCES
+  #
+  # There is one source today: ORCID. When web scraping arrives it is a
+  # UNION ALL in stg_role_records plus one WHEN branch in
+  # fct_braze_contact_roles for its display name. Nothing is abstracted
+  # ahead of that - the shape of the second source is not known yet.
   # ───────────────────────────────────────────────────────────────────────
-  # Every source that carries role information. Listed = active.
-  # To add one: write the staging model, then add a block here.
-  #
-  # provides: the fields this source is ABLE to carry.
-  #   Anything not listed is emitted as NULL, AND the scoring weights are
-  #   renormalised for that source. Example: if web scraping has no
-  #   department, hcp weights become 0.625 / 0.375 / 0 instead of
-  #   0.50 / 0.30 / 0.20. Without this, a title-only source could never
-  #   cross the confirmation threshold and would be dead weight.
-  #
-  # Guaranteed fields (MANDATORY in every source): snid, role_title
-  sources:
-
-    orcid:
-      display_name: 'Orcid'
-      staging_model: 'stg_orcid__employment'
-      provides: ['organisation', 'department', 'org_id', 'country_code', 'dates']
-
-    # Uncomment when ready - no other file changes.
-    # web_scraping:
-    #   display_name: 'Web scraping'
-    #   staging_model: 'stg_webscrape__role_records'
-    #   provides: ['organisation']        # snid + role + organisation only
-    #
-    # cdp_self_reported:
-    #   display_name: 'CDP'
-    #   staging_model: 'stg_cdp__role_records'
-    #   provides: []                      # snid + role only
 
   # ───────────────────────────────────────────────────────────────────────
   # 6. NORMALISATION - abbreviation expansion rules

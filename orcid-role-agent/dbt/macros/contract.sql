@@ -31,17 +31,6 @@
 {% endmacro %}
 
 
-{#- source key -> the display name used in the contract -#}
-{% macro source_display_name_expr(col='source_key') %}
-    CASE {{ col }}
-    {%- for k in source_keys() %}
-        WHEN '{{ k }}' THEN '{{ source_config(k).display_name }}'
-    {%- endfor %}
-        ELSE {{ col }}
-    END
-{% endmacro %}
-
-
 {#-
     Array ordering key. All four arrays MUST use this same ORDER BY.
     contract.array_order: 'alphabetical' | 'score'

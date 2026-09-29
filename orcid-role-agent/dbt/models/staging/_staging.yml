@@ -3,16 +3,13 @@ version: 2
 models:
   - name: stg_role_records
     description: >
-      ⭐ The single point where all sources meet. Layers above never
-      learn where the data came from. Adding a source means a new
-      staging model plus one block in dbt_project.yml.
+      The single place role records enter the pipeline. One source
+      today (ORCID); a second one becomes a UNION ALL here.
     columns:
       - name: snid
         tests: [not_null]
       - name: source_key
-        tests:
-          - not_null
-          - accepted_values: {values: "{{ source_keys() }}"}
+        tests: [not_null]
       - name: role_title
         tests: [not_null]
 

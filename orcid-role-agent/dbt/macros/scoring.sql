@@ -7,62 +7,27 @@
 -#}
 
 {#-
-    PER-SOURCE WEIGHT RENORMALISATION
-
-    Phase-1 formula: role*0.50 + org*0.30 + dept*0.20
-    But not every source carries all three fields. With fixed weights a
-    title-only source would top out at 0.50 and could NEVER cross the
-    0.60 threshold - the source would be dead weight.
-
-    Fix: redistribute the weights of the fields the source DOES carry
-    so they sum to 1.0.
-
-        orcid        (role+org+dept) -> 0.50 / 0.30 / 0.20
-        web_scraping (role+org)      -> 0.625 / 0.375 / -
-        cdp          (role only)     -> 1.00 / - / -
-
-    IMPORTANT DISTINCTION: an EMPTY department in ORCID and a source
-    that NEVER carries department are different things. The first is
-    genuine missing evidence and should lower the score (Phase-1
-    behaviour, preserved). The second is structural and is renormalised
-    here. This macro only corrects the second case.
--#}
-{% macro normalized_weights(role_key, source_key) %}
-    {%- set w = role(role_key).weights -%}
-    {%- set has = source_provides(source_key) -%}
-    {%- set w_role = w.role -%}
-    {%- set w_org  = w.org  if 'organisation' in has else 0.0 -%}
-    {%- set w_dept = w.dept if 'department'   in has else 0.0 -%}
-    {%- set total  = w_role + w_org + w_dept -%}
-    {{ return({
-        'role': (w_role / total) | round(4),
-        'org':  (w_org  / total) | round(4),
-        'dept': (w_dept / total) | round(4)
-    }) }}
-{% endmacro %}
-
-
-{#-
     Given role_score / org_score / dept_score / education_score columns,
-    emits the weighted composite score per (role x source).
+    emits the weighted composite score per role.
+
+    Formula (the generalised Phase-1 formula):
+        LEAST(1.0, role*w_role + org*w_org + dept*w_dept)
+          + education_score * education_bonus
+
+    A NULL org or dept score counts as zero, i.e. missing evidence
+    lowers the score. That is deliberate and matches Phase-1.
 -#}
 {% macro composite_score_expr() %}
-    CASE
+    CASE role_key
     {%- for k in role_keys() %}
-    {%- for s in source_keys() %}
-    {%- set w = normalized_weights(k, s) %}
-        WHEN role_key = '{{ k }}' AND source_key = '{{ s }}' THEN
+    {%- set w = role(k).weights %}
+        WHEN '{{ k }}' THEN
             LEAST(1.0,
                   COALESCE(role_score, 0.0)  * {{ w.role }}
-                {%- if w.org > 0 %}
                 + COALESCE(org_score, 0.0)   * {{ w.org }}
-                {%- endif %}
-                {%- if w.dept > 0 %}
                 + COALESCE(dept_score, 0.0)  * {{ w.dept }}
-                {%- endif %}
             )
             + COALESCE(education_score, 0.0) * {{ role(k).get('education_bonus', 0.0) }}
-    {%- endfor %}
     {%- endfor %}
         ELSE NULL
     END
@@ -110,7 +75,6 @@
     -- {{ m.child }} -> {{ m.parent }} ({{ m.bucket }}) roll-up
     SELECT
         snid,
-        source_key,
         '{{ m.parent }}'                       AS role_key,
         '{{ m.bucket_label }}'                 AS role_detail,
         role_final_score,
@@ -120,6 +84,7 @@
         evidence_dept,
         country_code,
         is_current,
+        source_key,
         source_last_updated,
         '{{ m.child }}'                        AS derived_from_role
     FROM {{ cte_name }}

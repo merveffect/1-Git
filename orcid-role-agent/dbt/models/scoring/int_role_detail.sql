@@ -19,7 +19,6 @@ with scored as (
 
     select
         snid,
-        source_key,
         role_key,
         evidence_title,
         org_type
@@ -31,7 +30,6 @@ title_matches as (
 
     select
         s.snid,
-        s.source_key,
         s.role_key,
         m.detail_label,
         m.priority
@@ -47,7 +45,6 @@ org_matches as (
 
     select
         s.snid,
-        s.source_key,
         s.role_key,
         m.detail_label,
         m.priority
@@ -67,11 +64,10 @@ combined as (
 
 select
     snid,
-    source_key,
     role_key,
     detail_label
 from combined
 qualify row_number() over (
-    partition by snid, source_key, role_key
+    partition by snid, role_key
     order by priority asc, detail_label asc
 ) = 1

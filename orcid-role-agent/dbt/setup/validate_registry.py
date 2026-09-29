@@ -9,6 +9,7 @@ Checks:
   - every .sql file is valid Jinja
   - each enabled role's weights sum to 1.0
   - each enabled role has enough anchors
+  - the distractor set is large enough
   - parent references point at roles that exist
   - no model uses an undefined var() without a default
 """

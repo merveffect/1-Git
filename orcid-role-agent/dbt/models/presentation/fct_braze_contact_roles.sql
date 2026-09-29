@@ -46,12 +46,11 @@ per_role as (
             if(role_detail is null, '', concat('{{ var("contract").detail_separator }}', role_detail))
         )                                           as role_detailed_inferred,
 
-        -- several sources: "Orcid + Web scraping"
-        string_agg(
-            distinct {{ source_display_name_expr('source_key') }},
-            '{{ var("contract").detail_source_separator }}'
-            order by {{ source_display_name_expr('source_key') }}
-        )                                           as role_inferred_data_source,
+        -- Source display name. One source today; when web scraping
+        -- arrives, add a WHEN branch and switch this to a STRING_AGG so
+        -- a role asserted by both reads 'Orcid + Web scraping'.
+        max(case source_key when 'orcid' then 'Orcid' else source_key end)
+                                                    as role_inferred_data_source,
 
         max(source_last_updated)                    as role_inferred_data_source_last_updated,
         max(role_final_score)                       as role_final_score,

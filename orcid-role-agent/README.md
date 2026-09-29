@@ -75,8 +75,7 @@ To add a role: [docs/ADDING_A_ROLE.md](docs/ADDING_A_ROLE.md)
 ```
 raw/          sources + visibility filter + SNID filter
    |
-staging/      flatten, normalise, and meet in stg_role_records
-   |             (the single source-agnostic schema)
+staging/      flatten, normalise, resolve organisations
    |
 dictionary/   ⭐ THE DICTIONARY  (AI runs here, and only here)
    |  int_title_distinct      distinct titles + frequency
@@ -135,31 +134,22 @@ Human decisions in `seeds/role_title_overrides.csv` override everything.
 
 ---
 
-## Multiple sources
+## Sources
 
-`stg_role_records` is the single point where sources meet. Nothing above
-it knows where the data came from.
+Today there is one source: ORCID.
 
-The only guaranteed fields are **`snid` and `role_title`**. Everything
-else is optional: a source that does not carry a field produces NULL,
-and that source's weights are renormalised so it can still reach the
-threshold.
+`stg_role_records` is where role records enter the pipeline, and
+everything downstream reads it rather than `stg_orcid__employment`. When
+web scraping arrives (expected shape: `snid` + `role_title`, little
+else) it becomes a UNION ALL there, plus one branch in
+`fct_braze_contact_roles` for the display name.
 
-```
-orcid        (role + org + dept) -> weights 0.50 / 0.30 / 0.20
-web_scraping (role + org)        -> weights 0.625 / 0.375
-cdp          (role only)         -> weights 1.00
-```
+Columns a future source cannot supply are simply NULL. The scoring layer
+already treats a NULL organisation or department as "no evidence", so
+nothing special is needed for that.
 
-Without that renormalisation a title-only source could never cross 0.60
-and would be dead weight.
-
-If two sources assert different roles for the same person, both are
-kept. If they assert the same role, the presentation layer merges them
-and records `'Orcid + Web scraping'`.
-
-Adding a source: write the staging model, add a block to
-`vars.sources`. Nothing else changes.
+Nothing is abstracted ahead of the second source arriving - its real
+shape will decide what, if anything, needs generalising.
 
 ---
 

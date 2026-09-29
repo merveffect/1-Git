@@ -3,7 +3,7 @@ version: 2
 models:
   - name: fct_researcher_roles
     description: >
-      ⭐ THE CORE MODEL. One row = (snid, role_key, source_key).
+      ⭐ THE CORE MODEL. One row = (snid, role_key).
       Multi-label: a person can hold several roles. The whole
       presentation layer is built from this table.
     columns:
@@ -14,9 +14,7 @@ models:
           - not_null
           - accepted_values: {values: "{{ role_keys() }}"}
       - name: source_key
-        tests:
-          - not_null
-          - accepted_values: {values: "{{ source_keys() }}"}
+        tests: [not_null]
       - name: role_label
         tests:
           - accepted_values: {values: ['CONFIRMED', 'PROBABLE']}
@@ -30,4 +28,4 @@ models:
         description: Source role when this row came from a roll-up (e.g. pharmacist -> hcp).
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [snid, role_key, source_key]
+          combination_of_columns: [snid, role_key]
