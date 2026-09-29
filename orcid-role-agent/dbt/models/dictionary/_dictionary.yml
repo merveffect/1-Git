@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: int_title_distinct
+    description: Distinct titles and frequencies. All expensive work runs on this.
+    columns:
+      - name: title_key
+        tests: [unique, not_null]
+      - name: frequency
+        tests: [not_null]
+
+  - name: int_anchor_terms
+    description: >
+      Anchor terms per role (seed + ESCO), plus the '__distractor'
+      pseudo-role holding common non-target occupations.
+
+  - name: int_org_resolved
+    description: >
+      Organisation resolution via three routes: ROR id, external id
+      bridge (RINGGOLD / GRID / FUNDREF), then name matching.
+    columns:
+      - name: resolution_method
+        tests:
+          - not_null
+
+  - name: dim_title_role
+    description: >
+      ⭐ THE DICTIONARY. One row = (title, role). A title can belong to
+      more than one role. No AI runs downstream of this model.
+    columns:
+      - name: title_key
+        tests: [not_null]
+      - name: role_key
+        tests:
+          - not_null
+          - accepted_values: {values: "{{ role_keys() }}"}
+      - name: role_score
+        tests:
+          - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
+      - name: decision_source
+        tests:
+          - accepted_values: {values: ['HUMAN', 'VECTOR', 'LLM_JUDGE', 'REJECTED']}
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [title_key, role_key]

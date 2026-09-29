@@ -1,0 +1,137 @@
+{{ config(materialized='table') }}
+
+/*
+    ORGANISATION RESOLUTION - three routes.
+
+    MEASURED DISTRIBUTION (38.6M employment records):
+        ROR        35.3%   -> direct join, no matching needed
+        RINGGOLD   31.7%   -> bridged via ROR external_ids
+        no id      21.2%   -> name matching
+        GRID        7.8%   -> bridged via ROR external_ids
+        FUNDREF     4.0%   -> bridged via ROR external_ids
+        LEI         0.0%
+
+    organisation_name is 100% populated, so name matching is always
+    available as the fallback.
+
+    Routes are tried in order; the first hit wins.
+*/
+
+with employment_orgs as (
+
+    select distinct
+        organisation,
+        org_id,
+        org_id_source
+    from {{ ref('stg_role_records') }}
+    where organisation is not null
+
+),
+
+ror as (
+
+    select ror_id, organisation, canonical_name, ror_types, ror_country_code
+    from {{ ref('stg_ror__organisations') }}
+
+),
+
+-- ROUTE 1: ORCID's own ROR id (free, exact)
+by_ror_id as (
+
+    select
+        o.organisation,
+        o.org_id,
+        r.ror_id,
+        r.canonical_name,
+        r.ror_types,
+        r.ror_country_code,
+        'ORCID_ROR_ID'      as resolution_method,
+        1.0                 as resolution_confidence
+    from employment_orgs o
+    join ror r
+      on o.org_id_source = 'ROR'
+     and o.org_id = r.ror_id
+
+),
+
+/*
+    ROUTE 2: bridge through other identifier systems
+    RINGGOLD 31.7% + GRID 7.8% + FUNDREF 4.0% = 43.5%
+    ROR carries these identifiers inside external_ids.
+*/
+by_external_id as (
+
+    select
+        o.organisation,
+        o.org_id,
+        r.ror_id,
+        r.canonical_name,
+        r.ror_types,
+        r.ror_country_code,
+        concat('EXTERNAL_ID_', o.org_id_source)     as resolution_method,
+        0.95                                        as resolution_confidence
+    from employment_orgs o
+    join {{ ref('stg_ror__external_ids') }} x
+      on x.id_type  = o.org_id_source
+     and x.id_value = o.org_id
+    join ror r
+      on r.ror_id = x.ror_id
+    where o.org_id_source != 'ROR'
+      and not exists (
+          select 1 from by_ror_id b
+          where b.organisation = o.organisation
+            and b.org_id is not distinct from o.org_id
+      )
+
+),
+
+-- ROUTE 3: name matching (no identifier; organisation_name is always populated)
+by_name as (
+
+    select
+        o.organisation,
+        o.org_id,
+        r.ror_id,
+        r.canonical_name,
+        r.ror_types,
+        r.ror_country_code,
+        'NAME_EXACT'        as resolution_method,
+        0.9                 as resolution_confidence
+    from employment_orgs o
+    join ror r
+      on o.organisation = r.organisation
+    where not exists (
+        select 1 from by_ror_id b
+        where b.organisation = o.organisation
+          and b.org_id is not distinct from o.org_id
+    )
+    and not exists (
+        select 1 from by_external_id x
+        where x.organisation = o.organisation
+          and x.org_id is not distinct from o.org_id
+    )
+
+),
+
+combined as (
+    select * from by_ror_id
+    union all
+    select * from by_external_id
+    union all
+    select * from by_name
+)
+
+select
+    organisation,
+    org_id,
+    ror_id,
+    canonical_name,
+    ror_types,
+    ror_country_code,
+    resolution_method,
+    resolution_confidence
+from combined
+qualify row_number() over (
+    partition by organisation, org_id
+    order by resolution_confidence desc
+) = 1
