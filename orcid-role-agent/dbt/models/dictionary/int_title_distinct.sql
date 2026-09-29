@@ -1,17 +1,18 @@
 {{ config(materialized='table') }}
 
 /*
-    SOZLUGUN 1. ADIMI
-    Benzersiz unvanlar + kac kisi kullanmis.
+    DICTIONARY STEP 1
+    Distinct job titles and how many records use each one.
 
-    Tum pahali islemler (embedding, LLM) BU tablonun uzerinde calisir,
-    204K kisilik tablonun degil. Maliyet farki burada.
+    Every expensive operation (embedding, LLM) runs on THIS table, not
+    on the person-level table. That is where the cost saving comes from.
 
-    frequency kolonu kritik: insan review kuyrugu buna gore siralanir.
-    En sik gecen birkac yuz unvani gozden gecirmek, kisilerin yarisini kapsar.
+    The frequency column matters: the human review queue is ordered by
+    it. Job title distributions are heavily skewed, so reviewing the top
+    few hundred titles covers a large share of all people.
 */
 
-with employment as (
+with records as (
 
     select role_title, organisation, department
     from {{ ref('stg_role_records') }}
@@ -27,7 +28,7 @@ agg as (
         count(distinct organisation)                as distinct_orgs,
         approx_top_count(organisation, 3)           as top_organisations,
         approx_top_count(department, 3)             as top_departments
-    from employment
+    from records
     group by title
 
 )

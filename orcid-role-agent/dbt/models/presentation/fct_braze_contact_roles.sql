@@ -1,22 +1,23 @@
 {{ config(materialized='table', cluster_by=['snid']) }}
 
 /*
-    ⭐ BRAZE DATA CONTRACT CIKTISI
-    Bir satir = bir contact. Braze / MPC'ye giden nihai sema.
+    ⭐ BRAZE DATA CONTRACT OUTPUT
+    One row = one contact. The final schema delivered to Braze / MPC.
 
     ─────────────────────────────────────────────────────────────────────
-    KRITIK: DORT DIZI POZISYONEL OLARAK HIZALI OLMAK ZORUNDA
+    CRITICAL: THE FOUR ARRAYS MUST STAY POSITIONALLY ALIGNED
 
-        role_inferred[0]                        <-> Healthcare Professional
-        role_detailed_inferred[0]               <-> Healthcare Professional - Practitioner
-        role_inferred_data_source[0]            <-> Orcid
-        role_inferred_data_source_last_updated[0] <-> 2026-09-23 10:00:00
+        role_inferred[0]                          <-> Healthcare Professional
+        role_detailed_inferred[0]                 <-> Healthcare Professional - Practitioner
+        role_inferred_data_source[0]              <-> Orcid
+        role_inferred_data_source_last_updated[0] <-> 2026-09-29 10:00:00
 
-    Dortu de AYNI siralanmis CTE'den, AYNI ORDER BY ile turetilir.
-    Ayri ayri ARRAY_AGG yazmak sessiz hizalama bozulmasi uretir ve Braze
-    bunu YAKALAYAMAZ - yanlis kisiye yanlis rol segmenti gider.
+    All four are derived from the SAME ordered CTE with the SAME ORDER BY.
+    Writing four independent ARRAY_AGGs would drift silently, and Braze
+    CANNOT detect it - the wrong person would land in the wrong role
+    segment and nobody would notice.
 
-    Siralamayi degistirmek icin: dbt_project.yml -> contract.array_order
+    To change the ordering: dbt_project.yml -> contract.array_order
     ─────────────────────────────────────────────────────────────────────
 */
 
@@ -29,8 +30,8 @@ with audience as (
 ),
 
 /*
-    Ayni rol birden fazla kaynaktan gelebilir (ORCID + web scraping).
-    Rol basina TEK satira indiriyoruz; kaynaklar birlestiriliyor.
+    The same role can be asserted by several sources (ORCID + web
+    scraping). Collapse to one row per role and join the sources.
 */
 per_role as (
 
@@ -45,7 +46,7 @@ per_role as (
             if(role_detail is null, '', concat('{{ var("contract").detail_separator }}', role_detail))
         )                                           as role_detailed_inferred,
 
-        -- birden fazla kaynak: "Orcid + Web scraping"
+        -- several sources: "Orcid + Web scraping"
         string_agg(
             distinct {{ source_display_name_expr('source_key') }},
             '{{ var("contract").detail_source_separator }}'
@@ -65,15 +66,14 @@ per_role as (
 ),
 
 /*
-    TEK siralanmis kaynak. Butun diziler bundan cikar.
-    role_inferred snid icinde benzersiz oldugu icin siralama TOTAL -
-    beraberlik yok, dolayisiyla hizalama garanti.
+    ONE ordered source. Every array is built from it.
+    role_inferred is unique within a person, so the ordering is TOTAL -
+    no ties, therefore alignment is guaranteed.
 */
 ordered as (
 
-    select *
-    from per_role
-    -- ORDER BY burada degil; ARRAY_AGG icinde, hepsinde AYNI ifadeyle
+    select * from per_role
+    -- ORDER BY lives inside the ARRAY_AGGs below, identical in each
 
 ),
 
@@ -82,7 +82,7 @@ contact as (
     select
         snid,
 
-        -- ── contract alanlari ────────────────────────────────────────
+        -- ── contract fields ──────────────────────────────────────────
         array_agg(role_inferred                             order by {{ contract_array_order() }})
             as role_inferred,
         array_agg(role_detailed_inferred                    order by {{ contract_array_order() }})
@@ -92,15 +92,15 @@ contact as (
         array_agg(role_inferred_data_source_last_updated    order by {{ contract_array_order() }})
             as role_inferred_data_source_last_updated,
 
-        -- ── ic kullanim: hizalamanin bozulamayacagi kanonik form ─────
+        -- ── internal: the canonical form that cannot drift ───────────
         array_agg(
             struct(
                 role_key,
                 role_inferred,
                 role_detailed_inferred,
-                role_inferred_data_source           as data_source,
+                role_inferred_data_source              as data_source,
                 role_inferred_data_source_last_updated as last_updated,
-                round(role_final_score, 3)          as confidence
+                round(role_final_score, 3)             as confidence
             )
             order by {{ contract_array_order() }}
         )                                           as roles_struct,
@@ -116,8 +116,10 @@ contact as (
 
 select
     /*
-        contact_email CDP tarafindan gelir - bu pipeline email tutmaz.
-        TODO: audience_builder_big'deki email kolonunun adi dogrulanacak.
+        contact_email comes from CDP - this pipeline does not hold email
+        addresses. ORCID emails are mostly PRIVATE and would be the wrong
+        source even where they exist.
+        TODO: confirm the email column name in audience_builder_big.
     */
     cast(null as string)                            as contact_email,   -- TODO
     c.snid,
@@ -126,7 +128,7 @@ select
     c.role_inferred_data_source,
     c.role_inferred_data_source_last_updated,
 
-    -- contract disi, bizim icin
+    -- outside the contract, for us
     c.roles_struct,
     c.country_code,
     array_length(c.role_inferred)                   as role_count,

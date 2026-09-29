@@ -5,22 +5,22 @@
 ) }}
 
 /*
-    ⭐ ANA MODEL
+    ⭐ THE CORE MODEL
 
-    Bir satir = (snid, role_key, source_key).
+    One row = (snid, role_key, source_key).
 
-    Ucuncu boyut KAYNAK. Ayni kisi hakkinda iki kaynak farkli sey
-    soyluyorsa iki satir olur:
+    The third dimension is the SOURCE. If two sources say different
+    things about the same person, there are two rows:
 
         88412 | hcp          | orcid         | CONFIRMED
         88412 | faculty_head | web_scraping  | CONFIRMED
 
-    Ayni seyi soyluyorlarsa yine iki satir olur ama sunum katmani
-    bunlari tek role indirip kaynaklari 'Orcid + Web scraping' olarak
-    birlestirir. Kanit kaybolmaz.
+    If they say the same thing there are still two rows, and the
+    presentation layer collapses them into one role with the sources
+    joined as 'Orcid + Web scraping'. No evidence is lost.
 
-    Yeni rol VEYA yeni kaynak eklendiginde bu dosya DEGISMEZ - makrolar
-    kayit defterlerini okuyup SQL'i kendileri genisletir.
+    Adding a role OR a source changes nothing in this file - the macros
+    read the registries and expand the SQL themselves.
 */
 
 with base as (
@@ -97,8 +97,8 @@ qualified as (
 ),
 
 /*
-    Ebeveyn roll-up: pharmacist olan kisi ayni zamanda hcp/PRACTITIONER
-    satiri da alir. Iliskiler dbt_project.yml -> roles.*.parent
+    Parent roll-up: a pharmacist also gets an hcp / PRACTITIONER row.
+    Relationships come from dbt_project.yml -> roles.*.parent
 */
 with_parents as (
 
@@ -128,7 +128,7 @@ select
     derived_from_role,
     current_date()  as scored_date
 from with_parents
--- ayni (snid, rol, kaynak) birden fazla kez gelirse en yuksek skoru tut
+-- if the same (person, role, source) appears more than once keep the best score
 qualify row_number() over (
     partition by snid, role_key, source_key
     order by role_final_score desc, derived_from_role nulls first

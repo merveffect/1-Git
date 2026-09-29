@@ -4,8 +4,9 @@
 ) }}
 
 /*
-    Aranacak hedef vektorler. int_title_embeddings ile AYNI modeli
-    kullanmak zorunlu - farkli model = anlamsiz benzerlik skoru.
+    The target vectors we search against. Must use the SAME model as
+    int_title_embeddings - a different model makes the similarity
+    scores meaningless.
 */
 
 with anchors as (

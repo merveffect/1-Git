@@ -1,9 +1,10 @@
 {{ config(materialized='view') }}
 
 /*
-    ORCID educations[] -> kisi basina EN GUNCEL egitim kaydi.
-    Egitim yalnizca BONUS olarak skora girer, tek basina rol kazandirmaz.
-    Gorunurluk filtresi raw katmaninda uygulandi.
+    ORCID educations[] -> the most recent education record per person.
+    Education only ever acts as a BONUS; it never qualifies a role on
+    its own (same principle as Phase-1).
+    The visibility filter was applied in the raw layer.
 */
 
 with flattened as (

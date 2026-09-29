@@ -1,23 +1,24 @@
 {{ config(materialized='view') }}
 
 /*
-    ⭐ TUM KAYNAKLARIN BIRLESTIGI TEK NOKTA
+    ⭐ THE SINGLE POINT WHERE ALL SOURCES MEET
 
-    GARANTI ALANLAR - her kaynakta olmak ZORUNDA:
+    GUARANTEED FIELDS - MANDATORY in every source:
         snid, role_title
-    Geri kalan her sey OPSIYONEL. Kaynak tasimiyorsa NULL gelir; o kaynak
-    icin skor agirliklari yeniden normalize edilir (bkz. macros/scoring.sql).
+    Everything else is OPTIONAL. If a source does not carry a field it
+    arrives as NULL and that source's scoring weights are renormalised
+    (see macros/scoring.sql -> normalized_weights).
 
-    Bu sayede web scraping gibi sadece (snid, role) tasiyan bir kaynak
-    da pipeline'a girebiliyor ve esigi gecebiliyor.
+    This is what lets a source carrying only (snid, role) - web scraping,
+    for example - enter the pipeline and still cross the threshold.
 
-    YENI KAYNAK EKLEMEK:
-      1. stg_<kaynak>__role_records.sql - en az snid + role_title uret
-      2. dbt_project.yml -> vars.sources altina bir blok
+    ADDING A SOURCE:
+      1. stg_<source>__role_records.sql - produce at least snid + role_title
+      2. dbt_project.yml -> vars.sources: add a block
       3. dbt run
-    Bu dosya dahil baska HICBIR sey degismez.
+    Nothing else changes, including this file.
 
-    Kaynak listesi: {{ source_keys() | join(', ') }}
+    Active sources: {{ source_keys() | join(', ') }}
 */
 
 with unioned as (
@@ -25,7 +26,7 @@ with unioned as (
     {%- for key in source_keys() %}
 
     -- ── {{ key }} ({{ source_config(key).display_name }}) ──
-    -- tasidigi alanlar: {{ source_provides(key) | join(', ') or 'sadece snid + role_title' }}
+    -- carries: {{ source_provides(key) | join(', ') or 'snid + role_title only' }}
     {{ role_record_select(key) }}
 
     {% if not loop.last %}union all{% endif %}

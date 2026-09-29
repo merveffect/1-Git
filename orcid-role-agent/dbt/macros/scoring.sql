@@ -1,39 +1,31 @@
 {#-
-    SKORLAMA
-    --------
-    Agirliklar / esikler SADECE dbt_project.yml'de. Buradaki makrolar
-    rol kayit defterinden okuyup SQL ifadesi uretir.
-    Yeni rol eklenince bu dosyada HICBIR sey degismez.
+    SCORING
+    -------
+    Weights and thresholds live ONLY in dbt_project.yml. These macros
+    read the registries and emit SQL. Adding a role or a source changes
+    nothing in this file.
 -#}
 
 {#-
-    role_score / org_score / dept_score / education_score kolonlari
-    mevcutken, rol bazli agirlikli kompozit skoru uretir.
+    PER-SOURCE WEIGHT RENORMALISATION
 
-    Formul (Phase-1 HCP dokumaninin genellestirilmis hali):
-        LEAST(1.0, role*w_role + org*w_org + dept*w_dept)
-          + education_score * education_bonus
--#}
-{#-
-    KAYNAK BAZLI AGIRLIK NORMALIZASYONU
+    Phase-1 formula: role*0.50 + org*0.30 + dept*0.20
+    But not every source carries all three fields. With fixed weights a
+    title-only source would top out at 0.50 and could NEVER cross the
+    0.60 threshold - the source would be dead weight.
 
-    Phase-1 formulu: role*0.50 + org*0.30 + dept*0.20
-    Ama her kaynak bu uc alani tasimiyor. Web scraping sadece unvan
-    veriyorsa, sabit agirliklarla o kisi en fazla 0.50 alabilir ve
-    0.60 esigini ASLA gecemez - yani o kaynak ise yaramaz olur.
-
-    Cozum: kaynagin TASIYABILDIGI alanlarin agirliklarini 1.0'a
-    yeniden dagit.
+    Fix: redistribute the weights of the fields the source DOES carry
+    so they sum to 1.0.
 
         orcid        (role+org+dept) -> 0.50 / 0.30 / 0.20
         web_scraping (role+org)      -> 0.625 / 0.375 / -
-        cdp          (sadece role)   -> 1.00 / - / -
+        cdp          (role only)     -> 1.00 / - / -
 
-    ONEMLI AYRIM: ORCID'de departman alani BOS olmasi ile, kaynagin
-    departman alanini HIC tasimamasi farkli seyler. Birincisi gercek
-    kanit eksikligi (skoru dusurmeli, Phase-1 davranisi korunur),
-    ikincisi yapisal (normalize edilmeli). Bu makro sadece ikincisini
-    duzeltiyor.
+    IMPORTANT DISTINCTION: an EMPTY department in ORCID and a source
+    that NEVER carries department are different things. The first is
+    genuine missing evidence and should lower the score (Phase-1
+    behaviour, preserved). The second is structural and is renormalised
+    here. This macro only corrects the second case.
 -#}
 {% macro normalized_weights(role_key, source_key) %}
     {%- set w = role(role_key).weights -%}
@@ -51,8 +43,8 @@
 
 
 {#-
-    role_score / org_score / dept_score / education_score kolonlari
-    mevcutken, (rol x kaynak) bazli agirlikli kompozit skoru uretir.
+    Given role_score / org_score / dept_score / education_score columns,
+    emits the weighted composite score per (role x source).
 -#}
 {% macro composite_score_expr() %}
     CASE
@@ -77,7 +69,7 @@
 {% endmacro %}
 
 
-{#- Rol bazli esiklerle CONFIRMED / PROBABLE / NOT_QUALIFIED -#}
+{#- CONFIRMED / PROBABLE / NOT_QUALIFIED using per-role thresholds -#}
 {% macro role_label_expr(score_col='role_final_score') %}
     CASE
     {%- for k in role_keys() %}
@@ -91,8 +83,8 @@
 
 
 {#-
-    current_only = true olan roller icin gecmis kayitlari eler.
-    WHERE cumlesinde kullanilir.
+    Drops historical records for roles configured as current_only.
+    Used in a WHERE clause.
 -#}
 {% macro current_only_predicate(is_current_col='is_current') %}
     {%- set keys = current_only_role_keys() -%}
@@ -105,9 +97,10 @@
 
 
 {#-
-    Ebeveyn roll-up satirlari.
-    Ornek: pharmacist -> ayni kisi hcp/PRACTITIONER olarak da yazilir.
-    Cagrildigi yerde <scored_cte> adinda bir CTE beklenir.
+    Parent roll-up rows.
+    Example: pharmacist -> the same person is also written as
+    hcp / PRACTITIONER. Relationships come from roles.*.parent.
+    Expects a CTE named <cte_name> at the call site.
 -#}
 {% macro parent_rollup_union(cte_name) %}
     {%- for m in roles_with_parent() %}
@@ -137,8 +130,8 @@
 
 
 {#-
-    Presentation katmani icin genis (wide) bayrak kolonlari uretir.
-    GROUP BY snid ile kullanilir.
+    Wide (pivoted) flag columns for the presentation layer.
+    Used with GROUP BY snid.
 -#}
 {% macro role_flag_columns(qualified_labels=['CONFIRMED', 'PROBABLE']) %}
     {%- for k in role_keys() %}

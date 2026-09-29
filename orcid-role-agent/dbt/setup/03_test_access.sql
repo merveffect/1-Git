@@ -1,33 +1,32 @@
 -- ===========================================================================
--- ERISIM TESTI
--- Yeni Vertex baglantisi kurmaya gerek YOK - mevcut remote model var:
+-- ACCESS TESTS
+-- No new Vertex connection is needed - a remote model already exists:
 --     datasn-rm-live.institution_disambiguation.embedding_model
--- Sadece o proje uzerinde okuma izni gerekiyor.
+-- Only cross-project read access to that project is required.
 -- ===========================================================================
 
 -- ---------------------------------------------------------------------------
--- TEST 1: Mevcut embedding modeline erisim var mi?
+-- TEST 1: can we reach the existing embedding model?
 -- ---------------------------------------------------------------------------
 SELECT
     content,
-    ARRAY_LENGTH(ml_generate_embedding_result) AS boyut
+    ARRAY_LENGTH(ml_generate_embedding_result) AS dimensions
 FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT 'consultant cardiologist' AS content
      UNION ALL SELECT 'librarian')
 );
--- OK: 2 satir, boyut dolu.
--- HATA "Access Denied": datasn-rm-live uzerinde okuma izni gerekiyor.
+-- PASS: 2 rows, dimensions populated.  [verified: 768]
+-- FAIL "Access Denied": read access to datasn-rm-live is required.
 
 
 -- ---------------------------------------------------------------------------
--- TEST 1b: *** PROJENIN EN KRITIK TESTI ***
--- Bu model COK DILLI mi?
+-- TEST 1b: IS THE MODEL MULTILINGUAL?   [PASSED - see results below]
 --
--- Model institution disambiguation icin kurulmustu; kurum isimleri
--- cogunlukla Ingilizce oldugu icin orada sorun cikmamis olabilir.
--- Ama ORCID unvanlari 100+ dilde. Model Ingilizce-only ise
--- "kardiyolog" ve "Oberarztin" kacar ve BASKA MODEL gerekir.
+-- The model was provisioned for institution disambiguation, where names
+-- are mostly English, so multilingual behaviour was not guaranteed.
+-- ORCID job titles span 100+ languages, and an English-only model would
+-- silently drop "kardiyolog" and "Oberarztin".
 -- ---------------------------------------------------------------------------
 WITH e AS (
   SELECT content, ml_generate_embedding_result AS v
@@ -37,61 +36,44 @@ WITH e AS (
      UNION ALL SELECT 'kardiyolog'                      -- TR
      UNION ALL SELECT 'Facharzt fur Kardiologie'        -- DE
      UNION ALL SELECT 'cardiologue'                     -- FR
-     UNION ALL SELECT 'librarian'))                     -- alakasiz kontrol
+     UNION ALL SELECT 'librarian'))                     -- unrelated control
 SELECT
-    b.content                                           AS terim,
-    ROUND(1 - ML.DISTANCE(a.v, b.v, 'COSINE'), 3)       AS benzerlik
+    b.content                                           AS term,
+    ROUND(1 - ML.DISTANCE(a.v, b.v, 'COSINE'), 3)       AS similarity
 FROM e a CROSS JOIN e b
 WHERE a.content = 'cardiologist' AND b.content != 'cardiologist'
-ORDER BY benzerlik DESC;
+ORDER BY similarity DESC;
 
 /*
-    BEKLENEN (cok dilli model):
-        kardiyolog                  0.80+
-        Facharzt fur Kardiologie    0.75+
-        cardiologue                 0.85+
-        librarian                   0.40-
+    MEASURED RESULT - the model IS multilingual:
+        cardiologue                 0.928
+        Facharzt fur Kardiologie    0.795
+        kardiyolog                  0.760
+        librarian                   0.572   <-- unrelated control
 
-    COK DILLI DEGILSE:
-        Uc dil de librarian ile benzer seviyede (0.3-0.5) cikar.
-        Bu durumda dbt_project.yml -> embedding_model degistirilmeli
-        ve yeni bir remote model kurulmali:
-            text-multilingual-embedding-002
-        Tek satirlik degisiklik, kod etkilenmez.
+    Note the control still scores 0.572: this model has a HIGH BASELINE
+    similarity. That is why absolute thresholds do not work here and the
+    decision rule is built on the distractor margin instead. See
+    analyses/02_similarity_calibration.sql.
 */
 
 
 -- ---------------------------------------------------------------------------
--- TEST 2: VECTOR_SEARCH calisiyor mu? (kucuk olcekte prova)
+-- TEST 2: VECTOR_SEARCH
+--
+-- NOTE: VECTOR_SEARCH requires REAL TABLES as its first argument - a CTE
+-- raises "Only SELECT expressions and WHERE clauses are allowed in the
+-- 1st argument query". The dbt models already materialise the embedding
+-- tables, so this is only a constraint for ad-hoc testing. To try it by
+-- hand, create the two tables first, or use ML.DISTANCE with a CROSS
+-- JOIN as analyses/02 does.
 -- ---------------------------------------------------------------------------
-WITH anchors AS (
-  SELECT 'hcp' AS role_key, content AS anchor_term, ml_generate_embedding_result AS embedding
-  FROM ML.GENERATE_EMBEDDING(
-    MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
-    (SELECT 'physician' AS content UNION ALL SELECT 'cardiologist'))
-),
-titles AS (
-  SELECT content AS title, ml_generate_embedding_result AS embedding
-  FROM ML.GENERATE_EMBEDDING(
-    MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
-    (SELECT 'kardiyolog' AS content UNION ALL SELECT 'head librarian'))
-)
-SELECT
-    query.title         AS unvan,
-    base.anchor_term    AS eslesen_anchor,
-    ROUND(1 - distance, 3) AS benzerlik
-FROM VECTOR_SEARCH(
-    TABLE anchors, 'embedding',
-    TABLE titles,  'embedding',
-    top_k => 1,
-    distance_type => 'COSINE');
--- BEKLENEN: kardiyolog -> cardiologist (yuksek), head librarian -> dusuk
 
 
 -- ---------------------------------------------------------------------------
--- TEST 3: LLM hakemligi - hangi yol calisiyor?
+-- TEST 3: LLM judge - which route works?   [BOTH FAILED - no connection]
 -- ---------------------------------------------------------------------------
--- 3a) AI.GENERATE_BOOL (tercih edilen, sade)
+-- 3a) AI.GENERATE_BOOL (preferred, concise)
 SELECT
     t,
     AI.GENERATE_BOOL(
@@ -99,15 +81,29 @@ SELECT
         connection_id => 'EU.vertex_ai_conn',
         endpoint      => 'gemini-2.5-flash').result AS is_hcp
 FROM UNNEST(['consultant cardiologist', 'data consultant']) AS t;
--- Calisirsa:  judge_function: 'ai_generate_bool'
--- Calismazsa: 3b'ye gec (sorun degil)
+-- RESULT: "Not found: Connection vertex_ai_conn"
+--   -> this project has no Vertex connection.
 
--- 3b) ML.GENERATE_TEXT (guvenli liman) - once remote model gerekir
--- CREATE OR REPLACE MODEL `<proje>.<dataset>.remote_gemini_2_5_flash`
--- REMOTE WITH CONNECTION `<proje>.EU.vertex_ai_conn`
+-- 3b) ML.GENERATE_TEXT (safe harbour) - needs a remote model, which
+--     itself needs a Vertex connection, so it hits the same blocker:
+-- CREATE OR REPLACE MODEL `<project>.<dataset>.remote_gemini_2_5_flash`
+-- REMOTE WITH CONNECTION `<project>.EU.vertex_ai_conn`
 -- OPTIONS (ENDPOINT = 'gemini-2.5-flash');
---   -> judge_function: 'ml_generate_text'
 
--- NOT: LLM hakemligi OLMADAN da pipeline calisir; sadece vektor
--- kararlariyla gider (esikler biraz daha muhafazakar tutulur).
--- Yani Test 3 bloklayici degil, Test 1b bloklayici.
+/*
+    CONSEQUENCE
+    The LLM judge is disabled (dbt_project.yml -> use_llm_judge: false)
+    and the pipeline runs on vectors alone. This is NOT a blocker:
+      - clear cases are decided automatically by the distractor margin
+      - ambiguous generic titles ("Director", "Consultant", "Head of
+        Research") have no second opinion and fall to the human review
+        queue (rpt_title_review_queue)
+
+    To enable it later, either provision a Vertex AI connection in this
+    project, or reuse an existing one from another team. Then set
+    use_llm_judge: true - no other change is needed.
+
+    Worth checking first: does the project that hosts the embedding model
+    also expose a text model?
+        SELECT * FROM `datasn-rm-live.institution_disambiguation.INFORMATION_SCHEMA.MODELS`;
+*/

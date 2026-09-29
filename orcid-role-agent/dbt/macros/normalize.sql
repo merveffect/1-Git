@@ -1,11 +1,12 @@
 {#-
-    METIN NORMALIZASYONU
-    --------------------
-    Unvan / kurum / departman metinleri ayni boru hattindan gecer.
-    Tek kaynak: burasi. Model icinde elle LOWER()/TRIM() YAZILMAZ.
+    TEXT NORMALISATION
+    ------------------
+    Job titles, organisation names and department names all go through
+    the same pipeline. This file is the single source of truth - never
+    write a bare LOWER()/TRIM() inside a model.
 -#}
 
-{#- Unicode katla, kucuk harf, aksan/isaret temizle, bosluklari sikistir -#}
+{#- Unicode-fold, lowercase, strip punctuation, collapse whitespace -#}
 {% macro clean_text(col) %}
     NULLIF(
         TRIM(
@@ -22,7 +23,7 @@
 {% endmacro %}
 
 
-{#- dbt_project.yml:vars.abbreviations listesinden ic ice REGEXP_REPLACE uretir -#}
+{#- Builds a nested REGEXP_REPLACE chain from vars.abbreviations -#}
 {% macro expand_abbreviations(col) %}
     {%- set expr = col -%}
     {%- for a in var('abbreviations', []) -%}
@@ -32,7 +33,7 @@
 {% endmacro %}
 
 
-{#- Tam boru hatti: temizle -> kisaltmalari ac -> tekrar sikistir -#}
+{#- Full pipeline: clean -> expand abbreviations -> collapse again -#}
 {% macro normalize_title(col) %}
     NULLIF(TRIM(REGEXP_REPLACE(
         {{ expand_abbreviations(clean_text(col)) }},

@@ -3,15 +3,15 @@ version: 2
 models:
   - name: raw_orcid_researchers
     description: >
-      orcid_researchers ham hali + GORUNURLUK FILTRESI.
-      Public olmayan kayitlar dizilerden burada elenir; ustteki hicbir
-      model visibility bilmek zorunda degil.
+      orcid_researchers as-is, plus the VISIBILITY FILTER and the SNID
+      filter. Non-public records are dropped from the arrays here so no
+      model above needs to repeat the condition.
     columns:
       - name: snid
         tests: [not_null]
 
   - name: raw_ror_data_refresh
-    description: ror_data_refresh ham hali (ayri proje).
+    description: ror_data_refresh as-is (separate project).
 
   - name: raw_audience_builder_big
-    description: audience_builder_big ham hali - consent ve contact_email.
+    description: audience_builder_big as-is - consent flags and contact_email.

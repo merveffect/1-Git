@@ -3,9 +3,9 @@ version: 2
 models:
   - name: stg_role_records
     description: >
-      ⭐ Tum kaynaklarin birlestigi tek nokta. Ustteki katmanlar verinin
-      nereden geldigini bilmez. Yeni kaynak = yeni staging modeli +
-      dbt_project.yml sources bloguna bir satir.
+      ⭐ The single point where all sources meet. Layers above never
+      learn where the data came from. Adding a source means a new
+      staging model plus one block in dbt_project.yml.
     columns:
       - name: snid
         tests: [not_null]
@@ -17,15 +17,21 @@ models:
         tests: [not_null]
 
   - name: stg_orcid__employment
-    description: ORCID employments[] -> ortak rol kaydi semasi.
+    description: ORCID employments[] mapped onto the common role record schema.
 
   - name: stg_orcid__education
-    description: Kisi basina en guncel egitim kaydi (bonus sinyali).
+    description: Most recent education record per person (bonus signal only).
     columns:
       - name: snid
         tests: [unique, not_null]
 
   - name: stg_ror__organisations
     description: >
-      ROR kurum kayit defteri. Kurum TIPI (Education / Healthcare /
-      Company ...) buradan gelir; org skorlamasi bu tipe dayanir.
+      ROR organisation registry. The organisation TYPE (Education /
+      Healthcare / Company ...) comes from here and drives org scoring.
+
+  - name: stg_ror__external_ids
+    description: >
+      Flattened ROR external_ids. Bridges RINGGOLD / GRID / FUNDREF
+      identifiers to a ROR id, covering the ~44% of ORCID records that
+      carry a non-ROR identifier.

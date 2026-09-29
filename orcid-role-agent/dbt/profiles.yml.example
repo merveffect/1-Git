@@ -1,9 +1,9 @@
-# ~/.dbt/profiles.yml icine kopyala
+# Copy into ~/.dbt/profiles.yml
 #
-# OKUMA projeleri (kaynaklar) ayri; burasi sadece YAZMA hedefi.
-#   researcher-360-prod-e7fd74be   ORCID + CDP      (okuma izni gerekli)
-#   ri-data-engineering-dd4c0eca   ROR registry     (okuma izni gerekli)
-#   datasn-rm-live                 embedding modeli (okuma izni gerekli)
+# The READ projects (sources) are separate; this is only the WRITE target.
+#   researcher-360-prod-e7fd74be   ORCID + CDP       (read access required)
+#   ri-data-engineering-dd4c0eca   ROR registry      (read access required)
+#   datasn-rm-live                 embedding model   (read access required)
 
 orcid_role_agent:
   target: dev

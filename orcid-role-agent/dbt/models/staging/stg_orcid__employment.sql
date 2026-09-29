@@ -1,13 +1,13 @@
 {{ config(materialized='view') }}
 
 /*
-    ORCID employments[] -> ORTAK ROL KAYDI SEMASI
+    ORCID employments[] -> COMMON ROLE RECORD SCHEMA
 
-    Bu model ORCID'e ozel. Ama CIKTISI kaynak-bagimsiz: her yeni kaynak
-    (web scraping, CDP self-reported, ...) ayni kolonlari uretecek ve
-    stg_role_records altinda birlesecek.
+    This model is ORCID-specific, but its OUTPUT is source-agnostic:
+    every new source (web scraping, CDP self-reported, ...) produces the
+    same columns and they meet in stg_role_records.
 
-    Gorunurluk filtresi raw katmaninda uygulandi - burada tekrar yok.
+    The visibility filter was applied in the raw layer - not repeated here.
 */
 
 with flattened as (
@@ -18,21 +18,21 @@ with flattened as (
         r.last_updated_at,
         e.ordering,
 
-        -- ham metinler (kanit / izlenebilirlik icin saklanir)
+        -- raw text, kept for evidence and traceability
         e.role                                          as role_title_raw,
         e.organisation_name                             as organisation_raw,
         e.department_name                               as department_raw,
 
-        -- normalize (butun eslestirme bunlarin uzerinden)
+        -- normalised text - all matching runs on these
         {{ normalize_title('e.role') }}                 as role_title,
         {{ normalize_title('e.organisation_name') }}    as organisation,
         {{ normalize_title('e.department_name') }}      as department,
 
-        -- ORCID'in kendi kurum kimligi: ROR / GRID / RINGGOLD
+        -- ORCID's own organisation identifier: ROR / GRID / RINGGOLD
         e.disambiguated_organisation_id                 as org_id,
         upper(e.disambiguated_organisation_source)      as org_id_source,
 
-        -- kayit bazli ulke (profil ulkesinden daha dogru)
+        -- per-record country, more accurate than the profile country
         e.organisation_address_country_code             as country_code,
 
         e.full_start_date                               as start_date,

@@ -1,15 +1,16 @@
 {#-
-    KAYNAK KAYIT DEFTERI
-    --------------------
-    Rol bilgisi tasiyan kaynaklar. TEK garanti alan: snid + role_title.
-    Geri kalan her sey opsiyonel; kaynak tasimiyorsa NULL gelir ve
-    o kaynagin skor agirliklari yeniden normalize edilir.
+    SOURCE REGISTRY
+    ---------------
+    Sources that carry role information. The ONLY guaranteed fields are
+    snid + role_title. Everything else is optional: if a source does not
+    carry a field it is emitted as NULL and that source's scoring weights
+    are renormalised.
 -#}
 
-{#- Ortak sema: her kaynak icin uretilen kolonlar (tip bilgisiyle) -#}
+{#- Common schema: the columns produced for every source, with types -#}
 {% macro role_record_schema() %}
     {{ return([
-        {'name': 'role_title_raw',      'type': 'string',    'required': false, 'fallback': 'role_title'},
+        {'name': 'role_title_raw',      'type': 'string',    'required': false},
         {'name': 'organisation_raw',    'type': 'string',    'provides': 'organisation'},
         {'name': 'organisation',        'type': 'string',    'provides': 'organisation'},
         {'name': 'department_raw',      'type': 'string',    'provides': 'department'},
@@ -33,7 +34,7 @@
 {% macro source_config(key) %}
     {%- set s = var('sources').get(key) -%}
     {%- if s is none -%}
-        {{ exceptions.raise_compiler_error("Bilinmeyen kaynak: " ~ key) }}
+        {{ exceptions.raise_compiler_error("Unknown source: " ~ key) }}
     {%- endif -%}
     {{ return(s) }}
 {% endmacro %}
@@ -45,9 +46,9 @@
 
 
 {#-
-    Bir kaynagin ortak semaya cevrilmis SELECT blogu.
-    Kaynak bir alani tasimiyorsa o kolon NULL olarak uretilir - boylece
-    UNION ALL calisir ve kaynak modelin o kolonu olmak zorunda kalmaz.
+    A source's SELECT block mapped onto the common schema.
+    Fields the source does not carry are emitted as typed NULLs, so the
+    UNION ALL works and the source model is not required to have them.
 -#}
 {% macro role_record_select(key) %}
     {%- set cfg = source_config(key) -%}
@@ -72,8 +73,8 @@
 
 
 {#-
-    is_current mantigi: kaynak tarih tasimiyorsa "guncel" kabul edilir.
-    (Web scraping bugunun sayfasini kazir - tanimi geregi guncel.)
+    Currency rule: a source with no dates is treated as current.
+    (Web scraping reads today's page - current by definition.)
 -#}
 {% macro is_current_expr(key) %}
     {%- if 'dates' in source_provides(key) -%}

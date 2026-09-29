@@ -1,7 +1,7 @@
 role_key,dept_pattern,dept_score,note
-hcp,\b(cardiolog|oncolog|radiolog|neurolog|psychiatr|paediatr|pediatr|obstetric|gynaecolog|gynecolog|dermatolog|ophthalmolog|orthopaed|orthoped|urolog|anaesthe|anesthe)\w*,1.00,spesifik klinik bolum
+hcp,\b(cardiolog|oncolog|radiolog|neurolog|psychiatr|paediatr|pediatr|obstetric|gynaecolog|gynecolog|dermatolog|ophthalmolog|orthopaed|orthoped|urolog|anaesthe|anesthe)\w*,1.00,specific clinical department
 hcp,\b(internal medicine|emergency medicine|intensive care|icu|surgery|surgical|nursing|dentistry|dental|pharmacy|physiotherapy|general practice)\b,1.00,
-hcp,\b(clinical|patient care|ward|outpatient|inpatient|medicine|health service)\b,0.50,genis klinik baglam
+hcp,\b(clinical|patient care|ward|outpatient|inpatient|medicine|health service)\b,0.50,broader clinical context
 hcp,\b(public health|epidemiolog|biomedical)\w*,0.40,
 pharmacist,\b(pharmacy|pharmaceutical care|dispensary|medicines management)\b,1.00,
 pharmacist,\b(clinical|hospital|formulary)\b,0.50,

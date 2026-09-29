@@ -1,12 +1,12 @@
 {{ config(materialized='table', cluster_by=['snid']) }}
 
 /*
-    GENIS (WIDE) GORUNUM - kisi basina tek satir.
-    BI araclari ve hizli filtreleme icin. Kolonlar rol kayit defterinden
-    Jinja ile uretilir; yeni rol eklenince otomatik yeni kolon gelir.
+    WIDE VIEW - one row per person.
+    For BI tools and quick filtering. The columns are generated from the
+    role registry, so a new role automatically becomes a new column.
 
-        WHERE is_hcp AND is_researcher   -> akademisyen hekimler
-        WHERE is_librarian               -> kutuphane audience'i
+        WHERE is_hcp AND is_researcher   -> clinical academics
+        WHERE is_librarian               -> library audience
 */
 
 select

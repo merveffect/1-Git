@@ -1,22 +1,20 @@
 {{ config(materialized='table') }}
 
 /*
-    KURUM COZUMLEME - iki yollu.
+    ORGANISATION RESOLUTION - three routes.
 
-    GERCEK DAGILIM (38.6M employment kaydi uzerinden olculdu):
-        ROR       %35.3   -> dogrudan join, eslestirme yok
-        RINGGOLD  %31.7   -> ROR'un external_ids'inden koprulenir
-        kimliksiz %21.2   -> isim eslestirme
-        GRID      % 7.8   -> ROR GRID'den turedi, external_ids'te var
-        FUNDREF   % 4.0   -> external_ids
-        LEI       % 0.0
+    MEASURED DISTRIBUTION (38.6M employment records):
+        ROR        35.3%   -> direct join, no matching needed
+        RINGGOLD   31.7%   -> bridged via ROR external_ids
+        no id      21.2%   -> name matching
+        GRID        7.8%   -> bridged via ROR external_ids
+        FUNDREF     4.0%   -> bridged via ROR external_ids
+        LEI         0.0%
 
-    organisation_name ise %100 dolu - yani isim eslestirme her zaman
-    yedek yol olarak duruyor.
+    organisation_name is 100% populated, so name matching is always
+    available as the fallback.
 
-    Sirasiyla denenir, ilk tutan kazanir.
-
-    Cikti: (organisation, org_id) -> ror_id + ror_types
+    Routes are tried in order; the first hit wins.
 */
 
 with employment_orgs as (
@@ -37,7 +35,7 @@ ror as (
 
 ),
 
--- YOL 1: ORCID'in kendi ROR kimligi (bedava, kesin)
+-- ROUTE 1: ORCID's own ROR id (free, exact)
 by_ror_id as (
 
     select
@@ -57,9 +55,9 @@ by_ror_id as (
 ),
 
 /*
-    YOL 2: diger kimlik sistemleri uzerinden kopru
-    RINGGOLD %31.7 + GRID %7.8 + FUNDREF %4.0 = %43.5
-    ROR bu kimlikleri external_ids icinde tasiyor.
+    ROUTE 2: bridge through other identifier systems
+    RINGGOLD 31.7% + GRID 7.8% + FUNDREF 4.0% = 43.5%
+    ROR carries these identifiers inside external_ids.
 */
 by_external_id as (
 
@@ -87,7 +85,7 @@ by_external_id as (
 
 ),
 
--- YOL 3: isim eslestirme (kimlik yoksa; organisation_name %100 dolu)
+-- ROUTE 3: name matching (no identifier; organisation_name is always populated)
 by_name as (
 
     select

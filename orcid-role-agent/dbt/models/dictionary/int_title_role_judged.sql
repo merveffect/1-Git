@@ -5,13 +5,19 @@
 ) }}
 
 /*
-    SOZLUGUN 6. ADIMI - LLM HAKEMLIGI
-    SADECE 'NEEDS_JUDGE' olan (unvan, rol) ciftleri Gemini'ye gider.
+    DICTIONARY STEP 6 - LLM JUDGE  (OPTIONAL)
 
-    Ekonomi: 50.000 unvan x 5 rol = 250.000 cift ama bunlarin
-    belki 5.000'i belirsiz bolgede. Geri kalani bedava karara baglandi.
+    Disabled by default: this project has no Vertex connection
+    (setup/03_test_access.sql Test 3). The pipeline runs on vectors alone.
+    Set use_llm_judge: true once a connection exists.
 
-    incremental: ayni cift ikinci kez LLM'e sorulmaz.
+    Only (title, role) pairs marked NEEDS_JUDGE are sent to Gemini.
+
+    Economics: distinct titles x roles is a large number of pairs, but
+    only the ambiguous band reaches the model. Everything else is decided
+    for free by vector similarity.
+
+    Incremental: a pair is never sent to the model twice.
 */
 
 with to_judge as (
@@ -52,17 +58,17 @@ prompted as (
         j.*,
         d.role_label,
         concat(
-            'Sen bir meslek siniflandirma uzmanisin. ',
-            'ROL TANIMI: ', d.role_label, ' - ', d.role_description, ' ',
-            'SORU: "', j.title, '" is unvanina sahip bir kisi bu role girer mi? ',
-            'Sadece unvana bak; emin degilsen HAYIR de. ',
-            'Yonetim/danismanlik unvanlari ilgili alanda degilse HAYIR. ',
-            'Sadece YES veya NO yaz, baska hicbir sey yazma.'
+            'You are an occupation classification expert. ',
+            'ROLE DEFINITION: ', d.role_label, ' - ', d.role_description, ' ',
+            'QUESTION: does a person with the job title "', j.title, '" ',
+            'belong to this role? Judge the title alone; if unsure answer NO. ',
+            'Management or consulting titles outside the relevant field are NO. ',
+            'Answer with YES or NO only, nothing else.'
         )                                                   as judge_prompt
     from to_judge j
     join role_definitions d using (role_key)
 
-)
+),
 
 judged as (
 

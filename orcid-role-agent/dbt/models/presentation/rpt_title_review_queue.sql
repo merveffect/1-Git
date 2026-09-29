@@ -1,15 +1,19 @@
 {{ config(materialized='table') }}
 
 /*
-    INSAN REVIEW KUYRUGU - projenin en yuksek getirili adimi.
+    HUMAN REVIEW QUEUE - the highest-leverage step in the project.
 
-    Belirsiz bolgedeki unvanlari FREKANSA gore siralar. Is unvani dagilimi
-    cok dengesiz oldugu icin en tepedeki birkac yuz unvan, kisilerin
-    buyuk kismini kapsar. ~2 saatlik goz gezdirme, on binlerce kisilik
-    dogruluk kazanci demek.
+    Ambiguous titles ordered by FREQUENCY. Job title distributions are
+    heavily skewed, so the top few hundred titles cover a large share of
+    all people. Roughly two hours of reading buys accuracy across tens of
+    thousands of records.
 
-    Karari verdikten sonra seeds/role_title_overrides.csv'ye satir ekle,
-    dbt seed && dbt run -s dim_title_role+  calistir.
+    This matters more than usual right now: the LLM judge is disabled
+    (no Vertex connection), so this queue is the only verification
+    mechanism in the pipeline.
+
+    After deciding, add rows to seeds/role_title_overrides.csv and run
+    dbt seed && dbt run -s dim_title_role+
 */
 
 select
@@ -17,7 +21,8 @@ select
     role_key,
     frequency,
     round(include_similarity, 3)    as similarity,
-    round(distractor_margin, 3)     as distractor_marj,
+    round(distractor_margin, 3)     as distractor_margin,
+    round(distractor_similarity, 3) as distractor_similarity,
     matched_anchors,
     decision_source,
     is_role_member                  as current_decision,

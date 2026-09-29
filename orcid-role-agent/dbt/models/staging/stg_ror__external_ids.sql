@@ -1,22 +1,21 @@
 {{ config(materialized='view') }}
 
 /*
-    ROR external_ids duzlestirilmesi.
+    Flattens ROR external_ids.
 
-    Sema:  external_ids  ARRAY<STRUCT<type STRING, all ARRAY<STRING>, preferred STRING>>
+    Schema: external_ids ARRAY<STRUCT<type STRING, all ARRAY<STRING>, preferred STRING>>
 
-    NEDEN LAZIM:
-    ORCID employment kayitlarinin sadece %35'i ROR kimligi tasiyor.
-    Geri kalan %44 baska sistemlerin kimligini tasiyor:
-        RINGGOLD  %31.7
-        GRID      % 7.8
-        FUNDREF   % 4.0
-    ROR bu kimlikleri external_ids icinde saklıyor - yani ROR kaydina
-    bu kimlikler uzerinden de ulasabiliyoruz. Isim eslestirmeye
-    dusmeden once bu koprulerden geciyoruz.
+    WHY IT IS NEEDED:
+    Only 35% of ORCID employment records carry a ROR identifier. Another
+    44% carry an identifier from a different system:
+        RINGGOLD  31.7%
+        GRID       7.8%
+        FUNDREF    4.0%
+    ROR stores those identifiers inside external_ids, so we can reach the
+    ROR record through them and avoid falling back to name matching.
 
-    'all' bir DIZI: ayni kurumun birden fazla Ringgold kimligi olabilir.
-    Hepsini ayri satira aciyoruz.
+    'all' is an ARRAY: one organisation can hold several Ringgold ids.
+    Each is expanded into its own row.
 */
 
 select

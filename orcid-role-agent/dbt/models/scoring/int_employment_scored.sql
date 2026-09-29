@@ -1,17 +1,24 @@
 {{ config(materialized='table') }}
 
 /*
-    Kisi x rol x KAYNAK bazinda role / org / dept alt skorlari.
+    Role / org / dept sub-scores per person x role x SOURCE.
 
-    Kaynak boyutu neden var:
-    Ayni kisi hakkinda ORCID "Professor of Cardiology", web scraping
-    "Dean of Medicine" diyebilir. Ikisi farkli rollere isaret ediyorsa
-    IKISI DE tutulur (kisi gercekten ikisi birden). Ayni role isaret
-    ediyorlarsa sunum katmaninda birlestirilir ve kaynaklar
-    'Orcid + Web scraping' olarak yazilir.
+    Why the source dimension exists:
+    ORCID may say "Professor of Cardiology" while web scraping says
+    "Dean of Medicine" about the same person. If they point at different
+    roles, BOTH are kept (the person really is both). If they point at
+    the same role, the presentation layer merges them and records the
+    sources as 'Orcid + Web scraping'.
 
-    Kaynak tasimadigi alanlar NULL gelir; agirliklar o kaynak icin
-    yeniden normalize edilir (macros/scoring.sql -> normalized_weights).
+    Fields a source does not carry arrive as NULL; the weights are
+    renormalised for that source (macros/scoring.sql -> normalized_weights).
+
+    Two improvements over Phase-1:
+      - role_score comes from the dictionary instead of hundreds of
+        regex lines (multilingual, graded)
+      - org_score comes from the canonical ROR organisation TYPE instead
+        of pattern-matching the organisation name, so variants like
+        "St. Mary's Hosp." are no longer missed
 */
 
 with records as (
@@ -20,7 +27,7 @@ with records as (
 
 ),
 
--- 1) kurumu ROR uzerinden tanimla (ORCID'in ROR kimligi varsa dogrudan)
+-- 1) resolve the organisation via ROR (direct id where available)
 with_org as (
 
     select
@@ -36,7 +43,7 @@ with_org as (
 
 ),
 
--- 2) unvani sozluk uzerinden rollere bagla (multi-label: 1 -> N satir)
+-- 2) map the title to roles via the dictionary (multi-label: 1 -> N rows)
 with_roles as (
 
     select
@@ -51,16 +58,17 @@ with_roles as (
 ),
 
 /*
-    3) org skoru: (rol, kurum tipi) ciftinden.
-       ROR 'types' bir DIZI - universite hastanesi hem Education hem
-       Healthcare. Rol icin EN YUKSEK skoru veren tipi aliyoruz.
+    3) org score from the (role, organisation type) pair.
+       ROR 'types' is an ARRAY - a university hospital is both Education
+       and Healthcare. We take the type that scores HIGHEST for the role:
+       overlapping types are an advantage, not ambiguity.
 */
 with_org_score as (
 
     select
         w.*,
         case
-            when w.organisation is null then null      -- kaynak kurum tasimiyor
+            when w.organisation is null then null      -- source carries no organisation
             else coalesce((
                 select max(s.org_score)
                 from unnest(coalesce(w.ror_types, ['UNKNOWN'])) as t
@@ -76,7 +84,7 @@ with_org_score as (
 
 ),
 
--- 4) dept skoru: (rol, departman deseni), en yuksegi kazanir
+-- 4) dept score from the (role, department pattern) pair; highest wins
 with_dept_score as (
 
     select
@@ -107,8 +115,9 @@ with_dept_score as (
 )
 
 /*
-    Kisi + rol + kaynak basina TEK kayit: once guncel gorev, sonra
-    en yuksek skor. (Phase-1'deki "most recent, preferring current")
+    One record per person + role + source: current posts first, then the
+    highest score. (Phase-1's "most recent employment record, preferring
+    current roles".)
 */
 select * from with_dept_score
 qualify row_number() over (

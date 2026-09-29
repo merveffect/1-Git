@@ -3,19 +3,21 @@ version: 2
 seeds:
   - name: role_anchors
     description: >
-      Her rol icin cekirdek anchor terimleri. VECTOR_SEARCH bunlara karsi
-      arama yapar. polarity=exclude olanlar yanlis pozitifleri keser
-      (Phase-1'deki "data consultant" kuralinin vektor karsiligi).
-      YENI ROL EKLERKEN buraya satir eklenir.
+      Core anchor terms per role. VECTOR_SEARCH runs against these.
+      polarity=exclude cuts false positives (the vector equivalent of the
+      Phase-1 "data consultant" rule). Add rows here when adding a role.
+      '__distractor' is a pseudo-role holding common occupations that are
+      none of our targets; it is the reference point the decision rule
+      measures against.
     config:
       column_types: {role_key: STRING, anchor_term: STRING, polarity: STRING, language_code: STRING, note: STRING}
     columns:
       - name: role_key
         description: >
-          Hedef roller + '__distractor'. Distractor sozde bir rol:
-          hedeflerimizden hicbiri olmayan yaygin meslekler. Bir unvanin
-          gercekten bizim rollerimizden biri olup olmadigini olcmek icin
-          referans noktasi gorevi goruyor.
+          Target roles plus '__distractor'. Calibration showed the
+          deciding measure is not "how similar is this title to the role"
+          but "how much MORE similar is it to the role than to unrelated
+          occupations".
         tests:
           - not_null
           - accepted_values:
@@ -26,27 +28,27 @@ seeds:
 
   - name: org_type_scores
     description: >
-      (rol, ROR kurum tipi) -> org skoru. Phase-1'deki kurum regex
-      gradyaninin yerini alir. Kurum tipi ROR'dan geldigi icin
-      "St. Mary's Hosp." gibi varyantlar artik kacmiyor.
+      (role, ROR organisation type) -> org score. Replaces the Phase-1
+      organisation regex gradient. Because the type comes from ROR,
+      variants like "St. Mary's Hosp." are no longer missed.
     config:
       column_types: {role_key: STRING, org_type: STRING, org_score: FLOAT64, note: STRING}
 
   - name: dept_signals
-    description: (rol, departman regex) -> dept skoru.
+    description: (role, department regex) -> dept score.
     config:
       column_types: {role_key: STRING, dept_pattern: STRING, dept_score: FLOAT64, note: STRING}
 
   - name: education_signals
-    description: (rol, derece/bolum regex) -> egitim bonusu bileseni.
+    description: (role, degree/department regex) -> education bonus component.
     config:
       column_types: {role_key: STRING, signal_type: STRING, pattern: STRING, degree_score: FLOAT64, note: STRING}
 
   - name: role_detail_map
     description: >
-      role_detailed_inferred'in 2. parcasini belirleyen kurallar.
-      match_type='title' -> unvan regex'i, match_type='org_type' -> ROR
-      kurum tipi. En dusuk priority kazanir.
+      Rules producing the second part of role_detailed_inferred.
+      match_type='title' matches the job title, match_type='org_type'
+      matches the ROR organisation type. Lowest priority wins.
     config:
       column_types: {role_key: STRING, match_type: STRING, match_value: STRING, detail_label: STRING, priority: INT64, note: STRING}
     columns:
@@ -59,8 +61,8 @@ seeds:
 
   - name: role_title_overrides
     description: >
-      INSAN KARARLARI. Her zaman vektor ve LLM kararlarini ezer.
-      rpt_title_review_queue'yu gozden gecirdikten sonra buraya yazilir.
+      HUMAN DECISIONS. Always beat the vector and LLM decisions.
+      Filled in after working through rpt_title_review_queue.
     config:
       column_types: {title: STRING, role_key: STRING, decision: STRING, reviewer: STRING, reviewed_at: DATE, note: STRING}
     columns:

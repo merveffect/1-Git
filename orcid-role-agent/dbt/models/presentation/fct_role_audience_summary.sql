@@ -1,8 +1,9 @@
 {{ config(materialized='table') }}
 
 /*
-    Agent'in kullaniciya gosterecegi ozet. "47.000 kisi buldum" demek
-    yaniltici; iş birimini ilgilendiren sayi en alttaki.
+    The summary the agent shows to a user. "We found 47,000 people" is
+    misleading on its own; the only number the business acts on is the
+    reachable one at the bottom.
 */
 
 select

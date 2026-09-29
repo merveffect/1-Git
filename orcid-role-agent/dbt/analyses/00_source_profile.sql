@@ -1,25 +1,25 @@
 /*
-    KAYNAK PROFILI - maliyet ve strateji bu sayilardan cikar.
-    Sirayla calistir, ciktilari kaydet.
+    SOURCE PROFILE - cost and strategy follow from these numbers.
+    Run in order and keep the outputs.
 */
 
 -- ---------------------------------------------------------------------------
--- A. Genel hacim
+-- A. Overall volume
 -- ---------------------------------------------------------------------------
 SELECT
-    COUNT(*)                                    AS kisi,
-    SUM(ARRAY_LENGTH(employments))              AS employment_kaydi,
-    SUM(ARRAY_LENGTH(educations))               AS education_kaydi,
-    SUM(ARRAY_LENGTH(publications))             AS publication_kaydi,
-    SUM(ARRAY_LENGTH(keywords))                 AS keyword_kaydi,
-    COUNTIF(ARRAY_LENGTH(employments) = 0)      AS employment_yok
+    COUNT(*)                                    AS people,
+    SUM(ARRAY_LENGTH(employments))              AS employment_records,
+    SUM(ARRAY_LENGTH(educations))               AS education_records,
+    SUM(ARRAY_LENGTH(publications))             AS publication_records,
+    SUM(ARRAY_LENGTH(keywords))                 AS keyword_records,
+    COUNTIF(ARRAY_LENGTH(employments) = 0)      AS no_employment
 FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`;
 
 
 -- ---------------------------------------------------------------------------
--- B. NORMALIZE EDILMIS distinct unvan sayisi
---    Ham sayi 355.803. Normalize edince ne kadar dusuyor?
---    Bu fark dogrudan maliyet tasarrufu.
+-- B. NORMALISED distinct title count
+--    The raw count is 355,803. How far does normalisation reduce it?
+--    That difference is a direct cost saving.
 -- ---------------------------------------------------------------------------
 WITH roles AS (
   SELECT
@@ -34,16 +34,16 @@ WITH roles AS (
   WHERE e.role IS NOT NULL AND TRIM(e.role) != ''
 )
 SELECT
-    COUNT(*)                        AS toplam_kayit,
-    COUNT(DISTINCT raw_role)        AS ham_distinct,
-    COUNT(DISTINCT norm_role)       AS normalize_distinct,
-    ROUND(1 - COUNT(DISTINCT norm_role) / COUNT(DISTINCT raw_role), 3) AS tasarruf_orani
+    COUNT(*)                        AS total_records,
+    COUNT(DISTINCT raw_role)        AS raw_distinct,
+    COUNT(DISTINCT norm_role)       AS normalised_distinct,
+    ROUND(1 - COUNT(DISTINCT norm_role) / COUNT(DISTINCT raw_role), 3) AS reduction_ratio
 FROM roles;
 
 
 -- ---------------------------------------------------------------------------
--- C. ⭐ FREKANS DAGILIMI - butun maliyet stratejisi buna dayaniyor
---    "En sik N unvan, kayitlarin yuzde kacini kapsiyor?"
+-- C. FREQUENCY DISTRIBUTION - the whole cost strategy rests on this
+--    "What share of records do the top N titles cover?"
 -- ---------------------------------------------------------------------------
 WITH roles AS (
   SELECT TRIM(REGEXP_REPLACE(
@@ -59,18 +59,18 @@ freq AS (
   FROM roles GROUP BY norm_role
 ),
 cum AS (
-  SELECT *, SUM(n) OVER (ORDER BY rnk) / SUM(n) OVER () AS kapsama
+  SELECT *, SUM(n) OVER (ORDER BY rnk) / SUM(n) OVER () AS coverage
   FROM freq
 )
 SELECT
-    esik AS ilk_n_unvan,
-    (SELECT ROUND(MAX(kapsama), 4) FROM cum WHERE rnk <= esik) AS kayit_kapsamasi
-FROM UNNEST([100, 500, 1000, 2000, 5000, 10000, 25000, 50000, 100000]) AS esik
-ORDER BY esik;
+    cutoff AS top_n_titles,
+    (SELECT ROUND(MAX(coverage), 4) FROM cum WHERE rnk <= cutoff) AS record_coverage
+FROM UNNEST([100, 500, 1000, 2000, 5000, 10000, 25000, 50000, 100000]) AS cutoff
+ORDER BY cutoff;
 
 
 -- ---------------------------------------------------------------------------
--- D. Tek seferlik (singleton) unvanlar - uzun kuyruk ne kadar buyuk?
+-- D. Singleton titles - how big is the long tail?
 -- ---------------------------------------------------------------------------
 WITH roles AS (
   SELECT TRIM(LOWER(e.role)) AS r
@@ -79,74 +79,74 @@ WITH roles AS (
 ),
 freq AS (SELECT r, COUNT(*) n FROM roles GROUP BY r)
 SELECT
-    COUNTIF(n = 1)                              AS bir_kez_gecen,
-    COUNTIF(n BETWEEN 2 AND 9)                  AS az_gecen,
-    COUNTIF(n >= 10)                            AS sik_gecen,
-    ROUND(COUNTIF(n = 1) / COUNT(*), 3)         AS singleton_orani,
-    ROUND(AVG(LENGTH(r)), 1)                    AS ort_uzunluk,
-    COUNTIF(LENGTH(r) > 100)                    AS cok_uzun_supheli
+    COUNTIF(n = 1)                              AS seen_once,
+    COUNTIF(n BETWEEN 2 AND 9)                  AS seen_rarely,
+    COUNTIF(n >= 10)                            AS seen_often,
+    ROUND(COUNTIF(n = 1) / COUNT(*), 3)         AS singleton_ratio,
+    ROUND(AVG(LENGTH(r)), 1)                    AS avg_length,
+    COUNTIF(LENGTH(r) > 100)                    AS suspiciously_long
 FROM freq;
 
 
 -- ---------------------------------------------------------------------------
--- E. ⭐ KURUM KIMLIGI - kac kayit BEDAVA ROR kimligi tasiyor?
---    Tasiyorsa isim eslestirmeye hic gerek yok.
+-- E. ORGANISATION IDENTITY - how many records carry a ROR id for free?
+--    Where present, no name matching is needed at all.
 -- ---------------------------------------------------------------------------
 SELECT
-    UPPER(e.disambiguated_organisation_source)  AS kaynak,
-    COUNT(*)                                    AS kayit,
-    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 3)  AS oran
+    UPPER(e.disambiguated_organisation_source)  AS id_source,
+    COUNT(*)                                    AS records,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 3)  AS ratio
 FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`,
 UNNEST(employments) e
-GROUP BY kaynak ORDER BY kayit DESC;
+GROUP BY id_source ORDER BY records DESC;
 
 
 -- ---------------------------------------------------------------------------
--- F. ⚠️ VISIBILITY - pazarlama icin sadece PUBLIC kullanilabilir.
---    PUBLIC olmayan oran yuksekse hacim beklentisi dusmeli.
+-- F. VISIBILITY - only PUBLIC data is usable for marketing.
+--    A high non-public share means lowering the volume expectation.
 -- ---------------------------------------------------------------------------
 SELECT
-    UPPER(e.visibility)                         AS gorunurluk,
-    COUNT(*)                                    AS kayit,
-    COUNT(DISTINCT r.snid)                      AS kisi,
-    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 3)  AS oran
+    UPPER(e.visibility)                         AS visibility,
+    COUNT(*)                                    AS records,
+    COUNT(DISTINCT r.snid)                      AS people,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 3)  AS ratio
 FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
 UNNEST(r.employments) e
-GROUP BY gorunurluk ORDER BY kayit DESC;
+GROUP BY visibility ORDER BY records DESC;
 
 
 -- ---------------------------------------------------------------------------
--- G. Guncel vs gecmis gorev (librarian / faculty_head current_only icin)
+-- G. Current vs past posts (for the current_only roles)
 -- ---------------------------------------------------------------------------
 SELECT
-    e.full_end_date IS NULL                     AS guncel_gorev,
-    COUNT(*)                                    AS kayit,
-    COUNT(DISTINCT r.snid)                      AS kisi
+    e.full_end_date IS NULL                     AS is_current,
+    COUNT(*)                                    AS records,
+    COUNT(DISTINCT r.snid)                      AS people
 FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
 UNNEST(r.employments) e
-GROUP BY guncel_gorev;
+GROUP BY is_current;
 
 
 -- ---------------------------------------------------------------------------
--- H. En sik 100 unvan - insan review kuyrugunun on izlemesi
+-- H. Top 100 titles - a preview of the human review queue
 -- ---------------------------------------------------------------------------
 SELECT
-    TRIM(LOWER(e.role))     AS unvan,
-    COUNT(*)                AS kayit,
-    COUNT(DISTINCT r.snid)  AS kisi
+    TRIM(LOWER(e.role))     AS title,
+    COUNT(*)                AS records,
+    COUNT(DISTINCT r.snid)  AS people
 FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
 UNNEST(r.employments) e
 WHERE e.role IS NOT NULL
-GROUP BY unvan ORDER BY kayit DESC LIMIT 100;
+GROUP BY title ORDER BY records DESC LIMIT 100;
 
 
 -- ===========================================================================
--- I. ⭐ EN ONEMLI SORGU - GERCEK CALISMA EVRENI
+-- I. THE MOST IMPORTANT QUERY - THE REAL WORKING POPULATION
 --
---    Tablo 24.8M kisi iceriyor ama sadece 1.76M'sinde snid var.
---    snid'siz kisiye ulasamayiz -> pipeline'a hic girmemeli.
---    355.803 distinct unvan TUM tablodan olculmustu; snid'lilerde
---    cok daha az olacak ve maliyet buna gore dusecek.
+--    The table holds 24.8M people but only 1.76M carry an SNID.
+--    Without an SNID a person is unreachable and never enters the pipeline.
+--    The 355,803 distinct titles were measured across the WHOLE table;
+--    within the SNID population it will be far lower, and so will the cost.
 -- ===========================================================================
 WITH scoped AS (
   SELECT
@@ -161,15 +161,15 @@ WITH scoped AS (
     AND e.role IS NOT NULL AND TRIM(e.role) != ''
 )
 SELECT
-    COUNT(*)                        AS employment_kaydi,
-    COUNT(DISTINCT snid)            AS kisi,
-    COUNT(DISTINCT norm_role)       AS distinct_unvan,
-    ROUND(COUNT(*) / COUNT(DISTINCT norm_role), 1) AS unvan_basina_kayit
+    COUNT(*)                        AS employment_records,
+    COUNT(DISTINCT snid)            AS people,
+    COUNT(DISTINCT norm_role)       AS distinct_title,
+    ROUND(COUNT(*) / COUNT(DISTINCT norm_role), 1) AS title_basina_records
 FROM scoped;
 
 
 -- ===========================================================================
--- J. Ayni evrende frekans dagilimi - katman esiklerini bu belirler
+-- J. Frequency distribution in that same population - this sets the tier thresholds
 -- ===========================================================================
 WITH scoped AS (
   SELECT TRIM(REGEXP_REPLACE(
@@ -184,9 +184,9 @@ freq AS (
   SELECT norm_role, COUNT(*) n, ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) rnk
   FROM scoped GROUP BY norm_role
 ),
-cum AS (SELECT *, SUM(n) OVER (ORDER BY rnk) / SUM(n) OVER () AS kapsama FROM freq)
+cum AS (SELECT *, SUM(n) OVER (ORDER BY rnk) / SUM(n) OVER () AS coverage FROM freq)
 SELECT
-    esik AS ilk_n_unvan,
-    (SELECT ROUND(MAX(kapsama), 4) FROM cum WHERE rnk <= esik) AS kayit_kapsamasi
-FROM UNNEST([100, 500, 1000, 2000, 5000, 10000, 25000, 50000]) AS esik
-ORDER BY esik;
+    cutoff AS top_n_titles,
+    (SELECT ROUND(MAX(coverage), 4) FROM cum WHERE rnk <= cutoff) AS record_coverage
+FROM UNNEST([100, 500, 1000, 2000, 5000, 10000, 25000, 50000]) AS cutoff
+ORDER BY cutoff;

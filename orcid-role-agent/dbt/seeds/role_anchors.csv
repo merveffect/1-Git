@@ -37,12 +37,12 @@ hcp,enfermera,include,es,
 hcp,medico cirurgiao,include,pt,
 hcp,kardiyolog,include,tr,
 hcp,doktor ogretim uyesi tip,include,tr,
-hcp,data consultant,exclude,en,yonetim danismanligi yanlis pozitifini engeller
+hcp,data consultant,exclude,en,blocks the management-consultant false positive
 hcp,it consultant,exclude,en,
 hcp,digital transformation consultant,exclude,en,
 hcp,management consultant,exclude,en,
 hcp,software engineer,exclude,en,
-hcp,veterinarian,exclude,en,hayvan sagligi - ayri rol olacak
+hcp,veterinarian,exclude,en,animal health - will become its own role
 hcp,medical writer,exclude,en,
 hcp,medical sales representative,exclude,en,
 pharmacist,pharmacist,include,en,
@@ -60,11 +60,11 @@ pharmacist,apotheker,include,de,
 pharmacist,pharmacien,include,fr,
 pharmacist,farmaceutico,include,es,
 pharmacist,eczaci,include,tr,
-pharmacist,pharmacology professor,exclude,en,farmakolog eczaci degildir
+pharmacist,pharmacology professor,exclude,en,a pharmacologist is not a pharmacist
 pharmacist,pharmacologist,exclude,en,
 pharmacist,pharmaceutical sales,exclude,en,
 pharmacist,pharmacy student,exclude,en,
-pharmacist,pharmacy technician,exclude,en,teknisyen ayri meslek
+pharmacist,pharmacy technician,exclude,en,technician is a separate occupation
 librarian,librarian,include,en,
 librarian,academic librarian,include,en,
 librarian,research librarian,include,en,
@@ -120,8 +120,8 @@ researcher,ogretim gorevlisi arastirma,include,tr,
 researcher,market research analyst,exclude,en,
 researcher,user research designer,exclude,en,
 researcher,research administrator,exclude,en,
-researcher,research nurse,exclude,en,hcp altinda degerlendirilir
-researcher,phd student,exclude,en,ogrenci - ayri karar gerektirir
+researcher,research nurse,exclude,en,handled under hcp
+researcher,phd student,exclude,en,student - needs its own decision
 faculty_head,dean,include,en,
 faculty_head,dean of faculty,include,en,
 faculty_head,associate dean,include,en,
@@ -143,11 +143,11 @@ faculty_head,doyen,include,fr,
 faculty_head,decano,include,es,
 faculty_head,dekan fakulte,include,tr,
 faculty_head,bolum baskani,include,tr,
-faculty_head,head of laboratory,exclude,en,lab yonetimi fakulte yonetimi degil
+faculty_head,head of laboratory,exclude,en,running a lab is not running a faculty
 faculty_head,head of marketing,exclude,en,
 faculty_head,project director,exclude,en,
-faculty_head,clinical director,exclude,en,hcp administrator altinda
-__distractor,software engineer,include,en,hedef rollerimizden hicbiri degil
+faculty_head,clinical director,exclude,en,covered by the hcp administrator bucket
+__distractor,software engineer,include,en,none of our target roles
 __distractor,data engineer,include,en,
 __distractor,data scientist,include,en,
 __distractor,web developer,include,en,

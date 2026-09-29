@@ -2,7 +2,7 @@ role_key,match_type,match_value,detail_label,priority,note
 hcp,title,\b(physician|surgeon|nurse|midwife|dentist|paramedic|physiotherapist|general practitioner|consultant|registrar|clinician|practitioner|attending|resident)\b,Practitioner,10,
 hcp,title,\b(principal investigator|research fellow|research scientist|postdoc|clinical research|senior scientist|professor)\b,Researcher,20,
 hcp,title,\b(director|head of|chief|manager|vp |vice president|officer)\b,Administrator,30,
-hcp,org_type,Healthcare,Practitioner,90,fallback - saglik kurumunda calisiyorsa varsayilan
+hcp,org_type,Healthcare,Practitioner,90,fallback - default when working at a health organisation
 hcp,org_type,Education,Researcher,91,fallback
 pharmacist,title,\b(hospital|clinical|ward|inpatient)\b,Hospital,10,
 pharmacist,title,\b(community|retail|high street|pharmacy owner)\b,Community,20,

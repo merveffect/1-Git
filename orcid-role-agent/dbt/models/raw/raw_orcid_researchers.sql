@@ -1,17 +1,20 @@
 {{ config(materialized='view') }}
 
 /*
-    HAM KATMAN - orcid_researchers
+    RAW LAYER - orcid_researchers
 
-    Tek isi: kaynagi oldugu gibi getirmek + GORUNURLUK FILTRESI.
+    Its only job: surface the source as-is, plus the VISIBILITY FILTER.
 
-    Public olmayan veriyi hicbir yerde kullanmayacagiz. O yuzden filtreyi
-    tek sefer burada uyguluyoruz; ustteki modellerin hicbiri visibility
-    bilmek zorunda degil.
+    We will never use non-public data anywhere, so the filter is applied
+    once here; no model above this needs to know about visibility.
 
-    ORCID'de gorunurluk KAYIT bazinda: ayni kisinin bir isi PUBLIC,
-    digeri PRIVATE olabilir. O yuzden dizileri yeniden kuruyoruz -
-    kisiyi degil, kaydi eliyoruz.
+    In ORCID visibility is per RECORD: the same person can have one
+    employment marked PUBLIC and another PRIVATE. So the arrays are
+    rebuilt - we drop records, not people.
+
+    Note the snid filter: the table holds 24.8M ORCID profiles but only
+    ~1.76M carry an SNID. Without an SNID the person is unreachable, so
+    they never enter the pipeline.
 */
 
 {% set public_only = var('public_visibility_only', true) %}
@@ -27,7 +30,7 @@ select
     keywords,
 
     {% if public_only %}
-    -- sadece PUBLIC kayitlar kalir, dizi yapisi korunur
+    -- keep PUBLIC records only; array shape is preserved
     array(select e from unnest(employments)  e where upper(e.visibility) = 'PUBLIC') as employments,
     array(select d from unnest(educations)   d where upper(d.visibility) = 'PUBLIC') as educations,
     array(select p from unnest(publications) p where upper(p.visibility) = 'PUBLIC') as publications,

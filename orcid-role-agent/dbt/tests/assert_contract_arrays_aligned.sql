@@ -1,11 +1,11 @@
 /*
-    CONTRACT'IN EN KRITIK TESTI.
+    THE MOST IMPORTANT TEST IN THE CONTRACT.
 
-    Dort dizi pozisyonel olarak hizali olmak zorunda. Hizalama bozulursa
-    Braze bunu yakalayamaz - yanlis kisi yanlis rol segmentine duser ve
-    kimse fark etmez. Bu test bozulmayi build zamaninda yakalar.
+    The four arrays must stay positionally aligned. If they drift, Braze
+    cannot detect it - the wrong person lands in the wrong role segment
+    and nobody notices. This test catches drift at build time.
 
-    Satir donerse test BASARISIZ.
+    The test FAILS if any row is returned.
 */
 
 select

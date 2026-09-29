@@ -1,20 +1,20 @@
 /*
     ============================================================================
-    BENZERLIK ESIGI KALIBRASYONU
+    SIMILARITY THRESHOLD CALIBRATION
     ============================================================================
-    Her sorgu TEK BASINA calisir. TEMP TABLE yok, dbt tablosu yok -
-    hicbir sey BigQuery'de olusturulmus olmak zorunda degil.
-    Konsola yapistir, calistir.
+    Each query runs STANDALONE. No TEMP TABLE, no dbt table -
+    nothing needs to exist in BigQuery first.
+    Paste into the console and run.
 
-    NEDEN: Test 1b'de alakasiz iki terim ("cardiologist" vs "librarian")
-    bile 0.572 benzerlik aldi. Bu modelin TABAN benzerligi yuksek;
-    esikleri gozlemle degil olcumle koymamiz lazim.
+    WHY: in Test 1b two unrelated terms ("cardiologist" vs "librarian")
+    still scored 0.572. This model has a high BASELINE similarity, so
+    thresholds must be measured rather than guessed.
     ============================================================================
 */
 
 
 -- ###########################################################################
--- SORGU 1 - DETAY: her test unvani icin en iyi rol, marj, dogru mu?
+-- QUERY 1 - DETAIL: best role, margin and correctness per test title
 -- ###########################################################################
 WITH anchor_input AS (
   SELECT * FROM UNNEST([
@@ -106,34 +106,34 @@ ranked AS (
   FROM per_role
 )
 SELECT
-    r1.title                                    AS unvan,
-    r1.expected_role                            AS beklenen,
-    r1.should_match                             AS dogru_mu,
-    r1.role_key                                 AS bulunan,
-    r1.role_key = r1.expected_role              AS rol_isabetli,
-    ROUND(r1.inc_sim, 3)                        AS en_iyi,
-    ROUND(r2.inc_sim, 3)                        AS ikinci,
-    ROUND(r1.inc_sim - r2.inc_sim, 3)           AS marj,
+    r1.title                                    AS title,
+    r1.expected_role                            AS expected_role,
+    r1.should_match                             AS is_true,
+    r1.role_key                                 AS matched_role,
+    r1.role_key = r1.expected_role              AS role_correct,
+    ROUND(r1.inc_sim, 3)                        AS best_sim,
+    ROUND(r2.inc_sim, 3)                        AS second_sim,
+    ROUND(r1.inc_sim - r2.inc_sim, 3)           AS margin,
     ROUND(r1.exc_sim, 3)                        AS exclude_sim,
-    r1.exc_sim > r1.inc_sim                     AS exclude_bloklardi
+    r1.exc_sim > r1.inc_sim                     AS blocked_by_exclude
 FROM ranked r1
 LEFT JOIN ranked r2 ON r1.title = r2.title AND r2.rnk = 2
 WHERE r1.rnk = 1
 ORDER BY r1.should_match DESC, r1.inc_sim DESC;
 
 /*
-    NASIL OKUNUR:
-      rol_isabetli = FALSE       -> anchor eksigi, role_anchors.csv'ye terim ekle
-      dogru_mu=TRUE  en_iyi min  -> kabul esiginin USTU olamaz
-      dogru_mu=FALSE en_iyi max  -> kabul esiginin ALTI olmali
-      Ikisi ortusuyorsa mutlak esik yetmez -> marj sutununa bak
-      exclude_bloklardi = TRUE   -> exclude anchor'i ise yariyor
+    HOW TO READ IT:
+      role_correct = FALSE       -> missing anchors, add terms to role_anchors.csv
+      is_true=TRUE  min best_sim -> the accept threshold must sit BELOW it
+      is_true=FALSE max best_sim -> the accept threshold must sit ABOVE it
+      If they overlap an absolute threshold is not enough -> look at the margin column
+      blocked_by_exclude = TRUE  -> the exclude anchor is doing its job
 */
 
 
 -- ###########################################################################
--- SORGU 2 - OZET: dogru ve yanlis eslesmelerin dagilimi
--- Yukaridaki CTE'lerin AYNISI; sadece son SELECT farkli.
+-- QUERY 2 - SUMMARY: distribution of true and false matches
+-- The SAME CTEs as above; only the final SELECT differs.
 -- ###########################################################################
 WITH anchor_input AS (
   SELECT * FROM UNNEST([
@@ -205,11 +205,11 @@ matched AS (
   GROUP BY 1,2
 )
 SELECT
-    should_match                                             AS dogru_eslesme_mi,
-    COUNT(*)                                                 AS adet,
+    should_match                                             AS is_true_match,
+    COUNT(*)                                                 AS n,
     ROUND(MIN(sim), 3)                                       AS min,
     ROUND(APPROX_QUANTILES(sim, 100)[OFFSET(25)], 3)         AS p25,
-    ROUND(AVG(sim), 3)                                       AS ortalama,
+    ROUND(AVG(sim), 3)                                       AS avg,
     ROUND(APPROX_QUANTILES(sim, 100)[OFFSET(75)], 3)         AS p75,
     ROUND(MAX(sim), 3)                                       AS max
 FROM matched
@@ -217,12 +217,12 @@ GROUP BY should_match
 ORDER BY should_match DESC;
 
 /*
-    ARADIGIMIZ SEY:
-        dogru_eslesme_mi=TRUE   min = 0.74
-        dogru_eslesme_mi=FALSE  max = 0.68
-                                       ^^^^ BOSLUK VAR -> esik 0.71 olur
+    WHAT WE ARE LOOKING FOR:
+        is_true_match=TRUE   min = 0.74
+        is_true_match=FALSE  max = 0.68
+                                       ^^^^ A GAP -> threshold becomes 0.71
 
-    Ortusuyorsa (TRUE.min < FALSE.max) tek bir mutlak esik yetmiyor
-    demektir; o zaman sorgu 1'deki MARJ sutunu belirleyici olur veya
-    LLM hakemi gerekir.
+    If they overlap (TRUE.min < FALSE.max) a single absolute threshold
+    is not enough; the MARGIN column in query 1 becomes the decider, or
+    an LLM judge is needed.
 */

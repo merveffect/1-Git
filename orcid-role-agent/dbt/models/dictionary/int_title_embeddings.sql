@@ -5,15 +5,14 @@
 ) }}
 
 /*
-    Her benzersiz unvan BIR KEZ embed edilir.
+    Every distinct title is embedded ONCE.
 
-    Mevcut remote model kullaniliyor (baska projede kurulu):
+    Uses the existing remote model (provisioned in another project):
         {{ var('embedding_model') }}
-    Yeni Vertex baglantisi kurmaya gerek yok - sadece o proje uzerinde
-    okuma izni gerekiyor.
+    No new Vertex connection is needed - only read access to that project.
 
-    incremental: yeni veri geldiginde sadece YENI unvanlar embed edilir.
-    Mevcut unvanlar tekrar para harcatmaz.
+    Incremental: when new data lands, only NEW titles are embedded.
+    Existing titles never cost anything again.
 */
 
 with titles_to_embed as (

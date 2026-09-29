@@ -1,44 +1,47 @@
 {{ config(materialized='view') }}
 
 /*
-    ROR KURUM KAYIT DEFTERI
+    ROR ORGANISATION REGISTRY
 
-    NE ISE YARIYOR:
-    Skorlamada kurumun TIPI lazim. "Bu kisi hastanede mi calisiyor,
-    universitede mi, bankada mi?" Cunku ayni unvan farkli kurumda
-    farkli sey demek:
+    WHAT IT IS FOR:
+    Scoring needs the organisation TYPE. "Does this person work in a
+    hospital, a university, or a bank?" The same title means different
+    things in different settings:
 
-        "Director" + hastane      -> saglik yoneticisi
-        "Director" + banka        -> alakasiz
+        "Director" + hospital   -> healthcare administrator
+        "Director" + bank       -> irrelevant
 
-    Kurum ADINDAN tip cikarmak zor ("St. Mary's Hosp." hastane mi?).
-    ROR bunu hazir veriyor: her kurumun bir kimligi ve bir TIPI var.
+    Deriving the type from the NAME is unreliable ("St. Mary's Hosp." -
+    a hospital?). A regex would miss hundreds of variants; this was a
+    known weakness in Phase-1.
+
+    ROR gives it to us directly: every organisation has an id and a TYPE.
 
         ror_id: 013czdx64
         name:   Heidelberg University Hospital
-        types:  [Education, Healthcare]       <-- ihtiyacimiz olan
+        types:  [Education, Healthcare]       <-- what we need
 
-    Bu tipleri org_type_scores.csv'deki skorlarla eslestiriyoruz.
+    These types are scored via seeds/org_type_scores.csv.
 
-    ror_data_refresh = ROR'un KENDI registry dump'i (Merve'nin eski
-    eslestirme ciktisi degil) - dogrulandi.
+    ror_data_refresh is ROR's OWN registry dump (confirmed), not a
+    previously produced matching output.
 
-    !! KOLON ADLARI DOGRULANACAK:
+    !! VERIFY COLUMN NAMES:
        bq show --schema ri-data-engineering-dd4c0eca:ror.ror_data_refresh
 */
 
 select
     id                                          as ror_id,
     name                                        as canonical_name,
-    {{ normalize_title('name') }}               as organisation,     -- isim eslestirme anahtari
+    {{ normalize_title('name') }}               as organisation,     -- name-match key
 
-    -- types bir DIZI: universite hastanesi hem Education hem Healthcare
+    -- types is an ARRAY: a university hospital is both Education and Healthcare
     types                                       as ror_types,
 
     country.country_code                        as ror_country_code,
 
-    -- ROR disi kimlikler: RINGGOLD / GRID / FUNDREF / ISNI ...
-    -- stg_ror__external_ids bunu duzlestiriyor
+    -- non-ROR identifiers: RINGGOLD / GRID / FUNDREF / ISNI ...
+    -- flattened by stg_ror__external_ids
     external_ids
 
 from {{ ref('raw_ror_data_refresh') }}
