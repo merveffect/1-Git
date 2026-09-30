@@ -11,4 +11,4 @@ For more details about this data product, please visit here - https://datacatalo
 
 
 Data pipeline overview and tracker
-[Download / View the full Excel tracker here](https://springernature-my.sharepoint.com/:x:/r/personal/vnt8692_springernature_com/Documents/Data_pipelines_overview_AE.xlsx?d=we29d805903914dc0ac735be341c09e18&csf=1&web=1&e=G3xVg6)
+[Download / View the full Excel tracker here](https://springernature.sharepoint.com/:x:/r/sites/DAT/_layouts/15/Doc.aspx?sourcedoc=%7B2796806C-C6E1-464A-B729-40753ACC07EF%7D&file=2025_08_DataPipelinesOverviewAE.xlsx&action=default&mobileredirect=true)
