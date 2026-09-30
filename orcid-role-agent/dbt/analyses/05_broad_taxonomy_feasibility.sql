@@ -124,12 +124,14 @@ title_emb AS (
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT title, records, title AS content FROM top_titles))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 anchor_emb AS (
   SELECT grp, example, ml_generate_embedding_result AS v
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT grp, example, example AS content FROM discipline_anchors))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 per_group AS (
   SELECT
@@ -188,7 +190,9 @@ WITH top_titles AS (
   UNNEST(r.employments) e
   WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
     AND e.role IS NOT NULL AND TRIM(e.role) != ''
-  GROUP BY title ORDER BY records DESC LIMIT 300
+  GROUP BY title
+  HAVING LENGTH(title) BETWEEN 2 AND 200
+  ORDER BY records DESC LIMIT 300
 ),
 discipline_anchors AS (
   SELECT * FROM UNNEST([
@@ -229,12 +233,14 @@ title_emb AS (
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT title, records, title AS content FROM top_titles))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 anchor_emb AS (
   SELECT grp, ml_generate_embedding_result AS v
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT grp, example, example AS content FROM discipline_anchors))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 per_group AS (
   SELECT t.title, t.records, a.grp,
@@ -271,7 +277,9 @@ WITH top_titles AS (
   UNNEST(r.employments) e
   WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
     AND e.role IS NOT NULL AND TRIM(e.role) != ''
-  GROUP BY title ORDER BY records DESC LIMIT 300
+  GROUP BY title
+  HAVING LENGTH(title) BETWEEN 2 AND 200
+  ORDER BY records DESC LIMIT 300
 ),
 position_anchors AS (
   SELECT * FROM UNNEST([
@@ -310,12 +318,14 @@ title_emb AS (
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT title, records, title AS content FROM top_titles))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 anchor_emb AS (
   SELECT grp, ml_generate_embedding_result AS v
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT grp, example, example AS content FROM position_anchors))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 per_group AS (
   SELECT t.title, t.records, a.grp,
@@ -358,7 +368,9 @@ WITH top_titles AS (
   UNNEST(r.employments) e
   WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
     AND e.role IS NOT NULL AND TRIM(e.role) != ''
-  GROUP BY title ORDER BY records DESC LIMIT 300
+  GROUP BY title
+  HAVING LENGTH(title) BETWEEN 2 AND 200
+  ORDER BY records DESC LIMIT 300
 ),
 discipline_anchors AS (
   SELECT * FROM UNNEST([
@@ -388,12 +400,14 @@ title_emb AS (
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT title, records, title AS content FROM top_titles))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 anchor_emb AS (
   SELECT grp, ml_generate_embedding_result AS v
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT grp, example, example AS content FROM discipline_anchors))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 per_group AS (
   SELECT t.title, t.records, a.grp,

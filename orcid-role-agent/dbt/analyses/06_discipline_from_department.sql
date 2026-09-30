@@ -72,7 +72,9 @@ WITH top_depts AS (
   UNNEST(r.employments) e
   WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
     AND e.department_name IS NOT NULL AND TRIM(e.department_name) != ''
-  GROUP BY department ORDER BY records DESC LIMIT 300
+  GROUP BY department
+  HAVING LENGTH(department) BETWEEN 2 AND 200
+  ORDER BY records DESC LIMIT 300
 ),
 
 -- Anchors written as DEPARTMENT names, not job titles. This matters:
@@ -146,12 +148,14 @@ dept_emb AS (
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT department, records, department AS content FROM top_depts))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 anchor_emb AS (
   SELECT grp, ml_generate_embedding_result AS v
   FROM ML.GENERATE_EMBEDDING(
     MODEL `datasn-rm-live.institution_disambiguation.embedding_model`,
     (SELECT grp, example, example AS content FROM discipline_anchors))
+  WHERE ARRAY_LENGTH(ml_generate_embedding_result) > 0
 ),
 per_group AS (
   SELECT d.department, d.records, a.grp,
