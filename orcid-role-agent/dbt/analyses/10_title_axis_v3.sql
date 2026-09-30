@@ -4,12 +4,12 @@
     ============================================================================
     v2 results were good on eight of nine groups. What broke:
 
-    1. LIBRARIAN COLLAPSED
-       Only 2 titles landed in it, both wrong: "assegnisti" (Italian for
-       grant holders) and "reader" (a UK academic rank). Margin 0.020.
-       Cause: the test only looks at the top 500 titles, and librarian
-       titles do not reach that cutoff. The test cannot see them.
-       Query 1 searches the WHOLE corpus instead.
+    1. LIBRARIAN COLLAPSED - RESOLVED, see analyses/12
+       Query 1 below searched the whole corpus and found the answer:
+       1,154 people, 258 of them marketable. Librarians are too rare in
+       ORCID to compete for anchor space against 9.4M professors, and a
+       plain regex finds them perfectly well. Librarian is therefore
+       OFF this axis entirely and handled in analyses/12.
 
     2. THE TEST WAS NOT RUNNING PRODUCTION'S NORMALISATION
        Production expands abbreviations; these tests did not. So:
@@ -18,104 +18,34 @@
          pdra  ( 6,449)         landed in leadership
                      -> production expands to "postdoctoral research associate"
        Both are correct in production and wrong only in the test.
-       Query 2 applies the full production expansion.
 
     3. A MARGIN FLOOR IS MISSING
        Several titles were assigned on coin-flip margins:
          resident physician  35,206 records   margin 0.002
          dr                  96,439           margin 0.024
-         analyst              5,280           margin 0.016
          psychologist         7,352           margin 0.009
-       These should get NO title group and let the department decide the
-       role instead. That is the whole point of having two axes.
-       Query 3 sizes what a floor would cost and save.
+         analyst              5,280           margin 0.016
+       "Dr" is the clearest case - a courtesy title, not a role, and
+       unresolvable from the title alone. Such titles should get NO title
+       group and let the department decide. That is what two axes are for.
+
+    NOTE ON THE SQL
+    The abbreviation expansion below is GENERATED, not hand-written. The
+    first version nested 14 REGEXP_REPLACE pairs inside 13 open calls and
+    failed with "Unexpected keyword AS" - a miscount that is invisible by
+    eye and cost a query run. Deeply nested calls get generated from now on.
     ============================================================================
 */
 
 
 -- ###########################################################################
--- QUERY 1 - WHERE ARE THE LIBRARIANS?
---   Whole corpus, no top-N cutoff. Regex first to find them at all,
---   then we can judge whether the group is worth having.
--- ###########################################################################
-WITH titles AS (
-  SELECT
-      r.snid,
-      TRIM(REGEXP_REPLACE(
-        REGEXP_REPLACE(LOWER(NORMALIZE_AND_CASEFOLD(e.role, NFKC)),
-          r'[^\p{L}\p{N}\s&/+-]', ' '), r'\s+', ' '))  AS title
-  FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
-  UNNEST(r.employments) e
-  WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
-    AND e.role IS NOT NULL AND TRIM(e.role) != ''
-)
-SELECT
-    title,
-    COUNT(*)                AS records,
-    COUNT(DISTINCT snid)    AS people
-FROM titles
-WHERE REGEXP_CONTAINS(title,
-  r'(librar|bibliothek|bibliotec|bibliothec|biblioteka|kutuphane|archivist|archiviste|arsivci|repository manager|scholarly communication|information specialist|information officer|open access officer)')
-GROUP BY title
-ORDER BY records DESC
-LIMIT 80;
-
--- Then the size of the whole population:
-WITH titles AS (
-  SELECT
-      r.snid,
-      TRIM(REGEXP_REPLACE(
-        REGEXP_REPLACE(LOWER(NORMALIZE_AND_CASEFOLD(e.role, NFKC)),
-          r'[^\p{L}\p{N}\s&/+-]', ' '), r'\s+', ' '))  AS title
-  FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
-  UNNEST(r.employments) e
-  WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
-    AND e.role IS NOT NULL AND TRIM(e.role) != ''
-)
-SELECT
-    COUNT(DISTINCT title)                                       AS distinct_librarian_titles,
-    COUNT(*)                                                    AS records,
-    COUNT(DISTINCT t.snid)                                      AS people,
-    COUNT(DISTINCT IF(c.snid IS NOT NULL, t.snid, NULL))        AS in_cdp,
-    COUNT(DISTINCT IF(c.mkt_pref_opt_in, t.snid, NULL))         AS marketable
-FROM titles t
-LEFT JOIN `researcher-360-prod-e7fd74be.researcher_profiles.audience_builder_big` c
-       ON t.snid = c.snid
-WHERE REGEXP_CONTAINS(t.title,
-  r'(librar|bibliothek|bibliotec|bibliothec|biblioteka|kutuphane|archivist|archiviste|arsivci|repository manager|scholarly communication|information specialist|information officer|open access officer)');
-
-/*
-    If this returns a few thousand people, librarian deserves its own
-    detection path and does not belong on the shared title axis at all -
-    it is too rare to compete with 9.4M professors for anchor space.
-    A dedicated regex plus a small embedding pass over just those titles
-    would be both cheaper and more accurate.
-*/
-
-
--- ###########################################################################
 -- QUERY 2 - TITLE AXIS WITH PRODUCTION NORMALISATION
---   Same as v2 but with the full abbreviation expansion from
---   dbt_project.yml, so pi / pdra / prof / assoc behave as they will live.
---   Librarian removed from the axis - handled separately per query 1.
+--   Librarian removed from the axis - it has its own path now.
 -- ###########################################################################
 WITH top_titles AS (
   SELECT
-      TRIM(REGEXP_REPLACE(
-        REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(
-        REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(
-        REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(
-          REGEXP_REPLACE(LOWER(NORMALIZE_AND_CASEFOLD(e.role, NFKC)),
-            r'[^\p{L}\p{N}\s&/+-]', ' '),
-          r'\bprof\b', 'professor'),   r'\bassoc\b', 'associate'),
-          r'\basst\b', 'assistant'),   r'\bsr\b', 'senior'),
-          r'\bjr\b', 'junior'),        r'\bdir\b', 'director'),
-          r'\bres\b', 'research'),     r'\bsci\b', 'scientist'),
-          r'\bpi\b', 'principal investigator'),
-          r'\bpdra\b', 'postdoctoral research associate'),
-          r'\bpost doc\b', 'postdoc'), r'\bmed\b', 'medical'),
-        r'\s+', ' '))                                  AS title,
-      COUNT(*)                                         AS records
+      TRIM(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(LOWER(NORMALIZE_AND_CASEFOLD(e.role, NFKC)), r'[^\p{L}\p{N}\s&/+-]', ' '), r'\bprof\b', 'professor'), r'\bassoc\b', 'associate'), r'\basst\b', 'assistant'), r'\bsr\b', 'senior'), r'\bjr\b', 'junior'), r'\bdir\b', 'director'), r'\bres\b', 'research'), r'\bsci\b', 'scientist'), r'\bpi\b', 'principal investigator'), r'\bpdra\b', 'postdoctoral research associate'), r'\bpost doc\b', 'postdoc'), r'\bmed\b', 'medical'), r'\s+', ' ')) AS title,
+      COUNT(*) AS records
   FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
   UNNEST(r.employments) e
   WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
@@ -230,29 +160,18 @@ FROM assigned
 GROUP BY title_group
 ORDER BY records DESC;
 
--- CHECK: pi and pdra should now be gone from leadership. post doctor
--- should be researcher_early. analyst should be support_technical.
+-- CHECK: pi and pdra gone from leadership, post doctor in researcher_early,
+-- analyst in support_technical.
 
 
 -- ###########################################################################
 -- QUERY 3 - WHAT DOES A MARGIN FLOOR COST?
 --   Titles below the floor get no group and fall back to the department.
---   Find the floor that removes the coin-flip assignments without
---   throwing away real volume.
 -- ###########################################################################
 WITH top_titles AS (
   SELECT
-      TRIM(REGEXP_REPLACE(
-        REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(
-        REGEXP_REPLACE(REGEXP_REPLACE(
-          REGEXP_REPLACE(LOWER(NORMALIZE_AND_CASEFOLD(e.role, NFKC)),
-            r'[^\p{L}\p{N}\s&/+-]', ' '),
-          r'\bprof\b', 'professor'),  r'\bassoc\b', 'associate'),
-          r'\basst\b', 'assistant'),  r'\bsr\b', 'senior'),
-          r'\bpi\b', 'principal investigator'),
-          r'\bpdra\b', 'postdoctoral research associate'),
-        r'\s+', ' '))                                  AS title,
-      COUNT(*)                                         AS records
+      TRIM(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(LOWER(NORMALIZE_AND_CASEFOLD(e.role, NFKC)), r'[^\p{L}\p{N}\s&/+-]', ' '), r'\bprof\b', 'professor'), r'\bassoc\b', 'associate'), r'\basst\b', 'assistant'), r'\bsr\b', 'senior'), r'\bjr\b', 'junior'), r'\bdir\b', 'director'), r'\bres\b', 'research'), r'\bsci\b', 'scientist'), r'\bpi\b', 'principal investigator'), r'\bpdra\b', 'postdoctoral research associate'), r'\bpost doc\b', 'postdoc'), r'\bmed\b', 'medical'), r'\s+', ' ')) AS title,
+      COUNT(*) AS records
   FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers` r,
   UNNEST(r.employments) e
   WHERE r.snid IS NOT NULL AND UPPER(e.visibility) = 'PUBLIC'
@@ -324,14 +243,12 @@ assigned AS (
 )
 SELECT
     floor_value,
-    SUM(IF(margin >= floor_value, records, 0))                      AS records_kept,
-    SUM(IF(margin <  floor_value, records, 0))                      AS records_dropped,
-    ROUND(SUM(IF(margin >= floor_value, records, 0))
-          / SUM(records), 4)                                        AS share_kept,
-    COUNTIF(margin < floor_value)                                   AS titles_dropped
+    SUM(IF(margin >= floor_value, records, 0))  AS records_kept,
+    SUM(IF(margin <  floor_value, records, 0))  AS records_dropped,
+    ROUND(SUM(IF(margin >= floor_value, records, 0)) / SUM(records), 4) AS share_kept,
+    COUNTIF(margin < floor_value)               AS titles_dropped,
+    STRING_AGG(IF(margin < floor_value, title, NULL), ' | '
+               ORDER BY records DESC LIMIT 8)   AS largest_dropped
 FROM assigned, UNNEST([0.00, 0.02, 0.03, 0.05, 0.08, 0.10, 0.15]) AS floor_value
 GROUP BY floor_value
 ORDER BY floor_value;
-
--- Then look at exactly which titles a 0.05 floor would drop, largest first:
--- if those are the coin-flips we want removed, the floor is right.
