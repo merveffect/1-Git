@@ -10,6 +10,15 @@
     So the error is not about the model - it is about a handful of bad input
     strings. This query finds them.
 
+    STATUS: the error is already fixed - analyses 05-08 and the production
+    models now carry both guards, and test 07 ran clean afterwards. Query 1
+    here is therefore only needed if the error comes back.
+
+    Query 2 is still worth a minute: it reports how much volume the
+    LENGTH(x) BETWEEN 2 AND 200 filter silently removes. If that turns out
+    to be material rather than a rounding error, the normalisation rules
+    need a look.
+
     Usual causes:
       - the string normalises to empty or near-empty ("---", "...", "***")
       - the string is enormous (a whole address pasted into department_name)

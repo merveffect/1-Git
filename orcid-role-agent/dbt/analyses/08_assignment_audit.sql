@@ -13,12 +13,21 @@
     them to check the embedding's work. Any disagreement is a bug in the
     anchors.
 
-    FIVE AUDITS
-      A  discipline stem audit  - departments assigned against a decisive stem
-      B  title stem audit       - titles assigned against a decisive stem
-      C  known-answer set       - 60 hand-labelled departments, accuracy
-      D  low-margin queue       - what the model itself is unsure about
-      E  confusion pairs        - which groups get mistaken for each other
+    STATUS after the v2 results (read before running anything here)
+
+      A  RUN      discipline stem audit. Test 07 checked 18 named traps by
+                  hand and all passed; this checks all 500 departments
+                  systematically and can surface traps nobody thought of.
+      B  STALE    title stem audit. Superseded by analyses/10 query 2,
+                  which carries better anchors and production's
+                  abbreviation expansion. Do not run this version.
+      C  RUN      known-answer set. One row of output, names its own
+                  fixes. Cheapest confidence check on the discipline axis.
+      D  LATER    low-margin queue. Test 07 already reported the counts
+                  (51 weak departments out of 500). This lists which ones,
+                  which only matters once anchors are being tuned again.
+      E  LATER    confusion pairs. Margins are already 0.079 - 0.186, so
+                  there is no confusion worth chasing yet.
 
     Suspected traps, listed here so they are checked rather than discovered:
         radiology     / geology         shared -ology, DIFFERENT families
