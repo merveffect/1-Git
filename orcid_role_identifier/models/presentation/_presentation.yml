@@ -17,9 +17,13 @@ models:
 
   - name: fct_role_audience_summary
     description: >
-      Role x country summary. Answers "how many can we reach", not
-      "how many did we find" - consent is the binding constraint
-      (24% marketing, 19% advertising on the measured population).
+      One row per role. Answers "how many can we reach", not "how many did
+      we find" - consent is the binding constraint (24% marketing, 19%
+      advertising on the measured population). Not grouped by country:
+      that is a drill-down on fct_role_audience, not a headline.
+    columns:
+      - name: role_key
+        tests: [unique, not_null]
 
   - name: rpt_title_review_queue
     description: >
