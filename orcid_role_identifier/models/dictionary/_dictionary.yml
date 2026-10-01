@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: int_title_distinct
+    description: Distinct titles and frequencies. All expensive work runs on this.
+    columns:
+      - name: title_key
+        tests: [unique, not_null]
+      - name: frequency
+        tests: [not_null]
+
+  - name: int_anchor_terms
+    description: >
+      Anchor terms per role (seed + ESCO), plus the '__distractor'
+      pseudo-role holding common non-target occupations.
+
+  - name: int_org_resolved
+    description: >
+      Organisation resolution via three routes: ROR id, external id
+      bridge (RINGGOLD / GRID / FUNDREF), then name matching.
+    columns:
+      - name: resolution_method
+        tests:
+          - not_null
+
+  - name: dim_title_group
+    description: >
+      ⭐ DICTIONARY 1. One row per distinct job title, mapped to a position
+      group. Human overrides always win. No AI runs downstream of this.
+    columns:
+      - name: title_key
+        tests: [unique, not_null]
+      - name: group_score
+        tests:
+          - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
+      - name: decision_source
+        tests:
+          - accepted_values: {values: ['HUMAN', 'VECTOR', 'REJECTED']}
+
+  - name: dim_department_discipline
+    description: >
+      ⭐ DICTIONARY 2. One row per distinct department, mapped to a
+      discipline.
+    columns:
+      - name: department_key
+        tests: [unique, not_null]
+      - name: discipline_score
+        tests:
+          - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
+
+  - name: int_department_distinct
+    description: Distinct department names and frequency.
+    columns:
+      - name: department_key
+        tests: [unique, not_null]

@@ -1,0 +1,48 @@
+name: 'orcid_role_identifier'
+version: '1.0.0'
+
+profile: 'orcid_role_identifier'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  +persist_docs:
+    relation: true
+    columns: true
+  orcid_role_identifier:
+    +tags: 'orcid_role_identifier'
+
+    raw:
+      +schema: "raw"
+      +materialized: table
+      +enabled: true
+      +tags:
+       - raw
+    staging:
+      +schema: "staging"
+      +materialized: table
+      +tags:
+        - staging
+    presentation:
+      +schema: "presentation"
+      +materialized: table
+      +tags:
+        - presentation
+
+ 
+
+
+
+
+
+
+

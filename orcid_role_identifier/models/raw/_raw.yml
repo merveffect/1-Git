@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: raw_orcid_researchers
+    description: >
+      orcid_researchers as-is, plus the VISIBILITY FILTER and the SNID
+      filter. Non-public records are dropped from the arrays here so no
+      model above needs to repeat the condition.
+    columns:
+      - name: snid
+        tests: [not_null]
+
+  - name: raw_ror_data_refresh
+    description: ror_data_refresh as-is (separate project).
+
+  - name: raw_audience_builder_big
+    description: >
+      CDP contacts, narrowed to the four columns this pipeline consumes:
+      snid, email, mkt_pref_opt_in, advertising_opt_in. Presence in this
+      table is what "in_cdp" means downstream. Phase-2 behavioural
+      columns are deliberately left out until behaviour is scored.
+    columns:
+      - name: snid
+        tests: [unique, not_null]

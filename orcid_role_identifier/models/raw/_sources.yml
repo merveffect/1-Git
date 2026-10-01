@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: researcher_profiles
+    database: researcher-360-prod-e7fd74be
+    schema: researcher_profiles
+    tables:
+      - name: orcid_researchers
+        description: >
+          ORCID profiles. One row per person.
+          employments / educations / publications / keywords / peer_reviews
+          are REPEATED STRUCTs. Each record carries its own visibility.
+      - name: audience_builder_big
+        description: >
+          CDP population and consent flags.
+          !! VERIFY the dataset - taken from the Phase-2 document, not
+          from a schema read.
+
+  - name: ror
+    database: ri-data-engineering-dd4c0eca
+    schema: ror
+    description: SEPARATE PROJECT - cross-project read access required.
+    tables:
+      - name: ror_data_refresh
+        description: ROR organisation registry.
+
+   
+  - name: prod_audience_explorer_analytics_dbt_presentation
+    database: dat-analytics-eng-ec869189
+    schema: prod_audience_explorer_analytics_dbt_presentation
+    tables: 
+      - name: audience_builder_big

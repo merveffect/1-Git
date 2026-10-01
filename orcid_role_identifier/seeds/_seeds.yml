@@ -1,0 +1,75 @@
+version: 2
+
+seeds:
+  - name: title_group_anchors
+    description: >
+      Anchors for the TITLE axis: 9 position groups. An anchor is an
+      example that defines what a group looks like; the nearest group to a
+      real title wins. These are the only hand-written input to the
+      dictionary.
+    config:
+      column_types: {title_group: STRING, anchor_term: STRING, language_code: STRING, note: STRING}
+    columns:
+      - name: title_group
+        tests: [not_null]
+      - name: anchor_term
+        tests: [not_null]
+
+  - name: discipline_anchors
+    description: >
+      Anchors for the DISCIPLINE axis: 12 groups, matched against
+      department names. Measured: assigning a discipline from the job
+      title leaves 73.5% of records unusable; from the department, 1.6%.
+    config:
+      column_types: {discipline: STRING, anchor_term: STRING, language_code: STRING, note: STRING}
+    columns:
+      - name: discipline
+        tests: [not_null]
+      - name: anchor_term
+        tests: [not_null]
+
+  - name: org_name_patterns
+    description: >
+      Organisation fallback for the 21% of records with no resolvable ROR
+      identifier. organisation_name is 100% populated, so a small pattern
+      list rescues most of them. This is what Phase-1 did and it worked.
+    config:
+      column_types: {role_key: STRING, name_pattern: STRING, org_score: FLOAT64, note: STRING}
+    columns:
+      - name: role_key
+        tests:
+          - accepted_values: {values: "{{ role_keys() }}"}
+
+  - name: org_type_scores
+    description: >
+      (role, ROR organisation type) -> org score. Replaces the Phase-1
+      organisation regex gradient. Because the type comes from ROR,
+      variants like "St. Mary's Hosp." are no longer missed.
+    config:
+      column_types: {role_key: STRING, org_type: STRING, org_score: FLOAT64, note: STRING}
+
+  - name: role_detail_map
+    description: >
+      Rules producing the second part of role_detailed_inferred.
+      match_type='title' matches the job title, match_type='org_type'
+      matches the ROR organisation type. Lowest priority wins.
+    config:
+      column_types: {role_key: STRING, match_type: STRING, match_value: STRING, detail_label: STRING, priority: INT64, note: STRING}
+    columns:
+      - name: role_key
+        tests:
+          - accepted_values: {values: "{{ role_keys() }}"}
+      - name: match_type
+        tests:
+          - accepted_values: {values: ['title', 'org_type']}
+
+  - name: role_title_overrides
+    description: >
+      HUMAN DECISIONS. Always beat the vector and LLM decisions.
+      Filled in after working through rpt_title_review_queue.
+    config:
+      column_types: {title: STRING, role_key: STRING, decision: STRING, reviewer: STRING, reviewed_at: DATE, note: STRING}
+    columns:
+      - name: decision
+        tests:
+          - accepted_values: {values: ['ACCEPT', 'REJECT']}
