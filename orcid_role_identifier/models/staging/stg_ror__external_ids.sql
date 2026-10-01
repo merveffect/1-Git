@@ -16,6 +16,9 @@
 
     'all' is an ARRAY: one organisation can hold several Ringgold ids.
     Each is expanded into its own row.
+
+    NOTE: 'all' is a RESERVED WORD in BigQuery, so the field access needs
+    backticks. Without them the model fails with a syntax error.
 */
 
 select
@@ -25,6 +28,6 @@ select
     x.preferred                 as preferred_id
 from {{ ref('stg_ror__organisations') }} r,
 unnest(r.external_ids) x,
-unnest(x.all) as id_value
+unnest(x.`all`) as id_value          -- ALL is a reserved word in BigQuery
 where id_value is not null
   and trim(id_value) != ''
