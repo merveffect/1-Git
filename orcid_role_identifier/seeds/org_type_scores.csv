@@ -7,7 +7,7 @@ hcp,Government,0.50,health ministry / public health body
 hcp,Facility,0.60,research facility
 hcp,Archive,0.00,
 hcp,Other,0.25,
-hcp,Funder,0.30,funding body - ROR type, weak signal for every role
+hcp,Funder,0.30,funding body - ROR type - weak signal for every role
 hcp,UNKNOWN,0.25,no ROR match - low confidence
 pharmacist,Healthcare,1.00,
 pharmacist,Company,0.70,industry pharmacists
@@ -17,7 +17,7 @@ pharmacist,Nonprofit,0.40,
 pharmacist,Facility,0.40,
 pharmacist,Archive,0.00,
 pharmacist,Other,0.25,
-pharmacist,Funder,0.30,funding body - ROR type, weak signal for every role
+pharmacist,Funder,0.30,funding body - ROR type - weak signal for every role
 pharmacist,UNKNOWN,0.25,
 librarian,Education,1.00,university library - the primary target
 librarian,Archive,1.00,archive / national library
@@ -27,7 +27,7 @@ librarian,Facility,0.60,
 librarian,Healthcare,0.60,medical library
 librarian,Company,0.40,corporate information centre
 librarian,Other,0.25,
-librarian,Funder,0.20,funding body - ROR type, weak signal for every role
+librarian,Funder,0.20,funding body - ROR type - weak signal for every role
 librarian,UNKNOWN,0.25,
 researcher,Education,1.00,
 researcher,Facility,1.00,research facility / enstitu
@@ -37,7 +37,7 @@ researcher,Healthcare,0.80,
 researcher,Company,0.60,industrial R&D
 researcher,Archive,0.20,
 researcher,Other,0.25,
-researcher,Funder,0.40,funding body - ROR type, weak signal for every role
+researcher,Funder,0.40,funding body - ROR type - weak signal for every role
 researcher,UNKNOWN,0.25,
 faculty_head,Education,1.00,only meaningful at an academic institution
 faculty_head,Facility,0.60,
@@ -47,5 +47,5 @@ faculty_head,Government,0.30,
 faculty_head,Company,0.00,a company executive is not a faculty head
 faculty_head,Archive,0.20,
 faculty_head,Other,0.10,
-faculty_head,Funder,0.10,funding body - ROR type, weak signal for every role
+faculty_head,Funder,0.10,funding body - ROR type - weak signal for every role
 faculty_head,UNKNOWN,0.20,

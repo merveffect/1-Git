@@ -12,29 +12,46 @@
     embed would break VECTOR_SEARCH for every title.
 */
 
-with anchors as (
+with source_terms as (
 
-    select anchor_key, role_key, anchor_term, polarity, language_code
+    select
+        axis,
+        group_key,
+        anchor_term,
+        language_code
     from {{ ref('int_anchor_terms') }}
     where length(anchor_term) between 2 and 200
 
+),
+
+anchors as (
+
+    select
+        to_hex(md5(concat(axis, '||', group_key, '||', anchor_term, '||', coalesce(language_code, '')))) as anchor_key,
+        axis,
+        group_key,
+        anchor_term,
+        language_code
+    from source_terms
+
     {% if is_incremental() %}
-      and anchor_key not in (select anchor_key from {{ this }})
+    where to_hex(md5(concat(axis, '||', group_key, '||', anchor_term, '||', coalesce(language_code, ''))))
+          not in (select anchor_key from {{ this }})
     {% endif %}
 
 )
 
 select
     anchor_key,
-    role_key,
+    axis,
+    group_key,
     anchor_term,
-    polarity,
     language_code,
     ml_generate_embedding_result    as embedding,
     current_timestamp()             as embedded_at
 from ml.generate_embedding(
     model `{{ var('embedding_model') }}`,
-    (select anchor_key, role_key, anchor_term, polarity, language_code,
+    (select anchor_key, axis, group_key, anchor_term, language_code,
             anchor_term as content
      from anchors)
 )

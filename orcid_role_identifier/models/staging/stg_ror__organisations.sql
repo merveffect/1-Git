@@ -30,18 +30,44 @@
        bq show --schema ri-data-engineering-dd4c0eca:ror.ror_data_refresh
 */
 
+with base as (
+    select
+        id,
+        coalesce(
+            (
+                select n.value
+                from unnest(names) n
+                where 'ror_display' in unnest(coalesce(n.types, []))
+                limit 1
+            ),
+            (
+                select n.value
+                from unnest(names) n
+                limit 1
+            )
+        )                                        as canonical_name,
+        types,
+        (
+            select loc.geonames_details.country_code
+            from unnest(locations) loc
+            limit 1
+        )                                        as ror_country_code,
+        external_ids
+    from {{ ref('raw_ror_data_refresh') }}
+)
+
 select
     id                                          as ror_id,
-    name                                        as canonical_name,
-    {{ normalize_title('name') }}               as organisation,     -- name-match key
+    canonical_name,
+    {{ normalize_title('canonical_name') }}     as organisation,     -- name-match key
 
     -- types is an ARRAY: a university hospital is both Education and Healthcare
     types                                       as ror_types,
 
-    country.country_code                        as ror_country_code,
+    ror_country_code,
 
     -- non-ROR identifiers: RINGGOLD / GRID / FUNDREF / ISNI ...
     -- flattened by stg_ror__external_ids
     external_ids
 
-from {{ ref('raw_ror_data_refresh') }}
+from base
