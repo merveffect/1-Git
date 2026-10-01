@@ -30,7 +30,7 @@ with employment_orgs as (
 
 ror as (
 
-    select ror_id, organisation, canonical_name, ror_types, ror_country_code
+    select ror_id, organisation, canonical_name, ror_types
     from {{ ref('stg_ror__organisations') }}
 
 ),
@@ -44,7 +44,6 @@ by_ror_id as (
         r.ror_id,
         r.canonical_name,
         r.ror_types,
-        r.ror_country_code,
         'ORCID_ROR_ID'      as resolution_method,
         1.0                 as resolution_confidence
     from employment_orgs o
@@ -67,7 +66,6 @@ by_external_id as (
         r.ror_id,
         r.canonical_name,
         r.ror_types,
-        r.ror_country_code,
         concat('EXTERNAL_ID_', o.org_id_source)     as resolution_method,
         0.95                                        as resolution_confidence
     from employment_orgs o
@@ -94,7 +92,6 @@ by_name as (
         r.ror_id,
         r.canonical_name,
         r.ror_types,
-        r.ror_country_code,
         'NAME_EXACT'        as resolution_method,
         0.9                 as resolution_confidence
     from employment_orgs o
@@ -127,7 +124,6 @@ select
     ror_id,
     canonical_name,
     ror_types,
-    ror_country_code,
     resolution_method,
     resolution_confidence
 from combined

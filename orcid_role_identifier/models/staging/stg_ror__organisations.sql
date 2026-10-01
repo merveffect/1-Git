@@ -26,8 +26,13 @@
     ror_data_refresh is ROR's OWN registry dump (confirmed), not a
     previously produced matching output.
 
-    !! VERIFY COLUMN NAMES:
-       bq show --schema ri-data-engineering-dd4c0eca:ror.ror_data_refresh
+    WHAT WE DELIBERATELY DO NOT TAKE:
+    ROR also carries a country per organisation. We ignore it. The country
+    we use comes from ORCID itself -
+    employments[].organisation_address_country_code - which is recorded per
+    POST rather than per organisation and is populated on 100% of records.
+    A person can hold a German profile and a UK post, and it is the post we
+    are targeting. Carrying two country fields only invited confusion.
 */
 
 with base as (
@@ -47,11 +52,6 @@ with base as (
             )
         )                                        as canonical_name,
         types,
-        (
-            select loc.geonames_details.country_code
-            from unnest(locations) loc
-            limit 1
-        )                                        as ror_country_code,
         external_ids
     from {{ ref('raw_ror_data_refresh') }}
 )
@@ -63,8 +63,6 @@ select
 
     -- types is an ARRAY: a university hospital is both Education and Healthcare
     types                                       as ror_types,
-
-    ror_country_code,
 
     -- non-ROR identifiers: RINGGOLD / GRID / FUNDREF / ISNI ...
     -- flattened by stg_ror__external_ids
