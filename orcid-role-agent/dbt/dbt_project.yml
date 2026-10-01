@@ -168,9 +168,15 @@ vars:
       current_only:    false
 
     librarian:
+      # DROPPED after measurement (analyses/12). ORCID is a researcher
+      # identifier and librarians are not researchers, so most never create
+      # one: 1,154 people in the whole corpus, 258 of them marketable, across
+      # 969 distinct job titles. That is the true size of the overlap, not a
+      # pipeline failure. If a librarian audience is needed commercially it
+      # requires a different source - CDP self-reported role, institutional
+      # contacts or conference registrations.
       display_name: 'Librarian'
       detail_dimension: org_type
-      enabled: true
       label: 'Librarian / Information Professional'
       axis: profession
       description: >
@@ -180,6 +186,7 @@ vars:
         directors. Different commercial purpose from the other roles:
         institutional sales and licence renewal.
       isco_groups: ['2622']
+      enabled:         false          # see the note above
       weights:         {role: 0.70, org: 0.20, dept: 0.10}
       education_bonus: 0.00           # an LIS degree is not required
       thresholds:      {confirmed: 0.60, probable: 0.35}
