@@ -8,8 +8,9 @@ Checks:
   - dbt_project.yml and the model yml files are valid YAML
   - every .sql file is valid Jinja
   - each enabled role's weights sum to 1.0
-  - each enabled role has enough anchors
-  - the distractor set is large enough
+  - every enabled role names at least one title group or discipline
+  - every group it names exists in the seed files
+  - every group has enough anchors
   - parent references point at roles that exist
   - no model uses an undefined var() without a default
 """
@@ -40,36 +41,51 @@ for f in glob.glob('macros/*.sql') + glob.glob('models/**/*.sql', recursive=True
 
 roles = yaml.safe_load(open('dbt_project.yml'))['vars']['roles']
 
-anchors = {}
-for r in csv.DictReader(open('seeds/role_anchors.csv')):
-    anchors.setdefault(r['role_key'], {'include': 0, 'exclude': 0})[r['polarity']] += 1
+title_groups, disciplines = {}, {}
+for r in csv.DictReader(open('seeds/title_group_anchors.csv')):
+    title_groups.setdefault(r['title_group'], 0)
+    title_groups[r['title_group']] += 1
+for r in csv.DictReader(open('seeds/discipline_anchors.csv')):
+    disciplines.setdefault(r['discipline'], 0)
+    disciplines[r['discipline']] += 1
 
-print(f"\n{'role':<14}{'enabled':<9}{'weights':<9}{'thresholds':<14}{'current':<9}anchors (inc/exc)")
+print(f"\n{'role':<14}{'on':<6}{'weights r/o/d':<22}{'title groups':<44}{'disciplines'}")
+print("-" * 118)
 for k, v in roles.items():
     if not v.get('enabled', True):
-        print(f"{k:<14}{'no':<9}{'-':<9}{'-':<14}{'-':<9}-")
+        print(f"{k:<14}{'no':<6}{'-':<22}{'-':<44}-")
         continue
-    w = round(sum(v['weights'].values()), 4)
-    t = v['thresholds']
-    a = anchors.get(k, {'include': 0, 'exclude': 0})
+    w = v['weights']
+    wtxt = f"{w['role']} / {w['org']} / {w['dept']}"
+    tg = v.get('title_groups', [])
+    dg = v.get('disciplines', [])
     warn = ''
-    if abs(w - 1.0) > 1e-9:
-        warn += ' !!weights do not sum to 1.0'
-        ok = False
-    if a['include'] < 5:
-        warn += ' !!needs at least 5 include anchors'
-        ok = False
+    if abs(sum(w.values()) - 1.0) > 1e-9:
+        warn += f" !!weights sum to {sum(w.values())}"; ok = False
+    if not tg and not dg:
+        warn += " !!role has neither a title group nor a discipline"; ok = False
+    for g in tg:
+        if g not in title_groups:
+            warn += f" !!unknown title group: {g}"; ok = False
+    for g in dg:
+        if g not in disciplines:
+            warn += f" !!unknown discipline: {g}"; ok = False
     if v.get('parent') and v['parent'] not in roles:
-        warn += f" !!unknown parent: {v['parent']}"
-        ok = False
-    print(f"{k:<14}{'yes':<9}{w:<9}{str(t['confirmed']) + '/' + str(t['probable']):<14}"
-          f"{str(v['current_only']):<9}{a['include']}/{a['exclude']}{warn}")
+        warn += f" !!unknown parent: {v['parent']}"; ok = False
+    print(f"{k:<14}{'yes':<6}{wtxt:<22}{str(tg):<44}{dg or 'any'}{warn}")
 
-d = anchors.get('__distractor', {'include': 0})
-print(f"{'__distractor':<14}{'-':<9}{'-':<9}{'-':<14}{'-':<9}{d['include']}/0")
-if d['include'] < 20:
-    ok = False
-    print("  !! the distractor set is the primary decision reference - it needs at least 20 terms")
+print(f"\n{'title group':<26}{'anchors':<10}{'discipline':<26}anchors")
+print("-" * 76)
+tg_items = sorted(title_groups.items()); dg_items = sorted(disciplines.items())
+for i in range(max(len(tg_items), len(dg_items))):
+    a = f"{tg_items[i][0]:<26}{tg_items[i][1]:<10}" if i < len(tg_items) else " " * 36
+    b = f"{dg_items[i][0]:<26}{dg_items[i][1]}" if i < len(dg_items) else ""
+    print(a + b)
+
+for g, n in list(title_groups.items()) + list(disciplines.items()):
+    if n < 5:
+        ok = False
+        print(f"  !! {g} has only {n} anchors; at least 5 are needed")
 
 for k, v in roles.items():
     if v.get('enabled', True) and v.get('parent'):

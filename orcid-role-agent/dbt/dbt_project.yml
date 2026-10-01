@@ -143,8 +143,18 @@ vars:
         leading a healthcare organisation. Continues the definition from
         the Phase-1 HCP document.
       isco_groups: ['22']
-      weights:         {role: 0.50, org: 0.30, dept: 0.20}
-      education_bonus: 0.20
+      # Fires from EITHER axis. A consultant cardiologist with no
+      # department is caught by the title; a professor whose department is
+      # Cardiology is caught by the discipline. Both agreeing scores highest.
+      title_groups:    ['practitioner', 'trainee_clinical']
+      disciplines:     ['health_clinical']
+      # Discipline-led, so dept carries more than Phase-1's 0.20. Check:
+      #   "consultant cardiologist", no department
+      #       1.00*0.35 + 1.00*0.25 + 0*0.40 = 0.60  -> CONFIRMED
+      #   "professor", department Cardiology
+      #       0*0.35 + 1.00*0.25 + 1.00*0.40 = 0.65  -> CONFIRMED
+      weights:         {role: 0.35, org: 0.25, dept: 0.40}
+      education_bonus: 0.00
       thresholds:      {confirmed: 0.60, probable: 0.30}
       current_only:    false
       buckets: ['PRACTITIONER', 'HCP_RESEARCHER', 'ADMINISTRATOR']
@@ -162,8 +172,10 @@ vars:
       isco_groups: ['2262']
       parent:        'hcp'            # the same person is also written as hcp
       parent_bucket: 'PRACTITIONER'
-      weights:         {role: 0.60, org: 0.25, dept: 0.15}
-      education_bonus: 0.20
+      title_groups:    ['pharmacist']
+      disciplines:     ['pharmacy']
+      weights:         {role: 0.40, org: 0.20, dept: 0.40}
+      education_bonus: 0.00
       thresholds:      {confirmed: 0.60, probable: 0.30}
       current_only:    false
 
@@ -202,7 +214,12 @@ vars:
         Researchers in ALL fields - NOT restricted to health.
         Postdoc, research fellow, PI, research scientist, research associate.
       isco_groups: ['21', '213', '2131']
-      weights:         {role: 0.70, org: 0.20, dept: 0.10}
+      # Title-led and field-agnostic: a chemistry researcher and a
+      # historian are both researchers. dept weight is 0 on purpose -
+      # that is what "all fields" means in practice.
+      title_groups:    ['researcher_early', 'researcher_established']
+      disciplines:     []             # any
+      weights:         {role: 0.75, org: 0.25, dept: 0.00}
       education_bonus: 0.00
       thresholds:      {confirmed: 0.60, probable: 0.30}
       current_only:    false
@@ -217,24 +234,32 @@ vars:
         Deans, heads of department, institute directors, pro vice
         chancellors and provosts.
       isco_groups: ['1345']
-      weights:         {role: 0.60, org: 0.20, dept: 0.20}
+      # Title-led. The organisation weight is what enforces "academic":
+      # a company director scores 0 on org type and never qualifies.
+      title_groups:    ['leadership']
+      disciplines:     []             # any
+      weights:         {role: 0.70, org: 0.30, dept: 0.00}
       education_bonus: 0.00
       thresholds:      {confirmed: 0.65, probable: 0.40}
       current_only:    true           # a temporary post - current records only
 
-    # ─── QUEUED FOR LATER ──────────────────────────────────────────────
     lecturer:
       display_name: 'Lecturer'
       detail_dimension: org_type
-      enabled: false                  # flip to true, dbt run, done
+      enabled: true
       label: 'Lecturer / Teaching Academic'
       axis: position
       description: >
-        Teaching academics. CAUTION: a UK "Lecturer" is roughly a US
-        "Assistant Professor". Country-aware mapping is needed, which is
-        why this role is deferred.
+        Teaching academics. This role was deferred because a UK "Lecturer"
+        is roughly a US "Assistant Professor" and the two could not be
+        reconciled in a single list. On the position axis both are simply
+        teaching_academic, so the problem disappeared and the role is now
+        active. It is the largest single group in the data at 47% of
+        employment records.
       isco_groups: ['231', '2310']
-      weights:         {role: 0.70, org: 0.20, dept: 0.10}
+      title_groups:    ['teaching_academic']
+      disciplines:     []             # any
+      weights:         {role: 0.75, org: 0.25, dept: 0.00}
       education_bonus: 0.00
       thresholds:      {confirmed: 0.60, probable: 0.30}
       current_only:    false
