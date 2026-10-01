@@ -10,11 +10,6 @@ sources:
           ORCID profiles. One row per person.
           employments / educations / publications / keywords / peer_reviews
           are REPEATED STRUCTs. Each record carries its own visibility.
-      - name: audience_builder_big
-        description: >
-          CDP population and consent flags.
-          !! VERIFY the dataset - taken from the Phase-2 document, not
-          from a schema read.
 
   - name: ror
     database: ri-data-engineering-dd4c0eca
@@ -24,9 +19,14 @@ sources:
       - name: ror_data_refresh
         description: ROR organisation registry.
 
-   
+
   - name: prod_audience_explorer_analytics_dbt_presentation
     database: dat-analytics-eng-ec869189
     schema: prod_audience_explorer_analytics_dbt_presentation
-    tables: 
+    description: CDP presentation layer - consent flags and contact email.
+    tables:
       - name: audience_builder_big
+        description: >
+          The real location of the CDP population. The earlier declaration
+          under researcher_profiles was a guess taken from the Phase-2
+          document and has been removed.
