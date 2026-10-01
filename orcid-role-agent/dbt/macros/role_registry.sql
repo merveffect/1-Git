@@ -64,3 +64,25 @@
     {%- for i in items %}'{{ i }}'{% if not loop.last %}, {% endif %}{% endfor -%}
     {%- endif -%}
 {% endmacro %}
+
+
+{#- Title groups that support a role, as a SQL IN list -#}
+{% macro role_title_groups(role_key) %}
+    {{ return(role(role_key).get('title_groups', [])) }}
+{% endmacro %}
+
+
+{#- Disciplines that support a role. Empty means "any field". -#}
+{% macro role_disciplines(role_key) %}
+    {{ return(role(role_key).get('disciplines', [])) }}
+{% endmacro %}
+
+
+{#-
+    Does this role care about the discipline at all?
+    researcher, lecturer and faculty_head do not - that is what
+    "all fields" means, and their dept weight is 0 to match.
+-#}
+{% macro role_is_field_agnostic(role_key) %}
+    {{ return(role_disciplines(role_key) | length == 0) }}
+{% endmacro %}

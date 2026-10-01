@@ -1,30 +1,44 @@
 version: 2
 
 seeds:
-  - name: role_anchors
+  - name: title_group_anchors
     description: >
-      Core anchor terms per role. VECTOR_SEARCH runs against these.
-      polarity=exclude cuts false positives (the vector equivalent of the
-      Phase-1 "data consultant" rule). Add rows here when adding a role.
-      '__distractor' is a pseudo-role holding common occupations that are
-      none of our targets; it is the reference point the decision rule
-      measures against.
+      Anchors for the TITLE axis: 9 position groups. An anchor is an
+      example that defines what a group looks like; the nearest group to a
+      real title wins. These are the only hand-written input to the
+      dictionary.
     config:
-      column_types: {role_key: STRING, anchor_term: STRING, polarity: STRING, language_code: STRING, note: STRING}
+      column_types: {title_group: STRING, anchor_term: STRING, language_code: STRING, note: STRING}
+    columns:
+      - name: title_group
+        tests: [not_null]
+      - name: anchor_term
+        tests: [not_null]
+
+  - name: discipline_anchors
+    description: >
+      Anchors for the DISCIPLINE axis: 12 groups, matched against
+      department names. Measured: assigning a discipline from the job
+      title leaves 73.5% of records unusable; from the department, 1.6%.
+    config:
+      column_types: {discipline: STRING, anchor_term: STRING, language_code: STRING, note: STRING}
+    columns:
+      - name: discipline
+        tests: [not_null]
+      - name: anchor_term
+        tests: [not_null]
+
+  - name: org_name_patterns
+    description: >
+      Organisation fallback for the 21% of records with no resolvable ROR
+      identifier. organisation_name is 100% populated, so a small pattern
+      list rescues most of them. This is what Phase-1 did and it worked.
+    config:
+      column_types: {role_key: STRING, name_pattern: STRING, org_score: FLOAT64, note: STRING}
     columns:
       - name: role_key
-        description: >
-          Target roles plus '__distractor'. Calibration showed the
-          deciding measure is not "how similar is this title to the role"
-          but "how much MORE similar is it to the role than to unrelated
-          occupations".
         tests:
-          - not_null
-          - accepted_values:
-              values: "{{ role_keys() + ['__distractor'] }}"
-      - name: polarity
-        tests:
-          - accepted_values: {values: ['include', 'exclude']}
+          - accepted_values: {values: "{{ role_keys() }}"}
 
   - name: org_type_scores
     description: >
@@ -33,16 +47,6 @@ seeds:
       variants like "St. Mary's Hosp." are no longer missed.
     config:
       column_types: {role_key: STRING, org_type: STRING, org_score: FLOAT64, note: STRING}
-
-  - name: dept_signals
-    description: (role, department regex) -> dept score.
-    config:
-      column_types: {role_key: STRING, dept_pattern: STRING, dept_score: FLOAT64, note: STRING}
-
-  - name: education_signals
-    description: (role, degree/department regex) -> education bonus component.
-    config:
-      column_types: {role_key: STRING, signal_type: STRING, pattern: STRING, degree_score: FLOAT64, note: STRING}
 
   - name: role_detail_map
     description: >

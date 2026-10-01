@@ -1,36 +1,47 @@
 {{ config(materialized='table') }}
 
 /*
-    HUMAN REVIEW QUEUE - the highest-leverage step in the project.
+    HUMAN REVIEW QUEUE — the highest-leverage step in the project.
 
-    Ambiguous titles ordered by FREQUENCY. Job title distributions are
-    heavily skewed, so the top few hundred titles cover a large share of
-    all people. Roughly two hours of reading buys accuracy across tens of
-    thousands of records.
+    Ambiguous values from BOTH axes, ordered by frequency. Job title and
+    department distributions are heavily skewed, so the top few hundred
+    entries cover a large share of all people: roughly two hours of
+    reading buys accuracy across tens of thousands of records.
 
-    This matters more than usual right now: the LLM judge is disabled
-    (no Vertex connection), so this queue is the only verification
-    mechanism in the pipeline.
+    This matters more than usual because the LLM adjudication step has no
+    Vertex connection, making this queue the only verification mechanism
+    in the pipeline.
 
     After deciding, add rows to seeds/role_title_overrides.csv and run
-    dbt seed && dbt run -s dim_title_role+
+    dbt seed && dbt run -s dim_title_group+
 */
 
 select
-    title,
-    role_key,
+    'title'                         as axis,
+    title                           as value,
+    title_group                     as assigned_group,
+    runner_up,
     frequency,
-    round(include_similarity, 3)    as similarity,
-    round(distractor_margin, 3)     as distractor_margin,
-    round(distractor_similarity, 3) as distractor_similarity,
+    round(similarity, 3)            as similarity,
+    round(margin, 3)                as margin,
     matched_anchors,
-    decision_source,
-    is_role_member                  as current_decision,
-    round(
-        sum(frequency) over (order by frequency desc)
-        / sum(frequency) over (), 4
-    )                               as cumulative_coverage
-from {{ ref('dim_title_role') }}
+    is_assigned
+from {{ ref('dim_title_group') }}
 where needs_human_review
-   or decision_source = 'LLM_JUDGE'
+
+union all
+
+select
+    'discipline',
+    department,
+    discipline,
+    runner_up,
+    frequency,
+    round(similarity, 3),
+    round(margin, 3),
+    matched_anchors,
+    is_assigned
+from {{ ref('dim_department_discipline') }}
+where needs_human_review
+
 order by frequency desc

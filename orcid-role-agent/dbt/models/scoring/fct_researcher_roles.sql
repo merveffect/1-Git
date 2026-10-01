@@ -22,7 +22,8 @@ with base as (
         emp.role_score,
         emp.org_score,
         emp.dept_score,
-        coalesce(edu.education_score, 0.0)  as education_score,
+        emp.title_group,
+        emp.discipline,
         emp.evidence_title,
         emp.evidence_org,
         emp.evidence_org_canonical,
@@ -34,9 +35,6 @@ with base as (
         emp.source_last_updated,
         det.detail_label
     from {{ ref('int_employment_scored') }} emp
-    left join {{ ref('int_education_scored') }} edu
-           on emp.snid = edu.snid
-          and emp.role_key = edu.role_key
     left join {{ ref('int_role_detail') }} det
            on emp.snid = det.snid
           and emp.role_key = det.role_key
@@ -64,7 +62,8 @@ labelled as (
         role_score,
         org_score,
         dept_score,
-        education_score,
+        title_group,
+        discipline,
         evidence_title,
         evidence_org,
         evidence_org_canonical,

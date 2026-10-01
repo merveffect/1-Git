@@ -1,0 +1,17 @@
+role_key,name_pattern,org_score,note
+hcp,\b(hospital|hopital|krankenhaus|hastane|ospedale|hospitalar)\b,1.00,used only when ROR has no match; organisation_name is 100% populated
+hcp,\b(clinic|klinik|clinique|clinica|poliklinik)\b,1.00,
+hcp,\b(medical cent|health cent|medical school|faculty of medicine|nhs)\b,1.00,
+hcp,\b(health|medical|healthcare|saglik|sante)\b,0.40,weaker - the word alone is not decisive
+hcp,\b(universit|college|institut|academy)\b,0.60,
+pharmacist,\b(hospital|clinic|pharmacy|eczane|apotheke|farmacia)\b,1.00,
+pharmacist,\b(pharmaceutical|pharma)\b,0.70,
+pharmacist,\b(universit|college|institut)\b,0.50,
+researcher,\b(universit|institut|college|academy|research cent|laborator|cnrs|max planck|inserm)\b,1.00,
+researcher,\b(hospital|clinic|medical cent)\b,0.80,
+researcher,\b(ltd|inc|gmbh|corporation|company)\b,0.60,
+lecturer,\b(universit|college|school|academy|faculty|institut)\b,1.00,
+lecturer,\b(hospital|medical school)\b,0.70,
+faculty_head,\b(universit|college|academy|faculty|institut)\b,1.00,
+faculty_head,\b(hospital|medical school)\b,0.50,
+faculty_head,\b(ltd|inc|gmbh|corporation|company|bank)\b,0.00,a company executive is not a faculty head

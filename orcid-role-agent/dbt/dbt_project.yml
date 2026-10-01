@@ -38,6 +38,7 @@ vars:
   #       -> orcid_role_agent_raw / _staging / _dictionary
   #          _scoring / _presentation / _seeds
   # ───────────────────────────────────────────────────────────────────────
+  # Kept for documentation; dbt writes to the project in profiles.yml.
   target_project:   'dat-analytics-eng-ec869189'
 
   # ⚠️ ORCID carries per-record visibility: PUBLIC / LIMITED /
@@ -66,15 +67,7 @@ vars:
   # (Test 1b): cardiologue 0.928 / Facharzt 0.795 / kardiyolog 0.760
   # vs the unrelated control librarian 0.572.
   embedding_model:    'datasn-rm-live.institution_disambiguation.embedding_model'
-  vertex_connection:  'EU.vertex_ai_conn'   # only needed for the LLM judge
-  judge_model:        'gemini-2.5-flash'
 
-  # How to call an LLM from BigQuery. Both routes use the SAME Vertex
-  # connection; only the SQL syntax differs.
-  #   'ai_generate_bool'  -> AI.GENERATE_BOOL, concise, regional support varies
-  #   'ml_generate_text'  -> ML.GENERATE_TEXT, available everywhere (safe harbour)
-  # setup/03_test_access.sql tells you which one works here.
-  judge_function:     'ai_generate_bool'
 
   # ───────────────────────────────────────────────────────────────────────
   # THRESHOLDS - CALIBRATED via analyses/02_similarity_calibration.sql
@@ -98,27 +91,19 @@ vars:
   # very weak matches up front.
   sim_floor:        0.65
 
-  # MULTI-LABEL TIE BAND
-  # "Professor of Cardiology" should be both hcp and researcher.
-  # Every role within this distance of the best role is accepted.
-  # The runner-up is not penalised - both can be true at once.
-  sim_tie_band:     0.12
+  # Multi-label is no longer a tie band. Under two axes a person can hold
+  # several roles because the roles themselves overlap: a professor of
+  # cardiology is teaching_academic on one axis and health_clinical on the
+  # other, so they qualify as both lecturer and hcp. No special mechanism
+  # is needed.
 
   # A margin below this makes the decision fragile -> human review queue
   sim_review_margin: 0.18
 
-  # Education bonus split. Phase-1 used an even 0.5 / 0.5, but the degree
-  # field mostly encodes academic LEVEL (phd, master, bachelor) rather
-  # than subject - measured over 23M records in
-  # analyses/04_degree_coverage.sql. The subject lives in the department.
-  education_degree_weight: 0.3
-  education_dept_weight:   0.7
-
-  # The LLM judge is OPTIONAL. This project has no Vertex connection
-  # (Test 3: "Not found: Connection vertex_ai_conn"), so it defaults to
-  # off and the pipeline runs on vectors alone. Flip to true once a
-  # connection exists.
-  use_llm_judge:    false
+  # The LLM adjudication step is not built: this project has no Vertex
+  # connection (setup/03_test_access.sql, Test 3). Ambiguous values fall
+  # to rpt_title_review_queue instead. When a connection exists, the step
+  # goes back in as a filter over that queue.
 
   # ───────────────────────────────────────────────────────────────────────
   # 3. ROLE REGISTRY  ⭐
@@ -154,7 +139,6 @@ vars:
       #   "professor", department Cardiology
       #       0*0.35 + 1.00*0.25 + 1.00*0.40 = 0.65  -> CONFIRMED
       weights:         {role: 0.35, org: 0.25, dept: 0.40}
-      education_bonus: 0.00
       thresholds:      {confirmed: 0.60, probable: 0.30}
       current_only:    false
       buckets: ['PRACTITIONER', 'HCP_RESEARCHER', 'ADMINISTRATOR']
@@ -175,7 +159,6 @@ vars:
       title_groups:    ['pharmacist']
       disciplines:     ['pharmacy']
       weights:         {role: 0.40, org: 0.20, dept: 0.40}
-      education_bonus: 0.00
       thresholds:      {confirmed: 0.60, probable: 0.30}
       current_only:    false
 
@@ -200,7 +183,6 @@ vars:
       isco_groups: ['2622']
       enabled:         false          # see the note above
       weights:         {role: 0.70, org: 0.20, dept: 0.10}
-      education_bonus: 0.00           # an LIS degree is not required
       thresholds:      {confirmed: 0.60, probable: 0.35}
       current_only:    true           # institutional sales needs a CURRENT post
 
@@ -220,7 +202,6 @@ vars:
       title_groups:    ['researcher_early', 'researcher_established']
       disciplines:     []             # any
       weights:         {role: 0.75, org: 0.25, dept: 0.00}
-      education_bonus: 0.00
       thresholds:      {confirmed: 0.60, probable: 0.30}
       current_only:    false
 
@@ -239,7 +220,6 @@ vars:
       title_groups:    ['leadership']
       disciplines:     []             # any
       weights:         {role: 0.70, org: 0.30, dept: 0.00}
-      education_bonus: 0.00
       thresholds:      {confirmed: 0.65, probable: 0.40}
       current_only:    true           # a temporary post - current records only
 
@@ -260,7 +240,6 @@ vars:
       title_groups:    ['teaching_academic']
       disciplines:     []             # any
       weights:         {role: 0.75, org: 0.25, dept: 0.00}
-      education_bonus: 0.00
       thresholds:      {confirmed: 0.60, probable: 0.30}
       current_only:    false
 

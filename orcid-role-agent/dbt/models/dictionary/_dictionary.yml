@@ -23,23 +23,33 @@ models:
         tests:
           - not_null
 
-  - name: dim_title_role
+  - name: dim_title_group
     description: >
-      ⭐ THE DICTIONARY. One row = (title, role). A title can belong to
-      more than one role. No AI runs downstream of this model.
+      ⭐ DICTIONARY 1. One row per distinct job title, mapped to a position
+      group. Human overrides always win. No AI runs downstream of this.
     columns:
       - name: title_key
-        tests: [not_null]
-      - name: role_key
-        tests:
-          - not_null
-          - accepted_values: {values: "{{ role_keys() }}"}
-      - name: role_score
+        tests: [unique, not_null]
+      - name: group_score
         tests:
           - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
       - name: decision_source
         tests:
-          - accepted_values: {values: ['HUMAN', 'VECTOR', 'LLM_JUDGE', 'REJECTED']}
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [title_key, role_key]
+          - accepted_values: {values: ['HUMAN', 'VECTOR', 'REJECTED']}
+
+  - name: dim_department_discipline
+    description: >
+      ⭐ DICTIONARY 2. One row per distinct department, mapped to a
+      discipline.
+    columns:
+      - name: department_key
+        tests: [unique, not_null]
+      - name: discipline_score
+        tests:
+          - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
+
+  - name: int_department_distinct
+    description: Distinct department names and frequency.
+    columns:
+      - name: department_key
+        tests: [unique, not_null]

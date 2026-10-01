@@ -16,12 +16,6 @@ models:
   - name: stg_orcid__employment
     description: ORCID employments[] mapped onto the common role record schema.
 
-  - name: stg_orcid__education
-    description: Most recent education record per person (bonus signal only).
-    columns:
-      - name: snid
-        tests: [unique, not_null]
-
   - name: stg_ror__organisations
     description: >
       ROR organisation registry. The organisation TYPE (Education /

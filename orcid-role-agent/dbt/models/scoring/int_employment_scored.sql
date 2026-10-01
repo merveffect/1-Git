@@ -3,122 +3,170 @@
 /*
     Role / org / dept sub-scores per person x role.
 
-    Two improvements over Phase-1:
-      - role_score comes from the dictionary instead of hundreds of
-        regex lines (multilingual, graded)
-      - org_score comes from the canonical ROR organisation TYPE instead
-        of pattern-matching the organisation name, so variants like
-        "St. Mary's Hosp." are no longer missed
+    Every role reads BOTH axes and fires from either. That matters: a
+    consultant cardiologist whose department is empty - 11.6% of records
+    have no department - carries an unmistakable title and would be lost
+    if the discipline were the only route.
+
+        role_score  does the TITLE support this role?
+        dept_score  does the DISCIPLINE support this role?
+        org_score   does the ROR organisation type support this role?
+
+    A role with no disciplines listed is field-agnostic (researcher,
+    lecturer, faculty_head). Its dept weight is 0, so the discipline is
+    ignored rather than counted as missing evidence.
 */
 
 with records as (
-
     select * from {{ ref('stg_role_records') }}
-
 ),
 
--- 1) resolve the organisation via ROR (direct id where available)
-with_org as (
-
+-- title -> position group
+with_title_group as (
     select
         r.*,
-        o.ror_id,
-        o.canonical_name        as org_canonical_name,
-        o.ror_types,
-        o.resolution_method     as org_resolution_method
+        t.title_group,
+        t.group_score       as title_group_score
     from records r
-    left join {{ ref('int_org_resolved') }} o
-           on r.organisation = o.organisation
-          and r.org_id is not distinct from o.org_id
-
+    left join {{ ref('dim_title_group') }} t
+           on r.title_key = t.title_key
+          and t.is_assigned
 ),
 
--- 2) map the title to roles via the dictionary (multi-label: 1 -> N rows)
-with_roles as (
-
+-- department -> discipline
+with_discipline as (
     select
         w.*,
-        t.role_key,
-        t.role_score
-    from with_org w
-    join {{ ref('dim_title_role') }} t
-      on w.title_key = t.title_key
-    where t.is_role_member
+        d.discipline,
+        d.discipline_score
+    from with_title_group w
+    left join {{ ref('dim_department_discipline') }} d
+           on to_hex(md5(w.department)) = d.department_key
+          and d.is_assigned
+),
 
+-- organisation -> ROR type
+with_org as (
+    select
+        w.*,
+        o.ror_id,
+        o.canonical_name    as org_canonical_name,
+        o.ror_types,
+        o.resolution_method as org_resolution_method
+    from with_discipline w
+    left join {{ ref('int_org_resolved') }} o
+           on w.organisation = o.organisation
+          and w.org_id is not distinct from o.org_id
 ),
 
 /*
-    3) org score from the (role, organisation type) pair.
-       ROR 'types' is an ARRAY - a university hospital is both Education
-       and Healthcare. We take the type that scores HIGHEST for the role:
-       overlapping types are an advantage, not ambiguity.
+    Fan out to one row per (record, role). A record qualifies for a role
+    if its title group supports that role, or its discipline does.
+*/
+per_role as (
+    {%- for k in role_keys() %}
+    {%- set tg = role_title_groups(k) %}
+    {%- set dg = role_disciplines(k) %}
+
+    select
+        w.*,
+        '{{ k }}'                                   as role_key,
+        {% if tg | length > 0 -%}
+        if(w.title_group in ({{ sql_in_list(tg) }}), coalesce(w.title_group_score, 0.0), 0.0)
+        {%- else -%}
+        0.0
+        {%- endif %}                                as role_score,
+        {% if dg | length > 0 -%}
+        if(w.discipline in ({{ sql_in_list(dg) }}), coalesce(w.discipline_score, 0.0), 0.0)
+        {%- else -%}
+        cast(null as float64)   -- field-agnostic role: discipline ignored
+        {%- endif %}                                as dept_score
+    from with_org w
+    where
+        {% if tg | length > 0 -%}
+        w.title_group in ({{ sql_in_list(tg) }})
+        {%- endif %}
+        {%- if tg | length > 0 and dg | length > 0 %} or {% endif %}
+        {%- if dg | length > 0 %}
+        w.discipline in ({{ sql_in_list(dg) }})
+        {%- endif %}
+
+    {% if not loop.last %}union all{% endif %}
+    {%- endfor %}
+),
+
+/*
+    org score from the (role, ROR type) pair. ROR types is an ARRAY - a
+    university hospital is both Education and Healthcare - so we take the
+    type that scores HIGHEST for the role. Overlap is an advantage.
 */
 with_org_score as (
-
     select
-        w.*,
-        case
-            when w.organisation is null then null      -- source carries no organisation
-            else coalesce((
-                /*
-                    Case-insensitive on purpose. ROR v2 returns types
-                    lowercase ('healthcare'); the seed is written in
-                    title case. A case-sensitive join would match
-                    nothing and silently drop every organisation to
-                    UNKNOWN - worth 0.225 of an hcp score, which is
-                    enough to push borderline people under threshold.
-                */
-                select max(s.org_score)
-                from unnest(coalesce(w.ror_types, ['UNKNOWN'])) as t
-                join {{ ref('org_type_scores') }} s
-                  on s.role_key = w.role_key
-                 and upper(trim(s.org_type)) = upper(trim(t))
-            ), (
-                select s.org_score from {{ ref('org_type_scores') }} s
-                where s.role_key = w.role_key and s.org_type = 'UNKNOWN'
-            ), 0.0)
-        end                                             as org_score,
-        coalesce(w.ror_types[safe_offset(0)], 'UNKNOWN') as org_type
-    from with_roles w
-
+        p.*,
+        coalesce((
+            select max(s.org_score)
+            from unnest(coalesce(p.ror_types, ['UNKNOWN'])) as t
+            join {{ ref('org_type_scores') }} s
+              on s.role_key = p.role_key
+             and upper(trim(s.org_type)) = upper(trim(t))
+        ), (
+            select s.org_score from {{ ref('org_type_scores') }} s
+            where s.role_key = p.role_key and s.org_type = 'UNKNOWN'
+        ), 0.0)                                     as org_score_ror,
+        coalesce(p.ror_types[safe_offset(0)], 'UNKNOWN') as org_type
+    from per_role p
 ),
 
--- 4) dept score from the (role, department pattern) pair; highest wins
-with_dept_score as (
-
+/*
+    Organisation fallback. 21% of records carry no resolvable identifier,
+    and organisation_name is 100% populated, so a small pattern list
+    rescues most of them. This is what Phase-1 did, and it worked.
+    Only used when ROR produced nothing better.
+*/
+with_org_fallback as (
     select
-        w.snid,
-        w.role_key,
-        w.role_score,
-        w.org_score,
-        case when max(w.department) is null then null
-             else max(coalesce(d.dept_score, 0.0)) end  as dept_score,
-        any_value(w.role_title_raw)         as evidence_title,
-        any_value(w.organisation_raw)       as evidence_org,
-        any_value(w.department_raw)         as evidence_dept,
-        any_value(w.org_canonical_name)     as evidence_org_canonical,
-        any_value(w.org_type)               as org_type,
-        any_value(w.ror_id)                 as ror_id,
-        any_value(w.org_resolution_method)  as org_resolution_method,
-        any_value(w.country_code)           as country_code,
-        any_value(w.source_key)             as source_key,
-        max(w.is_current)                   as is_current,
-        min(w.recency_rank)                 as recency_rank,
-        max(w.source_last_updated)          as source_last_updated
+        w.*,
+        greatest(
+            w.org_score_ror,
+            coalesce((
+                select max(f.org_score)
+                from {{ ref('org_name_patterns') }} f
+                where f.role_key = w.role_key
+                  and regexp_contains(coalesce(w.organisation, ''), f.name_pattern)
+            ), 0.0)
+        )                                           as org_score
     from with_org_score w
-    left join {{ ref('dept_signals') }} d
-           on w.role_key = d.role_key
-          and regexp_contains(coalesce(w.department, ''), d.dept_pattern)
-    group by w.snid, w.role_key, w.role_score, w.org_score
+    where w.ror_id is null
 
+    union all
+
+    select w.*, w.org_score_ror as org_score
+    from with_org_score w
+    where w.ror_id is not null
 )
 
-/*
-    One record per person + role: current posts first, then the highest
-    score. (Phase-1's "most recent employment record, preferring current
-    roles".)
-*/
-select * from with_dept_score
+select
+    snid,
+    role_key,
+    role_score,
+    org_score,
+    dept_score,
+    title_group,
+    discipline,
+    org_type,
+    ror_id,
+    org_resolution_method,
+    role_title_raw      as evidence_title,
+    organisation_raw    as evidence_org,
+    department_raw      as evidence_dept,
+    org_canonical_name  as evidence_org_canonical,
+    country_code,
+    is_current,
+    source_key,
+    source_last_updated,
+    recency_rank
+from with_org_fallback
+-- one record per person per role: current posts first, then best score
 qualify row_number() over (
     partition by snid, role_key
     order by is_current desc, role_score desc, recency_rank asc

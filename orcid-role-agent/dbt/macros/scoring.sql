@@ -7,15 +7,25 @@
 -#}
 
 {#-
-    Given role_score / org_score / dept_score / education_score columns,
-    emits the weighted composite score per role.
+    Weighted composite score per role.
 
-    Formula (the generalised Phase-1 formula):
-        LEAST(1.0, role*w_role + org*w_org + dept*w_dept)
-          + education_score * education_bonus
+        score = role*w_role + org*w_org + dept*w_dept
 
-    A NULL org or dept score counts as zero, i.e. missing evidence
-    lowers the score. That is deliberate and matches Phase-1.
+    Weights are per role and live in dbt_project.yml. They encode which
+    axis leads: hcp is discipline-led (dept 0.40), researcher is title-led
+    (dept 0.00).
+
+    For a field-agnostic role the dept weight is 0 and dept_score arrives
+    NULL, so the discipline is ignored rather than counted as missing
+    evidence. That is what "all fields" means in practice.
+
+    Worked, for hcp at 0.35 / 0.25 / 0.40:
+        "consultant cardiologist", no department
+            1.00*0.35 + 1.00*0.25 + 0*0.40 = 0.60   CONFIRMED
+        "professor", department Cardiology
+            0*0.35 + 1.00*0.25 + 1.00*0.40 = 0.65   CONFIRMED
+    Both routes reach the threshold, which is the point of reading both
+    axes.
 -#}
 {% macro composite_score_expr() %}
     CASE role_key
@@ -23,11 +33,12 @@
     {%- set w = role(k).weights %}
         WHEN '{{ k }}' THEN
             LEAST(1.0,
-                  COALESCE(role_score, 0.0)  * {{ w.role }}
-                + COALESCE(org_score, 0.0)   * {{ w.org }}
-                + COALESCE(dept_score, 0.0)  * {{ w.dept }}
+                  COALESCE(role_score, 0.0) * {{ w.role }}
+                + COALESCE(org_score, 0.0)  * {{ w.org }}
+                {%- if w.dept > 0 %}
+                + COALESCE(dept_score, 0.0) * {{ w.dept }}
+                {%- endif %}
             )
-            + COALESCE(education_score, 0.0) * {{ role(k).get('education_bonus', 0.0) }}
     {%- endfor %}
         ELSE NULL
     END
