@@ -8,5 +8,6 @@ dbt_target: dev
 jobs:
   - name: subject-based-segmentation-dev
     schedule: 0 8 * * 1
+    timeout: 2000
 
 

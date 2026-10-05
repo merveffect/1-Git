@@ -8,6 +8,7 @@ dbt_target: prod
 jobs:
   - name: subject-based-segmentation-prod
     schedule: 0 8 * * 1
+    timeout: 2000
 
 
 
