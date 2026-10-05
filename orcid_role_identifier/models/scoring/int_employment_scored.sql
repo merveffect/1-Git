@@ -15,6 +15,11 @@
     A role with no disciplines listed is field-agnostic (researcher,
     lecturer, faculty_head). Its dept weight is 0, so the discipline is
     ignored rather than counted as missing evidence.
+
+    NOTE ON COMMENTS INSIDE THE JINJA BRANCHES BELOW: use /* */, never --.
+    The whitespace-stripping tags join the next line onto the same line, so
+    a -- comment swallows the alias that follows it and the column comes
+    out unnamed. That cost a run with "Unrecognized name: dept_score".
 */
 
 with records as (
@@ -79,7 +84,7 @@ per_role as (
         {% if dg | length > 0 -%}
         if(w.discipline in ({{ sql_in_list(dg) }}), coalesce(w.discipline_score, 0.0), 0.0)
         {%- else -%}
-        cast(null as float64)   -- field-agnostic role: discipline ignored
+        /* field-agnostic role: the discipline is ignored */ cast(null as float64)
         {%- endif %}                                as dept_score
     from with_org w
     where
