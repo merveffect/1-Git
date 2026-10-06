@@ -23,7 +23,8 @@ base AS (
 
 SELECT
   base.snid,
-  base.inferred_mpc_subjects
+  base.inferred_mpc_subjects,
+  base.inferred_mpc_subjects AS isubjects
 FROM base
 LEFT JOIN deleted USING (snid)
 WHERE deleted.snid IS NULL

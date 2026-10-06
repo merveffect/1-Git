@@ -34,6 +34,8 @@ models:
       - name: snid
       - name: inferred_mpc_subjects
         description: Array of up to 3 inferred MPC subject IDs (INT64) for this user.
+      - name: isubjects
+        description: Deprecated legacy alias of inferred_mpc_subjects kept for backwards compatibility.
 
   - name: permutive_inferred_mpc_subjects
     description: >
