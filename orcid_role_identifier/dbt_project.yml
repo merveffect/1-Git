@@ -97,7 +97,17 @@ vars:
       axis: position
       title_groups: ['leadership']
       disciplines: []
-      weights: {role: 0.70, org: 0.30, dept: 0.00}
+      # Organisation weight raised from 0.30 to 0.45. The first run showed
+      # this role collecting company executives - CEO, Founder, Managing
+      # Director - because a strong title alone cleared the threshold:
+      #     1.00*0.70 + 0.20*0.30 = 0.76  against a 0.65 threshold
+      # At 0.55 / 0.45 the title can no longer carry it alone:
+      #     company, org 0.00   1.00*0.55 + 0.00 = 0.55  rejected
+      #     unknown org 0.20    1.00*0.55 + 0.09 = 0.64  rejected
+      #     university  1.00    1.00*0.55 + 0.45 = 1.00  confirmed
+      # A hard gate would be blunter; this still lets a genuine dean at an
+      # unresolved institution reach PROBABLE.
+      weights: {role: 0.55, org: 0.45, dept: 0.00}
       thresholds: {confirmed: 0.65, probable: 0.40}
       current_only: true
 

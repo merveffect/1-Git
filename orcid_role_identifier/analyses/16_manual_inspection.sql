@@ -193,3 +193,91 @@ FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_depart
 WHERE NOT is_assigned
 ORDER BY frequency DESC
 LIMIT 150;
+
+
+-- ###########################################################################
+-- 6. THE DECISION FUNNEL — every distinct value, and where it ended up
+--    Answers: how many titles are there, how many matched anything, how
+--    many were rejected and for which of the two reasons.
+-- ###########################################################################
+WITH t AS (
+  SELECT
+      CASE
+        WHEN is_assigned                                   THEN '1. assigned'
+        WHEN similarity < 0.65                             THEN '2. rejected - too far from every group'
+        ELSE                                                    '3. rejected - margin below 0.13'
+      END                             AS outcome,
+      frequency
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+)
+SELECT
+    'title'                                             AS axis,
+    outcome,
+    COUNT(*)                                            AS distinct_values,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 4)          AS share_of_values,
+    SUM(frequency)                                      AS records,
+    ROUND(SUM(frequency) / SUM(SUM(frequency)) OVER (), 4) AS share_of_records
+FROM t
+GROUP BY outcome
+
+UNION ALL
+
+SELECT
+    'discipline',
+    CASE
+      WHEN is_assigned       THEN '1. assigned'
+      WHEN similarity < 0.65 THEN '2. rejected - too far from every group'
+      ELSE                        '3. rejected - margin below 0.13'
+    END,
+    COUNT(*),
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 4),
+    SUM(frequency),
+    ROUND(SUM(frequency) / SUM(SUM(frequency)) OVER (), 4)
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline`
+GROUP BY 2
+ORDER BY axis, outcome;
+
+
+-- ###########################################################################
+-- 7. HOW MUCH WOULD A LOWER MARGIN RECOVER?
+--    The margin threshold is currently 0.13. These were rejected only for
+--    that reason - their similarity is fine. Shows what each candidate
+--    threshold would bring back.
+-- ###########################################################################
+WITH rejected_on_margin AS (
+  SELECT title, frequency, margin, title_group, runner_up
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+  WHERE NOT is_assigned AND similarity >= 0.65
+)
+SELECT
+    candidate_threshold,
+    COUNTIF(margin >= candidate_threshold)              AS titles_recovered,
+    SUM(IF(margin >= candidate_threshold, frequency, 0)) AS records_recovered
+FROM rejected_on_margin, UNNEST([0.02, 0.04, 0.06, 0.08, 0.10, 0.12]) AS candidate_threshold
+GROUP BY candidate_threshold
+ORDER BY candidate_threshold;
+
+
+-- ###########################################################################
+-- 8. WHEN THE TOP TWO GROUPS LEAD TO THE SAME ROLE, THE MARGIN IS MOOT
+--    "medical oncologist" is close to both practitioner and
+--    trainee_clinical. Both of those support hcp, so whichever wins, the
+--    person is an hcp. Rejecting it on margin loses them for nothing.
+-- ###########################################################################
+SELECT
+    title_group,
+    runner_up,
+    CASE
+      WHEN title_group IN ('practitioner','trainee_clinical')
+       AND runner_up  IN ('practitioner','trainee_clinical')          THEN 'same role (hcp)'
+      WHEN title_group IN ('researcher_early','researcher_established')
+       AND runner_up  IN ('researcher_early','researcher_established') THEN 'same role (researcher)'
+      ELSE                                                                 'different roles'
+    END                                 AS consequence,
+    COUNT(*)                            AS titles,
+    SUM(frequency)                      AS records
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE NOT is_assigned AND similarity >= 0.65
+GROUP BY title_group, runner_up, consequence
+ORDER BY records DESC
+LIMIT 40;
