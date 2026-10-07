@@ -63,15 +63,30 @@ select
     r1.similarity - r2.similarity               as margin,
     r1.matched_anchors,
 
+    /*
+        ONE GATE: is this value close to any group at all?
+
+        There used to be a second gate on the margin between the first and
+        second choice, set at 0.13. It was wrong. That number came from a
+        different quantity - the distance to a set of deliberately
+        unrelated occupations, in an earlier design that no longer exists.
+        Applied to the gap between two of OUR groups it rejected correct
+        answers: "associate professor of medicine" failed at a margin of
+        0.129, and "medical oncologist" failed with practitioner first and
+        trainee_clinical second, when both of those support hcp anyway.
+
+        With 21 groups competing, neighbouring groups are genuinely close
+        and a small gap is normal rather than suspicious. The margin is
+        still computed and kept - it is a good signal of confidence and
+        drives the human review queue - but it no longer vetoes anything.
+    */
     case
-        when r1.similarity < {{ var('sim_floor') }}             then 'REJECTED_LOW_SIMILARITY'
-        when r1.similarity - r2.similarity < {{ var('sim_min_margin') }}
-                                                                then 'REJECTED_AMBIGUOUS'
+        when r1.similarity < {{ var('sim_floor') }} then 'REJECTED_LOW_SIMILARITY'
         else 'ACCEPTED'
     end                                         as match_decision,
 
-    (     r1.similarity - r2.similarity >= {{ var('sim_min_margin') }}
-      and r1.similarity - r2.similarity <  {{ var('sim_review_margin') }}
+    (     r1.similarity >= {{ var('sim_floor') }}
+      and r1.similarity - r2.similarity < {{ var('sim_review_margin') }}
       and r1.frequency >= {{ var('tier_a_min_frequency') }} )  as needs_human_review
 
 from ranked r1

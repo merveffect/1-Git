@@ -34,8 +34,10 @@ vars:
 
   embedding_model: 'datasn-rm-live.institution_disambiguation.embedding_model'
 
-  sim_min_margin: 0.13
   sim_floor: 0.65
+  # The margin between first and second choice. NOT a gate - it vetoes
+  # nothing. A value whose top two groups sit closer than this, and which
+  # carries enough records to matter, goes to the human review queue.
   sim_review_margin: 0.18
 
   roles:
@@ -101,13 +103,15 @@ vars:
       # this role collecting company executives - CEO, Founder, Managing
       # Director - because a strong title alone cleared the threshold:
       #     1.00*0.70 + 0.20*0.30 = 0.76  against a 0.65 threshold
-      # At 0.55 / 0.45 the title can no longer carry it alone:
-      #     company, org 0.00   1.00*0.55 + 0.00 = 0.55  rejected
-      #     unknown org 0.20    1.00*0.55 + 0.09 = 0.64  rejected
-      #     university  1.00    1.00*0.55 + 0.45 = 1.00  confirmed
-      # A hard gate would be blunter; this still lets a genuine dean at an
-      # unresolved institution reach PROBABLE.
-      weights: {role: 0.55, org: 0.45, dept: 0.00}
+      # Settled at 0.60 / 0.40 after weighing both failure modes:
+      #     dean, unresolved org   1.00*0.60 + 0.20*0.40 = 0.68  CONFIRMED
+      #     dean, university       1.00*0.60 + 1.00*0.40 = 1.00  CONFIRMED
+      #     director, company      1.00*0.60 + 0.00      = 0.60  PROBABLE
+      # A dean is a dean whatever we know about the institution, which is
+      # why the title keeps the larger share. A bare "Director" at an
+      # organisation we cannot resolve still gets through - that is the
+      # residual cost, and it is smaller than losing real deans.
+      weights: {role: 0.60, org: 0.40, dept: 0.00}
       thresholds: {confirmed: 0.65, probable: 0.40}
       current_only: true
 

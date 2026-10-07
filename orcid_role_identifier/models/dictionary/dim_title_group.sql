@@ -55,7 +55,8 @@ select
         when o.human_decision = 'ACCEPT'   then 1.0
         when o.human_decision = 'REJECT'   then 0.0
         when m.match_decision != 'ACCEPTED' then 0.0
-        else least(1.0, 0.70 + (m.margin - {{ var('sim_min_margin') }}) * 2)
+        else least(1.0, 0.70 + (m.similarity - {{ var('sim_floor') }})
+                               / (1.0 - {{ var('sim_floor') }}) * 0.30)
     end                                         as group_score
 
 from matched m

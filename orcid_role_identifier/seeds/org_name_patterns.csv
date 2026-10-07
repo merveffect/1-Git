@@ -14,4 +14,4 @@ lecturer,\b(universit|college|school|academy|faculty|institut)\b,1.00,
 lecturer,\b(hospital|medical school)\b,0.70,
 faculty_head,\b(universit|college|academy|faculty|institut)\b,1.00,
 faculty_head,\b(hospital|medical school)\b,0.50,
-faculty_head,\b(ltd|inc|gmbh|corporation|company|bank)\b,0.00,a company executive is not a faculty head
+faculty_head,\b(ltd|limited|inc|llc|plc|gmbh|ag|sa|bv|nv|srl|spa|pty|corp|corporation|company|holdings|group|ventures|capital|partners|consulting|solutions|technologies|labs|bank|insurance)\b,0.00,a company executive is not a faculty head - widened after the first run put CEOs and founders in this role

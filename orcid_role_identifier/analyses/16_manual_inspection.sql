@@ -204,8 +204,7 @@ WITH t AS (
   SELECT
       CASE
         WHEN is_assigned                                   THEN '1. assigned'
-        WHEN similarity < 0.65                             THEN '2. rejected - too far from every group'
-        ELSE                                                    '3. rejected - margin below 0.13'
+        ELSE                                                    '2. rejected - too far from every group'
       END                             AS outcome,
       frequency
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
@@ -225,9 +224,8 @@ UNION ALL
 SELECT
     'discipline',
     CASE
-      WHEN is_assigned       THEN '1. assigned'
-      WHEN similarity < 0.65 THEN '2. rejected - too far from every group'
-      ELSE                        '3. rejected - margin below 0.13'
+      WHEN is_assigned THEN '1. assigned'
+      ELSE                  '2. rejected - too far from every group'
     END,
     COUNT(*),
     ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 4),
@@ -239,6 +237,9 @@ ORDER BY axis, outcome;
 
 
 -- ###########################################################################
+-- 7. [SUPERSEDED] The margin is no longer a gate, so nothing is rejected
+--    for it any more. Kept only to show what the old threshold had been
+--    costing - run it against a build from before the change.
 -- 7. HOW MUCH WOULD A LOWER MARGIN RECOVER?
 --    The margin threshold is currently 0.13. These were rejected only for
 --    that reason - their similarity is fine. Shows what each candidate
@@ -259,6 +260,8 @@ ORDER BY candidate_threshold;
 
 
 -- ###########################################################################
+-- 8. [SUPERSEDED] This was the argument for dropping the margin gate.
+--    It has been dropped. Same note as query 7.
 -- 8. WHEN THE TOP TWO GROUPS LEAD TO THE SAME ROLE, THE MARGIN IS MOOT
 --    "medical oncologist" is close to both practitioner and
 --    trainee_clinical. Both of those support hcp, so whichever wins, the
@@ -281,3 +284,42 @@ WHERE NOT is_assigned AND similarity >= 0.65
 GROUP BY title_group, runner_up, consequence
 ORDER BY records DESC
 LIMIT 40;
+
+
+-- ###########################################################################
+-- 9. AFTER THE CHANGE — did the rejection rate move, and where?
+--    Compare against the previous build: 47,502 assigned titles carrying
+--    57.5% of records, 261,498 rejected carrying 42.5%.
+-- ###########################################################################
+SELECT
+    'title' AS axis, is_assigned,
+    COUNT(*)                                            AS distinct_values,
+    SUM(frequency)                                      AS records,
+    ROUND(SUM(frequency) / SUM(SUM(frequency)) OVER (), 4) AS share_of_records
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+GROUP BY is_assigned
+UNION ALL
+SELECT
+    'discipline', is_assigned, COUNT(*), SUM(frequency),
+    ROUND(SUM(frequency) / SUM(SUM(frequency)) OVER (), 4)
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline`
+GROUP BY is_assigned
+ORDER BY axis, is_assigned DESC;
+
+
+-- ###########################################################################
+-- 10. DID faculty_head STOP COLLECTING COMPANY EXECUTIVES?
+--     The first run had Director, CEO, President and Founder as the top
+--     four, with Dean sixteenth on 33 people.
+-- ###########################################################################
+SELECT
+    evidence_title,
+    evidence_org,
+    role_label,
+    COUNT(*)                        AS people,
+    ROUND(AVG(role_final_score), 2) AS avg_score
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+WHERE role_key = 'faculty_head'
+GROUP BY 1,2,3
+ORDER BY people DESC
+LIMIT 60;
