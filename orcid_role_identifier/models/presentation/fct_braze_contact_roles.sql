@@ -36,32 +36,32 @@ with audience as (
 per_role as (
 
     select
-        snid,
-        role_key,
+        a.snid,
+        a.role_key,
         {{ role_display_name_expr('role_key') }}    as role_inferred,
 
         -- "Healthcare Professional - Practitioner"
         concat(
             {{ role_display_name_expr('role_key') }},
-            if(role_detail is null, '', concat('{{ var("contract").detail_separator }}', role_detail))
+            if(a.role_detail is null, '', concat('{{ var("contract").detail_separator }}', a.role_detail))
         )                                           as role_detailed_inferred,
 
         -- Source display name. One source today; when web scraping
         -- arrives, add a WHEN branch and switch this to a STRING_AGG so
         -- a role asserted by both reads 'Orcid + Web scraping'.
-        max(case source_key when 'orcid' then 'Orcid' else source_key end)
+        max(case a.source_key when 'orcid' then 'Orcid' else a.source_key end)
                                                     as role_inferred_data_source,
 
-        max(source_last_updated)                    as role_inferred_data_source_last_updated,
-        max(role_final_score)                       as role_final_score,
-        any_value(role_detail)                      as role_detail,
-        any_value(country_code)                     as country_code,
-        any_value(contact_email)                    as contact_email,
-        any_value(is_marketable)                    as is_marketable,
-        any_value(is_advertisable)                  as is_advertisable,
-        any_value(in_cdp)                           as in_cdp
-    from audience
-    group by snid, role_key, role_detail
+        max(a.source_last_updated)                  as role_inferred_data_source_last_updated,
+        max(a.role_final_score)                     as role_final_score,
+        any_value(a.role_detail)                    as role_detail,
+        any_value(a.country_code)                   as country_code,
+        any_value(a.contact_email)                  as contact_email,
+        any_value(a.is_marketable)                  as is_marketable,
+        any_value(a.is_advertisable)                as is_advertisable,
+        any_value(a.in_cdp)                         as in_cdp
+    from audience a
+    group by a.snid, a.role_key, a.role_detail
 
 ),
 

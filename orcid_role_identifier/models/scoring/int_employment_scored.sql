@@ -16,7 +16,8 @@
     lecturer, faculty_head). Its dept weight is 0, so the discipline is
     ignored rather than counted as missing evidence.
 
-    NOTE ON COMMENTS INSIDE THE JINJA BRANCHES BELOW: use /* */, never --.
+    NOTE ON COMMENTS INSIDE THE JINJA BRANCHES BELOW:
+    use block comments (slash-star ... star-slash), never --.
     The whitespace-stripping tags join the next line onto the same line, so
     a -- comment swallows the alias that follows it and the column comes
     out unnamed. That cost a run with "Unrecognized name: dept_score".
