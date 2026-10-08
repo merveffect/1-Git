@@ -89,30 +89,40 @@
 
 
 {#-
-    How the two axes combine for this role.
+    How a record gets INTO a role. Two axes exist: the TITLE
+    (employments[].role) and the FIELD (employments[].department_name).
 
-      'any'  (the default) - the TITLE or the DISCIPLINE is enough. A wide
-             net. Everything built before 2026-10-08 behaves this way.
-      'all'  - BOTH must match. A record with a clinical department and no
-             title does not qualify, and neither does a researcher title
-             with no clinical department.
-      'title' - the TITLE is required and the discipline is optional. A
-             record with no matching title cannot enter the role at all;
-             a matching discipline only adds score. This is the rule for
-             any role where the occupation IS the title - nobody becomes
-             a pharmacist by working in a pharmacy department.
+      'title_required'   (the default) the title is required, the field
+                         is optional and only adds score. No matching
+                         title, no entry.
+      'title_and_field'  both required.
+      'title_or_field'   either is enough. A deliberately wide net.
 
-    'all' exists because 'any' cannot express a precise role. Give
-    hcp_researcher the researcher title groups and the health_clinical
-    discipline under 'any' and the title arm alone admits every researcher
-    on earth - a physics postdoc scores 0.35 + 0.25*org and confirms with
-    no clinical signal at all. That is the exact mistake the Phase-1 regex
-    made, and 'all' is what forbids it.
+    Why there are three, since two would be simpler:
 
-    The cost of 'all' is deliberate: it drops everyone missing either
-    field. hcp_broad keeps the wide net, so nobody is lost from the
-    audience as a whole - they just do not enter a precise sub-role.
+      title_required is the rule for any role where the occupation IS the
+      title. Nobody becomes a pharmacist by working in a pharmacy
+      department, and under title_or_field they did - 86% of that role's
+      population had no pharmacist title. It is the default because it is
+      the right answer for most roles.
+
+      title_and_field exists because title_or_field cannot express a
+      precise role. Give hcp_researcher the researcher title groups and
+      the health_clinical field under 'or' and the title arm alone admits
+      every researcher on earth: a physics postdoc scores 0.35 + 0.25*org
+      and confirms with no clinical signal at all. That is the exact
+      mistake the Phase-1 regex made, on 191 physics postdocs.
+
+      title_or_field is for one role only, hcp_broad, whose job is to be
+      the wide net so that nobody clinical is lost from the audience as a
+      whole. Its three precise children roll up into it.
+
+    Every role sets this explicitly, so nobody has to know the default.
+    Note that for a role with no fields listed the mode cannot change
+    anything - there is no field arm to combine - which is why the three
+    field-agnostic roles say title_required rather than implying a choice
+    they do not have.
 -#}
 {% macro role_match_mode(role_key) %}
-    {{ return(role(role_key).get('match', 'any')) }}
+    {{ return(role(role_key).get('match', 'title_required')) }}
 {% endmacro %}

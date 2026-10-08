@@ -9,8 +9,9 @@
     if the discipline were the only route.
 
         role_score  does the TITLE support this role?
-        The two axes are combined with OR by default and with AND for a
-        role declaring "match: all" - see role_match_mode().
+        How a record gets in is set per role by "match" - see
+        role_match_mode(). The default, title_required, means the title
+        is the only way in and the field only adds score.
         dept_score  does the DISCIPLINE support this role?
         org_score   does the ROR organisation type support this role?
 
@@ -95,11 +96,11 @@ per_role as (
         kind of cleverness that hides a missing bracket -#}
     {%- set mode = role_match_mode(k) %}
     where
-        {%- if tg | length > 0 and dg | length > 0 and mode == 'all' %}
+        {%- if tg | length > 0 and dg | length > 0 and mode == 'title_and_field' %}
         -- both axes required
         w.title_group in ({{ sql_in_list(tg) }})
         and w.discipline in ({{ sql_in_list(dg) }})
-        {%- elif tg | length > 0 and dg | length > 0 and mode == 'any' %}
+        {%- elif tg | length > 0 and dg | length > 0 and mode == 'title_or_field' %}
         -- either axis is enough
         (   w.title_group in ({{ sql_in_list(tg) }})
          or w.discipline  in ({{ sql_in_list(dg) }}) )

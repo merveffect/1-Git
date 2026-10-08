@@ -49,12 +49,12 @@ for r in csv.DictReader(open('seeds/discipline_anchors.csv')):
     disciplines.setdefault(r['discipline'], 0)
     disciplines[r['discipline']] += 1
 
-print(f"\n{'role':<18}{'on':<5}{'match':<7}{'weights r/o/d':<20}"
+print(f"\n{'role':<18}{'on':<5}{'match':<17}{'weights r/o/d':<20}"
       f"{'title groups':<44}{'disciplines'}")
-print("-" * 124)
+print("-" * 134)
 for k, v in roles.items():
     if not v.get('enabled', True):
-        print(f"{k:<18}{'no':<5}{'-':<7}{'-':<20}{'-':<44}-")
+        print(f"{k:<18}{'no':<5}{'-':<17}{'-':<20}{'-':<44}-")
         continue
     w = v['weights']
     wtxt = f"{w['role']} / {w['org']} / {w['dept']}"
@@ -77,17 +77,23 @@ for k, v in roles.items():
     # 'all' means both axes are required, so a missing list makes the role
     # match nothing at all - a silent empty audience rather than an error.
     mode = v.get('match', 'any')
-    if mode not in ('any', 'all', 'title'):
-        warn += f" !!match must be 'any', 'all' or 'title', got {mode!r}"; ok = False
-    if mode == 'title' and not tg:
-        warn += " !!match:title needs a title group"; ok = False
-    if mode == 'all' and (not tg or not dg):
-        warn += " !!match:all needs BOTH a title group and a discipline"; ok = False
-    if mode == 'all' and w['dept'] == 0:
-        warn += " !!match:all with dept weight 0 - the required axis scores nothing"
+    MODES = ('title_required', 'title_and_field', 'title_or_field')
+    if mode not in MODES:
+        warn += f" !!match must be one of {MODES}, got {mode!r}"; ok = False
+    if mode != 'title_or_field' and not tg:
+        warn += f" !!{mode} needs a title group"; ok = False
+    if mode == 'title_and_field':
+        if not dg:
+            warn += " !!title_and_field needs fields as well as title groups"; ok = False
+        if w['dept'] == 0:
+            warn += " !!title_and_field with dept weight 0 - a required axis scores nothing"
+            ok = False
+    # a mode is only meaningful when there are two axes to combine
+    if not dg and mode != 'title_required':
+        warn += f" !!no fields listed, so {mode} is misleading - use title_required"
         ok = False
 
-    print(f"{k:<18}{'yes':<5}{mode:<7}{wtxt:<20}{str(tg):<44}{dg or 'any'}{warn}")
+    print(f"{k:<18}{'yes':<5}{mode:<17}{wtxt:<20}{str(tg):<44}{dg or 'any'}{warn}")
 
 print(f"\n{'title group':<26}{'anchors':<10}{'discipline':<26}anchors")
 print("-" * 76)

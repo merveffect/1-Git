@@ -66,7 +66,7 @@ vars:
       enabled: true
       label: 'Healthcare Professional - any clinical signal'
       axis: profession
-      match: any
+      match: title_or_field
       title_groups: ['practitioner', 'trainee_clinical']
       disciplines: ['health_clinical']
       # Unchanged from the role formerly called 'hcp', so the audience
@@ -81,7 +81,7 @@ vars:
       enabled: true
       label: 'Healthcare Practitioner'
       axis: profession
-      match: all
+      match: title_and_field
       parent: 'hcp_broad'
       parent_bucket: 'PRACTITIONER'
       title_groups: ['practitioner', 'trainee_clinical']
@@ -102,7 +102,7 @@ vars:
       enabled: true
       label: 'Clinical Researcher'
       axis: profession
-      match: all
+      match: title_and_field
       parent: 'hcp_broad'
       parent_bucket: 'RESEARCHER'
       title_groups: ['researcher_early', 'researcher_established']
@@ -142,7 +142,7 @@ vars:
       enabled: true
       label: 'Clinical Leadership / Administration'
       axis: profession
-      match: all
+      match: title_and_field
       parent: 'hcp_broad'
       parent_bucket: 'ADMINISTRATOR'
       title_groups: ['leadership']
@@ -159,7 +159,7 @@ vars:
       enabled: true
       label: 'Pharmacist'
       axis: profession
-      match: title
+      match: title_required
       parent: 'hcp_broad'
       parent_bucket: 'PRACTITIONER'
       title_groups: ['pharmacist']
@@ -195,6 +195,7 @@ vars:
       enabled: false
       label: 'Librarian / Information Professional'
       axis: profession
+      match: title_required   # no fields listed, so the title is the only axis
       title_groups: ['librarian']
       disciplines: ['library_information']
       weights: {role: 0.70, org: 0.20, dept: 0.10}
@@ -207,6 +208,7 @@ vars:
       enabled: true
       label: 'Researcher (all fields)'
       axis: position
+      match: title_required   # no fields listed, so the title is the only axis
       title_groups: ['researcher_early', 'researcher_established']
       disciplines: []
       weights: {role: 0.75, org: 0.25, dept: 0.00}
@@ -219,6 +221,7 @@ vars:
       enabled: true
       label: 'Head of Faculty / Department'
       axis: position
+      match: title_required   # no fields listed, so the title is the only axis
       title_groups: ['leadership']
       disciplines: []
       # PRECISION ONLY. A second source for faculty leadership is coming
@@ -295,6 +298,7 @@ vars:
       enabled: true
       label: 'Lecturer / Teaching Academic'
       axis: position
+      match: title_required   # no fields listed, so the title is the only axis
       title_groups: ['teaching_academic']
       disciplines: []
       weights: {role: 0.75, org: 0.25, dept: 0.00}
