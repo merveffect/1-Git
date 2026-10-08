@@ -9,6 +9,8 @@
     if the discipline were the only route.
 
         role_score  does the TITLE support this role?
+        The two axes are combined with OR by default and with AND for a
+        role declaring "match: all" - see role_match_mode().
         dept_score  does the DISCIPLINE support this role?
         org_score   does the ROR organisation type support this role?
 
@@ -92,7 +94,7 @@ per_role as (
         {% if tg | length > 0 -%}
         w.title_group in ({{ sql_in_list(tg) }})
         {%- endif %}
-        {%- if tg | length > 0 and dg | length > 0 %} or {% endif %}
+        {%- if tg | length > 0 and dg | length > 0 %} {{ role_match_mode(k) | replace('all', 'and') | replace('any', 'or') }} {% endif %}
         {%- if dg | length > 0 %}
         w.discipline in ({{ sql_in_list(dg) }})
         {%- endif %}

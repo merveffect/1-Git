@@ -1,14 +1,14 @@
 role_key,org_type,org_score,note
-hcp,Healthcare,1.00,hospital / clinic / health centre
-hcp,Education,0.60,university - only meaningful with a clinical role or department signal
-hcp,Company,0.60,pharma / biotech / CRO
-hcp,Nonprofit,0.50,research foundations
-hcp,Government,0.50,health ministry / public health body
-hcp,Facility,0.60,research facility
-hcp,Archive,0.00,
-hcp,Other,0.25,
-hcp,Funder,0.30,funding body - ROR type - weak signal for every role
-hcp,UNKNOWN,0.25,no ROR match - low confidence
+hcp_broad,Healthcare,1.00,hospital / clinic / health centre
+hcp_broad,Education,0.60,university - only meaningful with a clinical role or department signal
+hcp_broad,Company,0.60,pharma / biotech / CRO
+hcp_broad,Nonprofit,0.50,research foundations
+hcp_broad,Government,0.50,health ministry / public health body
+hcp_broad,Facility,0.60,research facility
+hcp_broad,Archive,0.00,
+hcp_broad,Other,0.25,
+hcp_broad,Funder,0.30,funding body - ROR type - weak signal for every role
+hcp_broad,UNKNOWN,0.25,no ROR match - low confidence
 pharmacist,Healthcare,1.00,
 pharmacist,Company,0.70,industry pharmacists
 pharmacist,Education,0.50,school of pharmacy
@@ -46,6 +46,36 @@ faculty_head,Nonprofit,0.40,
 faculty_head,Government,0.30,
 faculty_head,Company,0.00,a company executive is not a faculty head
 faculty_head,Archive,0.20,
-faculty_head,Other,0.10,
-faculty_head,Funder,0.10,funding body - ROR type - weak signal for every role
-faculty_head,UNKNOWN,0.20,
+faculty_head,Other,0.00,not an academic institution
+faculty_head,Funder,0.00,funding body - not a faculty
+faculty_head,UNKNOWN,0.00,no ROR match - cannot confirm a faculty head on the title alone
+hcp_practitioner,Healthcare,1.00,hospital / clinic - where patients are treated
+hcp_practitioner,Education,0.55,medical school - clinical only with a department signal
+hcp_practitioner,Government,0.50,public health service
+hcp_practitioner,Facility,0.45,
+hcp_practitioner,Company,0.40,CRO / industry clinician
+hcp_practitioner,Nonprofit,0.40,
+hcp_practitioner,Funder,0.20,
+hcp_practitioner,Archive,0.00,
+hcp_practitioner,Other,0.20,
+hcp_practitioner,UNKNOWN,0.25,no ROR match
+hcp_researcher,Education,1.00,university medical faculty
+hcp_researcher,Facility,1.00,research institute
+hcp_researcher,Healthcare,0.95,research-active hospital
+hcp_researcher,Nonprofit,0.75,research foundation
+hcp_researcher,Company,0.65,pharma / biotech R&D
+hcp_researcher,Government,0.60,
+hcp_researcher,Funder,0.30,
+hcp_researcher,Archive,0.10,
+hcp_researcher,Other,0.20,
+hcp_researcher,UNKNOWN,0.25,no ROR match
+hcp_administrator,Healthcare,1.00,runs a clinical unit
+hcp_administrator,Education,0.85,clinical department in a medical faculty
+hcp_administrator,Facility,0.60,
+hcp_administrator,Government,0.55,health ministry
+hcp_administrator,Nonprofit,0.45,
+hcp_administrator,Company,0.25,a company director is not a clinical administrator
+hcp_administrator,Funder,0.15,
+hcp_administrator,Archive,0.10,
+hcp_administrator,Other,0.15,
+hcp_administrator,UNKNOWN,0.20,no ROR match

@@ -41,16 +41,93 @@ vars:
   sim_review_margin: 0.18
 
   roles:
-    hcp:
-      display_name: 'Healthcare Professional'
+    # ------------------------------------------------------------------
+    # HCP is four roles, mirroring the Phase-1 bucket split.
+    #
+    #   hcp_broad          the wide net - nobody clinical is lost here
+    #   hcp_practitioner   treats patients
+    #   hcp_researcher     researches in a clinical field
+    #   hcp_administrator  runs a clinical unit
+    #
+    # The three sub-roles declare "match: all", so BOTH a matching title
+    # and a clinical department are required. That is what makes them
+    # precise, and it is not optional: under the default "any" the title
+    # arm of hcp_researcher would admit every researcher on earth, which
+    # is exactly how the Phase-1 regex ended up labelling 191 physics
+    # postdocs as healthcare professionals.
+    #
+    # All three roll up into hcp_broad, carrying the Phase-1 bucket name,
+    # so hcp_broad is a superset in both membership and confidence - the
+    # roll-up hands it the child's score when the child scores higher.
+    # ------------------------------------------------------------------
+    hcp_broad:
+      display_name: 'Healthcare Professional (broad)'
       detail_dimension: bucket
       enabled: true
-      label: 'Healthcare Professional'
+      label: 'Healthcare Professional - any clinical signal'
       axis: profession
+      match: any
       title_groups: ['practitioner', 'trainee_clinical']
       disciplines: ['health_clinical']
+      # Unchanged from the role formerly called 'hcp', so the audience
+      # stays comparable with the 2026-10-08 baseline.
       weights: {role: 0.35, org: 0.25, dept: 0.40}
       thresholds: {confirmed: 0.60, probable: 0.30}
+      current_only: false
+
+    hcp_practitioner:
+      display_name: 'HCP - Practitioner'
+      detail_dimension: org_type
+      enabled: true
+      label: 'Healthcare Practitioner'
+      axis: profession
+      match: all
+      parent: 'hcp_broad'
+      parent_bucket: 'PRACTITIONER'
+      title_groups: ['practitioner', 'trainee_clinical']
+      disciplines: ['health_clinical']
+      # With match:all both axes are guaranteed present, so the floor is
+      # already 0.45*0.70 + 0.40*0.70 + org = ~0.63. A 0.70 threshold
+      # therefore means "a good match on both axes", not "a match".
+      #   Resident / Internal Medicine / hospital   = 1.00  CONFIRMED
+      #   Resident / Internal Medicine / unresolved = 0.89  CONFIRMED
+      #   weak title + weak dept + unresolved       = 0.63  PROBABLE
+      weights: {role: 0.45, org: 0.15, dept: 0.40}
+      thresholds: {confirmed: 0.70, probable: 0.50}
+      current_only: false
+
+    hcp_researcher:
+      display_name: 'HCP - Researcher'
+      detail_dimension: org_type
+      enabled: true
+      label: 'Clinical / Biomedical Researcher'
+      axis: profession
+      match: all
+      parent: 'hcp_broad'
+      parent_bucket: 'RESEARCHER'
+      title_groups: ['researcher_early', 'researcher_established']
+      disciplines: ['health_clinical']
+      # The title makes it research and the department makes it clinical,
+      # so the two carry equal weight.
+      weights: {role: 0.40, org: 0.20, dept: 0.40}
+      thresholds: {confirmed: 0.70, probable: 0.50}
+      current_only: false
+
+    hcp_administrator:
+      display_name: 'HCP - Administrator'
+      detail_dimension: org_type
+      enabled: true
+      label: 'Clinical Leadership / Administration'
+      axis: profession
+      match: all
+      parent: 'hcp_broad'
+      parent_bucket: 'ADMINISTRATOR'
+      title_groups: ['leadership']
+      disciplines: ['health_clinical']
+      # Leadership titles are the most ambiguous set we have, so the
+      # organisation carries more here than in the other two.
+      weights: {role: 0.35, org: 0.25, dept: 0.40}
+      thresholds: {confirmed: 0.70, probable: 0.50}
       current_only: false
 
     pharmacist:
@@ -59,7 +136,7 @@ vars:
       enabled: true
       label: 'Pharmacist'
       axis: profession
-      parent: 'hcp'
+      parent: 'hcp_broad'
       parent_bucket: 'PRACTITIONER'
       title_groups: ['pharmacist']
       disciplines: ['pharmacy']
@@ -99,20 +176,30 @@ vars:
       axis: position
       title_groups: ['leadership']
       disciplines: []
-      # Organisation weight raised from 0.30 to 0.45. The first run showed
-      # this role collecting company executives - CEO, Founder, Managing
-      # Director - because a strong title alone cleared the threshold:
-      #     1.00*0.70 + 0.20*0.30 = 0.76  against a 0.65 threshold
-      # Settled at 0.60 / 0.40 after weighing both failure modes:
-      #     dean, unresolved org   1.00*0.60 + 0.20*0.40 = 0.68  CONFIRMED
-      #     dean, university       1.00*0.60 + 1.00*0.40 = 1.00  CONFIRMED
-      #     director, company      1.00*0.60 + 0.00      = 0.60  PROBABLE
-      # A dean is a dean whatever we know about the institution, which is
-      # why the title keeps the larger share. A bare "Director" at an
-      # organisation we cannot resolve still gets through - that is the
-      # residual cost, and it is smaller than losing real deans.
-      weights: {role: 0.60, org: 0.40, dept: 0.00}
-      thresholds: {confirmed: 0.65, probable: 0.40}
+      # PRECISION ONLY. A second source for faculty leadership is coming,
+      # and it will extend coverage directly. So this role is not trying
+      # to be complete - it is trying to be right, and anything borderline
+      # is left out on purpose.
+      #
+      # Three levers, each measurable on its own:
+      #   1. The unresolved-organisation score is 0.00, not 0.20
+      #      (org_type_scores.csv). An organisation we cannot identify
+      #      can no longer carry a title over the line.
+      #   2. The organisation now carries half the score, because it is
+      #      the only thing that separates a dean from a founder.
+      #   3. The threshold is 0.75, so both halves have to be strong.
+      #
+      #   dean / university           0.50 + 0.50 = 1.00  CONFIRMED
+      #   dean / teaching hospital    0.50 + 0.25 = 0.75  CONFIRMED
+      #   dean / unresolved org       0.50 + 0.00 = 0.50  PROBABLE, not shipped
+      #   founder / company           0.40 + 0.00 = 0.40  dropped entirely
+      #   founder / unresolved org    0.40 + 0.00 = 0.40  dropped entirely
+      #
+      # Residual, accepted knowingly: a corporate title at an organisation
+      # that ROR resolves as academic still confirms. Measured by
+      # analyses/17 query 1.
+      weights: {role: 0.50, org: 0.50, dept: 0.00}
+      thresholds: {confirmed: 0.75, probable: 0.50}
       current_only: true
 
     lecturer:

@@ -55,7 +55,7 @@ trainee_clinical,clinical fellow,en,
 trainee_clinical,intern,en,
 trainee_clinical,house officer,en,
 trainee_clinical,medical resident,en,
-leadership,dean,en,'president' and 'founder' land here; org type is what enforces 'academic'
+leadership,dean,en,corporate titles still land in this group - removing them as anchors did not stop the embedding reaching them. The organisation score is what enforces 'academic'; see faculty_head in dbt_project.yml
 leadership,vice dean,en,
 leadership,head of department,en,
 leadership,department head,en,

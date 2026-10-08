@@ -38,7 +38,7 @@ WITH phase1 AS (
 new_pipeline AS (
   SELECT DISTINCT snid
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
-  WHERE role_key = 'hcp'
+  WHERE role_key = 'hcp_broad'
     AND role_label IN ('CONFIRMED', 'PROBABLE')
 )
 SELECT
@@ -68,7 +68,7 @@ WITH phase1 AS (
 new_pipeline AS (
   SELECT DISTINCT snid
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
-  WHERE role_key = 'hcp'
+  WHERE role_key = 'hcp_broad'
 )
 SELECT
     p.orcid_role                AS title,
@@ -96,7 +96,7 @@ WITH phase1 AS (
 new_pipeline AS (
   SELECT snid, evidence_title, evidence_dept, title_group, discipline, role_final_score
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
-  WHERE role_key = 'hcp'
+  WHERE role_key = 'hcp_broad'
     AND role_label IN ('CONFIRMED', 'PROBABLE')
 )
 SELECT
@@ -134,7 +134,7 @@ SELECT
     COUNTIF(role_label = 'CONFIRMED')       AS confirmed,
     ROUND(COUNTIF(role_label = 'CONFIRMED') / COUNT(*), 3) AS confirmed_rate
 FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
-WHERE role_key = 'hcp'
+WHERE role_key = 'hcp_broad'
   AND derived_from_role IS NULL   -- hcp's own rows, not the pharmacist roll-up
 GROUP BY route
 ORDER BY route;

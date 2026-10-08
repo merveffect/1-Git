@@ -30,7 +30,7 @@ SELECT
 FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
 JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
   ON e.snid = r.snid AND e.role_key = r.role_key
-WHERE e.role_key = 'hcp'
+WHERE e.role_key = 'hcp_broad'
   AND e.discipline = 'health_clinical'
   AND r.role_label != 'CONFIRMED'
 GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12
@@ -47,7 +47,7 @@ SELECT
 FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
 JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
   ON e.snid = r.snid AND e.role_key = r.role_key
-WHERE e.role_key = 'hcp'
+WHERE e.role_key = 'hcp_broad'
   AND e.discipline = 'health_clinical'
   AND r.role_label != 'CONFIRMED'
 GROUP BY 1,2

@@ -86,3 +86,28 @@
 {% macro role_is_field_agnostic(role_key) %}
     {{ return(role_disciplines(role_key) | length == 0) }}
 {% endmacro %}
+
+
+{#-
+    How the two axes combine for this role.
+
+      'any'  (the default) - the TITLE or the DISCIPLINE is enough. A wide
+             net. Everything built before 2026-10-08 behaves this way.
+      'all'  - BOTH must match. A record with a clinical department and no
+             title does not qualify, and neither does a researcher title
+             with no clinical department.
+
+    'all' exists because 'any' cannot express a precise role. Give
+    hcp_researcher the researcher title groups and the health_clinical
+    discipline under 'any' and the title arm alone admits every researcher
+    on earth - a physics postdoc scores 0.35 + 0.25*org and confirms with
+    no clinical signal at all. That is the exact mistake the Phase-1 regex
+    made, and 'all' is what forbids it.
+
+    The cost of 'all' is deliberate: it drops everyone missing either
+    field. hcp_broad keeps the wide net, so nobody is lost from the
+    audience as a whole - they just do not enter a precise sub-role.
+-#}
+{% macro role_match_mode(role_key) %}
+    {{ return(role(role_key).get('match', 'any')) }}
+{% endmacro %}
