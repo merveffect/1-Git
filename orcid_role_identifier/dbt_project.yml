@@ -100,7 +100,7 @@ vars:
       display_name: 'HCP - Researcher'
       detail_dimension: org_type
       enabled: true
-      label: 'Clinical / Biomedical Researcher'
+      label: 'Clinical Researcher'
       axis: profession
       match: all
       parent: 'hcp_broad'
@@ -109,6 +109,29 @@ vars:
       disciplines: ['health_clinical']
       # The title makes it research and the department makes it clinical,
       # so the two carry equal weight.
+      #
+      # DELIBERATELY NOT life_biomedical. This was labelled "Clinical /
+      # Biomedical Researcher" for one commit, which the config never
+      # matched - renamed rather than widened, and here is the number
+      # behind that choice.
+      #
+      # analyses/17 query 8a asked where the 118,497 people Phase-1 calls
+      # HCP and we do not actually land. 15,588 of them are researchers
+      # whose department reads as life_biomedical:
+      #
+      #   researcher_early       + life_biomedical   11,979 people
+      #   researcher_established + life_biomedical    3,609 people
+      #
+      # Adding 'life_biomedical' here would recover all of them in one
+      # line. It is not a scoring question, it is what HCP means. A
+      # biomedical researcher is already found by the 'researcher' role,
+      # and rolling them into hcp_broad would make 'Healthcare
+      # Professional' include people who have never seen a patient -
+      # which is not what marketing will assume when they pick the
+      # audience. So HCP stays clinical.
+      #
+      # If marketing wants them, add the one word and rename the label
+      # back. The decision belongs to them, not to the model.
       weights: {role: 0.40, org: 0.20, dept: 0.40}
       thresholds: {confirmed: 0.70, probable: 0.50}
       current_only: false
