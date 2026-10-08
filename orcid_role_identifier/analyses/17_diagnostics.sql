@@ -6,20 +6,18 @@
 --     99,000 people Phase-1 found and we do not have. Query 5 sizes the new
 --     HCP sub-roles BEFORE a rebuild, so the audience is known in advance.
 --
---     WHEN TO RUN: after the rebuild, with one optional exception.
+--     WHEN TO RUN: all five after the rebuild. Nothing here needs to be
+--     captured first.
 --
---     Query 2 is the only one that CANNOT run afterwards - it compares the
---     old faculty_head scoring against the new, and the rebuild overwrites
---     the old org_score it needs. It is optional all the same, because the
---     numbers it would establish are already recorded in
---     docs/BASELINE_2026-10-08.md. Run it only if the per-title breakdown
---     of what the change costs is worth a minute.
+--     Every input these queries depend on either survives the rebuild
+--     untouched - role_score, org_type, the ORCID source, the Phase-1
+--     table - or is already written down in docs/BASELINE_2026-10-08.md.
+--     Query 2 spells both scoring scales out in full for that reason, so
+--     it compares old against new on whichever build it is run against.
 --
---     Everything else is better after the rebuild, where it reads the real
---     result instead of a simulation. Queries 1 and 5 in particular: query
---     1 compares against the top-20 titles already written down in the
---     baseline, and query 5 is a simulation that the rebuild replaces with
---     the actual audiences.
+--     Queries 1 and 5 are strictly better afterwards: query 1 compares
+--     against the top-20 titles recorded in the baseline, and query 5 is a
+--     simulation that the rebuild replaces with the real audiences.
 --
 --     Replace TODO_phase1_table in queries 3 and 4 the same way as in
 --     analyses/14.
@@ -55,42 +53,47 @@ LIMIT 40;
 
 
 -- ###########################################################################
--- 2. DRY RUN OF THE NEW faculty_head RULES   [OPTIONAL, BEFORE-ONLY]
+-- 2. WHAT THE NEW faculty_head RULES COST, PER TITLE
 --
---    The rebuild overwrites the old org_score this needs, so it is the one
---    query here that cannot be run afterwards. It is still optional: the
---    baseline document already records the before-counts. Its unique value
---    is seeing, per title, exactly WHO the change drops - which is the real
---    risk of a precision-first change, since losing deans would be as bad
---    as keeping founders.
+--    Runs on either build. role_score and org_type both survive the
+--    rebuild untouched - the anchors did not change and neither did ROR -
+--    so both scoring scales can be written out in full and compared
+--    side by side whenever this is run.
 --
---    Recomputes the score under the new configuration without rebuilding
---    anything, so the cost of the change is known before it is paid.
+--      old:  0.60 * role + 0.40 * org,  confirm 0.65,  unresolved = 0.20
+--      new:  0.50 * role + 0.50 * org,  confirm 0.75,  unresolved = 0.00
 --
---      old:  0.60 * role + 0.40 * org,  confirm 0.65,  UNKNOWN org = 0.20
---      new:  0.50 * role + 0.50 * org,  confirm 0.75,  UNKNOWN org = 0.00
---
---    The three levers are independent, so read the columns separately: how
---    many CONFIRMED we keep, how many we lose, and - the point of the whole
---    exercise - whether the losses are the executives or the deans.
+--    The point is not the totals, which the baseline already records. It
+--    is WHICH titles the change drops. A precision-first change fails by
+--    over-tightening, and losing deans would be as bad as keeping
+--    founders - so read the 'lost' column against the title, not the sum.
 -- ###########################################################################
 WITH scored AS (
   SELECT
       lower(role_title_raw)       AS title,
       org_type,
       role_score,
-      -- the new organisation scale: anything we cannot place as academic
-      -- scores zero, so it cannot carry a title over the line
-      CASE org_type
+      CASE org_type                       -- the scale before 2026-10-08
         WHEN 'Education'  THEN 1.00
         WHEN 'Facility'   THEN 0.60
         WHEN 'Healthcare' THEN 0.50
         WHEN 'Nonprofit'  THEN 0.40
         WHEN 'Government' THEN 0.30
         WHEN 'Archive'    THEN 0.20
+        WHEN 'Other'      THEN 0.10
+        WHEN 'Funder'     THEN 0.10
+        WHEN 'UNKNOWN'    THEN 0.20
+        WHEN 'Company'    THEN 0.00
+      END                         AS org_score_old,
+      CASE org_type                       -- and after: anything we cannot
+        WHEN 'Education'  THEN 1.00       -- place as academic scores zero,
+        WHEN 'Facility'   THEN 0.60       -- so it cannot carry a title
+        WHEN 'Healthcare' THEN 0.50       -- over the line
+        WHEN 'Nonprofit'  THEN 0.40
+        WHEN 'Government' THEN 0.30
+        WHEN 'Archive'    THEN 0.20
         ELSE 0.00   -- Company, Other, Funder, UNKNOWN
-      END                         AS org_score_new,
-      org_score                   AS org_score_old
+      END                         AS org_score_new
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
   WHERE role_key = 'faculty_head'
 ),
@@ -104,13 +107,13 @@ both AS (
 )
 SELECT
     title,
-    COUNT(*)                                             AS people,
-    COUNTIF(score_old >= 0.65)                           AS confirmed_old,
-    COUNTIF(score_new >= 0.75)                           AS confirmed_new,
+    COUNT(*)                                                AS people,
+    COUNTIF(score_old >= 0.65)                              AS confirmed_old,
+    COUNTIF(score_new >= 0.75)                              AS confirmed_new,
     COUNTIF(score_old >= 0.65) - COUNTIF(score_new >= 0.75) AS lost,
-    COUNTIF(score_new <  0.50)                           AS dropped_entirely,
-    ROUND(AVG(score_old), 3)                             AS avg_old,
-    ROUND(AVG(score_new), 3)                             AS avg_new
+    COUNTIF(score_new <  0.50)                              AS dropped_entirely,
+    ROUND(AVG(score_old), 3)                                AS avg_old,
+    ROUND(AVG(score_new), 3)                                AS avg_new
 FROM both
 GROUP BY title
 HAVING people >= 20
