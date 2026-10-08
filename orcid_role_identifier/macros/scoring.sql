@@ -90,6 +90,13 @@
         '{{ m.bucket_label }}'                 AS role_detail,
         role_final_score,
         role_label,
+        -- the child's component scores, kept so the parent row stays
+        -- auditable; derived_from_role says which child they came from
+        role_score,
+        org_score,
+        dept_score,
+        title_group,
+        discipline,
         evidence_title,
         evidence_org,
         evidence_dept,

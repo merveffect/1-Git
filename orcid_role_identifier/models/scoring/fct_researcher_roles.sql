@@ -93,6 +93,10 @@ with_parents as (
 
     select
         snid, role_key, role_detail, role_final_score, role_label,
+        -- the three component scores travel with the row: without them
+        -- you cannot tell from this table WHICH axis carried a decision,
+        -- which is the first question anyone asks of a result
+        role_score, org_score, dept_score, title_group, discipline,
         evidence_title, evidence_org, evidence_dept, country_code,
         is_current, source_key, source_last_updated, derived_from_role
     from qualified
@@ -107,6 +111,11 @@ select
     role_detail,
     role_label,
     role_final_score,
+    role_score,
+    org_score,
+    dept_score,
+    title_group,
+    discipline,
     evidence_title,
     evidence_org,
     evidence_dept,
