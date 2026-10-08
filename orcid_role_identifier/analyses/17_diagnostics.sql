@@ -620,3 +620,64 @@ FROM ranked
 WHERE version_rank <= 3
 GROUP BY version_rank
 ORDER BY version_rank;
+
+
+-- ###########################################################################
+-- 9. POST-REBUILD SANITY CHECK - run this after every dbt run
+--
+--     Three things that have silently gone wrong at least once each, in
+--     one place. Read it top to bottom; if any block is wrong, nothing
+--     downstream of it is worth reading.
+-- ###########################################################################
+
+-- 9a. Did the dedup land, and did the seeds load?
+--     raw should now hold 1,781,624 rows, not 25,132,641. If it still
+--     holds 25M the qualify is not in the build.
+SELECT
+    'raw rows'        AS check_name,
+    CAST(COUNT(*) AS STRING)           AS value,
+    '1,781,624 expected'               AS expected
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers`
+UNION ALL
+SELECT
+    'distinct snid',
+    CAST(COUNT(DISTINCT snid) AS STRING),
+    'same as raw rows - one row per person'
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers`
+UNION ALL
+SELECT
+    'org_type_scores rows',
+    CAST(COUNT(*) AS STRING),
+    '80 - includes the four hcp_* keys; 50 means the seed did not reload'
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.org_type_scores`;
+
+
+-- 9b. Which roles exist, and did each get an organisation scale?
+--     A role with avg_org_score of 0 across every org_type has no rows in
+--     org_type_scores, which means dbt seed was skipped. The new hcp_*
+--     roles are the ones at risk.
+SELECT
+    role_key,
+    COUNT(*)                                        AS records,
+    COUNT(DISTINCT snid)                            AS people,
+    ROUND(AVG(org_score), 3)                        AS avg_org_score,
+    ROUND(AVG(role_score), 3)                       AS avg_role_score,
+    ROUND(AVG(dept_score), 3)                       AS avg_dept_score,
+    COUNTIF(org_score IS NULL)                      AS null_org_score
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+GROUP BY role_key
+ORDER BY people DESC;
+
+
+-- 9c. Is faculty_head on the new organisation scale?
+--     UNKNOWN averaged 0.117 on the old seed. On the new one it should be
+--     at or near 0.000 - the regex fallback can still lift a few rows, so
+--     a small positive number is fine, but 0.117 means the seed is stale.
+SELECT
+    COALESCE(org_type, '(null)')                    AS org_type,
+    COUNT(*)                                        AS records,
+    ROUND(AVG(org_score), 3)                        AS avg_org_score
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+WHERE role_key = 'faculty_head'
+GROUP BY org_type
+ORDER BY records DESC;
