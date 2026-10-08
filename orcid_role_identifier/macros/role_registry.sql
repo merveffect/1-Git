@@ -96,6 +96,11 @@
       'all'  - BOTH must match. A record with a clinical department and no
              title does not qualify, and neither does a researcher title
              with no clinical department.
+      'title' - the TITLE is required and the discipline is optional. A
+             record with no matching title cannot enter the role at all;
+             a matching discipline only adds score. This is the rule for
+             any role where the occupation IS the title - nobody becomes
+             a pharmacist by working in a pharmacy department.
 
     'all' exists because 'any' cannot express a precise role. Give
     hcp_researcher the researcher title groups and the health_clinical

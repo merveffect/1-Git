@@ -77,8 +77,10 @@ for k, v in roles.items():
     # 'all' means both axes are required, so a missing list makes the role
     # match nothing at all - a silent empty audience rather than an error.
     mode = v.get('match', 'any')
-    if mode not in ('any', 'all'):
-        warn += f" !!match must be 'any' or 'all', got {mode!r}"; ok = False
+    if mode not in ('any', 'all', 'title'):
+        warn += f" !!match must be 'any', 'all' or 'title', got {mode!r}"; ok = False
+    if mode == 'title' and not tg:
+        warn += " !!match:title needs a title group"; ok = False
     if mode == 'all' and (not tg or not dg):
         warn += " !!match:all needs BOTH a title group and a discipline"; ok = False
     if mode == 'all' and w['dept'] == 0:

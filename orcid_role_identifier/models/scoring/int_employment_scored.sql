@@ -90,12 +90,23 @@ per_role as (
         /* field-agnostic role: the discipline is ignored */ cast(null as float64)
         {%- endif %}                                as dept_score
     from with_org w
+    {#- written out per mode rather than splicing a keyword in: the old
+        version built the operator with a replace() chain, which is the
+        kind of cleverness that hides a missing bracket -#}
+    {%- set mode = role_match_mode(k) %}
     where
-        {% if tg | length > 0 -%}
+        {%- if tg | length > 0 and dg | length > 0 and mode == 'all' %}
+        -- both axes required
         w.title_group in ({{ sql_in_list(tg) }})
-        {%- endif %}
-        {%- if tg | length > 0 and dg | length > 0 %} {{ role_match_mode(k) | replace('all', 'and') | replace('any', 'or') }} {% endif %}
-        {%- if dg | length > 0 %}
+        and w.discipline in ({{ sql_in_list(dg) }})
+        {%- elif tg | length > 0 and dg | length > 0 and mode == 'any' %}
+        -- either axis is enough
+        (   w.title_group in ({{ sql_in_list(tg) }})
+         or w.discipline  in ({{ sql_in_list(dg) }}) )
+        {%- elif tg | length > 0 %}
+        -- the title is the only way in; the discipline only adds score
+        w.title_group in ({{ sql_in_list(tg) }})
+        {%- else %}
         w.discipline in ({{ sql_in_list(dg) }})
         {%- endif %}
 

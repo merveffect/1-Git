@@ -159,11 +159,33 @@ vars:
       enabled: true
       label: 'Pharmacist'
       axis: profession
+      match: title
       parent: 'hcp_broad'
       parent_bucket: 'PRACTITIONER'
       title_groups: ['pharmacist']
       disciplines: ['pharmacy']
-      weights: {role: 0.40, org: 0.20, dept: 0.40}
+      # THE TITLE IS THE ONLY WAY IN. Nobody becomes a pharmacist by
+      # working in a pharmacy department, and this role was letting them:
+      # under the old 'any' mode a record entered on the title OR the
+      # department, and query 9b measured avg_role_score at 0.135 against
+      # 0.88-0.95 for every other role - roughly 86% of the population
+      # had no pharmacist title at all. They were pharmacy academics and
+      # students. That is where 2,719 CONFIRMED against 27,789 PROBABLE
+      # came from.
+      #
+      # The department is now optional and only adds score, so the
+      # weights shift towards the title that is doing the work:
+      #
+      #   pharmacist / pharmacy / hospital    0.55+0.15+0.30 = 1.00  CONF
+      #   pharmacist / pharmacy / unresolved  0.55+0.04+0.30 = 0.89  CONF
+      #   pharmacist / no dept  / hospital    0.55+0.15      = 0.70  CONF
+      #   pharmacist / no dept  / unresolved  0.55+0.04      = 0.59  PROB
+      #
+      # A clear pharmacist title at a recognised health organisation now
+      # confirms without needing the department, which it could not do
+      # before - the old 0.40 title weight capped a title-only record at
+      # exactly 0.60.
+      weights: {role: 0.55, org: 0.15, dept: 0.30}
       thresholds: {confirmed: 0.60, probable: 0.30}
       current_only: false
 
