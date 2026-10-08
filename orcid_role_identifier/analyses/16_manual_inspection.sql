@@ -287,9 +287,22 @@ LIMIT 40;
 
 
 -- ###########################################################################
--- 9. AFTER THE CHANGE — did the rejection rate move, and where?
---    Compare against the previous build: 47,502 assigned titles carrying
---    57.5% of records, 261,498 rejected carrying 42.5%.
+-- 9. AFTER THE CHANGE - did the rejection rate move, and where?
+--
+--    MEASURED, 2026-10-08. Dropping the margin gate:
+--
+--      axis         assigned values        assigned records
+--      title        47,502 -> 261,313      57.50% -> 96.07%   (+38.6 pt)
+--      discipline   57,104 -> 278,332      35.16% -> 83.38%   (+48.2 pt)
+--
+--    11.8M title records and 13.0M department records came back. The
+--    discipline axis gained more than the title axis, which is why hcp
+--    and pharmacist - the only two roles that weight discipline - were
+--    the worst hit by the gate.
+--
+--    COVERAGE IS NOT PRECISION. These numbers say we now have an opinion
+--    about 96% of titles; they say nothing about whether the opinion is
+--    right. The gate against that is analyses/14 (hcp vs Phase-1).
 -- ###########################################################################
 SELECT
     'title' AS axis, is_assigned,
@@ -309,8 +322,27 @@ ORDER BY axis, is_assigned DESC;
 
 -- ###########################################################################
 -- 10. DID faculty_head STOP COLLECTING COMPANY EXECUTIVES?
---     The first run had Director, CEO, President and Founder as the top
---     four, with Dean sixteenth on 33 people.
+--      The first run had Director, CEO, President and Founder as the top
+--      four, with Dean sixteenth on 33 people.
+--
+--      MEASURED, 2026-10-08: yes. CEO, President and Founder are gone
+--      from the top 50. It now reads Personal Chair, Department Chair,
+--      Chair Professor, Head of Department, Head of Institute - all at
+--      universities. Program Director at NSF and NCI correctly land on
+--      PROBABLE (0.58, 0.59) rather than CONFIRMED.
+--
+--      Four residual leaks, all small, none worth a change on its own:
+--        - "Chancellor's Fellow" (~21 people) is an early-career
+--          fellowship, not leadership. The 'vice chancellor' anchor
+--          pulls it in.
+--        - "Department of Archaeology" (5) is a department name in the
+--          role field, latching onto 'head of department'.
+--        - "Director, Ministry of Health" (6) and Chief at NIH (5) are
+--          government, not faculty.
+--        - Director at hospitals - St. Jude, MGH, Charite, Cleveland
+--          Clinic - scores 0.80 and is kept. Judgement call: these are
+--          academic medical centres, so arguably correct for the
+--          audience. Left in deliberately.
 -- ###########################################################################
 SELECT
     evidence_title,
