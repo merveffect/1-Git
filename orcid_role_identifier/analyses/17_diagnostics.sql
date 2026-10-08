@@ -702,3 +702,71 @@ FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employmen
 WHERE role_key = 'faculty_head'
 GROUP BY org_type
 ORDER BY records DESC;
+
+
+-- ###########################################################################
+-- 10. PHARMACIST: WHAT WOULD "match: all" ACTUALLY COST?
+--
+--     Query 9b showed pharmacist with avg_role_score 0.135 against
+--     0.88-0.95 for every other role. The role is 'match: any', so a
+--     record enters on the pharmacist TITLE or the pharmacy DEPARTMENT,
+--     and that 0.135 says roughly 86% of the population arrives on the
+--     department alone - pharmacy academics and students, not pharmacists.
+--
+--     Weights are 0.40 title / 0.20 org / 0.40 dept, confirming at 0.60:
+--
+--       both axes      0.40*role + 0.20*org + 0.40*dept   ~0.85  CONFIRMED
+--       title only     0.40*role + 0.20*org               <=0.60 borderline
+--       dept only                  0.20*org + 0.40*dept   <=0.60 borderline
+--
+--     The two single-axis routes cap at exactly 0.60, so they confirm only
+--     when the organisation is perfect and sit in PROBABLE otherwise. That
+--     is the 2,719 CONFIRMED against 27,789 PROBABLE in the baseline.
+--
+--     THE HIDDEN COST. pharmacist rolls up into hcp_broad, and a pharmacy
+--     department resolves to 'pharmacy', NOT 'health_clinical'. So a
+--     dept-only pharmacist is not in hcp_broad on their own merit - they
+--     are there purely through the roll-up. Dropping them from pharmacist
+--     drops them from hcp_broad too, unless they independently hold a
+--     practitioner title or a clinical department. The last column counts
+--     exactly who would survive.
+--
+--     Compare the two options before choosing:
+--       match: all        removes routes 2 and 3 from the role entirely
+--       confirmed: 0.70   keeps them in the role as PROBABLE, and only
+--                         both-axes cases ship, since only CONFIRMED does
+-- ###########################################################################
+WITH p AS (
+  SELECT
+      e.snid,
+      CASE
+        WHEN e.role_score > 0 AND COALESCE(e.dept_score, 0) > 0
+                                 THEN '1. both axes - survives match:all'
+        WHEN e.role_score > 0    THEN '2. pharmacist title only'
+        ELSE                          '3. pharmacy department only'
+      END                                                   AS route,
+      e.org_score,
+      0.40 * e.role_score + 0.20 * e.org_score
+           + 0.40 * COALESCE(e.dept_score, 0)               AS score
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
+  WHERE e.role_key = 'pharmacist'
+),
+-- hcp_broad rows a person earns WITHOUT the pharmacist roll-up
+hcp_own AS (
+  SELECT DISTINCT snid
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+  WHERE role_key = 'hcp_broad'
+)
+SELECT
+    p.route,
+    COUNT(*)                                        AS people,
+    ROUND(AVG(p.org_score), 3)                      AS avg_org_score,
+    ROUND(AVG(p.score), 3)                          AS avg_score,
+    COUNTIF(p.score >= 0.60)                        AS confirmed_now,
+    COUNTIF(p.score >= 0.70)                        AS confirmed_if_070,
+    COUNTIF(p.score >= 0.30 AND p.score < 0.60)     AS probable_now,
+    COUNTIF(h.snid IS NOT NULL)                     AS also_in_hcp_on_own_merit
+FROM p
+LEFT JOIN hcp_own h USING (snid)
+GROUP BY p.route
+ORDER BY p.route;
