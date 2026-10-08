@@ -6,8 +6,20 @@
 --     99,000 people Phase-1 found and we do not have. Query 5 sizes the new
 --     HCP sub-roles BEFORE a rebuild, so the audience is known in advance.
 --
---     Queries 1, 2 and 5 read the CURRENT tables, so run them BEFORE the
---     next dbt run. They are the "before" the change is measured against.
+--     WHEN TO RUN: after the rebuild, with one optional exception.
+--
+--     Query 2 is the only one that CANNOT run afterwards - it compares the
+--     old faculty_head scoring against the new, and the rebuild overwrites
+--     the old org_score it needs. It is optional all the same, because the
+--     numbers it would establish are already recorded in
+--     docs/BASELINE_2026-10-08.md. Run it only if the per-title breakdown
+--     of what the change costs is worth a minute.
+--
+--     Everything else is better after the rebuild, where it reads the real
+--     result instead of a simulation. Queries 1 and 5 in particular: query
+--     1 compares against the top-20 titles already written down in the
+--     baseline, and query 5 is a simulation that the rebuild replaces with
+--     the actual audiences.
 --
 --     Replace TODO_phase1_table in queries 3 and 4 the same way as in
 --     analyses/14.
@@ -24,7 +36,8 @@
 --    executives vanish from a top-50 even when thousands are present. That
 --    reading was wrong, and this query is what settles it.
 --
---    Baseline to compare against (analyses/15, scored_date 2026-10-07):
+--    Run this AFTER the rebuild. The "before" is already recorded, so
+--    there is nothing to capture first:
 --      Director 876, Founder 303, President 290, Executive Director 169,
 --      Managing Director 137, CEO 78  ...  Dean 32
 -- ###########################################################################
@@ -42,7 +55,14 @@ LIMIT 40;
 
 
 -- ###########################################################################
--- 2. DRY RUN OF THE NEW faculty_head RULES
+-- 2. DRY RUN OF THE NEW faculty_head RULES   [OPTIONAL, BEFORE-ONLY]
+--
+--    The rebuild overwrites the old org_score this needs, so it is the one
+--    query here that cannot be run afterwards. It is still optional: the
+--    baseline document already records the before-counts. Its unique value
+--    is seeing, per title, exactly WHO the change drops - which is the real
+--    risk of a precision-first change, since losing deans would be as bad
+--    as keeping founders.
 --
 --    Recomputes the score under the new configuration without rebuilding
 --    anything, so the cost of the change is known before it is paid.
@@ -124,7 +144,10 @@ WITH phase1_missing AS (
   LEFT JOIN (
       SELECT DISTINCT snid
       FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
-      WHERE role_key = 'hcp_broad'
+      -- tolerate either name: 'hcp' before the 2026-10-08 rebuild,
+      -- 'hcp_broad' after. Pinning it to one makes every person look
+      -- missing when run against the other build.
+      WHERE role_key IN ('hcp', 'hcp_broad')
   ) n USING (snid)
   WHERE p.phase1_label IN ('CONFIRMED_HCP_CANDIDATE', 'PROBABLE_HCP')
     AND n.snid IS NULL
@@ -238,7 +261,7 @@ WITH candidates AS (
   JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
     ON  t.title_key = r.title_key
     AND t.is_assigned
-  WHERE e.role_key = 'hcp_broad'
+  WHERE e.role_key IN ('hcp', 'hcp_broad')
     AND e.discipline = 'health_clinical'     -- the AND arm of match:all
     AND e.dept_score > 0
 ),
