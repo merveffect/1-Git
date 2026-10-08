@@ -176,30 +176,52 @@ vars:
       axis: position
       title_groups: ['leadership']
       disciplines: []
-      # PRECISION ONLY. A second source for faculty leadership is coming,
-      # and it will extend coverage directly. So this role is not trying
-      # to be complete - it is trying to be right, and anything borderline
-      # is left out on purpose.
+      # PRECISION ONLY. A second source for faculty leadership is coming
+      # and will extend coverage directly, so this role is not trying to
+      # be complete - it is trying to be right.
       #
-      # Three levers, each measurable on its own:
-      #   1. The unresolved-organisation score is 0.00, not 0.20
-      #      (org_type_scores.csv). An organisation we cannot identify
-      #      can no longer carry a title over the line.
-      #   2. The organisation now carries half the score, because it is
-      #      the only thing that separates a dean from a founder.
-      #   3. The threshold is 0.75, so both halves have to be strong.
+      # ONE lever, not three. analyses/17 query 2a measured the role and
+      # killed the other two:
       #
-      #   dean / university           0.50 + 0.50 = 1.00  CONFIRMED
-      #   dean / teaching hospital    0.50 + 0.25 = 0.75  CONFIRMED
-      #   dean / unresolved org       0.50 + 0.00 = 0.50  PROBABLE, not shipped
-      #   founder / company           0.40 + 0.00 = 0.40  dropped entirely
-      #   founder / unresolved org    0.40 + 0.00 = 0.40  dropped entirely
+      #   org_type     records   share   avg org   avg role
+      #   UNKNOWN       23,996   51.3%     0.117      0.876
+      #   education     14,445   30.9%     1.000      0.880
+      #   healthcare     2,482    5.3%     0.500      0.897
+      #   facility       1,501    3.2%     0.600      0.887
+      #   funder         1,811    3.9%     0.413      0.880
+      #   government       766    1.6%     0.300      0.860
+      #   company          762    1.6%     0.000      0.849
       #
-      # Residual, accepted knowingly: a corporate title at an organisation
-      # that ROR resolves as academic still confirms. Measured by
-      # analyses/17 query 1.
-      weights: {role: 0.50, org: 0.50, dept: 0.00}
-      thresholds: {confirmed: 0.75, probable: 0.50}
+      # Half the role has an organisation we cannot resolve. Zeroing that
+      # score is the whole fix - at 0.60 / 0.40 with a 0.65 threshold:
+      #
+      #   education    0.60*0.880 + 0.40*1.000 = 0.928  CONFIRMED
+      #   facility     0.60*0.887 + 0.40*0.600 = 0.772  CONFIRMED
+      #   healthcare   0.60*0.897 + 0.40*0.500 = 0.738  CONFIRMED
+      #   nonprofit    0.60*0.877 + 0.40*0.400 = 0.686  CONFIRMED
+      #   government   0.60*0.860 + 0.40*0.300 = 0.636  PROBABLE
+      #   company      0.60*0.849 + 0.00      = 0.509  PROBABLE
+      #   UNKNOWN      0.60*0.876 + 0.00      = 0.526  PROBABLE
+      #
+      # Every confirmed row now has a verified academic or clinical
+      # organisation behind it, and nothing borderline survives.
+      #
+      # The weights stay at 0.60 / 0.40 and the threshold at 0.65. Moving
+      # them to 0.50 / 0.50 and 0.75, which is what this comment said
+      # before query 2a ran, would have thrown away two legitimate groups:
+      #
+      #   healthcare   0.50*0.897 + 0.50*0.500 = 0.699   misses 0.75
+      #   facility     0.50*0.887 + 0.50*0.600 = 0.744   misses 0.75
+      #
+      # Teaching hospitals and research institutes, lost for nothing. And
+      # healthcare would have missed a 0.70 threshold by 0.001 - the same
+      # razor-edge failure the similarity margin was removed for.
+      #
+      # Cost, knowingly: around 8,100 confirmations go, and roughly 1,800
+      # of them are real academic leaders at organisations ROR cannot
+      # place. The incoming source is where they come back from.
+      weights: {role: 0.60, org: 0.40, dept: 0.00}
+      thresholds: {confirmed: 0.65, probable: 0.40}
       current_only: true
 
     lecturer:

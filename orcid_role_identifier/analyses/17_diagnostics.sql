@@ -98,14 +98,18 @@ WITH both AS (
   SELECT
       LOWER(role_title_raw)                             AS title,
       0.60 * role_score + 0.40 * org_score              AS score_old,
-      0.50 * role_score + 0.50 * CASE org_type
-        WHEN 'Education'  THEN 1.00
-        WHEN 'Facility'   THEN 0.60
-        WHEN 'Healthcare' THEN 0.50
-        WHEN 'Nonprofit'  THEN 0.40
-        WHEN 'Government' THEN 0.30
-        WHEN 'Archive'    THEN 0.20
-        ELSE 0.00   -- Company, Other, Funder, UNKNOWN and NULL
+      -- org_type is LOWERCASE for everything ROR resolves - 'education',
+      -- 'healthcare', 'company' - and only 'UNKNOWN' is upper case. The
+      -- capitalised seed spellings matched nothing but UNKNOWN, which is
+      -- what made the first run of this query unreadable.
+      0.60 * role_score + 0.40 * CASE LOWER(org_type)
+        WHEN 'education'  THEN 1.00
+        WHEN 'facility'   THEN 0.60
+        WHEN 'healthcare' THEN 0.50
+        WHEN 'nonprofit'  THEN 0.40
+        WHEN 'government' THEN 0.30
+        WHEN 'archive'    THEN 0.20
+        ELSE 0.00   -- company, other, funder, UNKNOWN and NULL
       END                                               AS score_new
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
   WHERE role_key = 'faculty_head'
@@ -114,9 +118,9 @@ SELECT
     title,
     COUNT(*)                                                AS people,
     COUNTIF(score_old >= 0.65)                              AS confirmed_old,
-    COUNTIF(score_new >= 0.75)                              AS confirmed_new,
-    COUNTIF(score_old >= 0.65) - COUNTIF(score_new >= 0.75) AS lost,
-    COUNTIF(score_new <  0.50)                              AS dropped_entirely,
+    COUNTIF(score_new >= 0.65)                              AS confirmed_new,
+    COUNTIF(score_old >= 0.65) - COUNTIF(score_new >= 0.65) AS lost,
+    COUNTIF(score_new <  0.40)                              AS dropped_entirely,
     ROUND(AVG(score_old), 3)                                AS avg_old,
     ROUND(AVG(score_new), 3)                                AS avg_new
 FROM both
