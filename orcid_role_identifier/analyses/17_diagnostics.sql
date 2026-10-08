@@ -222,6 +222,9 @@ SELECT
       WHEN s.n_employments = 0         THEN 'B. in the source, no employment records at all'
       WHEN s.n_public = 0              THEN 'C. employments exist but NONE are PUBLIC'
       WHEN c.snid IS NULL              THEN 'D. public employments, no clinical department'
+      -- note: D only tests the DEPARTMENT. But anyone here is also absent
+      -- from hcp_broad, which admits a clinical TITLE on its own, so D
+      -- means neither axis carried a clinical signal. Query 8 opens it up.
       WHEN a.snid IS NULL              THEN 'E1. clinical department, never entered scoring'
       ELSE                                  'E2. entered scoring, produced no hcp_broad row'
     END                                                   AS stage,
@@ -433,3 +436,136 @@ SELECT
 FROM per_snid
 GROUP BY bucket
 ORDER BY rows_total DESC;
+
+
+-- ###########################################################################
+-- 7c. IS THE GRAIN (snid, orcid_id) OR (orcid_id, version)?
+--
+--     Query 7b ruled out both of the causes query 7 proposed. There is no
+--     placeholder snid - no single value carries millions of rows - and it
+--     is not a flat snapshot either, because the counts run from 1 to over
+--     100 in a smooth curve:
+--
+--       1 row         185,557 snids    185,557 rows    0.7%
+--       2-5 rows      558,944 snids  2,107,081 rows    8.4%
+--       6-20 rows     699,168 snids  7,519,793 rows   29.9%
+--       21-100 rows   318,713 snids 12,591,948 rows   50.1%
+--       over 100      19,242 snids  2,728,262 rows   10.9%
+--
+--     _sources.yml claims "One row per person" for this table. It is not.
+--     The two readings left differ enormously in what they imply:
+--
+--       VERSIONS - many rows per ORCID profile, one per load. Harmless
+--         data-wise, but raw should keep the latest per snid: 14x less to
+--         scan, honest dictionary frequencies, and no risk of scoring an
+--         employment the person has since deleted.
+--
+--       MANY ORCID IDS PER SNID - the snid to ORCID match is overmatched.
+--         Then fct_researcher_roles, which is grained on snid, is
+--         assigning one marketing contact the roles of up to a hundred
+--         different people. That is a correctness bug, it is upstream of
+--         us, and no dedup here fixes it.
+--
+--     If distinct_orcid equals source_rows, it is the second one.
+-- ###########################################################################
+SELECT
+    COUNT(*)                                                AS source_rows,
+    COUNT(DISTINCT orcid_id)                                AS distinct_orcid,
+    COUNT(DISTINCT snid)                                    AS distinct_snid,
+    ROUND(COUNT(*) / COUNT(DISTINCT orcid_id), 2)           AS rows_per_orcid,
+    ROUND(COUNT(DISTINCT orcid_id) / COUNT(DISTINCT snid), 2) AS orcid_per_snid
+FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`;
+
+
+-- 7d. The worst offenders: versions of one profile, or many profiles?
+SELECT
+    snid,
+    COUNT(*)                    AS rows_for_this_snid,
+    COUNT(DISTINCT orcid_id)    AS distinct_orcid_ids,
+    MIN(last_updated_at)        AS first_seen,
+    MAX(last_updated_at)        AS last_seen
+FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`
+GROUP BY snid
+ORDER BY rows_for_this_snid DESC
+LIMIT 20;
+
+
+-- ###########################################################################
+-- 8. INSIDE STAGE D - WHAT DO WE SAY ABOUT THESE PEOPLE INSTEAD?
+--
+--     Query 3b settled where the 118,664 go missing, and it is not where I
+--     said. Stages B and C are EMPTY: every one of them has employment
+--     records and every one has at least one PUBLIC record, so the
+--     visibility filter explains none of it. E2 is 1 person, so scoring
+--     explains none of it either.
+--
+--     99.86% simply carry no clinical signal in our copy - no department
+--     we read as health_clinical and no title we read as a clinician.
+--     Phase-1 recorded clinical departments for thousands of them
+--     (neurology 422, radiology 348, urology 298 in analyses/14 query 2),
+--     so either it read a field we do not, or it read a record we do not
+--     have.
+--
+--     8a asks what we assign them instead. If they come back as
+--     teaching_academic over life_biomedical, that is a discipline-anchor
+--     problem and it is fixable in a seed. If they come back with nothing
+--     at all, the data is not reaching us and the fix is upstream.
+-- ###########################################################################
+
+-- 8a. Where do they land instead?
+WITH missing AS (
+  SELECT DISTINCT p.snid
+  FROM `researcher-360-prod-e7fd74be.researcher_profiles.TODO_phase1_table` p
+  LEFT JOIN (
+      SELECT DISTINCT snid
+      FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+      WHERE role_key IN ('hcp', 'hcp_broad')
+  ) n USING (snid)
+  WHERE p.phase1_label IN ('CONFIRMED_HCP_CANDIDATE', 'PROBABLE_HCP')
+    AND n.snid IS NULL
+)
+SELECT
+    COALESCE(t.title_group, '(no title group)')      AS title_group,
+    COALESCE(d.discipline,  '(no discipline)')       AS discipline,
+    COUNT(DISTINCT r.snid)                           AS people,
+    COUNT(*)                                         AS records
+FROM missing m
+JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
+  ON r.snid = m.snid
+LEFT JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+  ON t.title_key = r.title_key AND t.is_assigned
+LEFT JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline` d
+  ON d.department = r.department AND d.is_assigned
+GROUP BY title_group, discipline
+ORDER BY people DESC
+LIMIT 40;
+
+
+-- 8b. Side by side: what Phase-1 recorded against what we hold.
+--     Thirty people is enough to see whether the record is missing or
+--     merely unrecognised.
+WITH missing AS (
+  SELECT p.snid, p.orcid_role, p.orcid_organisation, p.orcid_department
+  FROM `researcher-360-prod-e7fd74be.researcher_profiles.TODO_phase1_table` p
+  LEFT JOIN (
+      SELECT DISTINCT snid
+      FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+      WHERE role_key IN ('hcp', 'hcp_broad')
+  ) n USING (snid)
+  WHERE p.phase1_label IN ('CONFIRMED_HCP_CANDIDATE', 'PROBABLE_HCP')
+    AND n.snid IS NULL
+    AND p.orcid_department IS NOT NULL
+  LIMIT 30
+)
+SELECT
+    m.snid,
+    m.orcid_role                AS phase1_title,
+    m.orcid_department          AS phase1_department,
+    r.role_title_raw            AS our_title,
+    r.department_raw            AS our_department,
+    r.organisation_raw          AS our_org,
+    r.is_current
+FROM missing m
+LEFT JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
+  ON r.snid = m.snid
+ORDER BY m.snid, r.is_current DESC;
