@@ -79,3 +79,13 @@ hcp_administrator,Funder,0.15,
 hcp_administrator,Archive,0.10,
 hcp_administrator,Other,0.15,
 hcp_administrator,UNKNOWN,0.20,no ROR match
+lecturer,Education,1.00,university / school - the primary target
+lecturer,Facility,0.70,research institute with teaching
+lecturer,Healthcare,0.60,teaching hospital
+lecturer,Nonprofit,0.50,
+lecturer,Government,0.40,training academy
+lecturer,Company,0.20,corporate trainer, not an academic lecturer
+lecturer,Archive,0.20,
+lecturer,Other,0.20,
+lecturer,Funder,0.20,funding body - weak signal for every role
+lecturer,UNKNOWN,0.25,no ROR match

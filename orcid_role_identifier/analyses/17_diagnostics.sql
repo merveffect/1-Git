@@ -90,6 +90,27 @@ GROUP BY org_type
 ORDER BY records DESC;
 
 
+-- 2b. [RETIRED 2026-10-08 - read query 1 instead]
+--
+--     This compares the stored org_score against a CASE rebuilt from
+--     org_type. That CASE cannot see the organisation-name fallback, and
+--     the fallback is not a detail - for an unresolved organisation the
+--     real pipeline computes
+--
+--       greatest(seed score for UNKNOWN,
+--                best matching row in org_name_patterns)
+--
+--     and faculty_head's first pattern awards 1.00 to any name containing
+--     universit / college / academy / faculty / institut. So a dean at a
+--     university ROR cannot place is still confirmed on the name alone,
+--     which is the point of having the fallback.
+--
+--     That means 2b's 'lost' column is not the cost of the configured
+--     change. It is the cost of ALSO deleting the name-pattern rescue,
+--     which nobody proposed. Query 1 reads the real table and is the
+--     honest answer; 9c confirms UNKNOWN now averages 0.118, which is the
+--     pattern firing on about 12% of unresolved rows and zero on the rest.
+--
 -- 2b. PER TITLE: what the change keeps, loses, and drops
 --     Old score uses the org_score STORED on the row, so this must run
 --     BEFORE the rebuild overwrites it. New score is the only thing
