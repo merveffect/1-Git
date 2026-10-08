@@ -46,3 +46,43 @@ select
 
 from {{ source('researcher_profiles', 'orcid_researchers') }}
 where snid is not null
+
+/*
+    ONE ROW PER PERSON. The source is versioned, not deduplicated, which
+    nothing said until analyses/17 measured it:
+
+        rows                25,132,641
+        distinct orcid_id    1,781,624
+        distinct snid        1,781,624
+        orcid per snid            1.00   <- the match is clean
+        rows per orcid           14.11   <- every profile is here ~14 times
+
+    So "where snid is not null" above removes nothing at all, and the
+    1.76M people in the baseline is a distinct count rather than what the
+    pipeline was actually processing. Three consequences, all fixed by
+    this one window:
+
+      COST       every model downstream scanned 25.1M rows for 1.78M
+                 people. Fourteen times the work.
+
+      FREQUENCY  dictionary frequencies were inflated by the same factor,
+                 so tier_a_min_frequency 50 was really about 3 real
+                 occurrences and tier_b_min_frequency 3 was no floor at
+                 all. The tiers now mean what they say.
+
+      STALENESS  the worst of the three. Scoring picks a person's
+                 best-matching employment across every row it can see, so
+                 an employment someone DELETED from their ORCID profile
+                 still sat in an older version and could be the record we
+                 labelled them on. Keeping only the newest version means
+                 we read what the person's profile says today.
+
+    Rows sharing the maximum last_updated_at are the same profile
+    unchanged between loads, so which of them wins does not matter.
+    analyses/17 query 7f is the check on that assumption; if it ever fails
+    the ordering needs a real ingestion timestamp, not this column.
+*/
+qualify row_number() over (
+    partition by snid
+    order by last_updated_at desc
+) = 1

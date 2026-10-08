@@ -7,7 +7,12 @@ sources:
     tables:
       - name: orcid_researchers
         description: >
-          ORCID profiles. One row per person.
+          ORCID profiles, VERSIONED - about 14 rows per person, one per
+          load, NOT one row per person as this description claimed until
+          2026-10-08. Measured: 25,132,641 rows for 1,781,624 distinct
+          orcid_id and the same 1,781,624 distinct snid, so snid to ORCID
+          is strictly one to one and only the versioning is duplicated.
+          raw_orcid_researchers keeps the newest row per snid.
           employments / educations / publications / keywords / peer_reviews
           are REPEATED STRUCTs. Each record carries its own visibility.
       - name: audience_builder_big

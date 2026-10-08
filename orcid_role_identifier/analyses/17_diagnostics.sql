@@ -569,3 +569,54 @@ FROM missing m
 LEFT JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
   ON r.snid = m.snid
 ORDER BY m.snid, r.is_current DESC;
+
+
+-- ###########################################################################
+-- 7e / 7f. THE VERSION KEY
+--
+--     ANSWERED by 7c: orcid_per_snid is exactly 1.00 and rows_per_orcid is
+--     14.11, so the snid to ORCID match is clean and the duplication is
+--     pure versioning. raw_orcid_researchers now keeps the newest row per
+--     snid, ordered by last_updated_at.
+--
+--     That ordering rests on one assumption: rows sharing the maximum
+--     last_updated_at are the same profile unchanged between loads, so
+--     picking any of them gives the same answer. 7f checks it. If
+--     distinct_employment_counts comes back above 1 for the newest
+--     version, the assumption is wrong and the ordering needs a real
+--     ingestion timestamp - which 7e is for.
+-- ###########################################################################
+
+-- 7e. What columns could carry a load timestamp?
+SELECT column_name, data_type
+FROM `researcher-360-prod-e7fd74be.researcher_profiles.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = 'orcid_researchers'
+ORDER BY ordinal_position;
+
+
+-- 7f. Do the rows sharing the newest last_updated_at agree with each other?
+WITH ranked AS (
+  SELECT
+      snid,
+      last_updated_at,
+      ARRAY_LENGTH(employments) AS n_emp,
+      DENSE_RANK() OVER (PARTITION BY snid ORDER BY last_updated_at DESC) AS version_rank
+  FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`
+  WHERE snid IN (
+      SELECT snid
+      FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`
+      GROUP BY snid
+      HAVING COUNT(*) BETWEEN 20 AND 40
+      LIMIT 200
+  )
+)
+SELECT
+    version_rank,
+    COUNT(*)                                        AS rows_at_this_rank,
+    COUNT(DISTINCT snid)                            AS people,
+    ROUND(COUNT(*) / COUNT(DISTINCT snid), 2)       AS rows_per_person,
+    COUNT(DISTINCT FORMAT('%t|%t', snid, n_emp))    AS distinct_snid_empcount_pairs
+FROM ranked
+WHERE version_rank <= 3
+GROUP BY version_rank
+ORDER BY version_rank;
