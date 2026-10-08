@@ -398,18 +398,22 @@ FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`;
 --    snapshot.
 -- ###########################################################################
 
--- 7a. The shape of the duplication
+-- 7a. The shape of the duplication.
+--     Reads the snid column only. Do not add ARRAY_LENGTH(employments)
+--     here - that forces a scan of the nested array across all 25.1M
+--     rows, which is the expensive column in this table.
 SELECT
     snid,
-    COUNT(*)                                    AS rows_for_this_snid,
-    COUNT(DISTINCT ARRAY_LENGTH(employments))   AS distinct_employment_counts
+    COUNT(*)    AS rows_for_this_snid
 FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`
 GROUP BY snid
 ORDER BY rows_for_this_snid DESC
 LIMIT 20;
 
 
--- 7b. The distribution, so one outlier does not hide the pattern
+-- 7b. The distribution, so one outlier does not hide the pattern.
+--     Also snid-only, so run this one first if you want the answer for
+--     the price of a single column.
 WITH per_snid AS (
   SELECT snid, COUNT(*) AS n
   FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`
