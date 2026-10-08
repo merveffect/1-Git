@@ -217,9 +217,29 @@ vars:
       # healthcare would have missed a 0.70 threshold by 0.001 - the same
       # razor-edge failure the similarity margin was removed for.
       #
-      # Cost, knowingly: around 8,100 confirmations go, and roughly 1,800
-      # of them are real academic leaders at organisations ROR cannot
-      # place. The incoming source is where they come back from.
+      # MEASURED COST (analyses/17 query 2b, corrected). My earlier
+      # estimate of ~8,100 lost confirmations came from the broken version
+      # of that query, which could only see UNKNOWN rows. The real cost is
+      # far smaller and it falls exactly where it should, because a
+      # confirmed UNKNOWN row needed role_score >= 0.95 and few had it:
+      #
+      #   academic titles        corporate titles       ambiguous
+      #   personal chair   -0%   executive director -19%  section chief -49%
+      #   chair professor  -6%   managing director  -20%  principal     -60%
+      #   vice dean        -8%   vice president     -23%
+      #   deputy dean      -8%   ceo                -26%
+      #   department chair -9%   president          -28%
+      #   rector          -10%   chairman           -29%
+      #
+      # Nothing falls below PROBABLE anywhere - dropped_entirely is 0 for
+      # every title - so this removes confirmations, not people.
+      #
+      # Residual, accepted: roughly 530 corporate titles still confirm,
+      # because they sit at organisations ROR resolves as 'education'.
+      # Some of those are real - a university's Executive Director of
+      # Research is academic leadership - so this is a definition question
+      # for marketing, not a scoring bug. The incoming faculty-leadership
+      # source is where the genuinely lost academics come back from.
       weights: {role: 0.60, org: 0.40, dept: 0.00}
       thresholds: {confirmed: 0.65, probable: 0.40}
       current_only: true

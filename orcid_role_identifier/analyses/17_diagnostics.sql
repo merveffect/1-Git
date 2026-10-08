@@ -96,7 +96,7 @@ ORDER BY records DESC;
 --     reconstructed, and only from org_type.
 WITH both AS (
   SELECT
-      LOWER(role_title_raw)                             AS title,
+      LOWER(evidence_title)                             AS title,
       0.60 * role_score + 0.40 * org_score              AS score_old,
       -- org_type is LOWERCASE for everything ROR resolves - 'education',
       -- 'healthcare', 'company' - and only 'UNKNOWN' is upper case. The
@@ -185,15 +185,22 @@ WITH phase1_missing AS (
   WHERE p.phase1_label IN ('CONFIRMED_HCP_CANDIDATE', 'PROBABLE_HCP')
     AND n.snid IS NULL
 ),
--- the raw ORCID source, BEFORE our two filters
+-- The raw ORCID source, BEFORE our two filters.
+--
+-- AGGREGATED BY SNID, which is not cosmetic. The source holds 25,132,641
+-- rows against 1,781,624 distinct snids (query 6), so joining to it
+-- un-aggregated multiplies every person by about 16 - which is exactly
+-- what made the first two runs of this query total 1.8M people instead
+-- of the 118,664 it is meant to split.
 source_all AS (
   SELECT
       snid,
-      ARRAY_LENGTH(employments)                                   AS n_employments,
-      (SELECT COUNT(*) FROM UNNEST(employments) e
-        WHERE UPPER(e.visibility) = 'PUBLIC')                     AS n_public
+      SUM(ARRAY_LENGTH(employments))                              AS n_employments,
+      SUM((SELECT COUNT(*) FROM UNNEST(employments) e
+            WHERE UPPER(e.visibility) = 'PUBLIC'))                AS n_public
   FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`
   WHERE snid IS NOT NULL
+  GROUP BY snid
 ),
 -- anyone we scored at all, under any role
 scored_any AS (
@@ -364,3 +371,61 @@ SELECT
     COUNTIF(snid IS NOT NULL AND TRIM(snid) != '')      AS usable_snid,
     COUNT(DISTINCT IF(TRIM(snid) != '', snid, NULL))    AS distinct_usable_snid
 FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`;
+
+
+-- ###########################################################################
+-- 7. WHY DOES THE SOURCE HOLD 25.1M ROWS FOR 1.78M PEOPLE?
+--
+--    Query 6 found 25,132,641 rows, no NULL and no empty snid, and only
+--    1,781,624 distinct snids - about 14 rows per snid. "snid is not null"
+--    in raw_orcid_researchers therefore filters nothing, and the 1.76M in
+--    the baseline is a distinct count, not the row count the pipeline
+--    actually processes.
+--
+--    Two very different causes, needing two very different fixes:
+--
+--      PLACEHOLDER   one sentinel value on tens of millions of unmatched
+--                    profiles. Then ~23M junk rows collapse into a single
+--                    fake person, and every title they carry is inflating
+--                    the dictionary. The filter needs to exclude it.
+--
+--      SNAPSHOT      a history table with one row per person per load.
+--                    Then the pipeline is processing ~14 copies of
+--                    everyone and raw should keep only the latest.
+--
+--    7a tells you which. If the top row is one snid with millions of rows,
+--    it is a placeholder. If the counts are flat at around 14, it is a
+--    snapshot.
+-- ###########################################################################
+
+-- 7a. The shape of the duplication
+SELECT
+    snid,
+    COUNT(*)                                    AS rows_for_this_snid,
+    COUNT(DISTINCT ARRAY_LENGTH(employments))   AS distinct_employment_counts
+FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`
+GROUP BY snid
+ORDER BY rows_for_this_snid DESC
+LIMIT 20;
+
+
+-- 7b. The distribution, so one outlier does not hide the pattern
+WITH per_snid AS (
+  SELECT snid, COUNT(*) AS n
+  FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`
+  GROUP BY snid
+)
+SELECT
+    CASE
+      WHEN n = 1            THEN '1 row'
+      WHEN n BETWEEN 2 AND 5    THEN '2-5 rows'
+      WHEN n BETWEEN 6 AND 20   THEN '6-20 rows'
+      WHEN n BETWEEN 21 AND 100 THEN '21-100 rows'
+      ELSE                           'over 100 rows'
+    END                                 AS bucket,
+    COUNT(*)                            AS snids,
+    SUM(n)                              AS rows_total,
+    ROUND(SUM(n) / (SELECT SUM(n) FROM per_snid), 4) AS share_of_rows
+FROM per_snid
+GROUP BY bucket
+ORDER BY rows_total DESC;
