@@ -53,57 +53,62 @@ LIMIT 40;
 
 
 -- ###########################################################################
--- 2. WHAT THE NEW faculty_head RULES COST, PER TITLE
+-- 2. WHAT THE NEW faculty_head RULES COST
 --
---    Runs on either build. role_score and org_type both survive the
---    rebuild untouched - the anchors did not change and neither did ROR -
---    so both scoring scales can be written out in full and compared
---    side by side whenever this is run.
+--    REWRITTEN 2026-10-08 after the first run returned confirmed_new = 0
+--    for every single title, with avg_old exactly 0.680 and avg_new
+--    exactly 0.500 across 21 titles of wildly different sizes. Identical
+--    averages like that are not a result, they are a symptom: every row
+--    the query could see had org_type = 'UNKNOWN' and role_score = 1.0.
 --
---      old:  0.60 * role + 0.40 * org,  confirm 0.65,  unresolved = 0.20
---      new:  0.50 * role + 0.50 * org,  confirm 0.75,  unresolved = 0.00
+--      0.60 * 1.00 + 0.40 * 0.20 = 0.68
+--      0.50 * 1.00 + 0.50 * 0.00 = 0.50
 --
---    The point is not the totals, which the baseline already records. It
---    is WHICH titles the change drops. A precision-first change fails by
---    over-tightening, and losing deans would be as bad as keeping
---    founders - so read the 'lost' column against the title, not the sum.
+--    And it contradicted query 1, which has dean averaging 0.907 - only
+--    reachable with a resolved academic organisation. Two readings of the
+--    same data disagreeing means the reconstruction was wrong, not the
+--    stored value, so 2a asks what org_type actually holds before 2b
+--    trusts it, and 2b now reads the stored org_score for the old scale
+--    instead of rebuilding it from org_type.
+--
+--    Run 2a first. If almost everything is UNKNOWN then organisation
+--    resolution is the headline problem in this role and no amount of
+--    weight tuning will fix it.
 -- ###########################################################################
-WITH scored AS (
+
+-- 2a. WHAT DOES org_type ACTUALLY HOLD FOR THIS ROLE?
+SELECT
+    COALESCE(org_type, '(null)')                        AS org_type,
+    COUNT(*)                                            AS records,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 4)          AS share,
+    ROUND(AVG(org_score), 3)                            AS avg_org_score,
+    ROUND(AVG(role_score), 3)                           AS avg_role_score,
+    COUNT(DISTINCT org_resolution_method)               AS methods
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+WHERE role_key = 'faculty_head'
+GROUP BY org_type
+ORDER BY records DESC;
+
+
+-- 2b. PER TITLE: what the change keeps, loses, and drops
+--     Old score uses the org_score STORED on the row, so this must run
+--     BEFORE the rebuild overwrites it. New score is the only thing
+--     reconstructed, and only from org_type.
+WITH both AS (
   SELECT
-      lower(role_title_raw)       AS title,
-      org_type,
-      role_score,
-      CASE org_type                       -- the scale before 2026-10-08
+      LOWER(role_title_raw)                             AS title,
+      0.60 * role_score + 0.40 * org_score              AS score_old,
+      0.50 * role_score + 0.50 * CASE org_type
         WHEN 'Education'  THEN 1.00
         WHEN 'Facility'   THEN 0.60
         WHEN 'Healthcare' THEN 0.50
         WHEN 'Nonprofit'  THEN 0.40
         WHEN 'Government' THEN 0.30
         WHEN 'Archive'    THEN 0.20
-        WHEN 'Other'      THEN 0.10
-        WHEN 'Funder'     THEN 0.10
-        WHEN 'UNKNOWN'    THEN 0.20
-        WHEN 'Company'    THEN 0.00
-      END                         AS org_score_old,
-      CASE org_type                       -- and after: anything we cannot
-        WHEN 'Education'  THEN 1.00       -- place as academic scores zero,
-        WHEN 'Facility'   THEN 0.60       -- so it cannot carry a title
-        WHEN 'Healthcare' THEN 0.50       -- over the line
-        WHEN 'Nonprofit'  THEN 0.40
-        WHEN 'Government' THEN 0.30
-        WHEN 'Archive'    THEN 0.20
-        ELSE 0.00   -- Company, Other, Funder, UNKNOWN
-      END                         AS org_score_new
+        ELSE 0.00   -- Company, Other, Funder, UNKNOWN and NULL
+      END                                               AS score_new
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
   WHERE role_key = 'faculty_head'
-),
-both AS (
-  SELECT
-      title,
-      org_type,
-      0.60 * role_score + 0.40 * org_score_old AS score_old,
-      0.50 * role_score + 0.50 * org_score_new AS score_new
-  FROM scored
 )
 SELECT
     title,
@@ -124,6 +129,11 @@ LIMIT 60;
 -- ###########################################################################
 -- 3. THE 99,000 - WHERE DO THEY ACTUALLY GO MISSING?
 --
+--    CHECK THE DENOMINATOR FIRST. The first run of this totalled
+--    1,831,819 people, which is the whole ORCID population rather than
+--    the 99,000 it was meant to split - so the phase1_missing CTE was not
+--    filtering. Run query 3a and do not read 3b until it returns 99,000.
+--
 --    The baseline said these people fail to clear a threshold. The
 --    arithmetic says otherwise: hcp_broad weights the department at 0.40,
 --    so an empty title still leaves a ceiling of 0.40 + 0.25 * org, and
@@ -141,6 +151,22 @@ LIMIT 60;
 --
 --    Only E is a scoring problem. The hypothesis under test is C.
 -- ###########################################################################
+-- 3a. Does phase1_missing actually hold 99,000 people?
+SELECT
+    COUNT(*)                                        AS phase1_rows,
+    COUNT(DISTINCT p.snid)                          AS phase1_people,
+    COUNTIF(n.snid IS NULL)                         AS missing_rows,
+    COUNT(DISTINCT IF(n.snid IS NULL, p.snid, NULL)) AS missing_people
+FROM `researcher-360-prod-e7fd74be.researcher_profiles.TODO_phase1_table` p
+LEFT JOIN (
+    SELECT DISTINCT snid
+    FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+    WHERE role_key IN ('hcp', 'hcp_broad')
+) n USING (snid)
+WHERE p.phase1_label IN ('CONFIRMED_HCP_CANDIDATE', 'PROBABLE_HCP');
+
+
+-- 3b. The five stages
 WITH phase1_missing AS (
   SELECT DISTINCT p.snid
   FROM `researcher-360-prod-e7fd74be.researcher_profiles.TODO_phase1_table` p
@@ -233,18 +259,23 @@ ORDER BY visibility_bucket;
 -- ###########################################################################
 -- 5. SIZING THE NEW HCP SUB-ROLES BEFORE THE REBUILD
 --
---    The three new roles declare "match: all" - a matching title AND a
---    clinical department. Every record that could satisfy them is already
---    present in the hcp_broad rows, because hcp_broad admits a record on
---    either axis. So the audiences can be counted now.
+--    REWRITTEN 2026-10-08. The first version reported hcp_practitioner as
+--    51,018 people with 755,394 confirmed - more confirmed than people,
+--    which is impossible. Two bugs compounding:
+--
+--      - the join to stg_role_records on role_title_raw = evidence_title
+--        matches every record of a person that shares that title, so one
+--        person fanned out into many rows;
+--      - 'people' used COUNT(DISTINCT snid) while confirmed, probable and
+--        confirmed_rate used COUNTIF, which counts those fanned-out rows.
+--
+--    Fixed by collapsing to one row per person per sub-role first, keeping
+--    their best score, and counting people everywhere after that.
 --
 --    Weights and thresholds as configured:
 --      hcp_practitioner   0.45 / 0.15 / 0.40   confirm 0.70
 --      hcp_researcher     0.40 / 0.20 / 0.40   confirm 0.70
 --      hcp_administrator  0.35 / 0.25 / 0.40   confirm 0.70
---
---    Expect these to be much smaller than hcp_broad's 254,400 and much
---    cleaner. That is the trade being made deliberately.
 -- ###########################################################################
 WITH candidates AS (
   SELECT
@@ -254,8 +285,7 @@ WITH candidates AS (
       e.dept_score,
       -- e.role_score is masked to 0 for any group outside hcp_broad's own
       -- two, so the real score has to come from the dictionary. Without
-      -- this join hcp_researcher and hcp_administrator would both size to
-      -- zero.
+      -- this join hcp_researcher and hcp_administrator would size to zero.
       t.group_score                           AS title_score
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
   JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
@@ -267,16 +297,17 @@ WITH candidates AS (
   WHERE e.role_key IN ('hcp', 'hcp_broad')
     AND e.discipline = 'health_clinical'     -- the AND arm of match:all
     AND e.dept_score > 0
+    AND e.title_group IN ('practitioner', 'trainee_clinical', 'researcher_early',
+                          'researcher_established', 'leadership')
 ),
-simulated AS (
+scored AS (
   SELECT
       CASE
         WHEN title_group IN ('practitioner', 'trainee_clinical')
           THEN 'hcp_practitioner'
         WHEN title_group IN ('researcher_early', 'researcher_established')
           THEN 'hcp_researcher'
-        WHEN title_group = 'leadership'
-          THEN 'hcp_administrator'
+        ELSE 'hcp_administrator'
       END                                     AS new_role,
       snid,
       CASE
@@ -284,21 +315,48 @@ simulated AS (
           THEN 0.45 * title_score + 0.15 * org_score + 0.40 * dept_score
         WHEN title_group IN ('researcher_early', 'researcher_established')
           THEN 0.40 * title_score + 0.20 * org_score + 0.40 * dept_score
-        WHEN title_group = 'leadership'
-          THEN 0.35 * title_score + 0.25 * org_score + 0.40 * dept_score
+        ELSE 0.35 * title_score + 0.25 * org_score + 0.40 * dept_score
       END                                     AS score_new
   FROM candidates
-  WHERE title_group IN ('practitioner', 'trainee_clinical', 'researcher_early',
-                        'researcher_established', 'leadership')
+),
+-- one row per person per sub-role, carrying their best score, exactly as
+-- fct_researcher_roles would. Everything below counts people.
+per_person AS (
+  SELECT new_role, snid, MAX(score_new) AS score_new
+  FROM scored
+  GROUP BY new_role, snid
 )
 SELECT
     new_role,
-    COUNT(DISTINCT snid)                                    AS people,
+    COUNT(*)                                                AS people,
     COUNTIF(score_new >= 0.70)                              AS confirmed,
     COUNTIF(score_new >= 0.50 AND score_new < 0.70)         AS probable,
     COUNTIF(score_new < 0.50)                               AS below_both,
     ROUND(AVG(score_new), 3)                                AS avg_score,
     ROUND(COUNTIF(score_new >= 0.70) / COUNT(*), 3)         AS confirmed_rate
-FROM simulated
+FROM per_person
 GROUP BY new_role
 ORDER BY people DESC;
+
+
+-- ###########################################################################
+-- 6. IS THE SNID FILTER DOING WHAT THE RAW MODEL CLAIMS?
+--
+--    raw_orcid_researchers says "the table holds 24.8M ORCID profiles but
+--    only a fraction carry a SNID", and the baseline records the result as
+--    1.76M people. Query 4 ran WHERE snid IS NOT NULL against the same
+--    source and counted 25,132,641 - so that filter removes almost
+--    nothing, and the 1.76M comes from somewhere else or is wrong.
+--
+--    The likely cause is an empty string: 'snid IS NOT NULL' keeps '',
+--    which then joins to nothing in the CDP. If empty_snid below is large,
+--    the raw filter should be "snid is not null and snid != ''" and every
+--    population figure in the baseline needs restating.
+-- ###########################################################################
+SELECT
+    COUNT(*)                                            AS source_rows,
+    COUNTIF(snid IS NULL)                               AS null_snid,
+    COUNTIF(snid IS NOT NULL AND TRIM(snid) = '')       AS empty_snid,
+    COUNTIF(snid IS NOT NULL AND TRIM(snid) != '')      AS usable_snid,
+    COUNT(DISTINCT IF(TRIM(snid) != '', snid, NULL))    AS distinct_usable_snid
+FROM `researcher-360-prod-e7fd74be.researcher_profiles.orcid_researchers`;
