@@ -174,8 +174,43 @@ select
     source_last_updated,
     recency_rank
 from with_org_fallback
--- one record per person per role: current posts first, then best score
+/*
+    ONE RECORD PER PERSON PER ROLE: THE MOST RECENT ONE.
+
+    This used to order by role_score, picking whichever of a person's
+    posts matched the role best. It now orders purely by recency, so a
+    person is always described by their CURRENT occupation.
+
+    Note what this does NOT do. The per_role filter above has already
+    thrown out every record that cannot support this role, so the choice
+    here is only ever between posts that DO support it. Nobody loses a
+    role by holding a newer unrelated job - they are still found through
+    the clinical or academic post they hold, it is just represented by the
+    most recent one of those rather than the best-matching one.
+
+    What it costs: where someone has two qualifying posts and the older
+    one matches the title anchors more strongly, the score now comes from
+    the weaker, newer one. Expect average scores to dip slightly and some
+    CONFIRMED to move to PROBABLE.
+
+    What it buys, which is worth more: evidence_title, evidence_org and
+    evidence_dept now describe where the person works today. Marketing
+    acts on those fields, and a role sourced from a post someone left in
+    2015 is wrong however well its title scored. It also makes a person's
+    evidence coherent across roles - before, the same person could be
+    represented by a 2015 post for hcp and a 2023 post for lecturer.
+
+    recency_rank is itself ordered current-first (end_date is null desc,
+    then start_date desc, then end_date desc, then ORCID's own ordering),
+    so is_current is redundant here. It stays because it makes the intent
+    readable and survives a change to recency_rank's definition.
+
+    fct_researcher_roles still breaks its own ties on score. That is a
+    different question - it chooses between a role's own row and a
+    roll-up row from a child role, where the strongest evidence is what
+    should win, and recency is not defined across roles.
+*/
 qualify row_number() over (
     partition by snid, role_key
-    order by is_current desc, role_score desc, recency_rank asc
+    order by is_current desc, recency_rank asc
 ) = 1
