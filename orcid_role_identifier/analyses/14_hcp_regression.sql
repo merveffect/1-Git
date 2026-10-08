@@ -37,7 +37,7 @@ WITH phase1 AS (
 ),
 new_pipeline AS (
   SELECT DISTINCT snid
-  FROM `dat-analytics-eng-ec869189.orcid_role_agent_scoring.fct_researcher_roles`
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
   WHERE role_key = 'hcp'
     AND role_label IN ('CONFIRMED', 'PROBABLE')
 )
@@ -67,7 +67,7 @@ WITH phase1 AS (
 ),
 new_pipeline AS (
   SELECT DISTINCT snid
-  FROM `dat-analytics-eng-ec869189.orcid_role_agent_scoring.fct_researcher_roles`
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
   WHERE role_key = 'hcp'
 )
 SELECT
@@ -95,7 +95,7 @@ WITH phase1 AS (
 ),
 new_pipeline AS (
   SELECT snid, evidence_title, evidence_dept, title_group, discipline, role_final_score
-  FROM `dat-analytics-eng-ec869189.orcid_role_agent_scoring.fct_researcher_roles`
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
   WHERE role_key = 'hcp'
     AND role_label IN ('CONFIRMED', 'PROBABLE')
 )
@@ -116,6 +116,8 @@ LIMIT 60;
 
 -- ---------------------------------------------------------------------------
 -- 4. WHICH ROUTE FOUND THEM
+--    Needs the component scores, which fct_researcher_roles did not carry
+--    until 2026-10-08 - that is why this one failed on the first attempt.
 --    Confirms that reading both axes was worth it. Anyone found by the
 --    title alone would have been lost in a discipline-only design, and
 --    vice versa.
@@ -129,9 +131,11 @@ SELECT
     END                                     AS route,
     COUNT(*)                                AS people,
     ROUND(AVG(role_final_score), 3)         AS avg_score,
-    COUNTIF(role_label = 'CONFIRMED')       AS confirmed
-FROM `dat-analytics-eng-ec869189.orcid_role_agent_scoring.fct_researcher_roles`
+    COUNTIF(role_label = 'CONFIRMED')       AS confirmed,
+    ROUND(COUNTIF(role_label = 'CONFIRMED') / COUNT(*), 3) AS confirmed_rate
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 WHERE role_key = 'hcp'
+  AND derived_from_role IS NULL   -- hcp's own rows, not the pharmacist roll-up
 GROUP BY route
 ORDER BY route;
 
@@ -147,7 +151,7 @@ SELECT
     COUNT(DISTINCT IF(c.snid IS NOT NULL, f.snid, NULL))        AS in_cdp,
     COUNT(DISTINCT IF(c.mkt_pref_opt_in OR c.advertising_opt_in,
                       f.snid, NULL))                            AS reachable
-FROM `dat-analytics-eng-ec869189.orcid_role_agent_scoring.fct_researcher_roles` f
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` f
 LEFT JOIN `researcher-360-prod-e7fd74be.researcher_profiles.audience_builder_big` c
        ON f.snid = c.snid
 GROUP BY role_key
