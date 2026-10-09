@@ -20,6 +20,21 @@
 
 
 {#- Enabled role keys, alphabetical. Every loop iterates over this. -#}
+{#-
+    Every key in the registry, INCLUDING disabled roles.
+
+    role_keys() returns only the enabled ones, which is right for the
+    fan-out - a disabled role should not produce rows. But it is wrong for
+    validating the seeds: librarian is disabled with its reasoning
+    recorded, and its seed rows are deliberately kept so the role can be
+    switched back on without reconstructing them. Testing those rows
+    against role_keys() failed them for existing on purpose.
+-#}
+{% macro all_role_keys() %}
+    {{ return(var('roles').keys() | list | sort) }}
+{% endmacro %}
+
+
 {% macro role_keys() %}
     {%- set keys = [] -%}
     {%- for k, v in var('roles').items() -%}

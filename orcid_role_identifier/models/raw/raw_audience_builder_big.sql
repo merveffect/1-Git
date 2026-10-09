@@ -30,10 +30,24 @@
        the Phase-2 document rather than from the schema.
 */
 
+/*
+    ONE ROW PER PERSON. The source carries 11 duplicate snids, which the
+    unique test on this model caught. Eleven rows is nothing by volume,
+    but a duplicate here fans a person out in every downstream join and,
+    worse, leaves two conflicting answers to "may we contact them".
+
+    Consent is collapsed with logical_and, not logical_or: a person counts
+    as consented only if EVERY row for them says so. When the source
+    disagrees with itself we do not get to pick the permissive reading -
+    under-sending is recoverable and sending without consent is not.
+
+    The email is taken with min() purely so the result is deterministic.
+*/
 select
     snid,
-    email,
-    mkt_pref_opt_in,
-    advertising_opt_in
+    min(email)                      as email,
+    logical_and(coalesce(mkt_pref_opt_in, false))    as mkt_pref_opt_in,
+    logical_and(coalesce(advertising_opt_in, false)) as advertising_opt_in
 from {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
 where snid is not null
+group by snid

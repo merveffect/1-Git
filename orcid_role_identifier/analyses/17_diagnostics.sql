@@ -652,18 +652,17 @@ ORDER BY version_rank;
 -- ###########################################################################
 
 -- 9a. Did the dedup land, and did the seeds load?
---     raw should now hold 1,781,624 rows, not 25,132,641. If it still
---     holds 25M the qualify is not in the build.
+--     The test is rows == distinct snid, NOT a fixed count. The source
+--     grows with every ORCID load - it was 1,781,624 people on
+--     2026-10-08 and 1,784,774 the next day - so a hardcoded number
+--     reports a healthy build as broken. If rows is in the millions the
+--     qualify is not in the build.
 SELECT
-    'raw rows'        AS check_name,
-    CAST(COUNT(*) AS STRING)           AS value,
-    '1,781,624 expected'               AS expected
-FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers`
-UNION ALL
-SELECT
-    'distinct snid',
-    CAST(COUNT(DISTINCT snid) AS STRING),
-    'same as raw rows - one row per person'
+    'raw rows vs distinct snid'                             AS check_name,
+    FORMAT('%d rows / %d people', COUNT(*), COUNT(DISTINCT snid)) AS value,
+    IF(COUNT(*) = COUNT(DISTINCT snid),
+       'OK - one row per person',
+       'FAIL - the dedup is not in this build')             AS expected
 FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers`
 UNION ALL
 SELECT

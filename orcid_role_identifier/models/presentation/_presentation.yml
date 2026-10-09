@@ -17,13 +17,20 @@ models:
 
   - name: fct_role_audience_summary
     description: >
-      One row per role. Answers "how many can we reach", not "how many did
-      we find" - consent is the binding constraint (24% marketing, 19%
+      One row per role AND confidence label. Answers "how many can we
+      reach", not "how many did we find" - consent is the binding constraint (24% marketing, 19%
       advertising on the measured population). Not grouped by country:
       that is a drill-down on fct_role_audience, not a headline.
+    # the grain is one row per role AND label, not per role - this model
+    # groups by both, so a plain unique test on role_key fails by design
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [role_key, role_label]
     columns:
       - name: role_key
-        tests: [unique, not_null]
+        tests: [not_null]
+      - name: role_label
+        tests: [not_null]
 
   - name: rpt_title_review_queue
     description: >

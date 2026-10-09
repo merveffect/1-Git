@@ -38,7 +38,7 @@ seeds:
     columns:
       - name: role_key
         tests:
-          - accepted_values: {values: "{{ role_keys() }}"}
+          - accepted_values: {values: "{{ all_role_keys() }}"}
 
   - name: org_type_scores
     description: >
@@ -58,7 +58,7 @@ seeds:
     columns:
       - name: role_key
         tests:
-          - accepted_values: {values: "{{ role_keys() }}"}
+          - accepted_values: {values: "{{ all_role_keys() }}"}
       - name: match_type
         tests:
           - accepted_values: {values: ['title', 'org_type']}

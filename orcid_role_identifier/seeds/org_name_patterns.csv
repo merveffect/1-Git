@@ -1,9 +1,9 @@
 role_key,name_pattern,org_score,note
-hcp,\b(hospital|hopital|krankenhaus|hastane|ospedale|hospitalar)\b,1.00,used only when ROR has no match; organisation_name is 100% populated
-hcp,\b(clinic|klinik|clinique|clinica|poliklinik)\b,1.00,
-hcp,\b(medical cent|health cent|medical school|faculty of medicine|nhs)\b,1.00,
-hcp,\b(health|medical|healthcare|saglik|sante)\b,0.40,weaker - the word alone is not decisive
-hcp,\b(universit|college|institut|academy)\b,0.60,
+hcp_broad,\b(hospital|hopital|krankenhaus|hastane|ospedale|hospitalar)\b,1.00,used only when ROR has no match; organisation_name is 100% populated
+hcp_broad,\b(clinic|klinik|clinique|clinica|poliklinik)\b,1.00,
+hcp_broad,\b(medical cent|health cent|medical school|faculty of medicine|nhs)\b,1.00,
+hcp_broad,\b(health|medical|healthcare|saglik|sante)\b,0.40,weaker - the word alone is not decisive
+hcp_broad,\b(universit|college|institut|academy)\b,0.60,
 pharmacist,\b(hospital|clinic|pharmacy|eczane|apotheke|farmacia)\b,1.00,
 pharmacist,\b(pharmaceutical|pharma)\b,0.70,
 pharmacist,\b(universit|college|institut)\b,0.50,
