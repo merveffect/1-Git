@@ -56,7 +56,10 @@ ORDER BY role_key, band;
 --     floor is doing no harm. If they look wrong, the floor is too generous
 --     and either it comes down or the threshold goes up.
 --
---     evidence_* are the raw ORCID fields, untouched.
+--     evidence_* are the raw ORCID fields, untouched. org_type is NOT
+--     selected: it exists in int_employment_scored but is not carried into
+--     fct_researcher_roles, and for an eyeball the raw organisation name
+--     plus org_score say the same thing more directly.
 -- ###########################################################################
 SELECT
     role_key,
@@ -67,7 +70,6 @@ SELECT
     evidence_title                  AS orcid_role,
     evidence_org                    AS orcid_organisation,
     evidence_dept                   AS orcid_department,
-    org_type,
     is_current
 FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 WHERE role_key IN ('lecturer', 'researcher')
@@ -90,8 +92,7 @@ SELECT
     title_group,
     evidence_title                  AS orcid_role,
     evidence_org                    AS orcid_organisation,
-    evidence_dept                   AS orcid_department,
-    org_type
+    evidence_dept                   AS orcid_department
 FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 WHERE role_key IN ('lecturer', 'researcher')
   AND role_final_score < 0.60
