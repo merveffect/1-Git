@@ -44,7 +44,17 @@ vars:
   # The margin between first and second choice. NOT a gate - it vetoes
   # nothing. A value whose top two groups sit closer than this, and which
   # carries enough records to matter, goes to the human review queue.
-  sim_review_margin: 0.18
+  #
+  # 0.18 made the queue useless. Measured margins run from 0.038 to 0.091
+  # on average across every group, so a 0.18 threshold flagged essentially
+  # the whole dictionary and the review queue came back as "everything,
+  # ordered by frequency" - indistinguishable from query 5 beside it.
+  #
+  # 0.02 isolates the tail that is genuinely a coin flip, and the tail is
+  # real: fellow 0.001, research assistant professor 0.003, medical student
+  # 0.004, assistant 0.005, senior research associate 0.006. Those five
+  # alone carry 217,000 records between them.
+  sim_review_margin: 0.02
 
   roles:
     # ------------------------------------------------------------------

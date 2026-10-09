@@ -78,6 +78,17 @@
     hcp / PRACTITIONER. Relationships come from roles.*.parent.
     Expects a CTE named <cte_name> at the call site.
 -#}
+{#-
+    Roll a child role up into its parent, so hcp_practitioner also appears
+    as hcp_broad.
+
+    A person therefore carries BOTH names in the Braze role_inferred array -
+    "Healthcare Professional (broad)" and "HCP - Practitioner". That is
+    intended, not redundancy: a child is always a strict subset of its
+    parent, so the pair is a hierarchy marketing can filter at either
+    level. Confirmed as wanted on 2026-10-09; do not "fix" it by emitting
+    only the most specific role.
+-#}
 {% macro parent_rollup_union(cte_name) %}
     {%- for m in roles_with_parent() %}
 
