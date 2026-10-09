@@ -92,7 +92,7 @@ qualified as (
 with_parents as (
 
     select
-        snid, role_key, role_detail, role_final_score, role_label,
+        snid, role_key, role_detail, role_final_score,
         -- the three component scores travel with the row: without them
         -- you cannot tell from this table WHICH axis carried a decision,
         -- which is the first question anyone asks of a result
@@ -102,6 +102,35 @@ with_parents as (
     from qualified
 
     {{ parent_rollup_union('qualified') }}
+
+)
+
+/*
+    LABEL AFTER THE UNION, NOT BEFORE IT.
+
+    A roll-up row arrives carrying its child's score but the PARENT's
+    role_key, and the two have different thresholds - hcp_broad confirms
+    at 0.60 while hcp_practitioner, hcp_researcher and hcp_administrator
+    confirm at 0.70. Labelling the child and copying the answer put 5,528
+    people into hcp_broad as PROBABLE when their score cleared hcp_broad's
+    own threshold, and PROBABLE does not ship to Braze.
+
+    Measured before the fix: hcp_broad PROBABLE ran from 0.303 to 0.700
+    while hcp_broad CONFIRMED started at 0.600 - the two bands overlapped,
+    which is impossible for a single threshold and is the symptom that
+    found this.
+
+    role_label_expr switches on role_key, which is the parent here, so
+    recomputing gives the parent's thresholds. The filter below keeps the
+    guard the qualified CTE applied earlier, in case a future parent is
+    ever stricter than its child.
+*/
+relabelled as (
+
+    select
+        *,
+        {{ role_label_expr('role_final_score') }}   as role_label
+    from with_parents
 
 )
 
@@ -125,7 +154,8 @@ select
     source_last_updated,
     derived_from_role,
     current_date()  as scored_date
-from with_parents
+from relabelled
+where role_label in ('CONFIRMED', 'PROBABLE')
 -- if the same (person, role) appears more than once keep the best score
 qualify row_number() over (
     partition by snid, role_key

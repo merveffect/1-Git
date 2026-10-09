@@ -100,7 +100,13 @@
         '{{ m.parent }}'                       AS role_key,
         '{{ m.bucket_label }}'                 AS role_detail,
         role_final_score,
-        role_label,
+        -- role_label is deliberately NOT carried. A child's label was
+        -- computed against the CHILD's thresholds, and the parent's are
+        -- different - hcp_broad confirms at 0.60 while its children
+        -- confirm at 0.70 - so copying it labelled 5,528 people PROBABLE
+        -- in hcp_broad who cleared its own threshold, and PROBABLE does
+        -- not ship. fct_researcher_roles recomputes it after the union,
+        -- where role_key is already the parent.
         -- the child's component scores, kept so the parent row stays
         -- auditable; derived_from_role says which child they came from
         role_score,
