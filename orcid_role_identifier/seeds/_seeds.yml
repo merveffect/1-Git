@@ -74,7 +74,7 @@ seeds:
       HUMAN DECISIONS. Always beat the vector and LLM decisions.
       Filled in after working through rpt_title_review_queue.
     config:
-      column_types: {title: STRING, role_key: STRING, decision: STRING, reviewer: STRING, reviewed_at: DATE, note: STRING}
+      column_types: {title: STRING, title_group: STRING, decision: STRING, reviewer: STRING, reviewed_at: DATE, note: STRING}
     columns:
       - name: decision
         tests:

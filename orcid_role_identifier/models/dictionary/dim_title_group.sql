@@ -64,4 +64,20 @@ select
     end                                         as group_score
 
 from matched m
-left join overrides o using (title_key, title_group)
+/*
+    JOIN ON title_key ALONE.
+
+    This said "using (title_key, title_group)" until 2026-10-09, which
+    made the whole override mechanism dead code. Joining on title_group
+    as well means an override can only match when it names the group the
+    model ALREADY chose - so the one thing an override exists to do,
+    move a value to a different group, could never fire. A REJECT could
+    not fire either: the seeded example named 'hcp', which is not a title
+    group at all, so it matched nothing.
+
+    With the join on title_key, coalesce(o.title_group, m.title_group)
+    below does what it looks like it does - an ACCEPT moves the value, and
+    a REJECT needs no group because the coalesce falls back to the model's
+    and is_assigned goes false.
+*/
+left join overrides o using (title_key)
