@@ -138,36 +138,54 @@ with_org_score as (
 ),
 
 /*
-    Organisation fallback. A fifth of records carry no resolvable
-    identifier, and organisation_name is always populated, so a small
-    pattern list rescues most of them. This is what Phase-1 did, and it
-    worked. Only used when ROR produced nothing better.
+    Organisation fallback. A fifth to a half of records, depending on the
+    role, carry no resolvable ROR identifier, and organisation_name is
+    always populated - so a small pattern list rescues most of them. This
+    is what Phase-1 did, and it worked.
 
-    "NOTHING BETTER" USED TO MEAN "no ROR id", WHICH IS NOT THE SAME
-    THING. ROR can match an organisation and still carry no `types` array
-    for it, and then org_score_ror falls back to the role's UNKNOWN value
-    while ror_id is not null - so the old split sent the row down the
-    branch with no fallback, and a name that plainly says what it is got
-    the unknown score anyway.
+    THE PATTERNS WERE HALF DEAD UNTIL 2026-10-09. Every one was written
+    \b(stem|stem|...)\b, and a TRAILING word boundary makes a truncated
+    stem impossible to match: \buniversit\b cannot match "university",
+    because the word carries on with a "y". So the two most valuable stems
+    in the list, universit and institut, never fired once, while whole
+    words like college, school and faculty always did.
 
-    That is how "Deakin University - Geelong Campus at Waurn Ponds",
+    That is why "Deakin University - Geelong Campus at Waurn Ponds",
     "Istanbul University-Cerrahpasa" and "Universiti Malaysia Sabah" all
-    ended up on lecturer's UNKNOWN score of 0.25, in the bottom band of
-    the role, beside a zoo educator and a bank economist. The pattern list
-    has matched "universit" since the first version; it was simply never
-    consulted for them.
+    sat on lecturer's UNKNOWN score of 0.25, in the bottom band of the
+    role, beside a zoo educator and a bank economist. The stems are now
+    prefixes, and universi rather than universit so universidad and
+    universidade match as well; see the seed for the multilingual set.
 
-    The condition is now the one the comment always claimed: the patterns
-    are consulted exactly when ROR produced no usable type, which is what
-    org_type = 'UNKNOWN' means - it is
-    coalesce(ror_types[safe_offset(0)], 'UNKNOWN'). Written as one branch
-    rather than a union of two, so the predicate cannot drift apart again.
+    A 0.00 PATTERN IS A VETO. With the stems working, "Acme Institute
+    Ltd" matches institut at 1.00 and the company list at 0.00, and
+    greatest() would hand it the 1.00 - re-opening the executive problem
+    faculty_head was just tightened to close. A matching 0.00 pattern now
+    overrides every other match.
+
+    One note on the first branch: it tests org_type != 'UNKNOWN' where it
+    used to test ror_id is not null. Query 3 of analyses/18 showed those
+    select exactly the same rows - ROR never matches an organisation
+    without also typing it - so that change fixed nothing. It stays
+    because it says what it means, and because it is one branch rather
+    than two predicates that could drift apart.
 */
 with_org_fallback as (
     select
         w.*,
         case
+            -- ROR gave a usable type: trust it, no guessing from the name
             when w.org_type != 'UNKNOWN' then w.org_score_ror
+
+            -- a company marker beats every academic stem in the name
+            when exists (
+                select 1
+                from {{ ref('org_name_patterns') }} f
+                where f.role_key = w.role_key
+                  and f.org_score = 0
+                  and regexp_contains(coalesce(w.organisation, ''), f.name_pattern)
+            ) then w.org_score_ror
+
             else greatest(
                 w.org_score_ror,
                 coalesce((

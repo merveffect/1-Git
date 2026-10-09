@@ -1,17 +1,21 @@
 role_key,name_pattern,org_score,note
-hcp_broad,\b(hospital|hopital|krankenhaus|hastane|ospedale|hospitalar)\b,1.00,used only when ROR has no match; organisation_name is 100% populated
-hcp_broad,\b(clinic|klinik|clinique|clinica|poliklinik)\b,1.00,
-hcp_broad,\b(medical cent|health cent|medical school|faculty of medicine|nhs)\b,1.00,
-hcp_broad,\b(health|medical|healthcare|saglik|sante)\b,0.40,weaker - the word alone is not decisive
-hcp_broad,\b(universit|college|institut|academy)\b,0.60,
-pharmacist,\b(hospital|clinic|pharmacy|eczane|apotheke|farmacia)\b,1.00,
-pharmacist,\b(pharmaceutical|pharma)\b,0.70,
-pharmacist,\b(universit|college|institut)\b,0.50,
-researcher,\b(universit|institut|college|academy|research cent|laborator|cnrs|max planck|inserm)\b,1.00,
-researcher,\b(hospital|clinic|medical cent)\b,0.80,
-researcher,\b(ltd|inc|gmbh|corporation|company)\b,0.60,
-lecturer,\b(universit|college|school|academy|faculty|institut)\b,1.00,
-lecturer,\b(hospital|medical school)\b,0.70,
-faculty_head,\b(universit|college|academy|faculty|institut)\b,1.00,
-faculty_head,\b(hospital|medical school)\b,0.50,
-faculty_head,\b(ltd|limited|inc|llc|plc|gmbh|ag|sa|bv|nv|srl|spa|pty|corp|corporation|company|holdings|group|ventures|capital|partners|consulting|solutions|technologies|labs|bank|insurance)\b,0.00,a company executive is not a faculty head - widened after the first run put CEOs and founders in this role
+hcp_broad,\b(hospital|hopital|krankenhaus|ospedale|szpital|ziekenhuis|hastane),1.00,"PREFIX STEM - no trailing boundary, so hospitals and hospitalar match too. Used only when ROR has no match."
+hcp_broad,\bnhs\b,1.00,"whole word"
+hcp_broad,\b(clinic|klinik|clinique|clinica|poliklinik),1.00,"prefix stem - also catches clinics and clinical"
+hcp_broad,\b(medical cent|health cent|centro medic|centre hospital|medical school|faculty of medicine|facultad de medicina|tip fakültesi),1.00,"prefix stem - cent catches center and centre"
+hcp_broad,\b(health|medical|healthcare|saglik|sağlık|sante|salud)\b,0.40,"weaker - the word alone is not decisive"
+hcp_broad,\b(universi|üniversi|uniwers|univerz|universit|institut|istitut|enstitü|colleg|colegi|academ|akadem|facult|facolt|fakült|fakulte|hochschule|politecn|polytechn),0.60,"prefix stem"
+pharmacist,\b(pharmacy|pharmacie|eczane|apotheke|farmacia|farmacie)\b,1.00,"whole words - a pharmacy itself"
+pharmacist,\b(hospital|hopital|krankenhaus|ospedale|szpital|ziekenhuis|hastane|clinic|klinik|clinique|clinica),1.00,"prefix stem"
+pharmacist,\b(pharmaceutic|pharma|eczacılık),0.70,"prefix stem - industry rather than a dispensing pharmacy"
+pharmacist,\b(universi|üniversi|uniwers|univerz|universit|institut|istitut|enstitü|colleg|colegi|academ|akadem|facult|facolt|fakült|fakulte|hochschule|politecn|polytechn),0.50,"prefix stem"
+researcher,\b(universi|üniversi|uniwers|univerz|universit|institut|istitut|enstitü|colleg|colegi|academ|akadem|facult|facolt|fakült|fakulte|hochschule|politecn|polytechn|research cent|centro de investigacion|laborator|laboratoire),1.00,"prefix stem - laborator catches laboratory laboratories laboratorio"
+researcher,\bcnrs|\binserm|\bcsic\b|\bcnr\b|\bcern\b|\bnasa\b|\bmax planck|\bhelmholtz|\bfraunhofer|\bleibniz,1.00,"national and German research bodies"
+researcher,\b(hospital|hopital|krankenhaus|ospedale|szpital|ziekenhuis|hastane|clinic|klinik|clinique|clinica|medical cent),0.80,"prefix stem"
+researcher,\b(ltd|inc|gmbh|corporation|company)\b,0.60,"industrial R and D is still research"
+lecturer,\b(universi|üniversi|uniwers|univerz|universit|institut|istitut|enstitü|colleg|colegi|academ|akadem|facult|facolt|fakült|fakulte|hochschule|politecn|polytechn|school|escuela|escola|ecole|scuola|lise|okul|gymnasium),1.00,"prefix stem - facult catches faculty faculties facultad faculte fakülte"
+lecturer,\bcnrs|\binserm|\bcsic\b|\bcnr\b|\bcern\b|\bnasa\b|\bmax planck|\bhelmholtz|\bfraunhofer|\bleibniz,0.90,"teaching staff at a national research body"
+lecturer,\b(hospital|hopital|krankenhaus|ospedale|szpital|ziekenhuis|hastane|medical school),0.70,"prefix stem"
+faculty_head,\b(universi|üniversi|uniwers|univerz|universit|institut|istitut|enstitü|colleg|colegi|academ|akadem|facult|facolt|fakült|fakulte|hochschule|politecn|polytechn),1.00,"prefix stem"
+faculty_head,\b(hospital|hopital|krankenhaus|ospedale|szpital|ziekenhuis|hastane|medical school),0.50,"prefix stem"
+faculty_head,\b(ltd|limited|inc|llc|plc|gmbh|ag|sa|bv|nv|srl|spa|pty|corp|corporation|company|holdings|group|ventures|capital|partners|consulting|solutions|technologies|labs|bank|insurance)\b,0.00,"VETO. A 0.00 pattern overrides every other match - see int_employment_scored. Without it, Acme Institute Ltd would score 1.00 on institut while the company marker lost the greatest()."
