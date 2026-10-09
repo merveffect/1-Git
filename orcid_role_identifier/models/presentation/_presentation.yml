@@ -25,7 +25,8 @@ models:
     # groups by both, so a plain unique test on role_key fails by design
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [role_key, role_label]
+          arguments:
+            combination_of_columns: [role_key, role_label]
     columns:
       - name: role_key
         tests: [not_null]
@@ -56,4 +57,6 @@ models:
         description: "e.g. ['Orcid', 'Orcid + Web scraping'] - not needed in marketing tools"
       - name: consent_basis
         tests:
-          - accepted_values: {values: ['marketing_opt_in', 'legitimate_interest']}
+          - accepted_values:
+              arguments:
+                values: ['marketing_opt_in', 'legitimate_interest']

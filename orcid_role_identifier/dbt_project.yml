@@ -10,7 +10,13 @@ seed-paths: ["seeds"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
 target-path: "target"
-clean-targets: ["target", "dbt_packages"]
+# "dbt clean" wipes everything listed here. dbt's default includes
+# dbt_packages, which means every clean forces a dbt deps and a fresh
+# download of dbt_utils before anything can run again. target/ is the only
+# thing that ever needs wiping - it is pure build output and dbt run
+# recompiles it anyway - so dbt_packages stays out of this list and the
+# installed package survives.
+clean-targets: ["target"]
 
 models:
   orcid_role_identifier:

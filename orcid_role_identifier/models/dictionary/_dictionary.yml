@@ -32,10 +32,16 @@ models:
         tests: [unique, not_null]
       - name: group_score
         tests:
-          - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+                inclusive: true
       - name: decision_source
         tests:
-          - accepted_values: {values: ['HUMAN', 'VECTOR', 'REJECTED']}
+          - accepted_values:
+              arguments:
+                values: ['HUMAN', 'VECTOR', 'REJECTED']
 
   - name: dim_department_discipline
     description: >
@@ -46,7 +52,11 @@ models:
         tests: [unique, not_null]
       - name: discipline_score
         tests:
-          - dbt_utils.accepted_range: {min_value: 0, max_value: 1, inclusive: true}
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+                inclusive: true
 
   - name: int_department_distinct
     description: Distinct department names and frequency.

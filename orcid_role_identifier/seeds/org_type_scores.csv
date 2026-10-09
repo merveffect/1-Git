@@ -84,7 +84,7 @@ lecturer,Facility,0.70,research institute with teaching
 lecturer,Healthcare,0.60,teaching hospital
 lecturer,Nonprofit,0.50,
 lecturer,Government,0.40,training academy
-lecturer,Company,0.20,corporate trainer, not an academic lecturer
+lecturer,Company,0.20,"corporate trainer, not an academic lecturer"
 lecturer,Archive,0.20,
 lecturer,Other,0.20,
 lecturer,Funder,0.20,funding body - weak signal for every role
