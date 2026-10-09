@@ -140,3 +140,70 @@ ORDER BY records DESC;
     org_name_patterns fallback, which is what Phase-1 did anyway.
     Worth knowing either way before anyone tries to "fix" it.
 */
+
+
+-- ###########################################################################
+-- 8. THE PROJECT HEADLINE — HOW MANY DISTINCT PEOPLE DOES THIS PRODUCE?
+--
+--    Query 1 and the baseline both report per-role audiences, and those
+--    CANNOT BE ADDED. A person holds 1.8 roles on average, so the 238,155
+--    in docs/BASELINE_2026-10-08.md is a sum of audiences, not a headcount
+--    — the same person is in it up to five times.
+--
+--    This is the number to quote when someone asks how big the project is.
+--    Read the CONFIRMED row: only CONFIRMED ships to Braze by default.
+-- ###########################################################################
+WITH per_person AS (
+  SELECT
+      snid,
+      LOGICAL_OR(role_label = 'CONFIRMED')        AS has_confirmed,
+      LOGICAL_OR(in_cdp)                          AS in_cdp,
+      LOGICAL_OR(is_marketable)                   AS is_marketable,
+      LOGICAL_OR(is_advertisable)                 AS is_advertisable,
+      COUNT(DISTINCT role_key)                    AS roles_held
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+  GROUP BY snid
+),
+scoped AS (
+  SELECT '1. CONFIRMED in at least one role' AS scope, * FROM per_person WHERE has_confirmed
+  UNION ALL
+  SELECT '2. any label, CONFIRMED or PROBABLE',    * FROM per_person
+)
+SELECT
+    scope,
+    COUNT(*)                                                AS people,
+    COUNTIF(in_cdp)                                         AS in_cdp,
+    COUNTIF(is_marketable)                                  AS marketable,
+    COUNTIF(is_advertisable)                                AS advertisable,
+    COUNTIF(is_marketable OR is_advertisable)               AS reachable,
+    ROUND(COUNTIF(in_cdp) / COUNT(*), 4)                    AS cdp_coverage,
+    ROUND(COUNTIF(is_marketable OR is_advertisable) / COUNT(*), 4) AS reachable_rate,
+    ROUND(AVG(roles_held), 2)                               AS avg_roles_per_person
+FROM scoped
+GROUP BY scope
+ORDER BY scope;
+
+
+-- ###########################################################################
+-- 9. THE SAME NUMBER, BROKEN DOWN BY HOW MANY ROLES A PERSON HOLDS
+--    Shows how much of the per-role overlap there is, which is what makes
+--    the audiences un-addable in the first place.
+-- ###########################################################################
+WITH per_person AS (
+  SELECT
+      snid,
+      COUNT(DISTINCT role_key)                    AS roles_held,
+      LOGICAL_OR(is_marketable OR is_advertisable) AS reachable
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+  WHERE role_label = 'CONFIRMED'
+  GROUP BY snid
+)
+SELECT
+    roles_held,
+    COUNT(*)                                        AS people,
+    COUNTIF(reachable)                              AS reachable,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 4)      AS share_of_people,
+    roles_held * COUNT(*)                           AS role_memberships_contributed
+FROM per_person
+GROUP BY roles_held
+ORDER BY roles_held;
