@@ -103,7 +103,7 @@ with_parents as (
 
     {{ parent_rollup_union('qualified') }}
 
-)
+),
 
 /*
     LABEL AFTER THE UNION, NOT BEFORE IT.
