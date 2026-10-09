@@ -669,7 +669,7 @@ UNION ALL
 SELECT
     'org_type_scores rows',
     CAST(COUNT(*) AS STRING),
-    '80 - includes the four hcp_* keys; 50 means the seed did not reload'
+    '90 - 8 roles x 10 org types; fewer means the seed did not reload'
 FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.org_type_scores`;
 
 
