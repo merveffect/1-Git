@@ -138,31 +138,47 @@ with_org_score as (
 ),
 
 /*
-    Organisation fallback. 21% of records carry no resolvable identifier,
-    and organisation_name is 100% populated, so a small pattern list
-    rescues most of them. This is what Phase-1 did, and it worked.
-    Only used when ROR produced nothing better.
+    Organisation fallback. A fifth of records carry no resolvable
+    identifier, and organisation_name is always populated, so a small
+    pattern list rescues most of them. This is what Phase-1 did, and it
+    worked. Only used when ROR produced nothing better.
+
+    "NOTHING BETTER" USED TO MEAN "no ROR id", WHICH IS NOT THE SAME
+    THING. ROR can match an organisation and still carry no `types` array
+    for it, and then org_score_ror falls back to the role's UNKNOWN value
+    while ror_id is not null - so the old split sent the row down the
+    branch with no fallback, and a name that plainly says what it is got
+    the unknown score anyway.
+
+    That is how "Deakin University - Geelong Campus at Waurn Ponds",
+    "Istanbul University-Cerrahpasa" and "Universiti Malaysia Sabah" all
+    ended up on lecturer's UNKNOWN score of 0.25, in the bottom band of
+    the role, beside a zoo educator and a bank economist. The pattern list
+    has matched "universit" since the first version; it was simply never
+    consulted for them.
+
+    The condition is now the one the comment always claimed: the patterns
+    are consulted exactly when ROR produced no usable type, which is what
+    org_type = 'UNKNOWN' means - it is
+    coalesce(ror_types[safe_offset(0)], 'UNKNOWN'). Written as one branch
+    rather than a union of two, so the predicate cannot drift apart again.
 */
 with_org_fallback as (
     select
         w.*,
-        greatest(
-            w.org_score_ror,
-            coalesce((
-                select max(f.org_score)
-                from {{ ref('org_name_patterns') }} f
-                where f.role_key = w.role_key
-                  and regexp_contains(coalesce(w.organisation, ''), f.name_pattern)
-            ), 0.0)
-        )                                           as org_score
+        case
+            when w.org_type != 'UNKNOWN' then w.org_score_ror
+            else greatest(
+                w.org_score_ror,
+                coalesce((
+                    select max(f.org_score)
+                    from {{ ref('org_name_patterns') }} f
+                    where f.role_key = w.role_key
+                      and regexp_contains(coalesce(w.organisation, ''), f.name_pattern)
+                ), 0.0)
+            )
+        end                                         as org_score
     from with_org_score w
-    where w.ror_id is null
-
-    union all
-
-    select w.*, w.org_score_ror as org_score
-    from with_org_score w
-    where w.ror_id is not null
 )
 
 select

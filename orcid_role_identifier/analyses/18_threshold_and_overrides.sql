@@ -255,3 +255,68 @@ WHERE role_final_score IS NULL
 GROUP BY 1,2,3,4,5,6,7,8,9,10,11
 ORDER BY rows_like_this DESC
 LIMIT 60;
+
+
+-- ###########################################################################
+-- 3. HOW MANY ORGANISATIONS DID ROR MATCH BUT LEAVE UNTYPED?
+--
+--     1b and 1c settled the threshold question, and the answer was not
+--     about the threshold. The bottom band of lecturer and researcher is a
+--     50/50 mix of real academics and people who are not academics at all,
+--     and what separates them is the ORGANISATION:
+--
+--       real, scored 0.25   Deakin University, Istanbul
+--                           University-Cerrahpasa, Universiti Malaysia Sabah
+--       not academics       Sichuan Museum, National Bank of Poland,
+--                           RHTLaw Taylor Wessing LLP, a zoo, a yoga expert
+--
+--     Those universities scored 0.25 - the UNKNOWN default - because ROR
+--     matched them but carries no types array, and the old fallback
+--     condition was "ror_id is null" rather than "ROR produced no usable
+--     type". So the name patterns, which have matched "universit" since
+--     the first version, were never consulted for them.
+--
+--     Run this AFTER the next rebuild to size what the fix recovered.
+-- ###########################################################################
+SELECT
+    e.role_key,
+    CASE
+      WHEN e.ror_id IS NULL                       THEN '1. no ROR match at all'
+      WHEN e.org_type = 'UNKNOWN'                 THEN '2. ROR matched but no type  <- the fixed case'
+      ELSE                                             '3. ROR matched and typed'
+    END                                                         AS resolution,
+    COUNT(*)                                                    AS records,
+    ROUND(AVG(e.org_score), 3)                                  AS avg_org_score,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY e.role_key), 4) AS share_of_role
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
+GROUP BY e.role_key, resolution
+ORDER BY e.role_key, resolution;
+
+
+-- ###########################################################################
+-- 4. IS "lecturer" A HIGHER-EDUCATION ROLE OR AN "ANYONE WHO TEACHES" ROLE?
+--
+--     The other thing 1b and 1c showed. teaching_academic's anchors include
+--     'teacher' and 'instructor', so the role also collects a zoo's
+--     environmental educator, a Python bootcamp instructor, a part-time
+--     piano teacher, a yoga expert and a triathlon coach.
+--
+--     Removing those two anchors would be the wrong fix - in much of the
+--     world university staff ARE called instructors, and losing them costs
+--     the multilingual reach that is the point of this pipeline. The
+--     organisation is the discriminator again: a teacher at a university
+--     against a teacher at a zoo.
+--
+--     This sizes the question before anyone acts on it. If the non-Education
+--     share is small, nothing needs doing.
+-- ###########################################################################
+SELECT
+    COALESCE(e.org_type, '(null)')                              AS org_type,
+    COUNT(*)                                                    AS records,
+    COUNT(DISTINCT e.snid)                                      AS people,
+    ROUND(AVG(e.role_score), 3)                                 AS avg_title_score,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 4)                  AS share
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
+WHERE e.role_key = 'lecturer'
+GROUP BY org_type
+ORDER BY records DESC;
