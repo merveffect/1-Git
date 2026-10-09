@@ -1,2 +1,2 @@
-title,role_key,decision,reviewer,reviewed_at,note
-clinical data manager,hcp,REJECT,example@springernature.com,2026-01-01,example row - data management is not a clinical role
+title,title_group,decision,reviewer,reviewed_at,note
+clinical data manager,,REJECT,example@springernature.com,2026-01-01,"example row - data management is not a clinical role. REJECT needs no title_group; it only unassigns the value."

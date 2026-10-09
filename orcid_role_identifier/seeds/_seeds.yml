@@ -81,3 +81,11 @@ seeds:
           - accepted_values:
               arguments:
                 values: ['ACCEPT', 'REJECT']
+      # an ACCEPT naming something that is not a real title group used to
+      # be silently ignored - the value simply matched no role afterwards
+      - name: title_group
+        tests:
+          - relationships:
+              arguments:
+                to: ref('title_group_anchors')
+                field: title_group

@@ -16,7 +16,11 @@ with matched as (
 overrides as (
     select
         to_hex(md5({{ normalize_title('title') }}))  as title_key,
-        role_key                                     as title_group,
+        -- the column holds a TITLE GROUP (practitioner, researcher_early,
+        -- ...), never a role key. It was named role_key until 2026-10-09
+        -- and the alias here was the only thing saying otherwise, so an
+        -- ACCEPT written with a role name silently did nothing.
+        title_group,
         decision                                     as human_decision,
         reviewer
     from {{ ref('role_title_overrides') }}

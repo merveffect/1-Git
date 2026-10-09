@@ -18,6 +18,11 @@
 -- ###########################################################################
 -- 1a. WHERE IS THE MASS? Score distribution for the two single-axis roles.
 --
+--     CORRECTED 2026-10-09: these three read fct_researcher_roles, not
+--     int_employment_scored. role_final_score is computed in fct and does
+--     not exist in int, so the first version of 1a-1c could not run as
+--     written against the table they named.
+--
 --     Both score 0.75 * title + 0.25 * organisation, confirming at 0.60. If
 --     the mass sits far above 0.60 then the threshold is not discriminating -
 --     it is just passing everything, and "CONFIRMED" tells marketing less
@@ -37,7 +42,7 @@ SELECT
     ROUND(COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY role_key), 4) AS share,
     ROUND(AVG(role_score), 3)                       AS avg_title_score,
     ROUND(AVG(org_score), 3)                        AS avg_org_score
-FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 WHERE role_key IN ('lecturer', 'researcher')
 GROUP BY role_key, band
 ORDER BY role_key, band;
@@ -64,7 +69,7 @@ SELECT
     evidence_dept                   AS orcid_department,
     org_type,
     is_current
-FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 WHERE role_key IN ('lecturer', 'researcher')
   AND role_final_score BETWEEN 0.60 AND 0.66   -- just inside CONFIRMED
 ORDER BY role_key, role_final_score
@@ -87,7 +92,7 @@ SELECT
     evidence_org                    AS orcid_organisation,
     evidence_dept                   AS orcid_department,
     org_type
-FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 WHERE role_key IN ('lecturer', 'researcher')
   AND role_final_score < 0.60
 ORDER BY role_key, role_final_score DESC
@@ -187,3 +192,65 @@ GROUP BY orcid_role, field
 HAVING records >= 50
 ORDER BY orcid_role, records DESC
 LIMIT 100;
+
+
+-- ###########################################################################
+-- 1d. SETTLE THE SCORE RANGE. Two of my readings disagree and one is wrong.
+--
+--     analyses/15 query 2 reported lecturer PROBABLE at 684 people with a
+--     minimum of 0.575, and researcher PROBABLE at 1,330 from 0.575. But 1a
+--     returned NO rows below 0.65 for either role, and 1b and 1c came back
+--     empty. Both cannot be true of the same table.
+--
+--     This prints the range directly, with the null count, so whichever
+--     reading is wrong stops being a guess.
+-- ###########################################################################
+SELECT
+    role_key,
+    role_label,
+    COUNT(*)                                        AS people,
+    ROUND(MIN(role_final_score), 4)                 AS min_score,
+    ROUND(MAX(role_final_score), 4)                 AS max_score,
+    COUNTIF(role_final_score IS NULL)               AS null_scores,
+    COUNTIF(role_final_score < 0.60)                AS below_060,
+    COUNTIF(role_final_score < 0.65)                AS below_065
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+GROUP BY role_key, role_label
+ORDER BY role_key, role_label;
+
+
+-- ###########################################################################
+-- 2d. ROWS WHOSE LABEL ITS SCORE CANNOT JUSTIFY.
+--
+--     Query 2b returned 'medical student' as hcp_broad CONFIRMED with an
+--     average score of 0.0, and the same for 'assistant' and 'member'. That
+--     is impossible: fct keeps only CONFIRMED and PROBABLE, and hcp_broad
+--     confirms at 0.60.
+--
+--     Two candidate causes, and derived_from_role separates them. If these
+--     rows carry a child role name then the parent roll-up handed them a
+--     label computed against the CHILD's thresholds - a known bug, since
+--     parent_rollup_union copies role_label verbatim and the children
+--     confirm at 0.70 while hcp_broad confirms at 0.60. If
+--     derived_from_role is null the score itself is wrong.
+-- ###########################################################################
+SELECT
+    role_key,
+    role_label,
+    ROUND(role_final_score, 4)      AS score,
+    ROUND(role_score, 3)            AS title_score,
+    ROUND(org_score, 3)             AS org_score,
+    ROUND(dept_score, 3)            AS dept_score,
+    title_group,
+    discipline,
+    derived_from_role,
+    evidence_title                  AS orcid_role,
+    evidence_dept                   AS orcid_department,
+    COUNT(*)                        AS rows_like_this
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+WHERE role_final_score IS NULL
+   OR role_final_score = 0
+   OR (role_label = 'CONFIRMED' AND role_final_score < 0.60)
+GROUP BY 1,2,3,4,5,6,7,8,9,10,11
+ORDER BY rows_like_this DESC
+LIMIT 60;
