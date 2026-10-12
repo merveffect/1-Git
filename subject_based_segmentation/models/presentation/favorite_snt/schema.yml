@@ -5,7 +5,9 @@ models:
     description: >
       Top-10 favorite SNTs per user — nearest SNTs (by cosine distance) to
       their reading-behaviour embedding (user_embedding), ranked 1 (most
-      favorite) to 10 via favorite_rank.
+      favorite) to 10 via favorite_rank. Refreshed on a rolling basis, one
+      batch of the stalest users per run. post_hooks clear superseded rows,
+      users who have left the target audience, and users in snid_deletions.
     columns:
       - name: snid
         description: SN id.
@@ -157,7 +159,8 @@ models:
     description: >
       Final output for the CDI pipeline: Top-10 favorite SNTs per user — nearest SNTs (by cosine distance) to
       their reading-behaviour embedding (user_embedding), ranked 1 (most
-      favorite) to 10 via favorite_rank.
+      favorite) to 10 via favorite_rank. Users in snid_deletions are
+      excluded, matching cdp_inferred_mpc_subjects on the MPC side.
     columns:
       - name: snid
         description: SN id.

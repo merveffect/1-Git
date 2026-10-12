@@ -6,7 +6,10 @@ teams_webhook_url: https://defaultd9aabe7c608b4fe1957c0739cb0dfe.22.environment.
 dbt_target: dev
 
 jobs:
+  # Daily, not weekly: favorite_snt_predictions refreshes one batch of users
+  # per run, so the cadence of this job is what sets how often a given user's
+  # predictions get re-evaluated. Weekly meant roughly every 6 months.
   - name: subject-based-segmentation-dev
-    schedule: 0 8 * * 1
+    schedule: 0 8 * * *
 
 
