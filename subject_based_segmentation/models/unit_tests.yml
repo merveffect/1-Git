@@ -112,11 +112,11 @@ unit_tests:
       - input: ref('favorite_snt_predictions')
         rows:
           - snid: 'userA'
-            snt_id: '500'
+            inferred_snt_id: '500'
           - snid: 'userB'
-            snt_id: '999'
+            inferred_snt_id: '999'
           - snid: 'userC'
-            snt_id: '111'
+            inferred_snt_id: '111'
       - input: source('subject_based_segmentation', 'snts_mktps_mapped_final')
         # unused level_x_id columns are left out entirely (not set to []) —
         # the model already does IFNULL(level_x_id, []) itself, and empty
@@ -134,3 +134,102 @@ unit_tests:
           predicted_mpc_subjects: ['700']
         - snid: 'userC'
           predicted_mpc_subjects: null
+
+  - name: users_with_content_signal_keeps_only_opted_in_users
+    description: >
+      The target-audience filter must let a user through on ANY one of the
+      three consents, and must exclude users with none of them.
+    model: users_with_content_signal
+    given:
+      - input: source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big')
+        rows:
+          - snid: 'u_advertising'
+            advertising_opt_in: true
+            mkt_pref_opt_in: false
+            is_legitimate_interest_author_opted_in: false
+            list_keywords_dois_last_60_d: '\\Oncology\\'
+          - snid: 'u_mkt_pref'
+            advertising_opt_in: false
+            mkt_pref_opt_in: true
+            is_legitimate_interest_author_opted_in: false
+            list_keywords_dois_last_60_d: '\\Virology\\'
+          - snid: 'u_legitimate_interest'
+            advertising_opt_in: false
+            mkt_pref_opt_in: false
+            is_legitimate_interest_author_opted_in: true
+            list_keywords_dois_last_60_d: '\\Geology\\'
+          - snid: 'u_no_consent'
+            advertising_opt_in: false
+            mkt_pref_opt_in: false
+            is_legitimate_interest_author_opted_in: false
+            list_keywords_dois_last_60_d: '\\Should Not Appear\\'
+          - snid: 'u_null_consent'
+            advertising_opt_in: null
+            mkt_pref_opt_in: null
+            is_legitimate_interest_author_opted_in: null
+            list_keywords_dois_last_60_d: '\\Should Not Appear Either\\'
+    expect:
+      rows:
+        - snid: 'u_advertising'
+          keywords_last_60d: '\\Oncology\\'
+        - snid: 'u_mkt_pref'
+          keywords_last_60d: '\\Virology\\'
+        - snid: 'u_legitimate_interest'
+          keywords_last_60d: '\\Geology\\'
+
+  - name: history_logs_new_and_changed_users
+    description: >
+      A user with no history row is logged as 'new'. A user whose top-10
+      differs from their last recorded fingerprint is logged as 'changed',
+      carrying first_seen_at forward from the earlier row while updated_at
+      moves to the new computed_at.
+    model: favorite_snt_predictions_history
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('favorite_snt_predictions')
+        rows:
+          - snid: 'u_new'
+            inferred_snt_id: '10'
+            inferred_snt_name: 'Alpha'
+            favorite_rank: 1
+            computed_at: '2026-02-01 00:00:00'
+          - snid: 'u_new'
+            inferred_snt_id: '20'
+            inferred_snt_name: 'Beta'
+            favorite_rank: 2
+            computed_at: '2026-02-01 00:00:00'
+          - snid: 'u_changed'
+            inferred_snt_id: '30'
+            inferred_snt_name: 'Gamma'
+            favorite_rank: 1
+            computed_at: '2026-02-01 00:00:00'
+          - snid: 'u_changed'
+            inferred_snt_id: '40'
+            inferred_snt_name: 'Delta'
+            favorite_rank: 2
+            computed_at: '2026-02-01 00:00:00'
+      - input: this
+        # u_changed already has history with a different fingerprint;
+        # u_new has none. Any non-matching fingerprint value works here —
+        # the model only compares it for equality.
+        rows:
+          - snid: 'u_changed'
+            change_type: 'new'
+            top_10_snt_names: 'Omega > Sigma'
+            fingerprint: 'PREVIOUS_FINGERPRINT'
+            first_seen_at: '2026-01-01 00:00:00'
+            updated_at: '2026-01-01 00:00:00'
+    expect:
+      rows:
+        - snid: 'u_new'
+          change_type: 'new'
+          top_10_snt_names: 'Alpha > Beta'
+          first_seen_at: '2026-02-01 00:00:00'
+          updated_at: '2026-02-01 00:00:00'
+        - snid: 'u_changed'
+          change_type: 'changed'
+          top_10_snt_names: 'Gamma > Delta'
+          first_seen_at: '2026-01-01 00:00:00'
+          updated_at: '2026-02-01 00:00:00'

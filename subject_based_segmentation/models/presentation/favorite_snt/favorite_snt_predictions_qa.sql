@@ -10,7 +10,7 @@ with predicted as (
 
     select
         snid,
-        string_agg(snt_name, ', ' order by favorite_rank) as predicted_snt_names
+        string_agg(inferred_snt_name, ', ' order by favorite_rank) as predicted_snt_names
     from {{ ref('favorite_snt_predictions') }}
     group by snid
 

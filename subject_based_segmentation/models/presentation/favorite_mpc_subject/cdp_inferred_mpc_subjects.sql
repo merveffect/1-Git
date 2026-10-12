@@ -24,6 +24,10 @@ base AS (
 SELECT
   base.snid,
   base.inferred_mpc_subjects,
+  -- Deliberate duplicate of inferred_mpc_subjects under a second name, so CDI
+  -- can map whichever of the two it prefers. Identical values by construction
+  -- (same expression, not a recomputation) — if one ever has to change, change
+  -- both.
   base.inferred_mpc_subjects AS isubjects
 FROM base
 LEFT JOIN deleted USING (snid)

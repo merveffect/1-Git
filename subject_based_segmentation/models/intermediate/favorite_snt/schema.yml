@@ -93,7 +93,7 @@ models:
       reading-relationship signal for. No embedding cost.
     columns:
       - name: snid
-        description: User id.
+        description: SN id.
         tests:
           - not_null
           - unique
@@ -109,7 +109,7 @@ models:
       tests/assert_users_and_keywords_unique_snid_keyword_id.sql.
     columns:
       - name: snid
-        description: User id.
+        description: SN id.
         tests:
           - not_null
       - name: keyword_id
@@ -131,7 +131,7 @@ models:
       keyword_snt_confidence, floored at 0.05). 
     columns:
       - name: snid
-        description: User id.
+        description: SN id.
         tests:
           - not_null
           - unique
@@ -212,7 +212,7 @@ models:
       Long-format (snid, collection_id) pairs, mirroring users_and_keywords.
     columns:
       - name: snid
-        description: User id.
+        description: SN id.
         tests:
           - not_null
       - name: collection_id
@@ -231,7 +231,7 @@ models:
       nearest_snt distance from collection_snt_confidence, floored at 0.05).
     columns:
       - name: snid
-        description: User id.
+        description: SN id.
         tests:
           - not_null
           - unique
@@ -247,7 +247,7 @@ models:
       user_collection_vector.
     columns:
       - name: snid
-        description: User id.
+        description: SN id.
         tests:
           - not_null
           - unique

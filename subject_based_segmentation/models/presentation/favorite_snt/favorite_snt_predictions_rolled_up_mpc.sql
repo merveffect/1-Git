@@ -8,7 +8,7 @@
 -- favorite_mpc_subject/snid_to_mktps_step1.sql.
 
 with predictions as (
-    select snid, snt_id
+    select snid, inferred_snt_id as snt_id
     from {{ ref('favorite_snt_predictions') }}
 ),
 
