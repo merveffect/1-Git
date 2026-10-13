@@ -5,13 +5,15 @@ models:
     description: >
       Top-10 favorite SNTs per user — nearest SNTs (by cosine distance) to
       their reading-behaviour embedding (user_embedding), ranked 1 (most
-      favorite) to 10 via favorite_rank.
+      favorite) to 10 via favorite_rank. Refreshed on a rolling basis, one
+      batch of the stalest users per run. post_hooks clear superseded rows,
+      users who have left the target audience, and users in snid_deletions.
     columns:
       - name: snid
         description: SN id.
         tests:
           - not_null
-      - name: snt_id
+      - name: inferred_snt_id
         description: A predicted SNT id.
         tests:
           - not_null
@@ -19,7 +21,7 @@ models:
               arguments:
                 to: ref('snt_embeddings')
                 field: snt_id
-      - name: snt_name
+      - name: inferred_snt_name
         description: Name of the predicted SNT.
         tests:
           - not_null
@@ -35,6 +37,10 @@ models:
               arguments:
                 values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
                 quote: false
+      - name: computed_at
+        description: When this user's predictions were last computed. Drives the rolling refresh (stalest users go first) and the post_hook that clears superseded rows.
+        tests:
+          - not_null
 
   - name: favorite_snt_predictions_rolled_up_mpc
     description: >
@@ -43,7 +49,7 @@ models:
       favorite_snt_evaluation_metrics — there's no other use
     columns:
       - name: snid
-        description: User id.
+        description: SN id.
         tests:
           - not_null
           - unique
@@ -114,11 +120,47 @@ models:
       - name: predicted_snt_names
         description: Comma-separated list of the predicted top-10 SNT names, ordered from most to least favorite (favorite_rank 1 to 10).
 
+  - name: favorite_snt_predictions_history
+    description: >
+      Change log: one row per user per change. A user appears only when
+      newly predicted, or when their top-10 actually changed (same 10 SNTs
+      in the same order writes nothing). Append-only, partitioned by
+      updated_at.
+    columns:
+      - name: snid
+        description: SN id.
+        tests:
+          - not_null
+      - name: change_type
+        description: "'new' the first time a user is predicted, 'changed' when their existing top-10 changed."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['new', 'changed']
+      - name: top_10_snt_names
+        description: The 10 SNT names as of this change, ordered most to least favorite, separated by " > ".
+        tests:
+          - not_null
+      - name: fingerprint
+        description: MD5 of the ordered inferred_snt_id sequence — what change detection compares against.
+        tests:
+          - not_null
+      - name: first_seen_at
+        description: When this user was first predicted, carried forward across later changes.
+        tests:
+          - not_null
+      - name: updated_at
+        description: When this change happened. Partition field.
+        tests:
+          - not_null
+
   - name: inferred_snts
     description: >
       Final output for the CDI pipeline: Top-10 favorite SNTs per user — nearest SNTs (by cosine distance) to
       their reading-behaviour embedding (user_embedding), ranked 1 (most
-      favorite) to 10 via favorite_rank.
+      favorite) to 10 via favorite_rank. Users in snid_deletions are
+      excluded, matching cdp_inferred_mpc_subjects on the MPC side.
     columns:
       - name: snid
         description: SN id.

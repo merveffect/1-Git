@@ -35,7 +35,10 @@ models:
       - name: inferred_mpc_subjects
         description: Array of up to 3 inferred MPC subject IDs (INT64) for this user.
       - name: isubjects
-        description: Deprecated legacy alias of inferred_mpc_subjects kept for backwards compatibility.
+        description: >
+          Identical copy of inferred_mpc_subjects under a second name, exposed so
+          CDI can consume whichever column name it prefers. Always equal to
+          inferred_mpc_subjects — kept in sync by assert_cdp_isubjects_matches_inferred_mpc_subjects.
 
   - name: permutive_inferred_mpc_subjects
     description: >
