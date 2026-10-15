@@ -5,10 +5,11 @@ import { store, options, setPref } from '../state.js';
 import {
   byPeriod, byCategory, byMerchant, totals, cumulativeNet, inRange,
   insights, detectRecurring, categoryTrends, monthlyAverages, activeTransactions,
+  byOriginalCurrency, currencies,
 } from '../lib/analytics.js';
 import { addMonths, todayISO, monthKey } from '../lib/dates.js';
 import { incomeExpenseChart, cumulativeChart, categoryBars, legend } from '../charts.js';
-import { card, stat, money, label, segmented, tone, formatDate } from './common.js';
+import { card, stat, money, moneyIn, label, segmented, tone, formatDate } from './common.js';
 
 const RANGES = [
   { value: 'this-month', label: 'This month' },
@@ -51,6 +52,8 @@ export function renderDashboard(navigate) {
   const trends = categoryTrends(scoped, { ...opts, granularity: 'month' });
   const highlights = insights(scoped, { ...opts, formatMoney: money });
   const counted = activeTransactions(scoped, opts).length;
+  const foreign = byOriginalCurrency(scoped, 'out', opts);
+  const booked = currencies(scoped);
 
   const periodWord = granularity === 'week' ? 'week' : granularity === 'year' ? 'year' : 'month';
   const latest = periodsWithLabels[periodsWithLabels.length - 1];
@@ -74,6 +77,12 @@ export function renderDashboard(navigate) {
         ], granularity, (value) => setPref('granularity', value)),
       ]),
     ]),
+
+    booked.length > 1 ? el('p', { class: 'notice notice-bad' }, [
+      el('strong', { text: `These transactions were charged in ${booked.join(', ')}. ` }),
+      el('span', { text: 'The totals below add those together, which does not mean anything. '
+        + 'Import one account at a time, or ignore the rows in the other currencies.' }),
+    ]) : null,
 
     el('div', { class: 'grid grid-stats' }, [
       stat('Money in', money(summary.incomeCents), {
@@ -187,6 +196,36 @@ export function renderDashboard(navigate) {
           ]),
         ]),
       ], el('button', { class: 'btn-small', text: 'See all transactions', onclick: () => navigate('transactions') })),
+    ]) : null,
+
+    foreign.length > 0 ? el('div', { style: 'margin-top:16px' }, [
+      card('Spending charged in another currency', [
+        el('p', { class: 'stat-foot', style: 'margin-bottom:10px', text:
+          'The left column is what the merchant asked for; the right is what left your '
+          + `${store.data.settings.currency} account. Only the right-hand figures are in the totals above.` }),
+        el('div', { class: 'table-wrap' }, [
+          el('table', {}, [
+            el('thead', {}, [el('tr', {}, [
+              el('th', { text: 'Currency' }),
+              el('th', { class: 'num', text: 'Charged' }),
+              el('th', { class: 'num', text: 'Cost to you' }),
+              el('th', { class: 'num', text: 'Average rate' }),
+              el('th', { class: 'num', text: 'Payments' }),
+            ])]),
+            el('tbody', {}, foreign.map((row) => el('tr', {}, [
+              el('td', {}, [el('span', { class: 'pill', text: row.currency })]),
+              el('td', { class: 'num', text: moneyIn(row.originalCents, row.currency) }),
+              el('td', { class: 'num', text: money(row.bookedCents) }),
+              el('td', { class: 'num', text: row.rate === null ? '—' : `${row.rate.toFixed(2)} / 1` }),
+              el('td', { class: 'num', text: String(row.count) }),
+            ]))),
+          ]),
+        ]),
+      ], el('button', {
+        class: 'btn-small',
+        text: 'See these transactions',
+        onclick: () => navigate('transactions', { direction: 'out', from, to }),
+      })),
     ]) : null,
 
     earning.length > 1 ? el('div', { style: 'margin-top:16px' }, [

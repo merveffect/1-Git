@@ -283,6 +283,10 @@ tbody tr:hover { background: var(--surface-2); }
 .row-excluded td { opacity: 0.45; text-decoration: line-through; }
 .cell-desc { max-width: 380px; }
 .cell-desc small { display: block; color: var(--text-muted); font-size: 11.5px; }
+/* The foreign original, kept visibly subordinate to what the account paid. */
+.amount-original {
+  display: block; color: var(--text-muted); font-size: 11.5px; font-weight: 400;
+}
 td select { padding: 4px 6px; font-size: 12.5px; min-width: 130px; }
 
 .empty { color: var(--text-muted); font-size: 13.5px; padding: 8px 0; }
@@ -923,6 +927,47 @@ function byMerchant(transactions, direction = 'out', options = {}) {
   return [...buckets.values()].sort((a, b) => b.cents - a.cents);
 }
 
+/**
+ * The currencies the account itself was charged in.
+ *
+ * More than one means every total in the app is adding unlike units together,
+ * so the UI has to say so rather than print a single figure.
+ */
+function currencies(transactions) {
+  const seen = new Set();
+  for (const tx of transactions) if (tx.currency) seen.add(tx.currency);
+  return [...seen].sort();
+}
+
+/**
+ * Spending that was charged in another currency, grouped by that currency.
+ *
+ * `originalCents` is what the merchant asked for and `bookedCents` is what the
+ * account actually paid - never interchangeable, which is the whole point of
+ * reporting them side by side.
+ *
+ * @param {'out'|'in'} direction
+ * @returns {Array<{currency, originalCents, bookedCents, count, rate}>}
+ */
+function byOriginalCurrency(transactions, direction = 'out', options = {}) {
+  const buckets = new Map();
+  for (const tx of activeTransactions(transactions, options)) {
+    if (!tx.originalCurrency || tx.originalAmountCents === null
+      || tx.originalAmountCents === undefined) continue;
+    const isOut = tx.amountCents < 0;
+    if ((direction === 'out') !== isOut) continue;
+    const bucket = buckets.get(tx.originalCurrency)
+      || { currency: tx.originalCurrency, originalCents: 0, bookedCents: 0, count: 0 };
+    bucket.originalCents += Math.abs(tx.originalAmountCents);
+    bucket.bookedCents += Math.abs(tx.amountCents);
+    bucket.count += 1;
+    buckets.set(tx.originalCurrency, bucket);
+  }
+  return [...buckets.values()]
+    .map((b) => ({ ...b, rate: b.bookedCents > 0 ? b.originalCents / b.bookedCents : null }))
+    .sort((a, b) => b.bookedCents - a.bookedCents);
+}
+
 /** Running balance of net cash flow over time, for the trend chart. */
 function cumulativeNet(periods) {
   let running = 0;
@@ -1152,7 +1197,7 @@ function insights(transactions, options = {}) {
   return out;
 }
 
-  Object.assign(__exports, { activeTransactions, inRange, byPeriod, totals, byCategory, byMerchant, cumulativeNet, detectRecurring, categoryTrends, monthlyAverages, goalProgress, insights });
+  Object.assign(__exports, { activeTransactions, inRange, byPeriod, totals, byCategory, byMerchant, currencies, byOriginalCurrency, cumulativeNet, detectRecurring, categoryTrends, monthlyAverages, goalProgress, insights });
 };
 __factories["lib/categorize.js"] = function (__exports, __require) {
 /**
@@ -1662,6 +1707,10 @@ const PATTERNS = {
   credit: /\b(credit|deposit|deposits|paid\s*in|money\s*in|inflow|income|haben|alacak|gelir)\b/i,
   balance: /\b(balance|saldo|solde|kontostand|bakiye|running\s*total)\b/i,
   currency: /\b(currency|ccy|waehrung|währung|devise|para\s*birimi)\b/i,
+  // A foreign "original amount" is what the merchant charged, not what the
+  // account paid. Claimed before `amount` so it can never be read as the charge.
+  originalAmount: /\b(original|foreign|source|billing)\s*(currency\s*)?(amount|value|tutar)\b|\bamount\s+in\s+original\s+currency\b|\borijinal\s*tutar\b/i,
+  originalCurrency: /\b(original|foreign|source|billing)\s*currency\b|\borijinal\s*(para\s*birimi|döviz|doviz)\b/i,
   type: /\b(type|transaction\s*type|dc|d\/c|debit\/credit|kind|direction|islem\s*turu|işlem\s*türü)\b/i,
   account: /\b(account|konto|compte|cuenta|hesap|iban|card)\b/i,
 };
@@ -1695,7 +1744,8 @@ function averageLength(rows, index) {
  * @param {string[][]} rows sample data rows (without the header)
  * @returns {{date:number|null, description:number[], amount:number|null,
  *   debit:number|null, credit:number|null, balance:number|null,
- *   currency:number|null, type:number|null, dateOrder:string}}
+ *   currency:number|null, type:number|null, originalAmount:number|null,
+ *   originalCurrency:number|null, dateOrder:string}}
  */
 function detectColumns(headers, rows) {
   const used = new Set();
@@ -1705,7 +1755,11 @@ function detectColumns(headers, rows) {
     return index >= 0 ? index : null;
   };
 
-  // Header names win; content analysis fills the gaps.
+  // Header names win; content analysis fills the gaps. The original-amount pair
+  // goes first: "Original amount" also matches the plain `amount` pattern, and
+  // mistaking it for the charge is exactly the error this guards against.
+  const originalAmount = byHeader('originalAmount');
+  const originalCurrency = byHeader('originalCurrency');
   let date = byHeader('date');
   const debit = byHeader('debit');
   const credit = byHeader('credit');
@@ -1779,7 +1833,10 @@ function detectColumns(headers, rows) {
 
   const dateOrder = date === null ? 'DMY' : detectDateOrder(rows.map((r) => r[date])) || 'DMY';
 
-  return { date, description: descriptions, amount, debit, credit, balance, currency, type, dateOrder };
+  return {
+    date, description: descriptions, amount, debit, credit, balance, currency, type,
+    originalAmount, originalCurrency, dateOrder,
+  };
 }
 
 const CREDIT_WORDS = /\b(credit|cr|deposit|in|income|alacak|gelir|haben|incoming)\b/i;
@@ -1852,12 +1909,21 @@ function mapRows(rows, mapping) {
       .filter((part) => part && part.trim() !== '')
       .join(' · ');
 
+    const cell = (index) => (index === null || index === undefined
+      ? null : (row[index] || '').trim() || null);
+    const currency = (cell(mapping.currency) || '').toUpperCase() || null;
+    const originalCurrency = (cell(mapping.originalCurrency) || '').toUpperCase() || null;
+    const originalAmount = mapping.originalAmount === null || mapping.originalAmount === undefined
+      ? null : parseAmount(row[mapping.originalAmount]);
+
     out.push({
       date,
       amount,
       description: description || '(no description)',
-      currency: mapping.currency === null || mapping.currency === undefined
-        ? null : (row[mapping.currency] || '').trim().toUpperCase() || null,
+      currency,
+      // Only worth keeping when it says something the charge does not.
+      originalAmount: originalCurrency && originalCurrency !== currency ? originalAmount : null,
+      originalCurrency: originalCurrency && originalCurrency !== currency ? originalCurrency : null,
       type: mapping.type === null || mapping.type === undefined ? null : row[mapping.type] || null,
     });
   }
@@ -1961,6 +2027,12 @@ function buildTransactions(rows, options = {}) {
     const cleaned = collapse(redactPII ? redact(row.description) : row.description);
     const merchantKey = normalizeMerchant(cleaned);
     const amountCents = toCents(row.amount);
+    const bookedCurrency = row.currency || currency;
+    // What the merchant charged, when the account paid in a different currency.
+    // Kept for display and for the foreign-spending breakdown only: the account
+    // moved `amountCents`, and that is the only figure any total may use.
+    const foreign = row.originalCurrency && row.originalCurrency !== bookedCurrency
+      && row.originalAmount !== null && row.originalAmount !== undefined;
     return {
       id: `tx_${importId}_${index}`,
       date: row.date,
@@ -1968,7 +2040,11 @@ function buildTransactions(rows, options = {}) {
       description: cleaned,
       merchantKey,
       merchantLabel: merchantLabel(cleaned),
-      currency: row.currency || currency,
+      currency: bookedCurrency,
+      originalAmountCents: foreign
+        ? toCents(Math.abs(row.originalAmount)) * (amountCents < 0 ? -1 : 1)
+        : null,
+      originalCurrency: foreign ? row.originalCurrency : null,
       account,
       category: 'Uncategorised',
       categorySource: 'fallback',
@@ -2636,7 +2712,8 @@ async function restoreEncryptedBackup(json, passphrase) {
 
 /** Plain CSV export - unencrypted by definition, the UI warns about it. */
 function exportCSV(transactions = store.data.transactions) {
-  const header = ['date', 'description', 'merchant', 'category', 'amount', 'currency', 'account', 'excluded', 'note'];
+  const header = ['date', 'description', 'merchant', 'category', 'amount', 'currency',
+    'original amount', 'original currency', 'account', 'excluded', 'note'];
   const escape = (value) => {
     const text = String(value ?? '');
     return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
@@ -2645,7 +2722,10 @@ function exportCSV(transactions = store.data.transactions) {
   for (const tx of transactions) {
     lines.push([
       tx.date, tx.description, tx.merchantLabel, tx.category,
-      (tx.amountCents / 100).toFixed(2), tx.currency, tx.account,
+      (tx.amountCents / 100).toFixed(2), tx.currency,
+      tx.originalAmountCents === null || tx.originalAmountCents === undefined
+        ? '' : (tx.originalAmountCents / 100).toFixed(2),
+      tx.originalCurrency || '', tx.account,
       tx.excluded ? 'yes' : 'no', tx.note,
     ].map(escape).join(','));
   }
@@ -2867,6 +2947,12 @@ function money(cents) {
   return formatMoney(cents, currency || 'EUR', locale || undefined);
 }
 
+/** For a figure that carries its own currency, such as a foreign original. */
+function moneyIn(cents, currency) {
+  const { locale } = settings();
+  return formatMoney(cents, currency || settings().currency || 'EUR', locale || undefined);
+}
+
 function label(periodKeyValue) {
   const { locale, weekStart } = settings();
   return periodLabel(periodKeyValue, locale || undefined, weekStart);
@@ -2950,16 +3036,16 @@ function tone(cents) {
   return cents >= 0 ? 'is-net' : 'is-negative';
 }
 
-  Object.assign(__exports, { settings, money, label, formatDate, card, stat, field, segmented, toast, downloadFile, categorySelect, tone });
+  Object.assign(__exports, { settings, money, moneyIn, label, formatDate, card, stat, field, segmented, toast, downloadFile, categorySelect, tone });
 };
 __factories["ui/dashboard.js"] = function (__exports, __require) {
 /** The overview: money in, money out, where it went, and what it is doing over time. */
 const { el } = __require("dom.js");
 const { store, options, setPref } = __require("state.js");
-const { byPeriod, byCategory, byMerchant, totals, cumulativeNet, inRange, insights, detectRecurring, categoryTrends, monthlyAverages, activeTransactions } = __require("lib/analytics.js");
+const { byPeriod, byCategory, byMerchant, totals, cumulativeNet, inRange, insights, detectRecurring, categoryTrends, monthlyAverages, activeTransactions, byOriginalCurrency, currencies } = __require("lib/analytics.js");
 const { addMonths, todayISO, monthKey } = __require("lib/dates.js");
 const { incomeExpenseChart, cumulativeChart, categoryBars, legend } = __require("charts.js");
-const { card, stat, money, label, segmented, tone, formatDate } = __require("ui/common.js");
+const { card, stat, money, moneyIn, label, segmented, tone, formatDate } = __require("ui/common.js");
 const RANGES = [
   { value: 'this-month', label: 'This month' },
   { value: '3m', label: '3 months' },
@@ -3001,6 +3087,8 @@ function renderDashboard(navigate) {
   const trends = categoryTrends(scoped, { ...opts, granularity: 'month' });
   const highlights = insights(scoped, { ...opts, formatMoney: money });
   const counted = activeTransactions(scoped, opts).length;
+  const foreign = byOriginalCurrency(scoped, 'out', opts);
+  const booked = currencies(scoped);
 
   const periodWord = granularity === 'week' ? 'week' : granularity === 'year' ? 'year' : 'month';
   const latest = periodsWithLabels[periodsWithLabels.length - 1];
@@ -3024,6 +3112,12 @@ function renderDashboard(navigate) {
         ], granularity, (value) => setPref('granularity', value)),
       ]),
     ]),
+
+    booked.length > 1 ? el('p', { class: 'notice notice-bad' }, [
+      el('strong', { text: `These transactions were charged in ${booked.join(', ')}. ` }),
+      el('span', { text: 'The totals below add those together, which does not mean anything. '
+        + 'Import one account at a time, or ignore the rows in the other currencies.' }),
+    ]) : null,
 
     el('div', { class: 'grid grid-stats' }, [
       stat('Money in', money(summary.incomeCents), {
@@ -3137,6 +3231,36 @@ function renderDashboard(navigate) {
           ]),
         ]),
       ], el('button', { class: 'btn-small', text: 'See all transactions', onclick: () => navigate('transactions') })),
+    ]) : null,
+
+    foreign.length > 0 ? el('div', { style: 'margin-top:16px' }, [
+      card('Spending charged in another currency', [
+        el('p', { class: 'stat-foot', style: 'margin-bottom:10px', text:
+          'The left column is what the merchant asked for; the right is what left your '
+          + `${store.data.settings.currency} account. Only the right-hand figures are in the totals above.` }),
+        el('div', { class: 'table-wrap' }, [
+          el('table', {}, [
+            el('thead', {}, [el('tr', {}, [
+              el('th', { text: 'Currency' }),
+              el('th', { class: 'num', text: 'Charged' }),
+              el('th', { class: 'num', text: 'Cost to you' }),
+              el('th', { class: 'num', text: 'Average rate' }),
+              el('th', { class: 'num', text: 'Payments' }),
+            ])]),
+            el('tbody', {}, foreign.map((row) => el('tr', {}, [
+              el('td', {}, [el('span', { class: 'pill', text: row.currency })]),
+              el('td', { class: 'num', text: moneyIn(row.originalCents, row.currency) }),
+              el('td', { class: 'num', text: money(row.bookedCents) }),
+              el('td', { class: 'num', text: row.rate === null ? '—' : `${row.rate.toFixed(2)} / 1` }),
+              el('td', { class: 'num', text: String(row.count) }),
+            ]))),
+          ]),
+        ]),
+      ], el('button', {
+        class: 'btn-small',
+        text: 'See these transactions',
+        onclick: () => navigate('transactions', { direction: 'out', from, to }),
+      })),
     ]) : null,
 
     earning.length > 1 ? el('div', { style: 'margin-top:16px' }, [
@@ -3330,7 +3454,7 @@ const { el, mount } = __require("dom.js");
 const { store, importStatement, undoImport } = __require("state.js");
 const { readStatement, remap, buildTransactions } = __require("lib/import.js");
 const { applyRules } = __require("lib/categorize.js");
-const { card, field, money, toast, formatDate } = __require("ui/common.js");
+const { card, field, money, moneyIn, toast, formatDate } = __require("ui/common.js");
 const ACCEPTED = '.csv,.tsv,.txt,.ofx,.qfx';
 
 let current = null; // { filename, parsed, mapping }
@@ -3455,6 +3579,11 @@ function previewCard(refresh, navigate) {
       field('Money out column', columnSelect(parsed.headers, mapping.debit, (value) => set({ debit: value }))),
       field('Money in column', columnSelect(parsed.headers, mapping.credit, (value) => set({ credit: value }))),
     ]),
+    el('div', { class: 'field-row' }, [
+      field('Currency column', columnSelect(parsed.headers, mapping.currency, (value) => set({ currency: value }))),
+      field('Original amount column', columnSelect(parsed.headers, mapping.originalAmount, (value) => set({ originalAmount: value }))),
+      field('Original currency column', columnSelect(parsed.headers, mapping.originalCurrency, (value) => set({ originalCurrency: value }))),
+    ]),
     mapping.amount !== null && mapping.amount !== undefined
       ? el('label', { class: 'checkbox' }, [
         el('input', {
@@ -3475,6 +3604,8 @@ function previewCard(refresh, navigate) {
 
   const readable = mapped.rows.length;
   const skipped = mapped.skipped.length;
+  const foreignRows = mapped.rows.filter((row) => row.originalCurrency);
+  const foreignCurrencies = [...new Set(foreignRows.map((row) => row.originalCurrency))].sort();
 
   return card(`Check before importing — ${filename}`, [
     el('p', {
@@ -3483,6 +3614,10 @@ function previewCard(refresh, navigate) {
         ? 'No rows could be read. Pick the right columns below and the preview will update.'
         : `${readable} transactions read${skipped ? `, ${skipped} lines ignored (headers, totals or blanks)` : ''}. Check that the first rows look right.`,
     }),
+    foreignRows.length > 0 ? el('p', { class: 'notice notice-warn', text:
+      `${foreignRows.length} rows were charged in ${foreignCurrencies.join(', ')}. `
+      + 'What gets imported is the amount your account paid, not the foreign figure — '
+      + 'the original is kept alongside it, and shown but never added into any total.' }) : null,
     controls,
     field('Which account is this? (optional)', accountInput),
     el('div', { class: 'table-wrap' }, [
@@ -3497,7 +3632,12 @@ function previewCard(refresh, navigate) {
             el('td', { text: formatDate(tx.date) }),
             el('td', { text: tx.description }),
             el('td', {}, [el('span', { class: 'pill', text: tx.category })]),
-            el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}`, text: money(tx.amountCents) }),
+            el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}` }, [
+              el('span', { text: money(tx.amountCents) }),
+              tx.originalCurrency
+                ? el('small', { class: 'amount-original', text: moneyIn(Math.abs(tx.originalAmountCents), tx.originalCurrency) })
+                : null,
+            ]),
           ]))),
       ]),
     ]),
@@ -4182,7 +4322,7 @@ const { el, mount } = __require("dom.js");
 const { store, options, setCategory, setExcluded, setNote, exportCSV } = __require("state.js");
 const { periodKey } = __require("lib/dates.js");
 const { categoryKind } = __require("lib/categorize.js");
-const { card, money, formatDate, categorySelect, toast, downloadFile, field } = __require("ui/common.js");
+const { card, money, moneyIn, formatDate, categorySelect, toast, downloadFile, field } = __require("ui/common.js");
 const PAGE_SIZE = 150;
 
 let filters = { search: '', category: '', direction: 'all', from: '', to: '', account: '', period: null, granularity: 'month' };
@@ -4358,7 +4498,17 @@ function transactionRow(tx, redraw) {
         ? el('span', { class: 'pill', style: 'margin-left:6px', text: 'manual' })
         : null,
     ]),
-    el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}`, text: money(tx.amountCents) }),
+    el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}` }, [
+      el('span', { text: money(tx.amountCents) }),
+      // Unsigned: the direction is already on the line above it.
+      tx.originalCurrency
+        ? el('small', {
+          class: 'amount-original',
+          title: `Charged as ${moneyIn(Math.abs(tx.originalAmountCents), tx.originalCurrency)}, paid from a ${tx.currency} account`,
+          text: moneyIn(Math.abs(tx.originalAmountCents), tx.originalCurrency),
+        })
+        : null,
+    ]),
     el('td', { class: 'num' }, [
       el('div', { class: 'btn-row', style: 'justify-content:flex-end; flex-wrap:nowrap' }, [
         el('button', {

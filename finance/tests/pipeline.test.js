@@ -157,3 +157,59 @@ test('"remember this" builds a rule that matches the same merchant again', () =>
   const other = { description: 'RANDOM LOCAL SHOP 902', merchantKey: 'random local shop', amountCents: -800 };
   assert.equal(categorizeOne(other, [rule]).category, 'Groceries');
 });
+
+/* A statement in one currency, where some rows were charged in another. This is
+   the shape that invites the worst possible mistake: reading the foreign figure
+   as the amount the account paid. */
+const FOREIGN_ORIGINAL = `Date,Description,Money out,Money in,Balance,Currency,Original amount,Original currency
+21/09/2026,Google G1sk001m,17.65,,93.06,EUR,979.99,TRY
+20/09/2026,Hiwell Online Psikolog,125.84,,110.71,EUR,6119.90,TRY
+19/09/2026,Rewe,42.10,,236.55,EUR,,
+18/09/2026,Salary,,2500.00,278.65,EUR,,
+`;
+
+test('a foreign original amount is never read as the amount charged', () => {
+  const parsed = readStatement(FOREIGN_ORIGINAL);
+  assert.equal(parsed.mapping.debit, 2);
+  assert.equal(parsed.mapping.credit, 3);
+  assert.equal(parsed.mapping.currency, 5);
+  assert.equal(parsed.mapping.originalAmount, 6);
+  assert.equal(parsed.mapping.originalCurrency, 7);
+  // "Original amount" also matches the plain amount pattern, so prove it was
+  // not claimed as the charge column.
+  assert.notEqual(parsed.mapping.amount, 6);
+
+  const amounts = parsed.rows.map((row) => row.amount);
+  assert.deepEqual(amounts, [-17.65, -125.84, -42.1, 2500]);
+  assert.deepEqual(parsed.rows.map((row) => row.originalAmount), [979.99, 6119.9, null, null]);
+  assert.deepEqual(parsed.rows.map((row) => row.originalCurrency), ['TRY', 'TRY', null, null]);
+});
+
+test('the stored transaction keeps the charge and the original apart', () => {
+  const parsed = readStatement(FOREIGN_ORIGINAL);
+  const built = buildTransactions(parsed.rows, { currency: 'EUR', importId: 'fx' });
+
+  assert.equal(built[0].amountCents, -1765);
+  assert.equal(built[0].currency, 'EUR');
+  assert.equal(built[0].originalAmountCents, -97999);
+  assert.equal(built[0].originalCurrency, 'TRY');
+
+  // A row with no foreign leg carries no original at all.
+  assert.equal(built[2].originalAmountCents, null);
+  assert.equal(built[2].originalCurrency, null);
+
+  // The totals only ever see what the account paid.
+  const out = built.filter((tx) => tx.amountCents < 0)
+    .reduce((sum, tx) => sum + Math.abs(tx.amountCents), 0);
+  assert.equal(out, 1765 + 12584 + 4210);
+});
+
+test('an original amount in the account currency is dropped as noise', () => {
+  const sameCurrency = `date,description,amount,currency,original amount,original currency
+2026-09-21,Rewe,-42.10,EUR,42.10,EUR
+`;
+  const parsed = readStatement(sameCurrency);
+  const built = buildTransactions(parsed.rows, { currency: 'EUR', importId: 'same' });
+  assert.equal(built[0].originalCurrency, null);
+  assert.equal(built[0].originalAmountCents, null);
+});

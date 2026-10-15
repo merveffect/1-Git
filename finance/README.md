@@ -54,6 +54,9 @@ Two things worth being clear about, because "super secure" should not mean
 - **Regular payments** — subscriptions and other repeating charges are detected
   automatically, with their cadence, monthly cost, yearly cost and the date the
   next one is expected.
+- **Spending charged in another currency** — what the merchant asked for next to
+  what it actually cost your account, per currency, with the average rate you
+  got.
 - **What changed** — the categories that moved most against your recent average.
 - **Goals** — set a target and a date; it shows what you have saved since the
   goal started, what you need per month, whether you are on track, and when you
@@ -77,6 +80,39 @@ before confirming, and the preview updates live.
 Amounts are parsed in whatever format your bank uses: `1.234,56`, `1,234.56`,
 `(12.50)`, `12.50-`, `100.00 CR`, with or without currency symbols.
 
+### Payments made abroad
+
+A card payment in another currency has two figures: what the merchant charged,
+and what your account actually paid. Only the second is money that moved, and
+only the second is ever added into a total — mixing them up turns ₺127,321 of
+Turkish spending into a €127,321 hole that never happened.
+
+So if your export has an original-amount and original-currency column, they are
+picked up as exactly that: shown beside each transaction and summarised in
+**Spending charged in another currency**, never counted as the charge. Those
+columns are claimed before the ordinary amount column precisely because
+"Original amount" also looks like an amount. The import preview lets you correct
+all three if the guess is wrong.
+
+The app assumes one statement is one currency. If your vault ends up holding
+transactions charged in more than one, the overview says so instead of printing
+a total that adds unlike units together.
+
+### Revolut PDF statements
+
+Revolut only exports a full year as PDF, which no bank-import feature can read.
+`tools/revolut_statement_to_csv.py` converts one into a CSV this app imports,
+keeping the foreign originals in their own columns and leaving out the *Pending*
+and *Reverted* sections, which are not part of the closing balance:
+
+```bash
+python3 finance/tools/revolut_statement_to_csv.py statement.pdf -o statement.csv
+```
+
+It reconciles what it parsed against the statement's own balance summary and
+refuses to write a CSV that does not add up, so a misread column fails loudly
+instead of quietly producing plausible wrong numbers.
+
 Every import can be undone from the import history, which removes exactly the
 transactions that came from that file.
 
@@ -98,7 +134,7 @@ countries. On top of that:
 No build tooling and no dependencies. The `src/` folder is plain ES modules.
 
 ```bash
-npm test            # 42 tests covering parsing, dedupe, categorising and analytics
+npm test            # 47 tests covering parsing, dedupe, categorising and analytics
 python3 build.py    # bundles src/ into dist/finance-tracker.html
 python3 -m http.server 8080   # serve the unbundled app during development
 ```
@@ -111,6 +147,7 @@ python3 -m http.server 8080   # serve the unbundled app during development
 | `src/charts.js` | Hand-written SVG charts, colours from CSS custom properties |
 | `src/ui/` | The screens: lock, dashboard, import, transactions, goals, categories, settings |
 | `build.py` | Tiny module bundler that inlines everything into one offline HTML file |
+| `tools/` | Standalone converters for statement formats the app cannot read directly |
 | `tests/` | Node's built-in test runner, no framework |
 
 The chart palette is a colourblind-safe categorical set validated in both light

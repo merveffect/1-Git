@@ -4,7 +4,7 @@ import { el, mount } from '../dom.js';
 import { store, options, setCategory, setExcluded, setNote, exportCSV } from '../state.js';
 import { periodKey } from '../lib/dates.js';
 import { categoryKind } from '../lib/categorize.js';
-import { card, money, formatDate, categorySelect, toast, downloadFile, field } from './common.js';
+import { card, money, moneyIn, formatDate, categorySelect, toast, downloadFile, field } from './common.js';
 
 const PAGE_SIZE = 150;
 
@@ -181,7 +181,17 @@ function transactionRow(tx, redraw) {
         ? el('span', { class: 'pill', style: 'margin-left:6px', text: 'manual' })
         : null,
     ]),
-    el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}`, text: money(tx.amountCents) }),
+    el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}` }, [
+      el('span', { text: money(tx.amountCents) }),
+      // Unsigned: the direction is already on the line above it.
+      tx.originalCurrency
+        ? el('small', {
+          class: 'amount-original',
+          title: `Charged as ${moneyIn(Math.abs(tx.originalAmountCents), tx.originalCurrency)}, paid from a ${tx.currency} account`,
+          text: moneyIn(Math.abs(tx.originalAmountCents), tx.originalCurrency),
+        })
+        : null,
+    ]),
     el('td', { class: 'num' }, [
       el('div', { class: 'btn-row', style: 'justify-content:flex-end; flex-wrap:nowrap' }, [
         el('button', {

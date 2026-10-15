@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {
   byPeriod, byCategory, byMerchant, totals, cumulativeNet, inRange,
   detectRecurring, categoryTrends, monthlyAverages, goalProgress, activeTransactions,
+  byOriginalCurrency, currencies,
 } from '../src/lib/analytics.js';
 
 /** Twelve tidy months of a salary, rent, Netflix and groceries. */
@@ -177,4 +178,38 @@ test('a goal with a deadline says whether the pace is enough', () => {
   const tight = goalProgress({ startDate: '2026-01-01', targetCents: 99000000, targetDate: '2027-01-01' }, rows);
   assert.equal(tight.onTrack, false);
   assert.ok(tight.requiredMonthlyCents > tight.monthlyNetCents);
+});
+
+test('foreign spending reports what was charged next to what it cost', () => {
+  const transactions = [
+    tx('2026-01-03', -1765, 'Google', 'Subscriptions', { currency: 'EUR', originalAmountCents: -97999, originalCurrency: 'TRY' }),
+    tx('2026-01-04', -12584, 'Hiwell', 'Health', { currency: 'EUR', originalAmountCents: -611990, originalCurrency: 'TRY' }),
+    tx('2026-01-05', -2040, 'OpenAI', 'Subscriptions', { currency: 'EUR', originalAmountCents: -2380, originalCurrency: 'USD' }),
+    tx('2026-01-06', -4210, 'Rewe', 'Groceries', { currency: 'EUR' }),
+    tx('2026-01-07', 250000, 'Salary', 'Salary', { currency: 'EUR' }),
+  ];
+
+  const rows = byOriginalCurrency(transactions, 'out');
+  assert.deepEqual(rows.map((r) => r.currency), ['TRY', 'USD']);
+
+  const [turkish] = rows;
+  assert.equal(turkish.count, 2);
+  assert.equal(turkish.originalCents, 97999 + 611990);
+  assert.equal(turkish.bookedCents, 1765 + 12584);
+  assert.ok(Math.abs(turkish.rate - 49.48) < 0.01);
+
+  // Money the account never paid must not reach the spending total.
+  assert.equal(totals(transactions).expenseCents, 1765 + 12584 + 2040 + 4210);
+});
+
+test('currencies() reports every currency the account itself was charged in', () => {
+  const transactions = [
+    tx('2026-01-03', -1765, 'Google', 'Subscriptions', { currency: 'EUR', originalAmountCents: -97999, originalCurrency: 'TRY' }),
+    tx('2026-01-04', -4210, 'Rewe', 'Groceries', { currency: 'EUR' }),
+  ];
+  // A foreign original does not make the vault multi-currency on its own.
+  assert.deepEqual(currencies(transactions), ['EUR']);
+
+  transactions.push(tx('2026-01-05', -50000, 'Migros', 'Groceries', { currency: 'TRY' }));
+  assert.deepEqual(currencies(transactions), ['EUR', 'TRY']);
 });

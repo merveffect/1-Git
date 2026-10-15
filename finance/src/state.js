@@ -340,7 +340,8 @@ export async function restoreEncryptedBackup(json, passphrase) {
 
 /** Plain CSV export - unencrypted by definition, the UI warns about it. */
 export function exportCSV(transactions = store.data.transactions) {
-  const header = ['date', 'description', 'merchant', 'category', 'amount', 'currency', 'account', 'excluded', 'note'];
+  const header = ['date', 'description', 'merchant', 'category', 'amount', 'currency',
+    'original amount', 'original currency', 'account', 'excluded', 'note'];
   const escape = (value) => {
     const text = String(value ?? '');
     return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
@@ -349,7 +350,10 @@ export function exportCSV(transactions = store.data.transactions) {
   for (const tx of transactions) {
     lines.push([
       tx.date, tx.description, tx.merchantLabel, tx.category,
-      (tx.amountCents / 100).toFixed(2), tx.currency, tx.account,
+      (tx.amountCents / 100).toFixed(2), tx.currency,
+      tx.originalAmountCents === null || tx.originalAmountCents === undefined
+        ? '' : (tx.originalAmountCents / 100).toFixed(2),
+      tx.originalCurrency || '', tx.account,
       tx.excluded ? 'yes' : 'no', tx.note,
     ].map(escape).join(','));
   }

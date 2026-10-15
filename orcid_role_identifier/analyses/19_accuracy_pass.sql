@@ -130,3 +130,65 @@ WHERE is_assigned
       )
 ORDER BY frequency DESC
 LIMIT 80;
+
+
+-- ###########################################################################
+-- 5. CONSENT: ARE WE READING THE RIGHT FLAGS, AND IS "REACHABLE" HONEST?
+--
+--     raw_audience_builder_big takes four columns and no more:
+--       snid, email, mkt_pref_opt_in, advertising_opt_in
+--
+--     Two things were never checked, and both can move the headline number.
+--
+--     5a. WHAT ELSE IS IN THAT TABLE? _sources.yml still carries a
+--         "!! VERIFY" note saying the dataset came from the Phase-2
+--         document rather than a schema read. If there is a suppression
+--         flag, a hard-bounce flag, an unsubscribe date, a channel-level
+--         consent or a region flag, then someone we count as reachable
+--         may not be.
+--
+--     5b. REACHABLE DOES NOT REQUIRE AN EMAIL. The definition is
+--         countif(is_marketable or is_advertisable) with no check that a
+--         contact address exists. A person who consented but whose email
+--         is null is being counted as reachable.
+-- ###########################################################################
+
+-- 5a. Every column in the CDP source
+SELECT column_name, data_type
+FROM `dat-analytics-eng-ec869189.prod_audience_explorer_analytics_dbt_presentation.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = 'audience_builder_big'
+ORDER BY ordinal_position;
+
+
+-- 5b. How much of "reachable" has no address to reach?
+WITH per_person AS (
+  SELECT
+      snid,
+      LOGICAL_OR(role_label = 'CONFIRMED')                    AS has_confirmed,
+      LOGICAL_OR(is_marketable OR is_advertisable)            AS consented,
+      LOGICAL_OR(contact_email IS NOT NULL
+                 AND TRIM(contact_email) != '')               AS has_email
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+  GROUP BY snid
+)
+SELECT
+    COUNTIF(consented)                                  AS reachable_as_reported,
+    COUNTIF(consented AND has_email)                    AS reachable_with_an_email,
+    COUNTIF(consented AND NOT has_email)                AS consented_but_no_email,
+    ROUND(COUNTIF(consented AND NOT has_email) / COUNTIF(consented), 4) AS share_unusable
+FROM per_person
+WHERE has_confirmed;
+
+
+-- 5c. The same, per role, so a correction can be applied to the table
+SELECT
+    a.role_key,
+    COUNT(DISTINCT a.snid)                                              AS confirmed_people,
+    COUNT(DISTINCT IF(a.is_marketable OR a.is_advertisable, a.snid, NULL)) AS reachable_as_reported,
+    COUNT(DISTINCT IF((a.is_marketable OR a.is_advertisable)
+                      AND a.contact_email IS NOT NULL
+                      AND TRIM(a.contact_email) != '', a.snid, NULL))   AS reachable_with_an_email
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience` a
+WHERE a.role_label = 'CONFIRMED'
+GROUP BY a.role_key
+ORDER BY reachable_as_reported DESC;

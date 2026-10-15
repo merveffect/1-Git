@@ -267,6 +267,10 @@ tbody tr:hover { background: var(--surface-2); }
 .row-excluded td { opacity: 0.45; text-decoration: line-through; }
 .cell-desc { max-width: 380px; }
 .cell-desc small { display: block; color: var(--text-muted); font-size: 11.5px; }
+/* The foreign original, kept visibly subordinate to what the account paid. */
+.amount-original {
+  display: block; color: var(--text-muted); font-size: 11.5px; font-weight: 400;
+}
 td select { padding: 4px 6px; font-size: 12.5px; min-width: 130px; }
 
 .empty { color: var(--text-muted); font-size: 13.5px; padding: 8px 0; }

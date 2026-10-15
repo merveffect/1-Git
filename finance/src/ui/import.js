@@ -7,7 +7,7 @@ import { el, mount } from '../dom.js';
 import { store, importStatement, undoImport } from '../state.js';
 import { readStatement, remap, buildTransactions } from '../lib/import.js';
 import { applyRules } from '../lib/categorize.js';
-import { card, field, money, toast, formatDate } from './common.js';
+import { card, field, money, moneyIn, toast, formatDate } from './common.js';
 
 const ACCEPTED = '.csv,.tsv,.txt,.ofx,.qfx';
 
@@ -133,6 +133,11 @@ function previewCard(refresh, navigate) {
       field('Money out column', columnSelect(parsed.headers, mapping.debit, (value) => set({ debit: value }))),
       field('Money in column', columnSelect(parsed.headers, mapping.credit, (value) => set({ credit: value }))),
     ]),
+    el('div', { class: 'field-row' }, [
+      field('Currency column', columnSelect(parsed.headers, mapping.currency, (value) => set({ currency: value }))),
+      field('Original amount column', columnSelect(parsed.headers, mapping.originalAmount, (value) => set({ originalAmount: value }))),
+      field('Original currency column', columnSelect(parsed.headers, mapping.originalCurrency, (value) => set({ originalCurrency: value }))),
+    ]),
     mapping.amount !== null && mapping.amount !== undefined
       ? el('label', { class: 'checkbox' }, [
         el('input', {
@@ -153,6 +158,8 @@ function previewCard(refresh, navigate) {
 
   const readable = mapped.rows.length;
   const skipped = mapped.skipped.length;
+  const foreignRows = mapped.rows.filter((row) => row.originalCurrency);
+  const foreignCurrencies = [...new Set(foreignRows.map((row) => row.originalCurrency))].sort();
 
   return card(`Check before importing — ${filename}`, [
     el('p', {
@@ -161,6 +168,10 @@ function previewCard(refresh, navigate) {
         ? 'No rows could be read. Pick the right columns below and the preview will update.'
         : `${readable} transactions read${skipped ? `, ${skipped} lines ignored (headers, totals or blanks)` : ''}. Check that the first rows look right.`,
     }),
+    foreignRows.length > 0 ? el('p', { class: 'notice notice-warn', text:
+      `${foreignRows.length} rows were charged in ${foreignCurrencies.join(', ')}. `
+      + 'What gets imported is the amount your account paid, not the foreign figure — '
+      + 'the original is kept alongside it, and shown but never added into any total.' }) : null,
     controls,
     field('Which account is this? (optional)', accountInput),
     el('div', { class: 'table-wrap' }, [
@@ -175,7 +186,12 @@ function previewCard(refresh, navigate) {
             el('td', { text: formatDate(tx.date) }),
             el('td', { text: tx.description }),
             el('td', {}, [el('span', { class: 'pill', text: tx.category })]),
-            el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}`, text: money(tx.amountCents) }),
+            el('td', { class: `num ${tx.amountCents >= 0 ? 'amount-in' : 'amount-out'}` }, [
+              el('span', { text: money(tx.amountCents) }),
+              tx.originalCurrency
+                ? el('small', { class: 'amount-original', text: moneyIn(Math.abs(tx.originalAmountCents), tx.originalCurrency) })
+                : null,
+            ]),
           ]))),
       ]),
     ]),

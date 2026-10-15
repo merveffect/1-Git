@@ -14,6 +14,12 @@ export function money(cents) {
   return formatMoney(cents, currency || 'EUR', locale || undefined);
 }
 
+/** For a figure that carries its own currency, such as a foreign original. */
+export function moneyIn(cents, currency) {
+  const { locale } = settings();
+  return formatMoney(cents, currency || settings().currency || 'EUR', locale || undefined);
+}
+
 export function label(periodKeyValue) {
   const { locale, weekStart } = settings();
   return periodLabel(periodKeyValue, locale || undefined, weekStart);

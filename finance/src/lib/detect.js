@@ -15,6 +15,10 @@ const PATTERNS = {
   credit: /\b(credit|deposit|deposits|paid\s*in|money\s*in|inflow|income|haben|alacak|gelir)\b/i,
   balance: /\b(balance|saldo|solde|kontostand|bakiye|running\s*total)\b/i,
   currency: /\b(currency|ccy|waehrung|währung|devise|para\s*birimi)\b/i,
+  // A foreign "original amount" is what the merchant charged, not what the
+  // account paid. Claimed before `amount` so it can never be read as the charge.
+  originalAmount: /\b(original|foreign|source|billing)\s*(currency\s*)?(amount|value|tutar)\b|\bamount\s+in\s+original\s+currency\b|\borijinal\s*tutar\b/i,
+  originalCurrency: /\b(original|foreign|source|billing)\s*currency\b|\borijinal\s*(para\s*birimi|döviz|doviz)\b/i,
   type: /\b(type|transaction\s*type|dc|d\/c|debit\/credit|kind|direction|islem\s*turu|işlem\s*türü)\b/i,
   account: /\b(account|konto|compte|cuenta|hesap|iban|card)\b/i,
 };
@@ -48,7 +52,8 @@ function averageLength(rows, index) {
  * @param {string[][]} rows sample data rows (without the header)
  * @returns {{date:number|null, description:number[], amount:number|null,
  *   debit:number|null, credit:number|null, balance:number|null,
- *   currency:number|null, type:number|null, dateOrder:string}}
+ *   currency:number|null, type:number|null, originalAmount:number|null,
+ *   originalCurrency:number|null, dateOrder:string}}
  */
 export function detectColumns(headers, rows) {
   const used = new Set();
@@ -58,7 +63,11 @@ export function detectColumns(headers, rows) {
     return index >= 0 ? index : null;
   };
 
-  // Header names win; content analysis fills the gaps.
+  // Header names win; content analysis fills the gaps. The original-amount pair
+  // goes first: "Original amount" also matches the plain `amount` pattern, and
+  // mistaking it for the charge is exactly the error this guards against.
+  const originalAmount = byHeader('originalAmount');
+  const originalCurrency = byHeader('originalCurrency');
   let date = byHeader('date');
   const debit = byHeader('debit');
   const credit = byHeader('credit');
@@ -132,7 +141,10 @@ export function detectColumns(headers, rows) {
 
   const dateOrder = date === null ? 'DMY' : detectDateOrder(rows.map((r) => r[date])) || 'DMY';
 
-  return { date, description: descriptions, amount, debit, credit, balance, currency, type, dateOrder };
+  return {
+    date, description: descriptions, amount, debit, credit, balance, currency, type,
+    originalAmount, originalCurrency, dateOrder,
+  };
 }
 
 const CREDIT_WORDS = /\b(credit|cr|deposit|in|income|alacak|gelir|haben|incoming)\b/i;
@@ -205,12 +217,21 @@ export function mapRows(rows, mapping) {
       .filter((part) => part && part.trim() !== '')
       .join(' · ');
 
+    const cell = (index) => (index === null || index === undefined
+      ? null : (row[index] || '').trim() || null);
+    const currency = (cell(mapping.currency) || '').toUpperCase() || null;
+    const originalCurrency = (cell(mapping.originalCurrency) || '').toUpperCase() || null;
+    const originalAmount = mapping.originalAmount === null || mapping.originalAmount === undefined
+      ? null : parseAmount(row[mapping.originalAmount]);
+
     out.push({
       date,
       amount,
       description: description || '(no description)',
-      currency: mapping.currency === null || mapping.currency === undefined
-        ? null : (row[mapping.currency] || '').trim().toUpperCase() || null,
+      currency,
+      // Only worth keeping when it says something the charge does not.
+      originalAmount: originalCurrency && originalCurrency !== currency ? originalAmount : null,
+      originalCurrency: originalCurrency && originalCurrency !== currency ? originalCurrency : null,
       type: mapping.type === null || mapping.type === undefined ? null : row[mapping.type] || null,
     });
   }

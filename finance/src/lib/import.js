@@ -69,6 +69,12 @@ export function buildTransactions(rows, options = {}) {
     const cleaned = collapse(redactPII ? redact(row.description) : row.description);
     const merchantKey = normalizeMerchant(cleaned);
     const amountCents = toCents(row.amount);
+    const bookedCurrency = row.currency || currency;
+    // What the merchant charged, when the account paid in a different currency.
+    // Kept for display and for the foreign-spending breakdown only: the account
+    // moved `amountCents`, and that is the only figure any total may use.
+    const foreign = row.originalCurrency && row.originalCurrency !== bookedCurrency
+      && row.originalAmount !== null && row.originalAmount !== undefined;
     return {
       id: `tx_${importId}_${index}`,
       date: row.date,
@@ -76,7 +82,11 @@ export function buildTransactions(rows, options = {}) {
       description: cleaned,
       merchantKey,
       merchantLabel: merchantLabel(cleaned),
-      currency: row.currency || currency,
+      currency: bookedCurrency,
+      originalAmountCents: foreign
+        ? toCents(Math.abs(row.originalAmount)) * (amountCents < 0 ? -1 : 1)
+        : null,
+      originalCurrency: foreign ? row.originalCurrency : null,
       account,
       category: 'Uncategorised',
       categorySource: 'fallback',

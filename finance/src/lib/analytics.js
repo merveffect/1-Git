@@ -116,6 +116,47 @@ export function byMerchant(transactions, direction = 'out', options = {}) {
   return [...buckets.values()].sort((a, b) => b.cents - a.cents);
 }
 
+/**
+ * The currencies the account itself was charged in.
+ *
+ * More than one means every total in the app is adding unlike units together,
+ * so the UI has to say so rather than print a single figure.
+ */
+export function currencies(transactions) {
+  const seen = new Set();
+  for (const tx of transactions) if (tx.currency) seen.add(tx.currency);
+  return [...seen].sort();
+}
+
+/**
+ * Spending that was charged in another currency, grouped by that currency.
+ *
+ * `originalCents` is what the merchant asked for and `bookedCents` is what the
+ * account actually paid - never interchangeable, which is the whole point of
+ * reporting them side by side.
+ *
+ * @param {'out'|'in'} direction
+ * @returns {Array<{currency, originalCents, bookedCents, count, rate}>}
+ */
+export function byOriginalCurrency(transactions, direction = 'out', options = {}) {
+  const buckets = new Map();
+  for (const tx of activeTransactions(transactions, options)) {
+    if (!tx.originalCurrency || tx.originalAmountCents === null
+      || tx.originalAmountCents === undefined) continue;
+    const isOut = tx.amountCents < 0;
+    if ((direction === 'out') !== isOut) continue;
+    const bucket = buckets.get(tx.originalCurrency)
+      || { currency: tx.originalCurrency, originalCents: 0, bookedCents: 0, count: 0 };
+    bucket.originalCents += Math.abs(tx.originalAmountCents);
+    bucket.bookedCents += Math.abs(tx.amountCents);
+    bucket.count += 1;
+    buckets.set(tx.originalCurrency, bucket);
+  }
+  return [...buckets.values()]
+    .map((b) => ({ ...b, rate: b.bookedCents > 0 ? b.originalCents / b.bookedCents : null }))
+    .sort((a, b) => b.bookedCents - a.bookedCents);
+}
+
 /** Running balance of net cash flow over time, for the trend chart. */
 export function cumulativeNet(periods) {
   let running = 0;
