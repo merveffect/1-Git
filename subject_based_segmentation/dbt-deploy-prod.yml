@@ -11,7 +11,7 @@ jobs:
   # predictions get re-evaluated. Weekly meant roughly every 6 months.
   - name: subject-based-segmentation-prod
     schedule: 0 8 * * *
-
+    timeout_seconds: 7200
 
 
 

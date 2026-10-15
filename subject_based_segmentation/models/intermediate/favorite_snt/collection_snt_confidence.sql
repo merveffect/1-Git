@@ -3,7 +3,7 @@
 -- Nearest-SNT distance per collection, same confidence-weighting purpose as
 -- keyword_snt_confidence: down-weight collections whose text doesn't match
 -- any SNT well when averaging into a user's embedding. Small scale
--- (~9.5k collections x ~4.8k SNTs) — no batching needed.
+-- (~9.5k collections x ~4.8k SNTs).
 
 SELECT
   query.collection_id  AS collection_id,

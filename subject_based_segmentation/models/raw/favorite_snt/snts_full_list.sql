@@ -12,3 +12,4 @@ WHERE snt_id IS NOT NULL
     AND TRIM(CAST(snt_id AS STRING)) != 'NULL'
     AND label IS NOT NULL
     AND TRIM(label) != ''
+

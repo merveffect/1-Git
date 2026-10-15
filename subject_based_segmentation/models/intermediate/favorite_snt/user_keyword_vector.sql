@@ -6,11 +6,8 @@
 -- ambiguous/niche keywords (spot-checked misses like "Mpro", "Ciona",
 -- distance > ~0.33) count less than confident matches like "Alport
 -- Syndrome" (distance ~0.007) instead of contributing equally.
---
--- Only keywords that already have a keyword_snt_confidence row are used —
--- this table backfills incrementally, so coverage grows over time as that
--- backfill completes.
---
+
+
 -- Averaging strategy: group into one array of (embedding, weight) structs
 -- per user first (array_agg), then compute the weighted average per-offset
 -- inside a per-row correlated subquery — see user_journal_snt_vector.sql

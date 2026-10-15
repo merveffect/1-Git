@@ -1,6 +1,5 @@
 {{ config(materialized='table') }}
 
--- Long-format (snid, keyword_id) pairs, mirroring users_and_journal_ids.sql.
 -- keyword_id = MD5(keyword), matching distinct_keywords/keyword_embeddings.
 
 with parsed as (

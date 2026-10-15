@@ -23,7 +23,7 @@ subject_based_segmentation:
       location: EU # Optional, one of US or EU
       priority: interactive
       retries: 1
-    poc:   # 🚀 THIS IS THE NEW TARGET FOR poc-gbq MODELS
+    poc:   # THIS IS THE NEW TARGET FOR poc-gbq MODELS
       type: bigquery
       method: oauth
       project: poc-gbq

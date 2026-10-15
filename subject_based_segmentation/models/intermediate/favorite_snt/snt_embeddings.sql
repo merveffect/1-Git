@@ -4,13 +4,12 @@
     incremental_strategy="merge"
 ) }}
 
--- Embedding of every SNT (S&T taxonomy, ~3000 codes) name, used as the
+-- Embedding of every SNT (S&T taxonomy, ~4800 codes) name, used as the
 -- comparison set for favorite-SNT inference via vector search.
 -- Incremental: only new SNT ids, or existing ids whose name changed, get
--- (re-)embedded on each run — a full re-embed of all ~3000 SNTs isn't needed
+-- (re-)embedded on each run — a full re-embed of all ~4800 SNTs isn't needed
 -- since the taxonomy source only changes incrementally over time.
--- The embedding model is a remote BQ ML model over Vertex AI, referenced
--- directly since it's not a dbt-managed source/table.
+
 
 WITH snt_names AS (
   SELECT snt_id, snt_name

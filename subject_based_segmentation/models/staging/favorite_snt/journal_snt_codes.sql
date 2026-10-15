@@ -4,17 +4,8 @@
 -- CURRENT snt reference table (snts_full_list): 100% match as of 2026-09.
 --
 -- SNT_Hierarchy1-4 is used ONLY as a fallback for the ~2.2% of journals
--- with no snt_discipline_code — NOT as an equal additional source. Checked
--- empirically (2026-09): SNT_Hierarchy1-4 values are dominated by broad
--- umbrella categories (e.g. "Life Sciences" appears on 44.6% of journals,
--- "Health Sciences" 31%, vs snt_discipline_code's most common value at only
--- 9.3%). Mixing both in as equal sources meant ~98% of journals — which
--- already had good specific discipline_code tags — also got these generic
--- top-level categories blended in, visibly skewing favorite_snt_predictions
--- toward "Biological/Life/Health Sciences" for most users.
---
--- journal_metadata.journal_id is INT64; users_and_journal_ids.journal_id is
--- STRING (parsed from JSON arrays) — cast to STRING to match throughout.
+-- with no snt_discipline_code — NOT as an equal additional source.
+
 
 WITH from_discipline_code AS (
   SELECT
