@@ -225,6 +225,48 @@ vars:
       # Marketing asked for it regardless of size - a publisher sells to
       # libraries, so librarians are a real audience whatever the count.
       #
+      # ANCHORS REWRITTEN 2026-10-16, SAME DAY, AFTER MEASURING. The first
+      # set had 25 title anchors, 11 of them translations, on my argument
+      # that 'librarian' means one thing in every language so widening the
+      # region costs nothing. That argument was wrong, and analyses/19
+      # query 3 priced it: 69.4% of librarian records sat below 0.75
+      # similarity, against 40.3% for practitioner, until then the dirtiest
+      # group we had. The new role was 1.7x worse than our worst.
+      #
+      # The mechanism, from analyses/21 query 4. In Spanish, Portuguese and
+      # the Slavic languages a short occupational noun sits in a sparse part
+      # of the embedding, so 'bibliotecario' behaved as a magnet for
+      # anything shaped like it: biólogo, catedrática, epidemiólogo,
+      # nutricionista, médica veterinária, pielęgniarka, odborný asistent.
+      # Not near in meaning - near in morphology. 'catedrática' is a full
+      # professor and it was classified as a librarian.
+      #
+      # The same failure hit multi-word English anchors from the other end,
+      # where the modifier dominated instead of the head noun:
+      #   information professional -> chief information officer, it
+      #     specialist, information security architect, senior ict officer
+      #   subject librarian        -> subject matter expert/specialist
+      #   systems librarian        -> senior systems engineer
+      #   scholarly comms librarian-> academic editor
+      #   archivist                -> archaeologist, glaciologist, clerk
+      # And the worst single case: 'jefe de servicio', a Spanish clinical
+      # head of department, 2,090 records, became a librarian.
+      #
+      # So the rule the anchors now follow: librarian or library must be the
+      # HEAD noun, with no competing strong modifier. 19 title anchors, 8
+      # field anchors, all English.
+      #
+      # Real foreign librarian titles are the known cost - bibliotecário and
+      # bibliotecária were being caught correctly at 1.00 and 0.975. If they
+      # no longer clear the floor, they get ACCEPT overrides. For a small
+      # group in a sparse region, enumerating a handful of known titles is
+      # safer than an anchor that generalises badly.
+      #
+      # THE TEST FOR THE NEXT BUILD, SET BEFORE SEEING IT: analyses/19
+      # query 3 must bring share_below_075 under 0.40, which is parity with
+      # practitioner. If it does not, this role goes back to enabled: false
+      # rather than shipping noise.
+      #
       # title_required, and the weights are title-led: a person is a
       # librarian because of their job title, not because their
       # department is a library building.
