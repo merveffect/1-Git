@@ -41,7 +41,7 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['HUMAN', 'VECTOR', 'REJECTED']
+                values: ['HUMAN', 'PATTERN', 'VECTOR', 'REJECTED']
 
   - name: dim_department_discipline
     description: >

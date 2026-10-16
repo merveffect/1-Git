@@ -9,10 +9,23 @@
     dead one is a silently missing audience rather than a slightly worse
     score.
 
-    The non-Latin patterns are the ones to watch - 図書館, 图书馆,
-    библиотек, бібліотек, kütüphane. If one of them matches nothing it is
-    more likely our normalisation lost the characters than that no such
-    librarian exists.
+    Same convention as assert_overrides_take_effect, and for the same
+    reason: a pattern can match nothing because it was written ahead of
+    the vocabulary, or because it is wrong, and those look identical. So
+    the author declares which. [pre-emptive] in the note allows a pattern
+    to match nothing; anything else matching nothing fails.
+
+    Three carry the marker: kütüphane, 図書館 and 图书馆. Every other
+    pattern has a measured title behind it - librarian 3,798 records,
+    bibliotecário 158, bibliothécaire 32, bibliothèque 10,
+    'директор библиотеки' 16, 'директор бібліотеки' 11. The Turkish,
+    Japanese and Chinese stems are the ones ORCID has nobody for yet,
+    which is worth knowing in itself: it says where this audience does
+    not reach, not that the pattern is broken.
+
+    A non-Latin pattern going dead AFTER having matched would be the
+    alarming case - more likely our normalisation lost the characters
+    than that the librarians left.
 */
 
 with hits as (
@@ -20,11 +33,15 @@ with hits as (
         p.title_group,
         p.name_pattern,
         count(m.title)      as matched_titles,
-        sum(m.frequency)    as matched_records
+        sum(m.frequency)    as matched_records,
+        coalesce(p.note, '')    as note
     from {{ ref('title_group_patterns') }} p
     left join {{ ref('dim_title_group') }} m
         on regexp_contains(m.title, p.name_pattern)
-    group by 1, 2
+    group by 1, 2, 5
 )
 
-select * from hits where matched_titles = 0
+select title_group, name_pattern, matched_titles, matched_records
+from hits
+where matched_titles = 0
+  and not contains_substr(note, '[pre-emptive]')
