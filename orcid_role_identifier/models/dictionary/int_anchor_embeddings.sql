@@ -1,15 +1,43 @@
-{{ config(
-    materialized = 'incremental',
-    unique_key   = 'anchor_key'
-) }}
+{{ config(materialized = 'table') }}
 
 /*
     The target vectors we search against. Must use the SAME model as
     int_title_embeddings - a different model makes the similarity
     scores meaningless.
 
-    Same two guards as int_title_embeddings: an anchor that fails to
-    embed would break VECTOR_SEARCH for every title.
+    A TABLE, NOT INCREMENTAL, AND THE REASON MATTERS.
+
+    This was incremental on unique_key = 'anchor_key' until 2026-10-16.
+    Incremental only ever inserts, so an anchor deleted from the seed kept
+    its row here and stayed a live search target for ever. Anchors are the
+    only hand-written input in the project and the thing we edit most, and
+    they were sitting in the one table that could not shrink. Removing an
+    anchor did nothing, silently.
+
+    It cost us twice.
+
+    Once on librarian, where 11 translation anchors were removed for
+    matching on morphology rather than meaning - bibliotecario pulling
+    biólogo and catedrática - and the next build came back WORSE, 69.4% to
+    72.8% of records below 0.75 similarity, because the old anchors were
+    still searched alongside the 19 new ones.
+
+    And once before that, on leadership, which is the expensive one. When
+    chief executive officer, founder, president, vice president, executive
+    director and managing director were removed from that group, corporate
+    titles kept arriving, and the note left on the 'dean' anchor concluded
+    that the embedding generalises to them regardless and the organisation
+    score would have to enforce 'academic'. That conclusion was wrong. The
+    removal had simply never taken effect. The org-score veto in
+    org_name_patterns was built to work around this bug without knowing it
+    was a bug.
+
+    Cost of rebuilding every run: 299 short strings. It is nothing, and it
+    buys back the ability to change our mind.
+
+    The guard below stays: an anchor that fails to embed would break
+    VECTOR_SEARCH for every title, so a zero-length vector is dropped -
+    and assert_anchors_all_embedded fails the build if that happens.
 */
 
 with source_terms as (
@@ -33,11 +61,6 @@ anchors as (
         anchor_term,
         language_code
     from source_terms
-
-    {% if is_incremental() %}
-    where to_hex(md5(concat(axis, '||', group_key, '||', anchor_term, '||', coalesce(language_code, ''))))
-          not in (select anchor_key from {{ this }})
-    {% endif %}
 
 )
 

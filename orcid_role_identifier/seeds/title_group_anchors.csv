@@ -55,7 +55,7 @@ trainee_clinical,clinical fellow,en,
 trainee_clinical,intern,en,
 trainee_clinical,house officer,en,
 trainee_clinical,medical resident,en,
-leadership,dean,en,corporate titles still land in this group - removing them as anchors did not stop the embedding reaching them. The organisation score is what enforces 'academic'; see faculty_head in dbt_project.yml
+leadership,dean,en,"The note here used to say that removing chief executive officer, founder, president and the rest did not stop corporate titles arriving, so the organisation score had to enforce 'academic'. That was wrong: int_anchor_embeddings was incremental, so the removal never reached the search targets. Fixed 2026-10-16. faculty_head needs re-measuring now that those anchors are genuinely gone - the org veto may be doing far less work than we think."
 leadership,vice dean,en,
 leadership,head of department,en,
 leadership,department head,en,
