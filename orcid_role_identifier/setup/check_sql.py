@@ -110,7 +110,10 @@ ctx = dict(config=lambda **k: '', ref=lambda n: f'`p.d.{n}`', source=lambda a, b
            this='`p.d.this`', is_incremental=lambda: False)
 
 bad = 0
-for f in sorted(pathlib.Path('models').rglob('*.sql')):
+# tests/ carries Jinja too - all_role_keys() loops, normalize_title() -
+# and a test that will not compile is a test that never fails.
+for f in sorted(pathlib.Path('models').rglob('*.sql')) + \
+         sorted(pathlib.Path('tests').rglob('*.sql')):
     try:
         sql = env.from_string(f.read_text()).render(**ctx)
     except Exception as e:
