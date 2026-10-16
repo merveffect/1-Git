@@ -89,3 +89,53 @@ seeds:
               arguments:
                 to: ref('title_group_anchors')
                 field: title_group
+
+  - name: external_role_library
+    description: >
+      REFERENCE ONLY - nothing scores from this, and nothing should.
+      A role library built by another team, received 2026-10-16 as
+      "B2C Research Audience - Job Title & Seniority Framework".
+      Converted from the xlsx so it is diffable and joinable; the
+      binary is not kept in the repo.
+
+      It is one row per job title here. In the sheet the title column
+      held semicolon-separated synonyms - 129 role rows carrying 315
+      titles - which cannot be joined on, so it is exploded, and 29
+      titles that appeared under more than one role are kept once at
+      their first occurrence.
+
+      What it is good for: measuring ourselves. 263 of its 286 titles
+      were already in our dictionary, and its titles cover 45.8% of all
+      our employment records, so it reads as independent confirmation of
+      the vocabulary rather than new material. It contributed 17 of our
+      44 overrides, mostly the retired and emeritus rejections, and its
+      "Former or inactive" sector is where that came from.
+
+      What it is not: a source of truth. Its categories are one team's
+      judgement, it is English-only, and 117 of 286 rows are flagged for
+      review by its own authors. Treat a disagreement with it as a
+      question, not a defect.
+
+      Two quirks preserved rather than cleaned, so our copy still
+      matches theirs: seniority has a stray 'Early-career & Support?'
+      with a trailing question mark on 5 rows, which is their
+      uncertainty marker and not a seventh category; and
+      'Variable / title alone insufficient' covers 72 of 286 titles -
+      25% of the library - which is the same conclusion our two-axis
+      design reached independently, that a title often cannot carry a
+      role on its own.
+    config:
+      column_types: {job_title: STRING, sector: STRING, subcategory: STRING, role_type: STRING, seniority: STRING, seniority_confidence: STRING, review_required: STRING, ambiguity_caveat: STRING}
+    columns:
+      - name: job_title
+        tests: [not_null, unique]
+      - name: seniority_confidence
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['High', 'Medium']
+      - name: review_required
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Yes', 'No']
