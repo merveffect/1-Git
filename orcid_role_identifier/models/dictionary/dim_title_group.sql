@@ -3,8 +3,29 @@
 /*
     ⭐ DICTIONARY 1 — title to position group
 
-    One row per distinct job title. Human decisions in
-    seeds/role_title_overrides.csv always win.
+    One row per distinct job title. Three ways a title gets its group,
+    in this order of precedence:
+
+      HUMAN   seeds/role_title_overrides.csv - a reviewer decided, and it
+              always wins.
+      PATTERN seeds/title_group_patterns.csv - the title literally
+              contains the word. No similarity involved, so no doubt.
+      VECTOR  the embedding's nearest anchor group, scored by similarity.
+
+    PATTERN exists because of librarian. That group was tried twice with
+    anchors and failed both times - 69% then 71% of its records below 0.75
+    similarity - because 'librarian' is a ONE-WORD profession and the
+    architecture asks every group for at least five anchors. Four of the
+    five are then forced to be compounds, and each compound attracted its
+    generic half: 'library manager' pulled 'manager' (17,340 records),
+    'library officer' pulled every officer in the labour market, 'chief
+    librarian' pulled chief technology officer.
+
+    The embedding was being asked to guess something we already know for
+    certain. A job title containing 'librarian' is a librarian. So the
+    group has no anchors at all now, which also means it can never appear
+    as a VECTOR_SEARCH result and can never take a value from another
+    group. Narrower on purpose, and certain instead of probable.
 
     Nothing downstream of this model runs AI.
 */
@@ -24,13 +45,28 @@ overrides as (
         decision                                     as human_decision,
         reviewer
     from {{ ref('role_title_overrides') }}
+),
+
+/*
+    A title matching a pattern IS that group - no score, no threshold.
+    min() picks deterministically if two groups ever claim one title;
+    assert_title_patterns_do_not_collide fails the build if they do.
+*/
+pattern_hits as (
+    select
+        m.title_key,
+        min(p.title_group) as title_group
+    from matched m
+    join {{ ref('title_group_patterns') }} p
+        on regexp_contains(m.title, p.name_pattern)
+    group by m.title_key
 )
 
 select
     m.title_key,
     m.title,
     m.frequency,
-    coalesce(o.title_group, m.title_group)      as title_group,
+    coalesce(o.title_group, pt.title_group, m.title_group) as title_group,
     m.similarity,
     m.margin,
     m.runner_up,
@@ -41,11 +77,13 @@ select
     case
         when o.human_decision = 'ACCEPT' then true
         when o.human_decision = 'REJECT' then false
+        when pt.title_group is not null  then true
         else m.match_decision = 'ACCEPTED'
     end                                         as is_assigned,
 
     case
         when o.human_decision is not null         then 'HUMAN'
+        when pt.title_group is not null           then 'PATTERN'
         when m.match_decision = 'ACCEPTED'        then 'VECTOR'
         else 'REJECTED'
     end                                         as decision_source,
@@ -58,6 +96,7 @@ select
     case
         when o.human_decision = 'ACCEPT'   then 1.0
         when o.human_decision = 'REJECT'   then 0.0
+        when pt.title_group is not null    then 1.0
         when m.match_decision != 'ACCEPTED' then 0.0
         else least(1.0, 0.70 + (m.similarity - {{ var('sim_floor') }})
                                / (1.0 - {{ var('sim_floor') }}) * 0.30)
@@ -80,4 +119,5 @@ from matched m
     a REJECT needs no group because the coalesce falls back to the model's
     and is_assigned goes false.
 */
-left join overrides o using (title_key)
+left join overrides o     using (title_key)
+left join pattern_hits pt using (title_key)

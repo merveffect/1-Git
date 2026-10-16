@@ -42,6 +42,12 @@ for f in glob.glob('macros/*.sql') + glob.glob('models/**/*.sql', recursive=True
 roles = yaml.safe_load(open('dbt_project.yml'))['vars']['roles']
 
 title_groups, disciplines = {}, {}
+pattern_groups = {r['title_group']
+                  for r in csv.DictReader(open('seeds/title_group_patterns.csv'))}
+
+for g in pattern_groups:
+    title_groups.setdefault(g, 0)
+
 for r in csv.DictReader(open('seeds/title_group_anchors.csv')):
     title_groups.setdefault(r['title_group'], 0)
     title_groups[r['title_group']] += 1
@@ -105,8 +111,11 @@ for i in range(max(len(tg_items), len(dg_items))):
 
 for g, n in list(title_groups.items()) + list(disciplines.items()):
     if n < 5:
-        ok = False
-        print(f"  !! {g} has only {n} anchors; at least 5 are needed")
+        if g in pattern_groups:
+            print(f"  -- {g}: 0 anchors by design, defined by title_group_patterns.csv")
+        else:
+            ok = False
+            print(f"  !! {g} has only {n} anchors; at least 5 are needed")
 
 for k, v in roles.items():
     if v.get('enabled', True) and v.get('parent'):

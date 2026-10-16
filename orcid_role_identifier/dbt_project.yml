@@ -206,88 +206,43 @@ vars:
       current_only: false
 
     librarian:
-      enabled: false
+      enabled: true
       label: 'Librarian / Information Professional'
       axis: profession
       match: title_required
       title_groups: ['librarian']
-      disciplines: ['library_information']
-      # OFF AGAIN 2026-10-16, AND THE ANCHORS ARE GONE WITH IT. Enabled and
-      # reverted the same day. Before the first build I wrote down the bar it
-      # had to clear - analyses/19 query 3 under 0.40 share_below_075, parity
-      # with practitioner - precisely so this would not be argued after the
-      # fact. It measured 0.7067 across three attempts: 0.6937, then 0.7282,
-      # then 0.7067. It never came close.
+      disciplines: []
+      # NO ANCHORS. This group is defined by seeds/title_group_patterns.csv
+      # instead - a title containing librar, bibliotec, bibliotek, библиотек,
+      # kütüphane or 図書館 IS a librarian, with no similarity score in the
+      # way.
       #
-      # The anchors are removed, not just the flag. A disabled role does not
-      # retire its title group - the group keeps competing in the dictionary
-      # and keeps taking values from the other 21. 'manager', 17,340 records,
-      # had left support_technical for 'library manager'. Leaving the anchors
-      # in place would have kept damaging live audiences to feed an audience
-      # nobody can use.
+      # It was tried with anchors twice and failed twice, at 69% and 71% of
+      # records below 0.75 similarity against practitioner's 40%. The reason
+      # is structural, not a tuning problem: librarian is a ONE-WORD
+      # profession, and asking a group for five anchors forces four of them
+      # to be compounds built from generic occupational nouns, each of which
+      # then attracts its generic half. 'library manager' pulled 'manager',
+      # 17,340 records. 'chief librarian' pulled chief technology officer.
+      # We were asking the embedding to guess something already certain.
       #
-      # WHY IT FAILED, WHICH IS THE PART WORTH KEEPING.
+      # Two things follow from having no anchors, both good. The group can
+      # never be returned by VECTOR_SEARCH, so it cannot take a value from
+      # any of the other 21 - the cross-group damage is gone by
+      # construction. And every assignment is exact, so group_score is 1.0
+      # and these people are all CONFIRMED.
       #
-      # Attempt 1, 25 anchors including 11 translations. In Spanish and
-      # Portuguese a short occupational noun sits in a sparse region, so
-      # 'bibliotecario' matched on MORPHOLOGY: biólogo, catedrática,
-      # nutricionista, médica veterinária, pielęgniarka.
+      # The cost is deliberate narrowness. Archivists are not included:
+      # 'archivist' as an anchor pulled archaeologist, glaciologist and
+      # clerk, and 'arquivista' is a separate judgement from the one
+      # marketing asked for. Nor is anybody whose title says only
+      # 'information specialist'. If marketing wants either, they are a
+      # pattern row or an ACCEPT override, not a guess.
       #
-      # Attempt 2, 19 anchors, rule: librarian or library must be the HEAD
-      # noun. Grammatically right and embedding-wrong, which is the lesson.
-      # In 'library manager' the head noun IS manager, and manager is a
-      # generic high-frequency occupational noun that dominates a two-word
-      # phrase. So every compound anchor attracted its generic half:
-      #   library manager  -> manager (17,340), branch manager, clinic
-      #                       manager, hardware manager, centre manager
-      #   library officer  -> program officer, education officer, credit
-      #                       officer, it officer, district census officer,
-      #                       armory officer lieutenant junior grade
-      #   chief librarian  -> chief technology officer, chief information
-      #                       officer, chief academic officer, chief geologist
-      #   medical librarian-> medical statistician, medical writer, medical
-      #                       science liaison
-      #   senior librarian -> senior speech therapist, senior timber ranger
-      # The distinctive term has to dominate, and 'librar-' never does when
-      # it shares a phrase with manager, officer, chief, senior or assistant.
-      #
-      # WHAT THE EVIDENCE SAYS WOULD ACTUALLY WORK, for whoever picks this up:
-      #
-      # The separation is clean, just not at 0.65. Every correct title sits
-      # at 0.79 and above - librarian 1.00, biomedical librarian 0.934,
-      # health sciences librarian 0.915, директор библиотеки 0.834,
-      # bibliotecária 0.797 - and nearly every wrong one at 0.78 and below:
-      # manager 0.735, medical statistician 0.752, it officer 0.765,
-      # assistant editor 0.734. A floor near 0.80 for THIS GROUP separates
-      # them; the global 0.65 cannot.
-      #
-      # That is a design change, not a tuning knob, so it is not made here.
-      # sim_floor is one number for all 21 groups, and the measured spread
-      # says that shape is wrong: practitioner sits at 0.40 below 0.75 and
-      # teaching_academic at 0.07. A group whose vocabulary is distinctive
-      # tolerates a low floor; a group whose anchors share words with the
-      # whole labour market does not. Librarian is the extreme case because
-      # it is a ONE-WORD profession, and our architecture asks every group
-      # for at least five anchors - so four of the five are forced to be
-      # compounds built from generic nouns. The rule and the vocabulary are
-      # in direct conflict here.
-      #
-      # Two routes, both needing a decision rather than a tweak:
-      #   1. a per-group similarity floor, librarian declaring ~0.80
-      #   2. allow a small group to declare 1-2 anchors, so 'librarian' can
-      #      stand alone without generic compounds beside it
-      # Route 2 is cheaper to test and the evidence mildly favours it: every
-      # correct title either contains 'librarian' or is a translation of it,
-      # and translations were reaching the English anchor comfortably on
-      # their own - bibliotecário 0.789, bibliothécaire 0.754.
-      #
-      # Marketing asked for this role and the request stands. It is a
-      # publisher selling to libraries; the audience is real and the clean
-      # core was real too - librarian, assistant librarian, library
-      # assistant, senior and deputy and chief librarian all matched their
-      # own titles at 1.00. What we could not do was keep them without
-      # 66,362 records of noise attached.
-      weights: {role: 0.70, org: 0.20, dept: 0.10}
+      # dept weight is 0 and the discipline list is empty. The title is the
+      # whole decision here, so library_information was dropped and
+      # 'library' and 'university library' went back to non_academic.
+      weights: {role: 0.75, org: 0.25, dept: 0.00}
       thresholds: {confirmed: 0.60, probable: 0.35}
       current_only: true
 

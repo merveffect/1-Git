@@ -145,3 +145,42 @@ seeds:
           - accepted_values:
               arguments:
                 values: ['Yes', 'No']
+
+  - name: title_group_patterns
+    description: >
+      A title containing one of these strings IS that group. No embedding,
+      no similarity, no threshold - it beats the vector and loses only to a
+      human override in role_title_overrides.
+
+      It exists because of librarian, which failed twice with anchors at
+      69% and 71% of records below 0.75 similarity. The cause was
+      structural: librarian is a one-word profession, and requiring five
+      anchors per group forces four of them to be compounds built from
+      generic occupational nouns, each of which attracts its generic half.
+      'library manager' pulled 'manager', 17,340 records. We were asking
+      the embedding to guess something already certain.
+
+      When to add a group here rather than anchors: the profession is
+      named by one distinctive word, and you would rather have a narrow
+      certain audience than a wide probable one. When NOT to: anything
+      whose vocabulary is varied or translated unpredictably - clinical
+      titles are the clearest counter-example, where Resident, Registrar,
+      Facharzt and Interno share no stem and only the embedding can
+      connect them.
+
+      A group listed here needs no anchors, which validate_registry.py
+      allows explicitly, and because it has none it can never be returned
+      by VECTOR_SEARCH - so it cannot take a value from another group.
+      That is the main reason to prefer it for a small audience.
+
+      Patterns are matched with REGEXP_CONTAINS against the NORMALISED
+      title, which is casefolded and punctuation-stripped but keeps
+      accents, since clean_text uses NFKC rather than NFKD. So
+      bibliothécaire needs the accented stem.
+    config:
+      column_types: {title_group: STRING, name_pattern: STRING, note: STRING}
+    columns:
+      - name: title_group
+        tests: [not_null]
+      - name: name_pattern
+        tests: [not_null, unique]
