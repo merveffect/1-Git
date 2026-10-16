@@ -397,3 +397,66 @@ JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_
 WHERE d.frequency >= 1000
 ORDER BY d.frequency DESC
 LIMIT 80;
+
+
+-- ###########################################################################
+-- 5. ANY OTHER RETIRED OR HONORARY TITLES WE STILL HOLD?
+--
+--     Marketing confirmed on 2026-10-16 that a retired professor is not a
+--     researcher, and 14 titles from the external library are now rejected:
+--     emeritus professor, professor emeritus, professor emerita, retired
+--     professor, retired academic, emeritus researcher, emeritus scientist,
+--     honorary researcher, retired researcher, retired scientist, not
+--     currently working, career break, unemployed, between roles.
+--
+--     But that list is 14 titles and our dictionary holds 310,299. The same
+--     status is written many other ways, and most of them are not English.
+--     Prefix stems only - no trailing word boundary, which is what made the
+--     organisation patterns fail silently for months.
+--
+--     Judge each row. 'honorary professor' is not necessarily retired, and
+--     'former' appears in contexts that have nothing to do with status.
+-- ###########################################################################
+SELECT
+    title,
+    frequency,
+    title_group,
+    ROUND(similarity, 3)    AS similarity,
+    decision_source
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE is_assigned
+  AND REGEXP_CONTAINS(title, r'\b(emerit|émérit|retired|retir|honorar|honorair|former|ex-|emekli|jubilad|pension|ruhestand|aposentad|gepensioneerd|emerytowan)')
+ORDER BY frequency DESC
+LIMIT 60;
+
+
+-- ###########################################################################
+-- 6. HOW MUCH WOULD "CURRENT POSTS ONLY" COST?
+--
+--     THE LIMIT OF THE OVERRIDES ABOVE. Rejecting 'professor emeritus' stops
+--     that RECORD counting. It does not necessarily remove the PERSON: if
+--     they also hold an earlier Professor post that has ended, that record
+--     still qualifies them, because seven of the eight roles run with
+--     current_only: false.
+--
+--     So the overrides remove retired EVIDENCE, not retired PEOPLE. Removing
+--     the people needs current_only: true on the role, and that is a much
+--     bigger change - it also drops everyone whose current post simply is
+--     not recorded in ORCID, and many profiles have none.
+--
+--     This sizes it before anyone decides. fct_researcher_roles already
+--     prefers a current record when picking each person's representative,
+--     so a row with is_current = false means the person has NO current post
+--     supporting that role.
+-- ###########################################################################
+SELECT
+    role_key,
+    COUNT(DISTINCT snid)                                        AS people_now,
+    COUNT(DISTINCT IF(is_current, snid, NULL))                  AS people_if_current_only,
+    COUNT(DISTINCT IF(NOT is_current, snid, NULL))              AS would_be_lost,
+    ROUND(COUNT(DISTINCT IF(NOT is_current, snid, NULL))
+          / COUNT(DISTINCT snid), 4)                            AS share_lost
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+WHERE role_label = 'CONFIRMED'
+GROUP BY role_key
+ORDER BY would_be_lost DESC;
