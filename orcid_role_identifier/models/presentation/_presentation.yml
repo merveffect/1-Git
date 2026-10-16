@@ -56,6 +56,10 @@ models:
       - name: role_inferred_data_source
         description: "e.g. ['Orcid', 'Orcid + Web scraping'] - not needed in marketing tools"
       - name: consent_basis
+        description: >
+          Read from the flag that grants it. Both opt-ins map to
+          marketing_opt_in; is_legitimate_interest_author_opted_in maps to
+          legitimate_interest. Never inferred from CDP membership.
         tests:
           - accepted_values:
               arguments:

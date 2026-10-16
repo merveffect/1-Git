@@ -23,6 +23,7 @@ cdp as (
         email,
         mkt_pref_opt_in,
         advertising_opt_in,
+        is_legitimate_interest,
         true as in_cdp
     from {{ ref('raw_audience_builder_big') }}
 
@@ -50,6 +51,7 @@ select
     coalesce(c.in_cdp, false)               as in_cdp,
     coalesce(c.mkt_pref_opt_in, false)      as is_marketable,
     coalesce(c.advertising_opt_in, false)   as is_advertisable,
+    coalesce(c.is_legitimate_interest, false) as is_legitimate_interest,
 
     r.scored_date
 from roles r

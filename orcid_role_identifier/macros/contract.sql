@@ -44,15 +44,31 @@
 {% endmacro %}
 
 
-{#- contract.consent_basis -> WHERE predicate -#}
+{#-
+    contract.consent_basis -> the WHERE predicate that decides who is in
+    the delivered table.
+
+    'any_basis' is the setting from 2026-10-16: a person qualifies if ANY
+    of the three flags is true. Two of them are explicit opt-ins and the
+    third is processing under legitimate interest where the author has not
+    objected. They are three separate legal bases, so requiring all of
+    them, or only one of them, would both be wrong.
+
+    The older settings are kept because they are stricter, not because
+    they are better. Note what 'legitimate_interest' used to mean here:
+    in_cdp, which claimed that legal basis from CDP membership alone.
+    There is now an explicit flag for it, so it reads that instead.
+-#}
 {% macro consent_predicate() %}
     {%- set basis = var('contract').consent_basis -%}
-    {%- if basis == 'marketing_opt_in' -%}
+    {%- if basis == 'any_basis' -%}
+        (is_marketable or is_advertisable or is_legitimate_interest)
+    {%- elif basis == 'marketing_opt_in' -%}
         is_marketable
+    {%- elif basis == 'any_opt_in' -%}
+        (is_marketable or is_advertisable)
     {%- elif basis == 'legitimate_interest' -%}
-        in_cdp
-    {%- elif basis == 'both' -%}
-        in_cdp
+        is_legitimate_interest
     {%- else -%}
         {{ exceptions.raise_compiler_error("Unknown consent_basis: " ~ basis) }}
     {%- endif -%}

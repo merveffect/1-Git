@@ -10,6 +10,13 @@
       email               contact_email in the Braze contract
       mkt_pref_opt_in     consent to be contacted for marketing
       advertising_opt_in  consent to be targeted via paid channels
+      is_legitimate_interest_author_opted_in
+                          processing under legitimate interest, where the
+                          author has not objected. A separate legal basis
+                          from the two opt-ins above, not a weaker version
+                          of them - which is why it is read explicitly
+                          rather than inferred from CDP membership, as it
+                          was until 2026-10-16.
 
     Presence in this table is itself the signal for "in_cdp" - the
     downstream LEFT JOIN derives that, so it is not a column here.
@@ -47,7 +54,9 @@ select
     snid,
     min(email)                      as email,
     logical_and(coalesce(mkt_pref_opt_in, false))    as mkt_pref_opt_in,
-    logical_and(coalesce(advertising_opt_in, false)) as advertising_opt_in
+    logical_and(coalesce(advertising_opt_in, false)) as advertising_opt_in,
+    logical_and(coalesce(is_legitimate_interest_author_opted_in, false))
+                                                     as is_legitimate_interest
 from {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
 where snid is not null
 group by snid

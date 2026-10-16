@@ -322,7 +322,10 @@ vars:
       current_only: false
 
   contract:
-    consent_basis: 'marketing_opt_in'
+    # any_basis: a person qualifies on ANY of the three flags -
+    # mkt_pref_opt_in, advertising_opt_in, or
+    # is_legitimate_interest_author_opted_in. Three separate legal bases.
+    consent_basis: 'any_basis'
     include_labels: ['CONFIRMED']
     array_order: 'alphabetical'
     detail_separator: ' - '

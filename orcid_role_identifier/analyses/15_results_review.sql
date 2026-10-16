@@ -152,6 +152,12 @@ ORDER BY records DESC;
 --
 --    This is the number to quote when someone asks how big the project is.
 --    Read the CONFIRMED row: only CONFIRMED ships to Braze by default.
+--
+--    REACHABLE IS ANY OF THREE FLAGS from 2026-10-16: the two opt-ins plus
+--    is_legitimate_interest_author_opted_in, which is a separate legal
+--    basis and was previously ignored. Earlier figures in this file and in
+--    docs/BASELINE_2026-10-08.md are on the two-flag basis and will be
+--    lower.
 -- ###########################################################################
 WITH per_person AS (
   SELECT
@@ -160,6 +166,7 @@ WITH per_person AS (
       LOGICAL_OR(in_cdp)                          AS in_cdp,
       LOGICAL_OR(is_marketable)                   AS is_marketable,
       LOGICAL_OR(is_advertisable)                 AS is_advertisable,
+      LOGICAL_OR(is_legitimate_interest)          AS is_legitimate_interest,
       COUNT(DISTINCT role_key)                    AS roles_held
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
   GROUP BY snid
@@ -175,9 +182,12 @@ SELECT
     COUNTIF(in_cdp)                                         AS in_cdp,
     COUNTIF(is_marketable)                                  AS marketable,
     COUNTIF(is_advertisable)                                AS advertisable,
-    COUNTIF(is_marketable OR is_advertisable)               AS reachable,
+    COUNTIF(is_legitimate_interest)                         AS legitimate_interest,
+    COUNTIF(is_marketable OR is_advertisable
+            OR is_legitimate_interest)                      AS reachable,
     ROUND(COUNTIF(in_cdp) / COUNT(*), 4)                    AS cdp_coverage,
-    ROUND(COUNTIF(is_marketable OR is_advertisable) / COUNT(*), 4) AS reachable_rate,
+    ROUND(COUNTIF(is_marketable OR is_advertisable
+                  OR is_legitimate_interest) / COUNT(*), 4) AS reachable_rate,
     ROUND(AVG(roles_held), 2)                               AS avg_roles_per_person
 FROM scoped
 GROUP BY scope
@@ -193,7 +203,8 @@ WITH per_person AS (
   SELECT
       snid,
       COUNT(DISTINCT role_key)                    AS roles_held,
-      LOGICAL_OR(is_marketable OR is_advertisable) AS reachable
+      LOGICAL_OR(is_marketable OR is_advertisable
+                 OR is_legitimate_interest) AS reachable
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
   WHERE role_label = 'CONFIRMED'
   GROUP BY snid

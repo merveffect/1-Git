@@ -135,8 +135,10 @@ LIMIT 80;
 -- ###########################################################################
 -- 5. CONSENT: ARE WE READING THE RIGHT FLAGS, AND IS "REACHABLE" HONEST?
 --
---     raw_audience_builder_big takes four columns and no more:
---       snid, email, mkt_pref_opt_in, advertising_opt_in
+--     ANSWERED 2026-10-16: it took four columns and missed a third consent
+--     flag. is_legitimate_interest_author_opted_in is now read as well, and
+--     reachable is any of the three. 5a is still worth running - there may
+--     be suppression or bounce columns we are also not reading.
 --
 --     Two things were never checked, and both can move the headline number.
 --
@@ -165,7 +167,8 @@ WITH per_person AS (
   SELECT
       snid,
       LOGICAL_OR(role_label = 'CONFIRMED')                    AS has_confirmed,
-      LOGICAL_OR(is_marketable OR is_advertisable)            AS consented,
+      LOGICAL_OR(is_marketable OR is_advertisable
+                 OR is_legitimate_interest)                   AS consented,
       LOGICAL_OR(contact_email IS NOT NULL
                  AND TRIM(contact_email) != '')               AS has_email
   FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
@@ -184,8 +187,10 @@ WHERE has_confirmed;
 SELECT
     a.role_key,
     COUNT(DISTINCT a.snid)                                              AS confirmed_people,
-    COUNT(DISTINCT IF(a.is_marketable OR a.is_advertisable, a.snid, NULL)) AS reachable_as_reported,
-    COUNT(DISTINCT IF((a.is_marketable OR a.is_advertisable)
+    COUNT(DISTINCT IF(a.is_marketable OR a.is_advertisable
+                      OR a.is_legitimate_interest, a.snid, NULL)) AS reachable_as_reported,
+    COUNT(DISTINCT IF((a.is_marketable OR a.is_advertisable
+                       OR a.is_legitimate_interest)
                       AND a.contact_email IS NOT NULL
                       AND TRIM(a.contact_email) != '', a.snid, NULL))   AS reachable_with_an_email
 FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience` a

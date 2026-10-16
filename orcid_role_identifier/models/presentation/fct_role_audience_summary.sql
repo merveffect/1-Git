@@ -22,9 +22,16 @@ select
     countif(in_cdp)                                     as in_cdp,
     countif(is_marketable)                              as marketable,
     countif(is_advertisable)                            as advertisable,
-    countif(is_marketable or is_advertisable)           as reachable,
+    countif(is_legitimate_interest)                     as legitimate_interest,
+    /*
+        REACHABLE IS ANY OF THE THREE, from 2026-10-16. It was the two
+        opt-ins only; legitimate interest is a third legal basis and was
+        being ignored.
+    */
+    countif(is_marketable or is_advertisable
+            or is_legitimate_interest)                  as reachable,
     safe_divide(countif(in_cdp), count(*))              as cdp_coverage,
-    safe_divide(countif(is_marketable or is_advertisable),
+    safe_divide(countif(is_marketable or is_advertisable or is_legitimate_interest),
                 count(*))                               as reachable_rate,
     round(avg(role_final_score), 3)                     as avg_score,
     max(scored_date)                                    as scored_date

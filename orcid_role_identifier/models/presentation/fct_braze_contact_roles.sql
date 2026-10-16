@@ -59,6 +59,7 @@ per_role as (
         any_value(a.contact_email)                  as contact_email,
         any_value(a.is_marketable)                  as is_marketable,
         any_value(a.is_advertisable)                as is_advertisable,
+        any_value(a.is_legitimate_interest)         as is_legitimate_interest,
         any_value(a.in_cdp)                         as in_cdp
     from audience a
     group by a.snid, a.role_key, a.role_detail
@@ -109,6 +110,7 @@ contact as (
         any_value(contact_email)                    as contact_email,
         max(is_marketable)                          as is_marketable,
         max(is_advertisable)                        as is_advertisable,
+        max(is_legitimate_interest)                 as is_legitimate_interest,
         max(in_cdp)                                 as in_cdp
     from ordered
     group by snid
@@ -133,10 +135,19 @@ select
     c.country_code,
     array_length(c.role_inferred)                   as role_count,
     case
-        when c.is_marketable then 'marketing_opt_in'
-        when c.in_cdp        then 'legitimate_interest'
+        /*
+            The basis is read from the flag that grants it, never inferred.
+            Until 2026-10-16 the second branch was "when c.in_cdp", which
+            claimed legitimate interest from CDP membership alone. Both
+            opt-ins map to consent; the third flag is the separate
+            legitimate-interest basis.
+        */
+        when c.is_marketable          then 'marketing_opt_in'
+        when c.is_advertisable        then 'marketing_opt_in'
+        when c.is_legitimate_interest then 'legitimate_interest'
     end                                             as consent_basis,
     c.is_marketable,
     c.is_advertisable,
+    c.is_legitimate_interest,
     current_date()                                  as contract_date
 from contact c
