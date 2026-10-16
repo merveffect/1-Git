@@ -208,12 +208,30 @@ vars:
     librarian:
       display_name: 'Librarian'
       detail_dimension: org_type
-      enabled: false
+      enabled: true
       label: 'Librarian / Information Professional'
       axis: profession
-      match: title_required   # no fields listed, so the title is the only axis
+      match: title_required
       title_groups: ['librarian']
       disciplines: ['library_information']
+      # ENABLED 2026-10-16. Switched off in the first run on the grounds
+      # that it was too small - 1,154 people, 258 marketable. That figure
+      # came from a bespoke regex query in analyses/archive/12, because
+      # the 'librarian' title group did not exist. It still did not exist
+      # until today, so the role could never have produced anybody.
+      #
+      # Three things also changed since: records are deduplicated, the
+      # organisation name patterns work, and a third consent flag is read.
+      # Marketing asked for it regardless of size - a publisher sells to
+      # libraries, so librarians are a real audience whatever the count.
+      #
+      # title_required, and the weights are title-led: a person is a
+      # librarian because of their job title, not because their
+      # department is a library building.
+      #   librarian / university / library dept  0.70+0.20+0.10 = 1.00 CONF
+      #   librarian / university / no dept       0.70+0.20      = 0.90 CONF
+      #   librarian / unresolved org / no dept   0.70+0.05      = 0.75 CONF
+      #   weak title / unresolved / no dept      0.49+0.05      = 0.54 PROB
       weights: {role: 0.70, org: 0.20, dept: 0.10}
       thresholds: {confirmed: 0.60, probable: 0.35}
       current_only: true
