@@ -73,6 +73,12 @@ seeds:
     description: >
       HUMAN DECISIONS. Always beat the vector and LLM decisions.
       Filled in after working through rpt_title_review_queue.
+
+      One convention, enforced by assert_overrides_take_effect: if you add
+      a decision for a title that is not in the ORCID vocabulary yet, put
+      [pre-emptive] in the note. Otherwise the test treats a title it
+      cannot find as a typo, because a misspelled override is inert while
+      looking alive, and that is the failure the test is there to catch.
     config:
       column_types: {title: STRING, title_group: STRING, decision: STRING, reviewer: STRING, reviewed_at: DATE, note: STRING}
     columns:

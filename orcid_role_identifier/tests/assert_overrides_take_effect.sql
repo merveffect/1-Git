@@ -26,10 +26,28 @@
       - the CTE aliased a title-group column as role_key, so an ACCEPT
         written with a role name was dropped.
 
-    A row also fails here if the title has simply disappeared from the
-    source. That is worth failing on: it means we are carrying a review
-    decision for a title nobody writes any more, and it should be
-    retired rather than left to rot in the seed.
+    An override whose title is not in the dictionary at all is the third
+    case, and it is the one that needed a convention. There are two
+    reasons a title can be absent and they look identical in the data:
+    the decision was written ahead of the vocabulary, or it is a typo and
+    the override is dead on arrival. The second is a real risk - a
+    misspelled override is silently inert while looking perfectly alive -
+    and it is exactly the kind of loss this test exists to catch, so
+    dropping the check was not an option.
+
+    So the reviewer declares which one it is. A note containing
+    [pre-emptive] means "I know this is not in the source yet, I added it
+    anyway", and the row is allowed to match nothing. Anything else that
+    matches nothing fails.
+
+    Three rows carry the marker today: 'retired academic', 'not currently
+    working' and 'between roles', all added from the external library's
+    "Former or inactive" sector. Worth knowing that 'unemployed' and
+    'career break' from the same import are NOT pre-emptive - people
+    really do write those in ORCID as their job title.
+
+    The first version of this check had no such convention and failed on
+    all three, which punished a defensive decision for being defensive.
 */
 
 with expected as (
@@ -37,7 +55,8 @@ with expected as (
         title,
         to_hex(md5({{ normalize_title('title') }})) as title_key,
         title_group                                as expected_group,
-        decision
+        decision,
+        coalesce(note, '')                         as note
     from {{ ref('role_title_overrides') }}
 ),
 
@@ -53,7 +72,7 @@ select
     a.title_group     as actual_group,
     a.decision_source,
     case
-        when a.title_key is null        then 'title not in the dictionary at all'
+        when a.title_key is null        then 'no such title, and not marked [pre-emptive]'
         when e.decision = 'ACCEPT'
              and (a.decision_source != 'HUMAN'
                   or a.title_group != e.expected_group)
@@ -65,7 +84,7 @@ select
     end as failure
 from expected e
 left join actual a using (title_key)
-where a.title_key is null
+where (a.title_key is null and not contains_substr(e.note, '[pre-emptive]'))
    or (e.decision = 'ACCEPT' and (a.decision_source != 'HUMAN'
                                   or a.title_group != e.expected_group))
    or (e.decision = 'REJECT' and (a.decision_source != 'HUMAN'
