@@ -159,11 +159,5 @@ non_academic,research and development,en,
 non_academic,administration,en,
 non_academic,human resources,en,
 non_academic,information technology services,en,
-library_information,library,en,"moved here from non_academic, which supports no role"
-library_information,libraries,en,
-library_information,university library,en,moved here from non_academic
-library_information,library services,en,
-library_information,library collections,en,
-library_information,archives,en,
-library_information,archival studies,en,
-library_information,special collections,en,
+non_academic,library,en,
+non_academic,university library,en,
