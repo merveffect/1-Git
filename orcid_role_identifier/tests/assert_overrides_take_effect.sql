@@ -1,7 +1,17 @@
 /*
     Every row in role_title_overrides must reach dim_title_group and be
-    recorded as the decision there: an ACCEPT must land as HUMAN with the
-    group the reviewer named, a REJECT as REJECTED and unassigned.
+    recorded as the decision there: an ACCEPT lands as HUMAN carrying the
+    group the reviewer named, a REJECT lands as HUMAN with is_assigned
+    false and group_score 0.
+
+    Both are HUMAN. decision_source answers WHO decided, not what they
+    decided, and 'REJECTED' is reserved for the vector failing to clear
+    sim_floor. That distinction is load-bearing: a human REJECT should
+    never be reopened, while a vector rejection should go back into the
+    review queue, and collapsing them into one value would lose the only
+    thing that tells them apart. The first version of this test asserted
+    REJECT -> 'REJECTED' and failed on all 25 rejections, which was the
+    test being wrong rather than the pipeline.
 
     An override is a human overruling the model after reading the
     evidence. It is the most expensive input in the project and the only
@@ -32,7 +42,7 @@ with expected as (
 ),
 
 actual as (
-    select title_key, title_group, decision_source, is_assigned
+    select title_key, title_group, decision_source, is_assigned, group_score
     from {{ ref('dim_title_group') }}
 )
 
@@ -49,7 +59,8 @@ select
                   or a.title_group != e.expected_group)
                                         then 'ACCEPT did not take effect'
         when e.decision = 'REJECT'
-             and (a.decision_source != 'REJECTED' or a.is_assigned)
+             and (a.decision_source != 'HUMAN' or a.is_assigned
+                  or a.group_score != 0.0)
                                         then 'REJECT did not take effect'
     end as failure
 from expected e
@@ -57,5 +68,6 @@ left join actual a using (title_key)
 where a.title_key is null
    or (e.decision = 'ACCEPT' and (a.decision_source != 'HUMAN'
                                   or a.title_group != e.expected_group))
-   or (e.decision = 'REJECT' and (a.decision_source != 'REJECTED'
-                                  or a.is_assigned))
+   or (e.decision = 'REJECT' and (a.decision_source != 'HUMAN'
+                                  or a.is_assigned
+                                  or a.group_score != 0.0))
