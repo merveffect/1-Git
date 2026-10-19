@@ -43,6 +43,18 @@ models:
               arguments:
                 values: ['HUMAN', 'PATTERN', 'VECTOR', 'REJECTED']
 
+  - name: int_title_group_registry
+    description: >
+      The valid title groups, which is NOT the same list as the anchor
+      seed. A group is real if it has anchors or patterns - librarian has
+      zero anchors and is defined entirely by title_group_patterns.csv.
+      Exists so the relationships test on role_title_overrides.title_group
+      has something true to point at; pointed at the anchor seed it would
+      reject a perfectly valid ACCEPT naming a pattern-defined group.
+    columns:
+      - name: title_group
+        tests: [not_null, unique]
+
   - name: dim_department_discipline
     description: >
       ⭐ DICTIONARY 2. One row per distinct department, mapped to a

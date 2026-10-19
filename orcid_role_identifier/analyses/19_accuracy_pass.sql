@@ -84,10 +84,25 @@ LIMIT 60;
 --    One row per group, so the shape of the problem is visible at a glance.
 --    A group whose weakest accepted value sits at 0.66 and carries 50,000
 --    records is taking on more guesswork than one whose weakest is 0.85.
+--
+--    READ share_below_075 ONLY FOR VECTOR-DECIDED VALUES. Since 2026-10-19
+--    a group can be defined by seeds/title_group_patterns.csv instead of
+--    anchors, and for those the similarity column measures something that
+--    did not decide anything: librarian has no anchors, so the vector's
+--    nearest neighbour for 'librarian' is whatever the OTHER 21 groups
+--    offer - pharmacist, at 0.65. The decision was made by the word in the
+--    title.
+--
+--    So librarian reads 0.81 below 0.75 here while being the most exact
+--    group in the project. pattern_decided below is the guard: where it
+--    equals values_assigned, ignore every similarity column on that row.
+--    Judge a pattern group by reading its titles instead - analyses/21
+--    query 2.
 -- ###########################################################################
 SELECT
     title_group,
     COUNT(*)                                        AS values_assigned,
+    COUNTIF(decision_source = 'PATTERN')            AS pattern_decided,
     SUM(frequency)                                  AS records,
     ROUND(MIN(similarity), 3)                       AS weakest_accepted,
     ROUND(APPROX_QUANTILES(similarity, 100)[OFFSET(10)], 3) AS p10_similarity,

@@ -88,12 +88,15 @@ seeds:
               arguments:
                 values: ['ACCEPT', 'REJECT']
       # an ACCEPT naming something that is not a real title group used to
-      # be silently ignored - the value simply matched no role afterwards
+      # be silently ignored - the value simply matched no role afterwards.
+      # Points at int_title_group_registry, not the anchor seed: a
+      # pattern-defined group like librarian has no anchors at all, and an
+      # ACCEPT naming it is perfectly valid.
       - name: title_group
         tests:
           - relationships:
               arguments:
-                to: ref('title_group_anchors')
+                to: ref('int_title_group_registry')
                 field: title_group
 
   - name: external_role_library

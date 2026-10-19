@@ -178,3 +178,37 @@ WHERE title_group = 'librarian'
   AND is_assigned
 GROUP BY runner_up
 ORDER BY records DESC;
+
+
+-- ###########################################################################
+-- 7. THE OTHER SENSE OF "LIBRARY"
+--    The 2026-10-19 build found one real false positive: 'guest scientist-
+--    lentiviral library oxstress dna-sensing', 63 records. A lentiviral
+--    library is a collection of genetic constructs, not a building. A stem
+--    match cannot tell which sense of a word it hit.
+--
+--    This finds the rest of that class. Every hit is a REJECT row in
+--    role_title_overrides - HUMAN beats PATTERN, so one row fixes one
+--    title, and that is the right shape of fix. Do NOT make the regex
+--    cleverer: a negative lookahead would be unreadable and would fail
+--    silently the next time biology invents a word.
+-- ###########################################################################
+SELECT
+    title,
+    frequency,
+    decision_source,
+    REGEXP_EXTRACT(title,
+        r'(lentiviral|retroviral|plasmid|phage|cdna|genomic|gene|compound|chemical|peptide|antibody|clone|fragment|mutant|expression|screening|digital)[ -]?librar'
+    )                                           AS biology_or_tech_sense
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'librarian'
+  AND is_assigned
+  AND REGEXP_CONTAINS(title,
+        r'(lentiviral|retroviral|plasmid|phage|cdna|genomic|gene|compound|chemical|peptide|antibody|clone|fragment|mutant|expression|screening)[ -]?librar')
+ORDER BY frequency DESC;
+
+/*
+    'digital library' is deliberately NOT in the WHERE clause, only in the
+    extract. A digital librarian is a librarian; a digital library is a
+    service a library runs. Both belong here.
+*/
