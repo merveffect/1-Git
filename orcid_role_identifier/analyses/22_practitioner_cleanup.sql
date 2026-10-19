@@ -136,7 +136,7 @@ ORDER BY records DESC;
 
 -- 3a. The titles behind the two anchors I suspect, so the hypothesis can be
 --     judged rather than believed. 'consultant' is a hospital specialist in
---     the UK and a business adviser in most of the world; 'medical officer'
+--     the UK and a business adviser in most of the world. 'medical officer'
 --     is also a rank in armies and health ministries.
 SELECT
     matched_anchors[OFFSET(0)]  AS nearest_anchor,
