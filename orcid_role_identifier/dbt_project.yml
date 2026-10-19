@@ -239,10 +239,33 @@ vars:
       # 'information specialist'. If marketing wants either, they are a
       # pattern row or an ACCEPT override, not a guess.
       #
-      # dept weight is 0 and the discipline list is empty. The title is the
-      # whole decision here, so library_information was dropped and
-      # 'library' and 'university library' went back to non_academic.
-      weights: {role: 0.75, org: 0.25, dept: 0.00}
+      # WEIGHTS 1 / 0 / 0, WHICH IS A STATEMENT RATHER THAN A SETTING.
+      #
+      # They were 0.75 / 0.25 / 0.00 and the org axis could not change a
+      # single outcome: a PATTERN decision pins role_score to exactly 1.0,
+      # so 0.75 alone already cleared the 0.60 threshold and every person
+      # confirmed regardless of their organisation. The 0.25 looked like it
+      # was doing work and was doing none. Now the configuration says what
+      # is actually true - the title is the whole decision.
+      #
+      # Two consequences, both intended and both worth knowing before
+      # reading this role's numbers:
+      #   - role_final_score is exactly 1.000 for everyone here. That is
+      #     not a suspiciously good score, it is the absence of a score.
+      #     Nothing was estimated, so there is nothing to be uncertain
+      #     about.
+      #   - the probable threshold can never fire, so this role has no
+      #     PROBABLE tier at all. The thresholds stay because the registry
+      #     expects them, not because they decide anything.
+      #
+      # If this role ever goes back to anchors, both lines have to be
+      # reconsidered together - 1/0/0 is only honest while every
+      # assignment is exact.
+      #
+      # dept weight is 0 and the discipline list is empty. library_
+      # information was dropped and 'library' and 'university library'
+      # went back to non_academic.
+      weights: {role: 1.00, org: 0.00, dept: 0.00}
       thresholds: {confirmed: 0.60, probable: 0.35}
       current_only: true
 
