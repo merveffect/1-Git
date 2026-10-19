@@ -4,10 +4,15 @@
 -- embedded downstream (distinct_collections / collection_embeddings).
 
 WITH target_snids AS (
-  SELECT snid
-  FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
-  WHERE snid IS NOT NULL
-    AND (advertising_opt_in = TRUE OR mkt_pref_opt_in = TRUE OR is_legitimate_interest_author_opted_in = TRUE)
+  SELECT ab.snid
+  FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }} ab
+  WHERE ab.snid IS NOT NULL
+    AND (ab.advertising_opt_in = TRUE OR ab.mkt_pref_opt_in = TRUE OR ab.is_legitimate_interest_author_opted_in = TRUE)
+    AND NOT EXISTS (
+      SELECT 1
+      FROM {{ source('prod_mpc_dbt_presentation', 'snid_deletions') }} d
+      WHERE d.snid = ab.snid
+    )
 )
 
 SELECT DISTINCT

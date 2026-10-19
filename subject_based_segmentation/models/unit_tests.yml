@@ -135,12 +135,19 @@ unit_tests:
         - snid: 'userC'
           predicted_mpc_subjects: null
 
-  - name: users_with_content_signal_keeps_only_opted_in_users
+  - name: users_with_content_signal_applies_consent_and_deletions
     description: >
-      The target-audience filter must let a user through on ANY one of the
-      three consents, and must exclude users with none of them.
+      Two filters in one test. The target-audience filter must let a user
+      through on ANY one of the three consents, and must exclude users with
+      none of them. On top of that, a user in snid_deletions must be
+      excluded even when fully consented — deletion overrides consent, and
+      it is applied here at the entry to the pipeline so a deleted user
+      never gets an embedding built in the first place.
     model: users_with_content_signal
     given:
+      - input: source('prod_mpc_dbt_presentation', 'snid_deletions')
+        rows:
+          - snid: 'u_deleted'
       - input: source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big')
         rows:
           - snid: 'u_advertising'
@@ -168,6 +175,12 @@ unit_tests:
             mkt_pref_opt_in: null
             is_legitimate_interest_author_opted_in: null
             list_keywords_dois_last_60_d: '\\Should Not Appear Either\\'
+          # fully consented, but deleted — must still be excluded
+          - snid: 'u_deleted'
+            advertising_opt_in: true
+            mkt_pref_opt_in: true
+            is_legitimate_interest_author_opted_in: true
+            list_keywords_dois_last_60_d: '\\Should Not Appear Because Deleted\\'
     expect:
       rows:
         - snid: 'u_advertising'

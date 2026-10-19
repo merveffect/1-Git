@@ -6,10 +6,15 @@
 -- 100% of its ids match real journal_metadata.journal_id as of 2026-09).
 
 WITH target_snids AS (
-  SELECT snid
-  FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
-  WHERE snid IS NOT NULL
-    AND (advertising_opt_in = TRUE OR mkt_pref_opt_in = TRUE OR is_legitimate_interest_author_opted_in = TRUE)
+  SELECT ab.snid
+  FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }} ab
+  WHERE ab.snid IS NOT NULL
+    AND (ab.advertising_opt_in = TRUE OR ab.mkt_pref_opt_in = TRUE OR ab.is_legitimate_interest_author_opted_in = TRUE)
+    AND NOT EXISTS (
+      SELECT 1
+      FROM {{ source('prod_mpc_dbt_presentation', 'snid_deletions') }} d
+      WHERE d.snid = ab.snid
+    )
 ),
 
 raw AS (
@@ -23,9 +28,14 @@ raw AS (
       list_journals_allpageviews_30_d,
       interested_journal_ids,
       interested_journal_ids_90
-  FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
-  WHERE snid IS NOT NULL
-    AND (advertising_opt_in = TRUE OR mkt_pref_opt_in = TRUE OR is_legitimate_interest_author_opted_in = TRUE)
+  FROM {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }} ab
+  WHERE ab.snid IS NOT NULL
+    AND (ab.advertising_opt_in = TRUE OR ab.mkt_pref_opt_in = TRUE OR ab.is_legitimate_interest_author_opted_in = TRUE)
+    AND NOT EXISTS (
+      SELECT 1
+      FROM {{ source('prod_mpc_dbt_presentation', 'snid_deletions') }} d
+      WHERE d.snid = ab.snid
+    )
 ),
 
 unpivoted AS (

@@ -6,7 +6,8 @@
             'field': 'updated_at',
             'data_type': 'timestamp',
             'granularity': 'day'
-        }
+        },
+        post_hook="delete from {{ this }} t where exists (select 1 from {{ source('prod_mpc_dbt_presentation', 'snid_deletions') }} d where d.snid = t.snid)"
     )
 }}
 
@@ -19,6 +20,13 @@
 -- so a reordering of the same 10 SNTs also counts as a change.
 --
 -- Append-only (no unique_key): every row is an event, kept for history.
+-- Never --full-refresh this model. Every other table in the project can be
+-- rebuilt from source; the change history cannot.
+--
+-- The post_hook is the one exception to append-only. top_10_snt_names is a
+-- record of what a user read, so a deletion request has to reach this table
+-- too — otherwise we would be clearing a user's predictions and embedding
+-- while keeping a history of their interests.
 
 with current_state as (
 
