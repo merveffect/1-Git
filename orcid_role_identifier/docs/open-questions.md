@@ -93,11 +93,26 @@ and we cannot tell them apart.
 | `consultant clinical psychologist` | 381 | clinical |
 | `educational psychologist` | 367 | works in schools |
 
-*Source: analyses/22 query 2.* A psychologist is not a psychiatrist — no
-medical degree — but a clinical psychologist is a regulated healthcare
+*Source: analyses/22 query 2.* A psychologist is not a psychiatrist - no
+medical degree - but a clinical psychologist is a regulated healthcare
 professional in most countries. An educational psychologist arguably is not.
-This is a judgement about what the audience means, so it is left alone until
-marketing decides, rather than guessed at.
+
+**There is a third answer, and it may be the right one.** Merve raised it on
+2026-10-20: these titles do not have to be labelled at all. The mechanism
+already exists - a REJECT override leaves a title unassigned, which is what
+already happens to any title the model cannot place above 0.65 similarity.
+
+The argument for using it here is the one Merve made about `consultant`:
+these people receive email. `psicóloga clínica` in a psychiatry department is
+CONFIRMED today and would receive a clinical campaign. If marketing does not
+count psychologists as healthcare professionals, a wrong inclusion costs more
+than a temporary exclusion, and either direction is one row to reverse.
+
+The argument against: a rejection removes them from everything, including a
+psychologist audience we might open later.
+
+So this is really two questions - are they healthcare professionals, and if
+the answer is not yet known, should they be held unlabelled until it is.
 
 ### 1.5 Three smaller versions of the same question
 
@@ -152,6 +167,47 @@ department confirms them; otherwise they stay Probable. The question is
 whether that is acceptable or whether a title carrying no occupational
 information should be excluded outright. *Source: analyses/22 query 2.*
 
+### 1.10 Should a job title be allowed in more than one group?
+
+This is new on 2026-10-20 and it is the largest thing the review has turned
+up that is not a defect.
+
+A title belongs to exactly one title group today. Measured: **463,603
+records contain the word "professor" and sit OUTSIDE teaching_academic** -
+and almost all of them belong where they are.
+
+| Title | Records | Group | Match |
+| --- | --- | --- | --- |
+| `research assistant professor` | 71,785 | researcher_early | 0.911 |
+| `research professor` | 48,609 | researcher_established | 0.886 |
+| `research associate professor` | 12,374 | researcher_established | 0.917 |
+| `professor and director` | 4,601 | leadership | 0.835 |
+| `professor of neurology` | 1,815 | practitioner | 0.860 |
+
+*Source: analyses/22 queries 11 and 11a.* These are not errors. A research
+assistant professor really is a research post; a professor of neurology
+really is a neurologist. The matches sit at 0.80-0.92, so the model is
+confident and correct.
+
+But a research assistant professor also **teaches**, and the Lecturer
+audience - 400,445 people - does not contain them. So Lecturer undercounts
+professors by some part of those 463,603 records, and the only way to fix it
+is to let one title carry two groups, which is a design change rather than a
+tuning one.
+
+Worth recording how this was found: I expected the opposite. I thought
+"professor of X" titles outside teaching_academic were a defect and was
+about to write a rule moving them. The measurement killed it - that rule
+would have pulled 71,785 research professors out of the Researcher audience.
+
+### 1.11 Is "healthcare professional" about the work or the subject?
+
+Several questions in 1.4 and 1.5 are really this one question asked about
+different jobs. A psychologist, a medical physicist, a mental health support
+worker, a genetic counsellor and a clinical embryologist all work in health
+without practising medicine. One answer settles all of them and several that
+have not come up yet.
+
 ---
 
 ## Part 2 — Limitations to state plainly
@@ -166,7 +222,8 @@ earth science, mathematics or humanities departments**.
 
 What exists instead, for every classification: how far it stretched from the
 example terms that define each group, and whether a human or the model
-decided. **93 human decisions are pinned** as of 2026-10-20.
+decided. **127 human decisions are pinned** as of 2026-10-20, each carrying
+the measured reason it was made.
 
 ### 2.2 Coverage is the ceiling, not consent
 
@@ -294,6 +351,20 @@ and the lesson is that the suffix does not predict a magnet - how crowded
 the neighbouring region is, does. `audiologist` sits beside nothing;
 `pathologist` sits beside every science ending in -ologist.
 
+**Two promises kept on 2026-10-20, with results that went against my own
+hypothesis both times.**
+
+The faculty_head company veto - three rows in org_name_patterns written to
+stop corporate executives reaching the audience - was suspected of being
+dead weight, because we later found the real cause of those executives
+arriving was the incremental anchor table. Measured: it catches **79
+people**, all of them PROBABLE at 0.505, where without it an
+academically-named company could lift them over the line. Small, but exactly
+the job it was written for. It stays. *analyses/23 query 1.*
+
+And the "professor of X" rule I was about to write would have been the worst
+change in the project's history. See 1.10.
+
 **What is left is a long tail.** practitioner has moved 40.64% -> 35.55%
 and each further batch now recovers a few thousand records rather than tens
 of thousands. Three titles remain unresolved not because they are hard but
@@ -318,6 +389,11 @@ the system being clean. All 2026-10-20 unless noted.
 | 4 medical-writing and pharma-commercial titles | 1,990 | moved to support |
 | 7 more unrelated professions (`lawyer`→dentist, `minister`, `personal trainer`, `asesor` …) | 3,216 | moved or rejected |
 | 3 more (`methodologist`→pathologist, `expert evaluator`, `economic advisor`) | 965 | moved |
+| 8 dental specialties had no anchor; everything leaned on `dentist` | — | anchors added |
+| 3 with them (`attorney`→dentist, dental researcher, course coordinator) | 393 | moved |
+| 13 sciences pulled by `pathologist`, third round (`biologo`, `field geologist`, `anatomist` …) | 2,078 | moved |
+| `horticulturist` → **gynaecologist** at 0.659 | 229 | moved |
+| 13 "senior X" titles pulled by `senior scientist` (`senior manager`, `senior software developer` …) | 10,073 | moved |
 | Retired and emeritus titles counted as working researchers | 14 titles | rejected, at marketing's request |
 | "Library" in the molecular-biology sense (lentiviral, chemical) | 89 | rejected |
 
