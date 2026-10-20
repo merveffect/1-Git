@@ -224,3 +224,121 @@ WHERE REGEXP_CONTAINS(d.title, s.stem)
 GROUP BY s.stem, d.title_group, d.is_assigned
 HAVING records >= 30
 ORDER BY s.stem, records DESC;
+
+
+-- ###########################################################################
+-- 6. THE 854 — WHO ARE THE PEOPLE CONFIRMED ON A TITLE ALONE?
+--
+--    Query 1 found that hcp_broad confirms exactly one group of people
+--    without a clinical department: a perfect title plus a fully resolved
+--    organisation, 0.35 + 0.25 = 0.60, landing precisely on the threshold.
+--    854 people, average score 0.600.
+--
+--    These are the only practitioners in the shipped audience that no
+--    department agrees with, so they are the whole of the messaging risk
+--    Merve raised. This is the most decisive query in the file: if they are
+--    mostly British consultants, there is nothing to fix. If they are
+--    business consultants in Germany and the United States, there is.
+--
+--    No country list is assumed here on purpose. Read the countries off the
+--    data rather than deciding in advance which ones use the grade.
+-- ###########################################################################
+SELECT
+    LOWER(TRIM(evidence_title))     AS title_as_written,
+    country_code,
+    COUNT(DISTINCT snid)            AS people,
+    ROUND(AVG(role_score), 3)       AS avg_title_score,
+    ROUND(AVG(org_score), 3)        AS avg_org_score
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+WHERE role_key = 'hcp_broad'
+  AND role_label = 'CONFIRMED'
+  AND title_group = 'practitioner'
+  AND discipline != 'health_clinical'
+GROUP BY title_as_written, country_code
+ORDER BY people DESC
+LIMIT 60;
+
+
+-- ###########################################################################
+-- 7. DOES COUNTRY ACTUALLY SEPARATE THE TWO SENSES OF "CONSULTANT"?
+--
+--    The hypothesis is that 'consultant' is a hospital specialist grade in
+--    the UK, Ireland and parts of the Commonwealth, and an adviser
+--    everywhere else. If that is true, the clinical-department share should
+--    be visibly higher in those countries - because a real consultant
+--    physician usually also names a clinical department, and a management
+--    consultant never does.
+--
+--    THE COLUMN THAT DECIDES IT is share_with_clinical_dept. Country is only
+--    worth a rule where it tells us something the department does not. If a
+--    country has a high clinical share, the department axis is already
+--    handling those people and country adds nothing. The rule is for the
+--    cells where the department is silent.
+--
+--    Includes PROBABLE deliberately: that tier is 21,645 people held back on
+--    a title alone, and whether it can ever be switched on depends on
+--    exactly this.
+-- ###########################################################################
+SELECT
+    country_code,
+    COUNT(DISTINCT snid)                                        AS people,
+    COUNTIF(role_label = 'CONFIRMED')                           AS confirmed_records,
+    COUNTIF(role_label = 'PROBABLE')                            AS probable_records,
+    ROUND(SAFE_DIVIDE(COUNTIF(discipline = 'health_clinical'),
+                      COUNT(*)), 4)                             AS share_with_clinical_dept,
+    ROUND(AVG(role_score), 3)                                   AS avg_title_score
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+WHERE role_key = 'hcp_broad'
+  AND title_group = 'practitioner'
+  AND REGEXP_CONTAINS(LOWER(evidence_title), r'consultant|consultor|consultora')
+GROUP BY country_code
+HAVING people >= 25
+ORDER BY people DESC;
+
+-- 7a. The same for the medical officer family, which has the identical
+--     problem from a different direction - it is also an army rank and a
+--     civil service grade. 1,669 titles, 70,114 records.
+SELECT
+    country_code,
+    COUNT(DISTINCT snid)                                        AS people,
+    COUNTIF(role_label = 'CONFIRMED')                           AS confirmed_records,
+    ROUND(SAFE_DIVIDE(COUNTIF(discipline = 'health_clinical'),
+                      COUNT(*)), 4)                             AS share_with_clinical_dept,
+    ROUND(AVG(role_score), 3)                                   AS avg_title_score
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+WHERE role_key = 'hcp_broad'
+  AND title_group = 'practitioner'
+  AND REGEXP_CONTAINS(LOWER(evidence_title), r'medical officer|health officer|^officer$')
+GROUP BY country_code
+HAVING people >= 15
+ORDER BY people DESC;
+
+
+-- ###########################################################################
+-- 8. HOW MUCH COUNTRY DO WE EVEN HAVE?
+--
+--    A rule conditioned on a column that is half null is a rule that fires
+--    half the time. country_code comes from the employment's organisation
+--    address, so it is only present where the organisation resolved - and
+--    analyses/17 query 2a measured 49.3% of faculty_head records sitting at
+--    org_type UNKNOWN, which is a warning that resolution is far from
+--    universal.
+--
+--    If coverage here is poor, the honest answer is that country cannot
+--    carry this decision and we go back to the department axis plus
+--    targeted REJECT overrides for the named business titles.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN country_code IS NULL OR TRIM(country_code) = '' THEN '2. no country'
+        ELSE                                                      '1. has country'
+    END                                                         AS country_known,
+    COUNT(*)                                                    AS records,
+    COUNT(DISTINCT snid)                                        AS people,
+    ROUND(SAFE_DIVIDE(COUNT(*),
+          SUM(COUNT(*)) OVER ()), 4)                            AS share
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+WHERE role_key = 'hcp_broad'
+  AND title_group = 'practitioner'
+GROUP BY country_known
+ORDER BY country_known;
