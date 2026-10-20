@@ -85,3 +85,10 @@ medical writer,support_technical,ACCEPT,analytics-engineering@springernature.com
 senior medical writer,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,203 records. See medical writer.
 associate medical writer,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,383 records. See medical writer.
 medical science liaison,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,"201 records. A commercial role in pharma, not a clinical one."
+lawyer,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,362 records. Matched DENTIST at 0.693. A lawyer is not a clinician and not a researcher.
+minister,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-20,"353 records. Matched medical doctor at 0.660. A government minister or a member of the clergy, neither of them a physician. leadership was the runner-up and is the better home."
+strength and conditioning coach,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,"363 records. Matched physiotherapist at 0.663. Sports coaching, not clinical practice."
+personal trainer,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,"351 records. Matched physiotherapist at 0.708. Same as the coach - adjacent to health, not a clinician."
+food safety auditor,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,337 records. Matched the new dietitian anchor at 0.679.
+support officer,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,328 records. Matched medical officer at 0.693. Generic administrative title.
+asesor,,REJECT,analytics-engineering@springernature.com,2026-10-20,"1,122 records. Matched consultant at 0.713. Spanish for adviser, so the same decision as advisor, adviser and expert, which were rejected earlier the same day. Consistency matters more here than the individual call."
