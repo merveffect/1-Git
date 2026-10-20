@@ -92,3 +92,6 @@ personal trainer,support_technical,ACCEPT,analytics-engineering@springernature.c
 food safety auditor,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,337 records. Matched the new dietitian anchor at 0.679.
 support officer,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,328 records. Matched medical officer at 0.693. Generic administrative title.
 asesor,,REJECT,analytics-engineering@springernature.com,2026-10-20,"1,122 records. Matched consultant at 0.713. Spanish for adviser, so the same decision as advisor, adviser and expert, which were rejected earlier the same day. Consistency matters more here than the individual call."
+methodologist,researcher_established,ACCEPT,analytics-engineering@springernature.com,2026-10-20,"319 records. Matched pathologist at 0.695 - the suffix, not the meaning. A methodologist is a researcher."
+expert evaluator,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,"324 records. Matched consultant at 0.702. Same call as expert and advisor, rejected earlier."
+economic advisor,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-20,"322 records. Matched consultant at 0.713. An economist, not a clinician."

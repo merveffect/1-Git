@@ -10,6 +10,19 @@ quoted.
 Sources are named for every number. Where a figure has no source it is not
 yet measured and says so.
 
+## The four figures at the top
+
+| | |
+| --- | --- |
+| **673,553** | people with a confirmed professional role |
+| **501,522** | of them reachable - in the CDP and opted in (74.5%) |
+| **9** | audiences, up from one |
+| **1.6** | roles per person |
+
+*Source: analyses/15 query 8, build 2026-10-20.* They cannot be added across
+audiences: a professor who publishes is both a Lecturer and a Researcher, so
+the per-role Reachable column sums far above 501,522.
+
 ---
 
 ## Part 1 — Questions only marketing can answer
@@ -25,15 +38,21 @@ being confirmed from both axes. It is not evenly useful.
 
 | Audience | Confirmed today | Adding Probable | Change |
 | --- | --- | --- | --- |
-| Healthcare professional (broad) | 126,335 | 237,240 | **+88%** |
+| Healthcare professional (broad) | 126,270 | 236,418 | **+87%** |
 | Pharmacist | 2,335 | 4,889 | **+109%** |
-| Head of faculty | 20,213 | 30,670 | **+52%** |
-| Clinical administrator | 6,853 | 8,779 | +28% |
-| Practitioner | 60,306 | 63,429 | +5% |
-| Clinical researcher | 50,382 | 52,561 | +4% |
-| Researcher | 321,778 | 322,576 | +0.2% |
-| Lecturer | 400,311 | 400,630 | +0.1% |
+| Head of faculty | 20,222 | 30,678 | **+52%** |
+| Clinical administrator | 6,855 | 8,781 | +28% |
+| Practitioner | 60,083 | 63,113 | +5% |
+| Clinical researcher | 50,590 | 52,767 | +4% |
+| Researcher | 322,266 | 323,062 | +0.2% |
+| Lecturer | 400,445 | 400,763 | +0.1% |
 | Librarian | 666 | 666 | none possible |
+| **Unique people** | **673,553** | **718,607** | **+6.7%** |
+
+It mostly adds a second LABEL to people we already hold rather than new
+people - the unique total rises only 6.7% while healthcare nearly doubles -
+so switching it on is less about reach than about how finely an existing
+audience can be segmented.
 
 *Source: analyses/15 query 1.* Librarian has no Probable tier at all — it is
 decided by pattern, so its score is always exactly 1.000.
@@ -87,6 +106,7 @@ marketing decides, rather than guessed at.
 | Are mental health support workers healthcare professionals? | 326 | yes, in practitioner |
 | Are medical physicists / clinical scientists? | 346 | yes, in practitioner |
 | Are genetic counsellors? | 866 | yes, in practitioner |
+| Are counsellors? (`counselor` 882 + `counsellor` 323) | 1,205 | yes, in practitioner |
 
 All three are regulated health roles in some countries and support roles in
 others.
@@ -110,7 +130,7 @@ classified and feed nothing:
 | Group | Records | |
 | --- | --- | --- |
 | `student` | 1,914,587 | doctoral and medical students, the largest expansion available |
-| `support_technical` | 1,399,438 | technicians, administrators, research support |
+| `support_technical` | 1,401,179 | technicians, administrators, research support |
 
 *Source: analyses/19 query 3.* The structure already supports both; this is a
 decision, not a build.
@@ -152,11 +172,14 @@ decided. **93 human decisions are pinned** as of 2026-10-20.
 
 | | People | |
 | --- | --- | --- |
-| ORCID profiles with an SNID | 1,803,315 | 100% |
-| …with a usable employment record | 844,890 | 46.9% |
-| …we can name a profession | ~670,000 | ~37% |
+| ORCID profiles with an SNID | 1,812,702 | 100% |
+| …with a usable employment record | 849,370 | 46.9% |
+| …we can name a profession | 673,553 | 37.2% |
+| …also present in the CDP | 646,233 | 35.7% |
+| …and opted in under any basis | 501,522 | 27.7% |
 
-*Source: analyses/13 query 1.* Around **1.1M people get no audience at all**,
+*Sources: analyses/13 query 1, analyses/15 query 8.* **1,139,149 people get
+no audience at all**,
 most of it the deliberate absence of a student or support-staff audience
 (1.7). Opening a new audience is worth far more than opting more people in.
 
@@ -175,9 +198,16 @@ behave the same way.
 
 ### 2.4 Healthcare is the weakest group, and we know why ⟳
 
-`practitioner` carries **35.68%** of its 1,615,104 records below 0.75
-similarity. The next worst is `support_technical` at 35.87% and
-`teaching_academic` is 6.81%. It was 40.64% before 2026-10-20.
+`practitioner` carries **35.55%** of its 1,611,888 records below 0.75
+similarity, down from **40.64%** at the start of 2026-10-20. The next worst
+is `support_technical` at 35.95%; `teaching_academic` is 6.81%.
+
+The 5.09 points came from two things measured that day: 25 specialty anchors
+for professions that had none of their own - 2,684 veterinarians were
+matching DENTIST - and 40 human overrides for titles that were never
+clinical. Every override landed to the record: researcher_established
++13,743, support_technical +5,445, teaching_academic +5,145, each one exactly
+the predicted figure.
 
 Clinical job titles are the least standardised vocabulary in the data:
 Resident, Registrar, Facharzt, Interno, Jefe de Servicio and Senior House
@@ -229,6 +259,45 @@ and 9a.*
 
 ---
 
+## Part 2b — How we find the next problem, and what is left
+
+One diagnostic turned out to generalise, and it is worth stating because it
+replaces guesswork. **A neighbouring anchor carrying a high share of records
+below 0.75 is the signature of a MISSING anchor, not of a bad one.** The
+titles arriving there are usually correct and merely unconfident, because the
+nearest available anchor is the closest thing we gave the model.
+
+Read from analyses/22 query 3 on 2026-10-20:
+
+| Anchor | Share below 0.75 | What was actually reaching it | Records |
+| --- | --- | --- | --- |
+| `paramedic` | 0.633 | emergency physician, emergency medicine specialist, emergency specialist | 2,998 |
+| `gynaecologist` | 0.591 | geriatrician | 500 |
+| `pathologist` | 0.487 | methodologist (wrong), clinical geneticist (right) | — |
+| `haematologist` | 0.442 | rheumatologist | 1,761 |
+| `anaesthetist` | 0.436 | intensivist | 1,198 |
+
+Six more anchors were added from that reading - emergency physician,
+geriatrician, intensivist, rheumatologist, nephrologist, pulmonologist.
+
+The same query also settled a prediction worth recording because it was
+wrong. Before building, I flagged `audiologist` as the most likely magnet
+on the grounds that the -ologist suffix attracts other -ologists. It came
+back at 0.326 and pulled nothing. `pathologist` was the problem instead,
+and the lesson is that the suffix does not predict a magnet - how crowded
+the neighbouring region is, does. `audiologist` sits beside nothing;
+`pathologist` sits beside every science ending in -ologist.
+
+**What is left is a long tail.** practitioner has moved 40.64% -> 35.55%
+and each further batch now recovers a few thousand records rather than tens
+of thousands. Three titles remain unresolved not because they are hard but
+because they are marketing's call, listed in 1.4 and 1.5. The next material
+gain is not in this group at all - it is the education signal in 2.7, which
+is the only thing that can speak to the 146,865 records where the title is
+just `dr` or `md`.
+
+---
+
 ## Part 3 — Errors found and corrected, with counts
 
 Useful for the presentation because it shows the review working rather than
@@ -242,6 +311,7 @@ the system being clean. All 2026-10-20 unless noted.
 | 3 academic ranks read as physicians (`doç dr`, `ayudante doctor`, `nursing tutor`) | 5,145 | moved to teaching |
 | 4 medical-writing and pharma-commercial titles | 1,990 | moved to support |
 | 7 more unrelated professions (`lawyer`→dentist, `minister`, `personal trainer`, `asesor` …) | 3,216 | moved or rejected |
+| 3 more (`methodologist`→pathologist, `expert evaluator`, `economic advisor`) | 965 | moved |
 | Retired and emeritus titles counted as working researchers | 14 titles | rejected, at marketing's request |
 | "Library" in the molecular-biology sense (lentiviral, chemical) | 89 | rejected |
 
