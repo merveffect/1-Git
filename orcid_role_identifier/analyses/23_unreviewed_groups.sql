@@ -1,0 +1,173 @@
+/*
+    ============================================================================
+    23. THE GROUPS NOBODY HAS LOOKED AT
+    ============================================================================
+    Two of the ten title groups have been reviewed properly: practitioner, over
+    2026-10-20, and librarian, which was rebuilt from nothing. The other eight
+    have never been read.
+
+    That is worth saying plainly, because the review we HAVE done found a
+    great deal - 2,684 veterinarians matched to DENTIST, epidemiologists
+    classified as clinicians, a lawyer matched to dentist - and there is no
+    reason the unreviewed groups are cleaner. We simply do not know.
+
+    Ranked by how dirty they are, against what they feed:
+
+      support_technical       35.95%   feeds nothing
+      practitioner            34.27%   reviewed
+      pharmacist              31.88%   the pharmacist audience, 2,335 people
+      leadership              27.63%   faculty_head + hcp_administrator
+      trainee_clinical        18.44%   the hcp roles
+      researcher_established  16.29%   researcher - 322,266 people - and hcp_researcher
+      student                  8.94%   feeds nothing
+      researcher_early         6.94%   researcher + hcp_researcher
+      teaching_academic        6.77%   lecturer - 400,445 people
+
+    THIS FILE DELIBERATELY SKIPS support_technical AND student. They are the
+    dirtiest and the second cleanest, and both feed no audience, so reviewing
+    them now would be work spent on nobody. They become urgent the day
+    marketing asks for a support-staff or student audience, which is question
+    1.7 in docs/open-questions.md.
+
+    Query 2 is the one I would start with. researcher_established is 2.3x
+    dirtier than researcher_early for no obvious reason, and it feeds the
+    second-largest audience in the project.
+
+    No build is needed for any of this.
+    ============================================================================
+*/
+
+
+-- ###########################################################################
+-- 1. FACULTY_HEAD — IS THE COMPANY VETO STILL DOING ANYTHING?
+--
+--    A promise from 2026-10-16 that was never kept. org_name_patterns holds
+--    three faculty_head rows with org_score 0.00, which veto a leadership
+--    title at a company. They were written to stop corporate executives
+--    arriving in the audience.
+--
+--    But we now know WHY they were arriving: int_anchor_embeddings was
+--    incremental, so removing 'chief executive officer', 'founder' and
+--    'president' from the leadership anchors had never taken effect. The
+--    veto was built to contain a bug, and the bug is fixed.
+--
+--    So the veto may now be dead weight. This asks. A large count means it
+--    is still load-bearing and stays. A tiny one means it is belt and braces
+--    and can be retired - and retiring a rule nobody needs is worth doing,
+--    because every rule left in place is a thing the next person has to
+--    understand.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN EXISTS (
+            SELECT 1
+            FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.org_name_patterns` p
+            WHERE p.role_key = 'faculty_head'
+              AND p.org_score = 0.0
+              AND REGEXP_CONTAINS(COALESCE(f.evidence_org, ''), p.name_pattern)
+        ) THEN '1. organisation matches a veto pattern'
+        ELSE '2. no veto'
+    END                                             AS veto,
+    role_label,
+    COUNT(DISTINCT snid)                            AS people,
+    ROUND(AVG(org_score), 3)                        AS avg_org_score,
+    ROUND(AVG(role_final_score), 3)                 AS avg_final_score
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` f
+WHERE role_key = 'faculty_head'
+GROUP BY veto, role_label
+ORDER BY veto, role_label;
+
+
+-- ###########################################################################
+-- 2. RESEARCHER_ESTABLISHED — THE WEAKEST END, NEVER READ
+--
+--    16.29% of its records sit below 0.75, against 6.94% for
+--    researcher_early. Both groups feed exactly the same two roles, so the
+--    difference is not design - it is that one group's nine anchors are
+--    doing more work than the other's thirteen.
+--
+--    Nine anchors for this group: senior researcher, senior scientist,
+--    research scientist, principal investigator, group leader, staff
+--    scientist, scientist, head of laboratory, scientific director.
+--
+--    Sort what you read into the same three piles that worked on
+--    practitioner: WRONG, which needs an override; RIGHT BUT UNCONFIDENT,
+--    which needs an anchor and is usually the larger pile; and AMBIGUOUS,
+--    which is a marketing question.
+-- ###########################################################################
+SELECT
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    runner_up,
+    ROUND(margin, 3)            AS margin,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'researcher_established'
+  AND is_assigned
+  AND similarity < 0.75
+ORDER BY frequency DESC
+LIMIT 60;
+
+-- 2a. The same per anchor, which is the diagnostic that worked on
+--     practitioner: an anchor carrying a high share below 0.75 is the
+--     signature of a MISSING anchor, not a bad one.
+SELECT
+    matched_anchors[OFFSET(0)]                      AS nearest_anchor,
+    COUNT(*)                                        AS distinct_titles,
+    SUM(frequency)                                  AS records,
+    ROUND(AVG(similarity), 3)                       AS avg_similarity,
+    ROUND(SAFE_DIVIDE(SUM(IF(similarity < 0.75, frequency, 0)),
+                      SUM(frequency)), 4)           AS share_records_below_075
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'researcher_established'
+  AND is_assigned
+GROUP BY nearest_anchor
+ORDER BY records DESC;
+
+
+-- ###########################################################################
+-- 3. LEADERSHIP — 27.63%, AND IT FEEDS TWO AUDIENCES
+--
+--    Read alongside analyses/17 query 1, which lists this group's biggest
+--    titles and how many of each confirm. That query already showed the
+--    corporate titles mostly failing as intended - ceo 879 people with 55
+--    confirmed, founder 411 with 31, owner 188 with 2 - so this is the
+--    weakest end rather than the known-bad end.
+-- ###########################################################################
+SELECT
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    runner_up,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'leadership'
+  AND is_assigned
+  AND similarity < 0.75
+ORDER BY frequency DESC
+LIMIT 50;
+
+
+-- ###########################################################################
+-- 4. PHARMACIST — 31.88%, AND IT IS A STANDALONE AUDIENCE
+--
+--    Only 2,335 confirmed people, so the absolute numbers are small, but it
+--    is the one audience where a single title group is the whole thing. Ten
+--    anchors carry it.
+-- ###########################################################################
+SELECT
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    runner_up,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'pharmacist'
+  AND is_assigned
+  AND similarity < 0.75
+ORDER BY frequency DESC
+LIMIT 40;
