@@ -417,3 +417,80 @@ WHERE role_key = 'hcp_broad'
   AND title_group = 'practitioner'
 GROUP BY country_known
 ORDER BY country_known;
+
+
+-- ###########################################################################
+-- 9. HTML ESCAPES SURVIVING NORMALISATION — SIZE IT BEFORE FIXING IT
+--
+--    The 2026-10-20 build surfaced this title:
+--        academic professor clinical &amp personal chair of vascular medicine
+--    '&amp;' came through as '&amp'. clean_text keeps '&' as a legal
+--    character and strips the semicolon, so the entity is half-decoded and
+--    left in place. A title stored as 'R&amp;D Manager' and one stored as
+--    'R&D Manager' therefore become TWO dictionary entries, classified
+--    separately, with the frequency split between them.
+--
+--    This is not a practitioner problem - it affects every group, and the
+--    distinct-title count the whole project quotes (310,299) is inflated by
+--    however much of it there is.
+--
+--    WHY IT IS NOT ALREADY FIXED. Changing clean_text changes every
+--    normalised value, so every title_key md5 changes, so the entire
+--    dictionary re-embeds - the 2.7 GiB merges that take 200+ seconds each.
+--    Worse, the embedding models are incremental, so the old keys stay
+--    behind and inflate dim_title_group and every quality metric read off
+--    it, exactly as the anchor table did before 2026-10-16. It would need
+--    --full-refresh on int_title_embeddings and int_department_embeddings.
+--
+--    So measure first. If this is a few hundred titles, override the loud
+--    ones and leave the normaliser alone. If it is thousands, the fix is
+--    worth one expensive rebuild - and it should be done in the same
+--    rebuild as any other normalisation change, never on its own.
+-- ###########################################################################
+WITH entities AS (
+    SELECT entity FROM UNNEST(['&amp', '&lt', '&gt', '&quot', '&apos',
+                               '&nbsp', '&#39', '&#34']) AS entity
+)
+
+SELECT
+    e.entity,
+    'title'                     AS vocabulary,
+    COUNT(*)                    AS distinct_values,
+    SUM(d.frequency)            AS records
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` d
+CROSS JOIN entities e
+WHERE STRPOS(d.title, e.entity) > 0
+GROUP BY e.entity, vocabulary
+
+UNION ALL
+
+SELECT
+    e.entity,
+    'department'                AS vocabulary,
+    COUNT(*)                    AS distinct_values,
+    SUM(d.frequency)            AS records
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline` d
+CROSS JOIN entities e
+WHERE STRPOS(d.department, e.entity) > 0
+GROUP BY e.entity, vocabulary
+
+ORDER BY records DESC;
+
+-- 9a. The pairs that prove the split: a value containing an entity whose
+--     decoded twin also exists as its own dictionary entry. Each pair is one
+--     job title counted twice, with its frequency divided between the halves.
+SELECT
+    escaped.title                       AS escaped_form,
+    escaped.frequency                   AS escaped_records,
+    escaped.title_group                 AS escaped_group,
+    decoded.title                       AS decoded_form,
+    decoded.frequency                   AS decoded_records,
+    decoded.title_group                 AS decoded_group,
+    escaped.title_group = decoded.title_group
+                                        AS same_group
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` escaped
+JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` decoded
+    ON decoded.title = REGEXP_REPLACE(escaped.title, r'&amp', '&')
+WHERE STRPOS(escaped.title, '&amp') > 0
+ORDER BY escaped.frequency + decoded.frequency DESC
+LIMIT 40;
