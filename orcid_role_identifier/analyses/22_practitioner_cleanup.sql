@@ -536,5 +536,73 @@ WHERE title_group = 'practitioner'
   AND is_assigned
   AND similarity < 0.75
   AND matched_anchors[OFFSET(0)] IN ('gynaecologist', 'pathologist', 'dentist')
-ORDER BY matched_anchors[OFFSET(0)], frequency DESC
-LIMIT 60;
+-- 20 PER ANCHOR, not 60 overall. The first version ordered by anchor name and
+-- took the top 60, so 'dentist' consumed the whole limit alphabetically and
+-- the two anchors the query was written to investigate never appeared.
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY matched_anchors[OFFSET(0)] ORDER BY frequency DESC
+) <= 20
+ORDER BY matched_anchors[OFFSET(0)], frequency DESC;
+
+
+-- ###########################################################################
+-- 11. "PROFESSOR OF SOMETHING" — SIZE IT BEFORE WRITING A RULE
+--
+--    Query 10 turned up seven dental titles of the form "professor of X"
+--    sitting in practitioner: professor of endodontology, professor of
+--    cariology & operative dentistry, profesor de ortodoncia, professor
+--    gerodontology. Each is an academic post, and each is losing the
+--    lecturer audience.
+--
+--    The same shape appears outside dentistry - 'vip clinical professor and
+--    chair' at 371 records, 'academic professor clinical ... chair of
+--    vascular medicine' at 884 - so it is a pattern rather than seven
+--    titles, and seven override rows would be treating the symptom.
+--
+--    THE PRECEDENT FOR A FIX ALREADY EXISTS AND SO DOES THE ARGUMENT. We
+--    settled this for 'doç dr', the Turkish form of associate professor: the
+--    title names an academic RANK, the subject after it is a field, and the
+--    clinical half is carried by the department axis because hcp_broad is
+--    title_or_field. On that reasoning a professor of endodontology is
+--    teaching_academic and still reaches healthcare through the department.
+--
+--    SO WHY NOT JUST ADD A PATTERN. Because title_group_patterns beats the
+--    vector unconditionally, and teaching_academic - unlike librarian - has
+--    anchors of its own. A rule on 'professor of' would move titles out of
+--    practitioner AND out of both researcher groups, wholesale, and I do not
+--    know how many. That is the measurement.
+--
+--    READ IT THIS WAY. A large count outside teaching_academic means the
+--    rule is worth writing. A small one means seven overrides and move on.
+--    Watch 'professor emeritus' especially: it is already REJECTED by hand
+--    at marketing's request, and any rule has to keep losing to that.
+-- ###########################################################################
+SELECT
+    title_group,
+    is_assigned,
+    COUNT(*)                            AS distinct_titles,
+    SUM(frequency)                      AS records,
+    ROUND(AVG(similarity), 3)           AS avg_similarity,
+    STRING_AGG(title ORDER BY frequency DESC LIMIT 4)
+                                        AS biggest_examples
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE REGEXP_CONTAINS(title, r'\b(professor|profesor|professeur|professora|professore)\b')
+GROUP BY title_group, is_assigned
+ORDER BY records DESC;
+
+-- 11a. The ones outside teaching_academic, which are the candidates to move.
+--      If this list is short, it is an override job. If it runs to thousands
+--      of records, it is a rule.
+SELECT
+    title,
+    frequency,
+    title_group,
+    ROUND(similarity, 3)        AS similarity,
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    runner_up
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE REGEXP_CONTAINS(title, r'\b(professor|profesor|professeur|professora|professore)\b')
+  AND is_assigned
+  AND title_group != 'teaching_academic'
+ORDER BY frequency DESC
+LIMIT 50;

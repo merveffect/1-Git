@@ -142,3 +142,11 @@ practitioner,intensivist,en,"1,198 records reaching anaesthetist at 0.678"
 practitioner,rheumatologist,en,"1,761 records reaching haematologist at 0.736"
 practitioner,nephrologist,en,no anchor of its own; consultant nephrologist was leaning on consultant
 practitioner,pulmonologist,en,no anchor of its own
+practitioner,orthodontist,en,"dentistry had ONE anchor for the whole profession. specialist orthodontist 218 records, consultant orthodontist 85, all leaning on dentist"
+practitioner,periodontist,en,"consultant periodontist 73, odontologo periodoncista 234"
+practitioner,endodontist,en,"endodoncista 79, consultant endodontist 63, especialista en endodoncia 51"
+practitioner,prosthodontist,en,"maxillofacial prosthetist 108, clinical director & prosthodontist 86"
+practitioner,oral and maxillofacial surgeon,en,"315 records on a misspelling of surgeon alone, plus 189 more"
+practitioner,oral surgeon,en,
+practitioner,dental surgeon,en,
+practitioner,dental hygienist,en,
