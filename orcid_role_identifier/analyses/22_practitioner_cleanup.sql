@@ -45,6 +45,35 @@
          Facharzt, médecin, infirmière, 医師. If they are, adding foreign
          anchors would repeat the librarian mistake, where 11 translations
          cost us 69% of the group and bought nothing.
+    WHAT WAS DONE, 2026-10-20, AND THE TEST SET BEFORE BUILDING IT.
+
+    25 anchors added for specialties that had none of their own, and 19
+    REJECT overrides for titles naming no clinical occupation (~24,800
+    records). No country rule - the contract block in dbt_project.yml
+    records why it is not needed yet and exactly when it will be. No
+    patterns: query 4 killed that proposal, because clinical stems appear
+    legitimately in teaching and research titles and a pattern would take
+    people out of lecturer.
+
+    Three checks, in this order:
+
+      1. analyses/19 query 3, practitioner share_below_075 must FALL from
+         0.4064. The whole point of the new anchors is that correct answers
+         were scoring low for want of the right word. If it RISES, the
+         anchors are behaving as magnets and this gets reverted.
+
+      2. The same query's other groups must not shrink. teaching_academic
+         12,115,778 records, researcher_early 8,297,241,
+         researcher_established 1,982,124, support_technical 1,402,019.
+         A new anchor can take values from a live audience - that is how
+         librarian did its damage.
+
+      3. Query 2 re-read, looking specifically at 'audiologist' and
+         'pathologist', both flagged in the seed. The -ologist suffix is a
+         known magnet: seismologist reached radiologist at 0.708 and
+         glaciologist reached archivist. Plant pathology is also a
+         different profession from medical pathology.
+
     ============================================================================
 */
 
