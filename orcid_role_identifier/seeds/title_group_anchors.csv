@@ -111,3 +111,28 @@ support_technical,analyst,en,
 support_technical,data analyst,en,
 support_technical,engineer,en,
 support_technical,supervisor,en,
+practitioner,anesthesiologist,en,"2,765 records were reaching neurosurgeon at 0.743"
+practitioner,anaesthetist,en,"the other spelling, 1,406 records"
+practitioner,veterinarian,en,"2,684 records were reaching DENTIST at 0.725"
+practitioner,urologist,en,"2,401 records, physician at 0.745"
+practitioner,midwife,en,"2,325 records at 0.686, and ~2,164 more rejected outright"
+practitioner,optometrist,en,"2,153 records were reaching DENTIST at 0.725"
+practitioner,neonatologist,en,"2,073 records, cardiologist at 0.699"
+practitioner,endocrinologist,en,"1,556 records, cardiologist at 0.722"
+practitioner,dermatologist,en,"1,051 records, physician at 0.727"
+practitioner,haematologist,en,
+practitioner,hematologist,en,"1,030 records, cardiologist at 0.747"
+practitioner,gastroenterologist,en,"673 records, general practitioner at 0.731"
+practitioner,paediatrician,en,"597 records, physician at 0.740"
+practitioner,pediatrician,en,the other spelling
+practitioner,obstetrician,en,
+practitioner,gynaecologist,en,
+practitioner,ophthalmologist,en,also the only anchor consultant ophthalmologist could lean on
+practitioner,oncologist,en,
+practitioner,pathologist,en,WATCH: plant pathology is a different profession entirely
+practitioner,paramedic,en,933 records were reaching nurse at 0.716
+practitioner,audiologist,en,"WATCH: 800 records, but -ologist is a known magnet - see seismologist"
+practitioner,dietitian,en,563 records were reaching registered nurse at 0.721
+practitioner,podiatrist,en,
+practitioner,occupational therapist,en,"480 records, physiotherapist at 0.699"
+practitioner,speech and language therapist,en,"842 records, physiotherapist at 0.658"

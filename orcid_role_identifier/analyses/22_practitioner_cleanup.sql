@@ -253,7 +253,13 @@ FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researche
 WHERE role_key = 'hcp_broad'
   AND role_label = 'CONFIRMED'
   AND title_group = 'practitioner'
-  AND discipline != 'health_clinical'
+  -- COALESCE, not `!=`. The first version wrote `discipline !=
+  -- 'health_clinical'`, which drops every row where discipline is NULL -
+  -- that is, everyone with no department at all, who are the more exposed
+  -- half of this population rather than the less. The title list it
+  -- returned was still complete, because confirming on a title alone needs
+  -- group_score 1.0 and so an exact anchor match, but the counts were not.
+  AND COALESCE(discipline, 'none') != 'health_clinical'
 GROUP BY title_as_written, country_code
 ORDER BY people DESC
 LIMIT 60;
