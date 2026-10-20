@@ -68,7 +68,47 @@
          A new anchor can take values from a live audience - that is how
          librarian did its damage.
 
-      3. Query 2 re-read, looking specifically at 'audiologist' and
+    RESULT, measured the same day. Check 1 passed, checks 2 and 3 did not.
+
+      1. PASSED. share_below_075 fell 0.4064 -> 0.3661 while the group GREW
+         by 178,849 records, so it got both cleaner and wider. In the
+         audience: hcp_practitioner confirmed 57,029 -> 60,306 people,
+         reachable 42,597 -> 45,074, and the evidence shifted exactly as
+         intended - hcp_broad's strong-title-plus-clinical-department row
+         24,694 -> 29,527 while its weak-title row fell 12,047 -> 11,262.
+
+      2. FAILED, partly benignly. Groups lost ~134,000 records:
+         teaching_academic -43,102, researcher_established -28,981,
+         trainee_clinical -27,211, pharmacist -10,426. trainee_clinical
+         feeds the same two roles, so that part is an internal shift with
+         no person lost, and its own share improved 0.2056 -> 0.1915. The
+         pharmacist ROLE lost 25 people. The rest was check 3.
+
+      3. FAILED, and not where I predicted. 'audiologist', which I flagged
+         loudest, pulled nothing at all. 'pathologist' was the problem -
+         via epidemiology, not the plant pathology I had written down:
+         epidemiologist 7,779 records, plus toxicologist, entomologist and
+         field epidemiologist. 'urologist' took hydrologist and
+         hydrogeologist, 'veterinarian' took agronomist, 'dietitian' took
+         health economist and food technologist, 'occupational therapist'
+         took social worker. ~17,200 records of professions that are not
+         clinical.
+
+         Repaired with 14 ACCEPT overrides moving them back, not REJECTs -
+         researcher_established feeds a live audience, and rejecting would
+         have left those people in no group at all, hiding the damage
+         rather than undoing it. The anchors stay: real pathologists,
+         urologists and veterinarians need them, and 2,684 veterinarians
+         were reaching DENTIST before this.
+
+         The lesson for the next anchor set: the -ologist suffix is not
+         what predicts a magnet. How crowded the neighbouring region is,
+         is. audiologist sits beside nothing; pathologist sits beside
+         every science ending in -ologist.
+
+      3b. Original wording of check 3, kept so the prediction can be read
+          against the result: query 2 re-read, looking specifically at
+          'audiologist' and
          'pathologist', both flagged in the seed. The -ologist suffix is a
          known magnet: seismologist reached radiologist at 0.708 and
          glaciologist reached archivist. Plant pathology is also a
