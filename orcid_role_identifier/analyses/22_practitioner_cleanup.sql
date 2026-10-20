@@ -494,3 +494,47 @@ JOIN `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_
 WHERE STRPOS(escaped.title, '&amp') > 0
 ORDER BY escaped.frequency + decoded.frequency DESC
 LIMIT 40;
+
+
+-- ###########################################################################
+-- 10. THE ANCHORS STILL SHOWING THE SIGNATURE — WHAT IS ARRIVING AT THEM?
+--
+--    Query 3 on 2026-10-20 proved the diagnostic: a neighbouring anchor with
+--    a high share below 0.75 means a MISSING anchor, and adding the missing
+--    one collapses it. paramedic went 0.633 -> 0.226 once emergency
+--    physician existed, anaesthetist 0.436 -> 0.122 once intensivist did,
+--    haematologist 0.442 -> 0.208 once rheumatologist did.
+--
+--    Three did not collapse and this query says why. It is the same read as
+--    query 2 but per anchor, so a single anchor's intake can be judged on
+--    its own instead of inside a group average.
+--
+--      gynaecologist  0.557  barely moved after geriatrician was given its
+--                            own anchor, so something else is arriving and
+--                            we do not know what. Guessing is what this
+--                            query exists to avoid.
+--      pathologist    0.480  still the second-highest after the two
+--                            abbreviations, even with epidemiologist,
+--                            toxicologist and entomologist moved out.
+--      dentist        0.403  never investigated at all.
+--
+--    EXPECT TWO KINDS OF ANSWER AND TREAT THEM DIFFERENTLY. A correct
+--    clinical title arriving unconfidently means one more anchor. A title
+--    from another profession means one more override. Nothing here is a
+--    threshold problem - the weakest accepted value in every group is
+--    exactly sim_floor, so moving the floor would cut correct answers first.
+-- ###########################################################################
+SELECT
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    runner_up,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'practitioner'
+  AND is_assigned
+  AND similarity < 0.75
+  AND matched_anchors[OFFSET(0)] IN ('gynaecologist', 'pathologist', 'dentist')
+ORDER BY matched_anchors[OFFSET(0)], frequency DESC
+LIMIT 60;

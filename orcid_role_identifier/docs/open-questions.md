@@ -198,11 +198,13 @@ behave the same way.
 
 ### 2.4 Healthcare is the weakest group, and we know why ⟳
 
-`practitioner` carries **35.55%** of its 1,611,888 records below 0.75
-similarity, down from **40.64%** at the start of 2026-10-20. The next worst
+`practitioner` carries **34.27%** of its 1,637,730 records below 0.75
+similarity, down from **40.64%** at the start of 2026-10-20 - and the group
+GREW by 177,726 records over the same day, so it became cleaner and wider at
+once. The next worst
 is `support_technical` at 35.95%; `teaching_academic` is 6.81%.
 
-The 5.09 points came from two things measured that day: 25 specialty anchors
+The 6.37 points came from two things measured that day: 31 specialty anchors
 for professions that had none of their own - 2,684 veterinarians were
 matching DENTIST - and 40 human overrides for titles that were never
 clinical. Every override landed to the record: researcher_established
@@ -271,14 +273,18 @@ Read from analyses/22 query 3 on 2026-10-20:
 
 | Anchor | Share below 0.75 | What was actually reaching it | Records |
 | --- | --- | --- | --- |
-| `paramedic` | 0.633 | emergency physician, emergency medicine specialist, emergency specialist | 2,998 |
-| `gynaecologist` | 0.591 | geriatrician | 500 |
-| `pathologist` | 0.487 | methodologist (wrong), clinical geneticist (right) | — |
-| `haematologist` | 0.442 | rheumatologist | 1,761 |
-| `anaesthetist` | 0.436 | intensivist | 1,198 |
+| Anchor | Before | What was reaching it | After |
+| --- | --- | --- | --- |
+| `paramedic` | 0.633 | emergency medicine, 2,998 records, no anchor at all | **0.226** |
+| `anaesthetist` | 0.436 | intensivist, 1,198 | **0.122** |
+| `haematologist` | 0.442 | rheumatologist, 1,761 | **0.208** |
+| `gynaecologist` | 0.591 | geriatrician, 500 | 0.557 — barely moved |
 
-Six more anchors were added from that reading - emergency physician,
-geriatrician, intensivist, rheumatologist, nephrologist, pulmonologist.
+Six anchors were added from that reading and five of the six behaved exactly
+as the diagnostic predicted, which is the evidence that the method works
+rather than that the guesses were lucky. `gynaecologist` did not collapse,
+so something other than geriatrician is arriving there and we do not yet
+know what. analyses/22 query 10 asks, rather than guessing.
 
 The same query also settled a prediction worth recording because it was
 wrong. Before building, I flagged `audiologist` as the most likely magnet
