@@ -1,0 +1,461 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nine Audiences, Thirteen Decisions</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ink:#1a1d26; --ink-2:#424856; --muted:#6d7483;
+    --ground:#f4f5f7; --surface:#ffffff; --surface-2:#ebedf1;
+    --rule:#d8dbe2; --rule-soft:#e6e8ed;
+    --accent:#3b4a8c; --accent-soft:#e2e5f2; --accent-ink:#2b386e;
+    --warn:#8f5410; --warn-soft:#f6ecdb;
+    --good:#2d6a4f; --good-soft:#e0ece6;
+    --serif:"Newsreader",Georgia,serif;
+    --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ink:#e7e9ef; --ink-2:#b6bcc9; --muted:#8a919f;
+      --ground:#13151b; --surface:#1b1e26; --surface-2:#242832;
+      --rule:#2f3440; --rule-soft:#272b35;
+      --accent:#8c9ad6; --accent-soft:#232a44; --accent-ink:#a7b3e4;
+      --warn:#d79d55; --warn-soft:#352819;
+      --good:#6fae8f; --good-soft:#1c2e26;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#e7e9ef; --ink-2:#b6bcc9; --muted:#8a919f;
+    --ground:#13151b; --surface:#1b1e26; --surface-2:#242832;
+    --rule:#2f3440; --rule-soft:#272b35;
+    --accent:#8c9ad6; --accent-soft:#232a44; --accent-ink:#a7b3e4;
+    --warn:#d79d55; --warn-soft:#352819;
+    --good:#6fae8f; --good-soft:#1c2e26;
+  }
+
+  body{background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .page{max-width:800px;margin:0 auto;padding-inline:20px;padding-block:40px 70px;}
+
+  h1{font-family:var(--serif);font-size:clamp(27px,5vw,38px);line-height:1.12;
+    font-weight:600;letter-spacing:-.015em;margin:0 0 12px;text-wrap:balance;max-width:580px;}
+  h2{font-family:var(--serif);font-size:clamp(20px,3.3vw,25px);line-height:1.2;
+    font-weight:600;margin:0 0 4px;text-wrap:balance;}
+  h3{font-family:var(--sans);font-size:15px;font-weight:600;margin:0 0 6px;line-height:1.35;}
+  p{margin:0 0 13px;}
+  .lede{font-size:17px;color:var(--ink-2);max-width:620px;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--accent);margin:0 0 9px;}
+  .note{font-size:13.5px;color:var(--muted);}
+  .m{font-family:var(--mono);font-size:.92em;}
+  .num{font-variant-numeric:tabular-nums;}
+  strong{font-weight:600;}
+  section{padding-block:32px;border-top:1px solid var(--rule-soft);}
+  section:first-of-type{border-top:0;padding-top:6px;}
+
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+    gap:1px;background:var(--rule);border:1px solid var(--rule);margin:24px 0 0;}
+  .fig{background:var(--surface);padding:15px 17px;}
+  .fig b{display:block;font-family:var(--serif);font-size:28px;line-height:1;
+    font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+  .fig span{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.4;}
+
+  .tw{overflow-x:auto;margin:18px 0 0;border:1px solid var(--rule);}
+  table{border-collapse:collapse;width:100%;background:var(--surface);font-size:13.5px;}
+  th,td{text-align:left;padding:9px 14px;border-top:1px solid var(--rule-soft);}
+  thead th{border-top:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);font-weight:500;white-space:nowrap;}
+  td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    white-space:nowrap;}
+  tr.indent td:first-child{padding-left:30px;color:var(--muted);}
+  tfoot td{border-top:1px solid var(--rule);font-weight:600;}
+
+  /* decision cards */
+  .dec{background:var(--surface);border:1px solid var(--rule);margin:16px 0 0;
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(128px,auto);}
+  .dec .body{padding:16px 18px;}
+  .dec .size{border-left:1px solid var(--rule);padding:16px 16px;background:var(--surface-2);
+    display:flex;flex-direction:column;justify-content:center;}
+  .dec .size b{font-family:var(--serif);font-size:23px;line-height:1.05;font-weight:600;
+    font-variant-numeric:tabular-nums;}
+  .dec .size span{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.35;}
+  .dec p{margin:0 0 9px;font-size:14px;color:var(--ink-2);}
+  .dec p:last-child{margin:0;}
+  .dec .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+    text-transform:uppercase;padding:2px 7px;display:inline-block;margin-bottom:8px;}
+  .dec .tag.ask{background:var(--warn-soft);color:var(--warn);}
+  .dec .tag.done{background:var(--good-soft);color:var(--good);}
+  .dec .tag.info{background:var(--accent-soft);color:var(--accent-ink);}
+  .dec .view{margin-top:9px;padding-top:9px;border-top:1px solid var(--rule-soft);
+    font-size:13.5px;color:var(--ink-2);}
+  .dec .view b{font-weight:600;color:var(--ink);}
+  @media (max-width:560px){
+    .dec{grid-template-columns:1fr;}
+    .dec .size{border-left:0;border-top:1px solid var(--rule);flex-direction:row;
+      align-items:baseline;gap:10px;}
+    .dec .size span{margin-top:0;}
+  }
+
+  .bars{margin:16px 0 0;}
+  .bar{display:grid;grid-template-columns:minmax(110px,auto) 1fr minmax(66px,auto);
+    align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid var(--rule-soft);}
+  .bar:last-child{border-bottom:0;}
+  .bar .lbl{font-size:13px;color:var(--ink-2);}
+  .bar .track{height:8px;background:var(--surface-2);border-radius:2px;overflow:hidden;}
+  .bar .fill{height:100%;background:var(--accent);border-radius:2px;min-width:3px;}
+  .bar .val{text-align:right;font-family:var(--mono);font-size:12.5px;
+    font-variant-numeric:tabular-nums;}
+
+  .lim{border-left:2px solid var(--rule);padding-left:16px;margin:16px 0 0;}
+  .lim h3{margin-bottom:5px;}
+  .lim p{margin:0 0 12px;font-size:14px;color:var(--ink-2);}
+  .lim p:last-child{margin:0;}
+
+  .foot{margin-top:38px;padding-top:16px;border-top:1px solid var(--rule);
+    font-size:12.5px;color:var(--muted);}
+</style>
+
+<div class="page">
+
+  <p class="eyebrow">Researcher 360 &middot; for the marketing meeting, 23 October 2026</p>
+  <h1>Nine audiences, thirteen decisions</h1>
+  <p class="lede">The role enrichment work is built and measured. Every audience below can
+  be pulled today. What is left is a set of questions about what each audience should
+  <em>mean</em> &mdash; and those belong to you, not to us, which is why none of them has
+  been answered on your behalf.</p>
+
+  <div class="figs">
+    <div class="fig"><b class="num">673,851</b><span>people with a confirmed profession</span></div>
+    <div class="fig"><b class="num">501,508</b><span>reachable &mdash; in the CDP and opted in</span></div>
+    <div class="fig"><b class="num">348</b><span>decisions already pinned by hand</span></div>
+    <div class="fig"><b class="num">13</b><span>decisions we need from you</span></div>
+  </div>
+
+  <section>
+    <p class="eyebrow">What you can pull today</p>
+    <h2>The nine audiences</h2>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Audience</th><th class="n">Identified</th><th class="n">Reachable</th><th class="n">+ second tier</th></tr></thead>
+        <tbody>
+          <tr><td>Lecturer</td><td class="n">399,884</td><td class="n">308,671</td><td class="n">+312</td></tr>
+          <tr><td>Researcher</td><td class="n">321,824</td><td class="n">227,513</td><td class="n">+755</td></tr>
+          <tr><td>Healthcare professional</td><td class="n">126,869</td><td class="n">94,622</td><td class="n">+107,382</td></tr>
+          <tr class="indent"><td>Practitioner</td><td class="n">60,937</td><td class="n">45,516</td><td class="n">+2,870</td></tr>
+          <tr class="indent"><td>Clinical researcher</td><td class="n">50,600</td><td class="n">37,180</td><td class="n">+2,068</td></tr>
+          <tr class="indent"><td>Clinical administrator</td><td class="n">6,865</td><td class="n">5,368</td><td class="n">+1,920</td></tr>
+          <tr class="indent"><td>Pharmacist</td><td class="n">2,245</td><td class="n">1,680</td><td class="n">+1,644</td></tr>
+          <tr><td>Head of faculty</td><td class="n">20,347</td><td class="n">15,796</td><td class="n">+10,631</td></tr>
+          <tr><td>Librarian</td><td class="n">668</td><td class="n">361</td><td class="n">none possible</td></tr>
+        </tbody>
+        <tfoot><tr><td>Unique people</td><td class="n">673,851</td><td class="n">501,508</td><td class="n">718,342</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="note" style="margin-top:12px;">Two things before quoting these. The four
+    indented rows sit <em>inside</em> Healthcare professional, so selecting the parent
+    already includes them. And the columns cannot be added: people hold 1.59 professions on
+    average, so a professor who publishes appears as both a Lecturer and a Researcher. For
+    one number, use the unique total.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Decisions &middot; 1 of 4</p>
+    <h2>One question settles five of the others</h2>
+    <p class="note" style="max-width:620px;">Five of our thirteen questions are the same
+    question asked about different jobs. Answer it once and they all resolve.</p>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag ask">needs an answer</span>
+        <h3>Is &ldquo;healthcare professional&rdquo; about the work or the subject?</h3>
+        <p>A psychologist, a medical physicist, a biomedical researcher, a mental health
+        support worker and a genetic counsellor all work in health without practising
+        medicine. Today we include some and not others, and the line we drew was ours, not
+        yours.</p>
+        <p class="view"><b>What hangs on it:</b> biomedical researchers 15,588 people;
+        psychologists about 4,500 records across six titles; counsellors 1,205; genetic
+        counsellors 866; medical physicists 346; mental health support workers 326.</p>
+      </div>
+      <div class="size"><b class="num">~21,000</b><span>people and records affected</span></div>
+    </div>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag ask">needs an answer</span>
+        <h3>Should the second confidence tier be switched on?</h3>
+        <p>We deliver only people whose evidence is confirmed from both the job title and
+        the department. A second tier holds people where the evidence points one way
+        without being complete &mdash; a confirmed lecturer in a paediatrics department,
+        for instance.</p>
+        <p>It is <strong>not evenly useful</strong>. It nearly doubles Healthcare, adds
+        half again to Head of faculty, and adds almost nothing to Lecturer or Researcher.
+        Mostly it adds a second label to people you already hold rather than new people:
+        the unique total rises 6.6%.</p>
+        <p class="view"><b>Our view:</b> switch it on for Healthcare, Pharmacist and Head
+        of faculty only. And for Healthcare there is a precondition &mdash; see the
+        leadership question below, the same &ldquo;consultant&rdquo; problem applies.</p>
+      </div>
+      <div class="size"><b class="num">+44,491</b><span>unique people, but +107,382 on Healthcare alone</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Decisions &middot; 2 of 4</p>
+    <h2>Which leadership titles count</h2>
+    <div class="dec">
+      <div class="body">
+        <span class="tag ask">needs an answer</span>
+        <h3>Is a &ldquo;Director&rdquo; at a university a head of faculty?</h3>
+        <p>Asked originally as a question about 2,900 people. Reading the data showed it is
+        much larger, and that it splits cleanly in two.</p>
+        <p><strong>Never academic &mdash; 53,599 records.</strong> <span class="m">ceo</span>
+        15,918, <span class="m">founder</span> 6,952,
+        <span class="m">managing director</span> 5,568,
+        <span class="m">general manager</span> 3,513, <span class="m">owner</span> 3,395.</p>
+        <p><strong>Could be either &mdash; 172,611 records.</strong>
+        <span class="m">director</span> 144,252, <span class="m">president</span> 11,625,
+        <span class="m">vice president</span> 6,324, <span class="m">principal</span> 5,482.
+        A university president really is its most senior leader, so excluding the word
+        would lose real ones.</p>
+        <p class="view"><b>What narrows it:</b> the organisation already does most of this
+        work. A company scores zero for Head of faculty, so <span class="m">ceo</span>
+        produces 879 people of whom only <strong>55</strong> are confirmed,
+        <span class="m">founder</span> 31 of 411, <span class="m">owner</span> 2 of 188.
+        The real question is whether that residue should be excluded by name. <b>Our
+        view:</b> exclude the first list, keep the second.</p>
+      </div>
+      <div class="size"><b class="num">226,210</b><span>records, but ~90 confirmed people at stake</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Decisions &middot; 3 of 4</p>
+    <h2>Four we would like you to confirm</h2>
+    <p class="note" style="max-width:620px;">We have taken a position on each of these and
+    acted on it. We would rather you knew than discovered it later.</p>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag done">decided &mdash; please confirm</span>
+        <h3>A teaching assistant who teaches is a Lecturer</h3>
+        <p>Most are doctoral students who teach as part of their funding, and the model
+        itself suggested classing them as students. We put them in Lecturer on the grounds
+        that they teach &mdash; and for textbook and course-material campaigns they may be
+        a better target than a professor.</p>
+      </div>
+      <div class="size"><b class="num">178,205</b><span>records</span></div>
+    </div>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag done">decided &mdash; please confirm</span>
+        <h3>A doctoral student doing research is a Researcher</h3>
+        <p>The same reasoning read across. <span class="m">graduate research assistant</span>
+        106,438 records, <span class="m">phd researcher</span> 49,317,
+        <span class="m">phd fellow</span> 19,424. The one we are least sure of is
+        <span class="m">undergraduate research assistant</span>, 7,348 records, who is often
+        on a summer placement.</p>
+      </div>
+      <div class="size"><b class="num">197,895</b><span>records</span></div>
+    </div>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag ask">needs an answer</span>
+        <h3>Should a past role still count?</h3>
+        <p>Seven of the nine audiences count past employment: someone who was a researcher
+        in 2010 and works in a bank today is still in the Researcher audience, on the
+        reasoning that researcher is a profession you have rather than a post you hold.
+        Head of faculty and Librarian are the exceptions and count current posts only.</p>
+        <p class="view">If you want the others to behave the same way it is one line per
+        audience &mdash; but <b>we have not measured what it would cost</b>, and we would
+        measure before changing it.</p>
+      </div>
+      <div class="size"><b class="num">7 of 9</b><span>audiences</span></div>
+    </div>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag ask">needs an answer</span>
+        <h3>Is an honorary professor active?</h3>
+        <p>You asked us in October to exclude retired and emeritus titles, and we did
+        &mdash; <span class="m">emeritus professor</span>, <span class="m">retired
+        professor</span>, <span class="m">honorary researcher</span> and eleven others.
+        <span class="m">honorary professor</span> survived, and it is not obviously
+        different. Though an honorary professor is often an active practitioner holding a
+        university title rather than a retired one, which is the opposite case.</p>
+      </div>
+      <div class="size"><b class="num">6,651</b><span>records</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Decisions &middot; 4 of 4</p>
+    <h2>Three smaller ones, and two that are really ours</h2>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag ask">needs an answer</span>
+        <h3>Are visiting scholars and fellows teaching staff?</h3>
+        <p><span class="m">visiting scholar</span> 60,561 records,
+        <span class="m">visiting fellow</span> 15,832, <span class="m">visiting research
+        scholar</span> 5,356, all currently counted as teaching. We moved
+        <span class="m">visiting scientist</span> out without asking, because a scientist
+        does not teach; these three are genuinely ambiguous.</p>
+      </div>
+      <div class="size"><b class="num">81,749</b><span>records</span></div>
+    </div>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag ask">needs an answer</span>
+        <h3>Should archivists be in the Librarian audience?</h3>
+        <p>They are not today. When we tried, the word attracted archaeologists,
+        glaciologists and clerks, so we left them out rather than guess. The same applies
+        to anyone whose title says only <span class="m">information specialist</span>.
+        Either is one line to add.</p>
+      </div>
+      <div class="size"><b class="num">1 line</b><span>to reverse, either way</span></div>
+    </div>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag info">a limit, not a question</span>
+        <h3>Two titles tell us nothing at all</h3>
+        <p><span class="m">dr</span> appears on 96,676 employment records and
+        <span class="m">md</span> on 50,189. Neither says anything about a profession
+        beyond holding a doctorate, and both are resolved only by the department: a
+        clinical department confirms them, otherwise they stay in the second tier.</p>
+        <p class="view">We could exclude uninformative titles outright. We would rather
+        fix it properly &mdash; see the last section.</p>
+      </div>
+      <div class="size"><b class="num">146,865</b><span>records</span></div>
+    </div>
+
+    <div class="dec">
+      <div class="body">
+        <span class="tag info">for us to solve, not you</span>
+        <h3>A job title can only belong to one audience</h3>
+        <p><span class="m">research assistant professor</span> &mdash; 71,785 records
+        &mdash; both researches and teaches, and it is counted as a Researcher. In total
+        <strong>463,603 records</strong> contain the word &ldquo;professor&rdquo; while
+        sitting outside the teaching group, almost all of them correctly. So Lecturer
+        undercounts professors by some part of that.</p>
+        <p class="view">Fixing it means letting one title carry two audiences, which is a
+        change to how the system is built rather than a decision about meaning. Flagging it
+        so the number is known.</p>
+      </div>
+      <div class="size"><b class="num">463,603</b><span>records</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">What the review found</p>
+    <h2>We read every audience and corrected 348 titles</h2>
+    <p style="max-width:620px;">All eight job-title groups behind these audiences have now
+    been read by hand at least once. That work corrected <strong>348 titles covering about
+    633,000 employment records</strong>. The largest cases are worth seeing, because they
+    show what kind of mistake this system makes.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>What was wrong</th><th class="n">Records</th></tr></thead>
+        <tbody>
+          <tr><td><span class="m">junior researcher</span> classified as a <em>senior</em> researcher &mdash; the words sit close together in the model</td><td class="n">42,949</td></tr>
+          <tr><td>Non-clinical internships inside Healthcare &mdash; <span class="m">internship</span>, <span class="m">engineering intern</span>, <span class="m">volunteer</span></td><td class="n">~65,000</td></tr>
+          <tr><td>Chemists counted as pharmacists, because a chemist is a pharmacy in British English</td><td class="n">6,923</td></tr>
+          <tr><td>Epidemiologists counted as clinicians</td><td class="n">7,779</td></tr>
+          <tr><td>French physicians in the Pharmacist audience &mdash; <span class="m">praticien</span> is three letters from <span class="m">pharmacien</span></td><td class="n">2,514</td></tr>
+          <tr><td>Veterinarians matched to &ldquo;dentist&rdquo;, because we had no example word for them</td><td class="n">2,684</td></tr>
+          <tr><td>Business consultants, advisers and experts in the clinical audience</td><td class="n">~24,800</td></tr>
+          <tr><td>Retired and emeritus titles counted as working researchers</td><td class="n">14 titles</td></tr>
+          <tr><td>A street address in Prague, classified as a teacher</td><td class="n">58</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:12px;">How much of each audience we have now read by
+    hand, as a share of its employment records: Researcher (early) 75%, Teaching 69%,
+    Clinical trainee 68%, Researcher (senior) 62%, Leadership 62%, Pharmacist 51%,
+    Healthcare practitioner 38%. The last one is the lowest and feeds the most, because
+    clinical job titles are the most scattered vocabulary in the data.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Being straight about it</p>
+    <h2>What we cannot claim</h2>
+
+    <div class="lim">
+      <h3>There is no accuracy percentage, and there never will be one</h3>
+      <p>ORCID has no &ldquo;profession&rdquo; field. The job title is free text the
+      researcher typed, so there is no correct answer anywhere to compare ours against.
+      The previous keyword system is not a reference either &mdash; around 53,000 of the
+      people it called healthcare professionals work in engineering, earth science,
+      mathematics or the humanities. If we gave you &ldquo;94% accurate&rdquo; we would be
+      inventing it.</p>
+      <p>What exists instead: for any person we can show the words they typed, which
+      example word it matched, how close the match was, and whether a human or the model
+      decided. Ten automated tests guard the specific ways this system has failed before.</p>
+    </div>
+
+    <div class="lim">
+      <h3>Coverage is the ceiling now, not permission</h3>
+      <p>Of 1.81 million ORCID profiles we can name a profession for 673,851. That leaves
+      roughly <strong>1.14 million people with no audience at all</strong> &mdash; mostly
+      because none exists yet for students or for technical and support staff. CDP
+      membership and opt-in together cost about 172,000 by comparison.</p>
+    </div>
+
+    <div class="lim">
+      <h3>Reachable means opted in, not deliverable</h3>
+      <p>Three consent bases are read and any one of them counts: marketing preference,
+      advertising, and legitimate interest. The CDP holds no bounce or suppression state at
+      all, so there is nothing for us to factor in. Treat the figure as the opted-in
+      population.</p>
+    </div>
+
+    <div class="lim">
+      <h3>Healthcare is the weakest audience and we know why</h3>
+      <p>Clinical job titles are the least standardised vocabulary in the data: Resident,
+      Registrar, Facharzt, Interno and Senior House Officer overlap in meaning and share no
+      common word. Academic titles are nearly identical worldwide. That group has improved
+      from 41% to 34% unsure over October, and it is the one we will keep working on.</p>
+    </div>
+
+    <div class="lim">
+      <h3>We were wrong about which words would cause trouble, six times out of eight</h3>
+      <p>Before each audience was read we predicted which example word would misbehave.
+      <span class="m">audiologist</span>, <span class="m">researcher</span> and
+      <span class="m">resident</span> were all flagged as risky and all came back clean.
+      <span class="m">pathologist</span>, <span class="m">intern</span> and
+      <span class="m">pharmacien</span> were not flagged and all three were problems.</p>
+      <p>The reason is useful rather than embarrassing. We were asking how ambiguous a word
+      is in English. What decides is whether people in <em>other</em> professions actually
+      type it &mdash; nobody outside medicine writes &ldquo;resident&rdquo; as their job,
+      and everybody outside medicine writes &ldquo;intern&rdquo;. That can only be
+      measured, which is why we no longer act on these judgements without measuring first.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Next</p>
+    <h2>The one thing that would change the most</h2>
+    <p style="max-width:620px;">ORCID also records each person&rsquo;s <strong>degrees</strong>,
+    and we have never used them. A degree is far more standard than a job title &mdash; MD,
+    MBBS, BDS and PharmD mean one thing worldwide, where clinical job titles mean different
+    things in every country.</p>
+    <p style="max-width:620px;">That is exactly what would settle the 146,865 records where
+    the job title is only <span class="m">dr</span> or <span class="m">md</span>. It is the
+    largest single improvement available and it needs no new data &mdash; we already hold
+    it.</p>
+    <p class="note" style="max-width:620px;">One constraint we would design around: a degree
+    is evidence of training, not of current work. Someone with an MD who now works in
+    venture capital still has an MD. So it should raise confidence in a profession the
+    employment already suggests, never assign one on its own.</p>
+  </section>
+
+  <p class="foot">Springer Nature &middot; Researcher 360 &middot; analytics engineering.
+  All figures from the build of 21 October 2026. A full register of every question,
+  limitation and corrected title is kept with the code.</p>
+
+</div>
+
+</body></html>
