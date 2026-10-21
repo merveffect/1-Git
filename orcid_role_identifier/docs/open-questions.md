@@ -342,6 +342,45 @@ finding five real ones above 0.75 that nothing else could reach - `officer`
 1,998 records, `staff member` 1,759, `leader` 1,707, `academic director`
 1,382, `staff specialist` 1,644.
 
+### 2.4c share_below_075 is not a quality metric, and here is the proof
+
+On 2026-10-21 we removed 70,977 wrong records from researcher_established -
+`junior researcher` and its family, sitting in the group that means the
+opposite of what they say - and the metric got **worse**: 0.1561 -> 0.1620.
+
+`records_below_075` was 304,478 before and 304,478 after, identical, because
+everything removed had scored ABOVE 0.75. The denominator shrank, the
+numerator did not, so the share rose.
+
+The group became more correct and the number deteriorated. Read
+share_below_075 as what it is - a measure of how much of a group the model
+was unsure about - and never as a measure of how much of it is wrong. Those
+are different quantities and this is the cleanest demonstration we have that
+they can move in opposite directions.
+
+### 2.4d Reading is viable where titles are common, and not where they are not
+
+Measured both halves of researcher_established on 2026-10-21.
+
+**Below 0.75**, the top 100 titles by frequency reach 23.65% of the records,
+half needs 1,150 titles and 80% needs 3,800. Long, specific, one-off titles -
+`head of national reference laboratory nrl for bovine tuberculosis` - and
+there are thousands of them.
+
+**Above 0.75**, 40 titles reach about 69% of the records. Short common
+vocabulary - `senior researcher` alone is 152,430 records - so the
+distribution is concentrated enough to read.
+
+Which gives a method rather than a feeling. Read the high-similarity region
+by hand, because it is concentrated and because that is where errors are
+invisible to every other check. Use computable tests for the long tail, and
+accept the remainder as unreviewed with a number attached rather than a
+claim.
+
+Coverage for researcher_established after both passes: roughly **62% of its
+records have now been looked at**, against 3.6% when it was first called
+finished.
+
 ### 2.4b share_below_075 is partly a measure of title LENGTH
 
 Found on 2026-10-21 while reading `head of laboratory`, which carries 5,203
