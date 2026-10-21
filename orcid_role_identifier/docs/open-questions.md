@@ -273,6 +273,33 @@ Resident, Registrar, Facharzt, Interno, Jefe de Servicio and Senior House
 Officer describe overlapping things and share no common stem, so only a
 meaning-based match can connect them. *Source: analyses/19 query 3.*
 
+### 2.4b share_below_075 is partly a measure of title LENGTH
+
+Found on 2026-10-21 while reading `head of laboratory`, which carries 5,203
+distinct titles and 37.19% of its records below 0.75 - the worst anchor in
+researcher_established. Almost everything arriving there is CORRECT: head of
+phycology research group, head of national reference laboratory NRL for
+bovine tuberculosis, head of textile metrology laboratory since 2014,
+director of metal materials research institute.
+
+They score low because they are LONG. The embedding averages over the whole
+string, so a nine-word title can only ever sit so close to a two-word anchor.
+`head of national reference laboratory nrl for bovine tuberculosis` reaches
+0.711; `librarian` reaches 1.000 because it is one word that matches one word.
+
+So a group that attracts long, specific, one-off titles will always look
+dirtier than a group whose vocabulary is short, whatever its accuracy. That
+is a reason to read the metric alongside the titles rather than on its own,
+and it is the second time the same caution has come up - `dr` and `md` carry
+146,865 records of honest low confidence in the clinical group, and the
+sciences carry about 14,000 more in researcher_established, all correct, all
+leaning on the single word `scientist`.
+
+It also means the number is NOT comparable between groups. teaching_academic
+at 6.74% and researcher_established at 15.95% are not 2.4x apart in quality;
+part of that gap is that one group's vocabulary is `professor` and the
+other's is `head of national reference laboratory for bovine tuberculosis`.
+
 ### 2.5 About 1,008 people are confirmed on a title alone ⟳
 
 Healthcare professional is the one role that accepts a title without a
