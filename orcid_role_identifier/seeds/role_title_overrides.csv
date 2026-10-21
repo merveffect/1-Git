@@ -218,3 +218,30 @@ dst-inspire faculty,researcher_early,ACCEPT,analytics-engineering@springernature
 inspire faculty,researcher_early,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"869 records. India's DST INSPIRE Faculty scheme is an independent early-career RESEARCH fellowship, not a teaching post. It reached `faculty member` on the word faculty."
 writer,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"296 records. Reached `reader` at 0.681 - the opposite activity, matched on the shape of the word."
 reporter,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"210 records. Reached `reader` at 0.674. A journalist, consistent with the `journalist` decision earlier the same day."
+op dr,practitioner,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"417 records. Turkish 'Operator Doktor', a surgeon. Reached `post doctor` at 0.684 on the letters."
+fachärztin,practitioner,ACCEPT,analytics-engineering@springernature.com,2026-10-21,216 records. German for a female specialist physician. Reached `wissenschaftlicher mitarbeiter` at 0.717.
+doctora,practitioner,ACCEPT,analytics-engineering@springernature.com,2026-10-21,115 records. Spanish for doctor. Reached `post doctor` at 0.710.
+arzt in weiterbildung,trainee_clinical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,161 records. German for a doctor in training. Reached `wissenschaftlicher mitarbeiter` at 0.657.
+conferentiar,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,192 records. Romanian for associate professor. Reached `collaboratori` at 0.664.
+pd dr,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"326 records. German 'Privatdozent Dr.', an academic rank. Reached `post doctor` at 0.706."
+dr öğrt üyesi,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"279 records. Turkish 'Dr. Ogretim Uyesi', an assistant professor. Reached `wissenschaftlicher mitarbeiter` at 0.657."
+אקדמי בכיר פרופסור מן המנין,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"248 records. Hebrew for senior academic, full professor. Reached `wissenschaftlicher mitarbeiter` at 0.719."
+bölüm başkanı,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-21,177 records. Turkish for department head. Reached `wissenschaftlicher mitarbeiter` at 0.681.
+副主任,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-21,256 records. Chinese for deputy director. Reached `wissenschaftlicher mitarbeiter` at 0.694.
+directora de investigación y trasferencia tecnológica,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-21,175 records. A director of research and technology transfer.
+partner,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,957 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c. A business partner.
+associated,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,439 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c. A bare adjective.
+colaborador,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,411 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c.
+colaborator,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,409 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c.
+colaborador - desenhista gráfico,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,225 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c. A graphic designer.
+external cooperation,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,284 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c.
+specjalista,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"227 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c. Polish for specialist, with no field attached."
+co-op,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,214 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c.
+post,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"201 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c. The bare word, reached `post doctor` at 0.665."
+cooperation contract,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,196 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c.
+affiliated,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,158 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c. A bare adjective.
+contratista,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,138 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c. Spanish for contractor.
+sócio,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,128 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c. Portuguese for partner or member.
+co-partner,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,109 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c.
+postbac irta,student,ACCEPT,analytics-engineering@springernature.com,2026-10-21,113 records. The NIH postbaccalaureate IRTA programme - undergraduates before graduate school.
+post graduation,student,ACCEPT,analytics-engineering@springernature.com,2026-10-21,87 records. Reached a researcher_early anchor but is not a research post. Found by analyses/23 query 6c.

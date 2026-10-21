@@ -574,6 +574,32 @@ finding five real ones above 0.75 that nothing else could reach - `officer`
 1,998 records, `staff member` 1,759, `leader` 1,707, `academic director`
 1,382, `staff specialist` 1,644.
 
+### 2.4g An accent splits a title into two groups
+
+Found 2026-10-21 in researcher_early:
+
+| Title | Records | Group |
+| --- | --- | --- |
+| `científico titular` | 2,153 | researcher_**early** |
+| `cientifico titular` | 402 | researcher_**established** |
+
+The same Spanish job title - a CSIC tenured scientist - in two different
+groups, because one spelling carries its accents and the other does not.
+clean_text uses NFKC, which preserves accents, so the two normalise to
+different strings, get different embeddings and land wherever each happens
+to fall.
+
+It changes no audience today, since both groups feed `researcher` and
+`hcp_researcher` identically. It would matter immediately if 1.16 were ever
+acted on, because the same person would be early career or senior depending
+on whether they typed an accent.
+
+Related to the decision recorded in `macros/normalize.sql` about HTML
+entities: that one was measured at 19 titles and left alone. This is the
+same class of problem and the same reasoning applies - but it is worth
+knowing that normalisation differences do not only duplicate a title, they
+can also split it between groups.
+
 ### 2.4f Short foreign anchors attract their spelling, not their meaning
 
 Four instances now, enough to call it a rule rather than an incident.
