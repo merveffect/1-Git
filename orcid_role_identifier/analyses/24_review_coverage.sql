@@ -227,3 +227,147 @@ WHERE is_assigned
   AND title_group IN ('researcher_established', 'practitioner')
 QUALIFY ROW_NUMBER() OVER (PARTITION BY title_group ORDER BY frequency DESC) <= 40
 ORDER BY title_group, frequency DESC;
+
+
+-- ###########################################################################
+-- 4. PRACTITIONER ABOVE 0.75, READ PROPERLY THIS TIME
+--
+--    practitioner was called reviewed on 2026-10-20 on the same method that
+--    missed `junior researcher` - 42,949 records in the wrong group at 0.870.
+--    It is the only group called reviewed that actually ships: hcp_broad
+--    126,270 people, hcp_practitioner 60,083, hcp_researcher 50,590,
+--    hcp_administrator 6,855.
+--
+--    Query 3's 40 rows reach about 39% of practitioner's 1,088,244 records
+--    above 0.75, not the 69% they reach in researcher_established - clinical
+--    vocabulary is more scattered because every specialty has its own name.
+--    So this goes to 150, and query 4a says how far that actually gets.
+--
+--    THE FLAG COLUMN IS THE POINT. 150 rows is too many to read carefully
+--    and most will be correct, so each title is tagged with the shape of
+--    error we have actually found before:
+--
+--      a non-clinical domain word - how `business consultant` got in
+--      a bare generic word        - how `officer` and `leader` got in
+--      a status word              - how `junior researcher` got in
+--
+--    Read the flagged rows first. An unflagged row is not proven right, it
+--    just does not match a failure we have seen.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(title, r'\b(business|commercial|sales|marketing|finance|financial|legal|software|hardware|network|agricultur|environment|military|police|insurance|banking|hotel|tourism|mining|construction|journalis|translat)\b')
+            THEN '1. non-clinical domain word'
+        WHEN REGEXP_CONTAINS(title, r'^(officer|director|consultant|specialist|manager|assistant|technician|coordinator|fellow|associate|staff|member|leader|head|chief|senior|junior|principal|expert|advisor|adviser|professional)$')
+            THEN '2. bare generic word'
+        WHEN REGEXP_CONTAINS(title, r'\b(former|retired|emeritus|aspiring|prospective|student|undergraduate|apprentice|volunteer|unpaid|honorary)\b')
+            THEN '3. status word that may invert the role'
+        ELSE '4. no flag'
+    END                             AS flag,
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    decision_source
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'practitioner'
+  AND is_assigned
+  AND similarity >= 0.75
+QUALIFY ROW_NUMBER() OVER (ORDER BY frequency DESC) <= 150
+ORDER BY flag, frequency DESC;
+
+-- 4a. How far did 150 rows get us? Run this alongside, so the next pass
+--     knows whether to go deeper or stop.
+SELECT
+    COUNT(*)                                        AS titles_above_075,
+    SUM(frequency)                                  AS records_above_075,
+    SUM(IF(rn <= 40,  frequency, 0))                AS covered_by_top_40,
+    SUM(IF(rn <= 150, frequency, 0))                AS covered_by_top_150,
+    ROUND(SUM(IF(rn <= 150, frequency, 0)) / SUM(frequency), 4)
+                                                    AS share_covered_by_150
+FROM (
+    SELECT frequency,
+           ROW_NUMBER() OVER (ORDER BY frequency DESC) AS rn
+    FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    WHERE title_group = 'practitioner'
+      AND is_assigned
+      AND similarity >= 0.75
+);
+
+
+-- ###########################################################################
+-- 5. THE JUNIOR RESEARCHER CLASS — look for its siblings on purpose
+--
+--    `junior researcher`, 42,949 records, sat in researcher_ESTABLISHED at
+--    0.870 against the `senior researcher` anchor. The embedding places
+--    junior and senior close together because they are two ends of one axis,
+--    not opposites, so a modifier that REVERSES a title's meaning barely
+--    moves it in the space.
+--
+--    That was found by accident. This looks for the rest of the class on
+--    purpose, and it needs no similarity threshold.
+--
+--    Two mismatches, and each row is a question rather than a verdict:
+--
+--      a junior, trainee or student modifier in a group that means
+--      established or senior
+--
+--      a senior, chief or principal modifier in a group that means early
+--      career or student
+--
+--    SOME OF THESE WILL BE RIGHT. 'senior lecturer' belongs in
+--    teaching_academic whatever the modifier says, because that group is not
+--    about seniority at all. The mismatch only matters where the GROUP
+--    encodes seniority - researcher_early against researcher_established,
+--    and student - which is why the output shows the group and lets you
+--    judge rather than filtering for you.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(title, r'\b(junior|jr|trainee|student|intern|apprentice|probationary|graduate|aspiring|early career|predoctoral|pre-doctoral)\b')
+            THEN '1. junior-ish modifier'
+        ELSE '2. senior-ish modifier'
+    END                             AS modifier,
+    title_group,
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    decision_source
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE is_assigned
+  AND (
+        (REGEXP_CONTAINS(title, r'\b(junior|jr|trainee|student|intern|apprentice|probationary|graduate|aspiring|early career|predoctoral|pre-doctoral)\b')
+         AND title_group IN ('researcher_established', 'leadership'))
+     OR (REGEXP_CONTAINS(title, r'\b(senior|chief|principal|head|lead|director|veteran|distinguished|emeritus)\b')
+         AND title_group IN ('researcher_early', 'student'))
+      )
+ORDER BY frequency DESC
+LIMIT 70;
+
+-- 5a. The same, counted per group and modifier, so the size is visible
+--     before reading. A large record count in '1. junior-ish' against
+--     researcher_established is another junior researcher.
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(title, r'\b(junior|jr|trainee|student|intern|apprentice|probationary|graduate|aspiring|early career|predoctoral|pre-doctoral)\b')
+            THEN '1. junior-ish modifier'
+        ELSE '2. senior-ish modifier'
+    END                             AS modifier,
+    title_group,
+    COUNT(*)                        AS distinct_titles,
+    SUM(frequency)                  AS records,
+    COUNTIF(similarity >= 0.75)     AS titles_above_075,
+    ROUND(AVG(similarity), 3)       AS avg_similarity
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE is_assigned
+  AND (
+        (REGEXP_CONTAINS(title, r'\b(junior|jr|trainee|student|intern|apprentice|probationary|graduate|aspiring|early career|predoctoral|pre-doctoral)\b')
+         AND title_group IN ('researcher_established', 'leadership'))
+     OR (REGEXP_CONTAINS(title, r'\b(senior|chief|principal|head|lead|director|veteran|distinguished|emeritus)\b')
+         AND title_group IN ('researcher_early', 'student'))
+      )
+GROUP BY modifier, title_group
+ORDER BY records DESC;
