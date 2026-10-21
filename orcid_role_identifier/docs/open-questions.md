@@ -502,12 +502,21 @@ records rather than of one similarity band:
 | --- | --- | --- |
 | `leadership` | ~62% | faculty_head, hcp_administrator |
 | `researcher_established` | ~62% | researcher, hcp_researcher |
-| `practitioner` | ~38% | all four healthcare audiences |
+| `practitioner` | ~38% | hcp_broad and hcp_practitioner |
 
-Note which one is lowest. practitioner feeds four audiences and is the least
-read of the three, because clinical vocabulary is the most scattered - 150
-titles reached only 52% of its high-similarity records against 71% for
-leadership.
+Note which one is lowest. practitioner is the least read of the three because
+clinical vocabulary is the most scattered - 150 titles reached only 52% of
+its high-similarity records against 71% for leadership.
+
+A correction worth making here, since it was stated wrongly more than once:
+`practitioner` and `trainee_clinical` each feed TWO roles, not four.
+hcp_broad and hcp_practitioner draw on both of those groups; hcp_researcher
+draws on the two researcher groups and hcp_administrator on leadership. One
+consequence is that moving a title between `practitioner` and
+`trainee_clinical` changes no audience at all - which is why the UK trainee
+grades were left alone - while a non-clinical title entering either of them
+does reach the audience, because hcp_broad is title_or_field and can confirm
+on a title alone at the edge.
 
 ### 2.4a "Reviewed" means read in part, and the part is small
 

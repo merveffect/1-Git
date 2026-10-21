@@ -632,3 +632,112 @@ QUALIFY ROW_NUMBER() OVER (
     PARTITION BY matched_anchors[OFFSET(0)] ORDER BY frequency DESC
 ) <= 22
 ORDER BY matched_anchors[OFFSET(0)], frequency DESC;
+
+
+-- ###########################################################################
+-- 7. TRAINEE_CLINICAL — TWO OF ITS ANCHORS ARE ORDINARY WORDS
+--
+--    Never read. 873,102 records at 18.4% below 0.75, and it feeds
+--    hcp_broad and hcp_practitioner - the same two roles `practitioner`
+--    feeds, which has two consequences worth holding onto.
+--
+--    Moving a title between trainee_clinical and practitioner changes NO
+--    audience, which is why the UK trainee grades found on 2026-10-20 -
+--    core surgical trainee 2,050 records, foundation doctor 2,038 - were
+--    left where they were rather than corrected for tidiness.
+--
+--    But a title arriving from OUTSIDE either group does reach the audience,
+--    and hcp_broad is title_or_field, so a perfect title match plus a
+--    resolved organisation confirms at exactly 0.60 with no department
+--    agreeing. That is the 1,008 people measured in analyses/22 query 1.
+--
+--    ITS ANCHORS: resident, resident physician, senior resident, specialist
+--    registrar, clinical fellow, intern, house officer, medical resident.
+--
+--    Two of those are ordinary English words and that is the whole risk:
+--
+--      intern        every industry has interns - software, marketing,
+--                    legal, engineering. `research intern` 28,124 records
+--                    was already moved to researcher_early by hand.
+--      resident      someone who lives somewhere. Also artist in residence,
+--                    resident engineer, resident representative.
+--
+--    This is the `teacher` and `reader` pattern from teaching_academic
+--    rather than the compound-anchor pattern - the anchor itself is generic,
+--    not its generic half. And `clinical fellow` and `house officer` carry
+--    generic halves on top of that.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(title, r'\b(software|marketing|business|finance|legal|law|sales|hr|human resources|communications|engineering|data|design|media|policy|consulting)\b')
+            THEN '1. an intern or resident of something non-clinical'
+        WHEN REGEXP_CONTAINS(title, r'\b(artist|writer|composer|residence|scholar in|fellow in residence)\b')
+            THEN '2. in RESIDENCE, not a resident doctor'
+        WHEN REGEXP_CONTAINS(title, r'^(intern|resident|fellow|trainee|registrar|officer|house officer)$')
+            THEN '3. bare generic anchor word'
+        WHEN REGEXP_CONTAINS(title, r'\b(consultant|attending|specialist physician|senior physician|chief|head of)\b')
+            THEN '4. may be fully qualified, not a trainee'
+        ELSE '5. no flag'
+    END                             AS flag,
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    decision_source
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'trainee_clinical'
+  AND is_assigned
+  AND similarity >= 0.75
+QUALIFY ROW_NUMBER() OVER (ORDER BY frequency DESC) <= 100
+ORDER BY flag, frequency DESC;
+
+-- 7a. Per anchor. RUN FIRST - it will say whether `intern` and `resident`
+--     are behaving as feared before anyone reads a title.
+SELECT
+    matched_anchors[OFFSET(0)]                      AS nearest_anchor,
+    COUNT(*)                                        AS distinct_titles,
+    SUM(frequency)                                  AS records,
+    ROUND(AVG(similarity), 3)                       AS avg_similarity,
+    ROUND(SAFE_DIVIDE(SUM(IF(similarity < 0.75, frequency, 0)),
+                      SUM(frequency)), 4)           AS share_below_075
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'trainee_clinical'
+  AND is_assigned
+GROUP BY nearest_anchor
+ORDER BY records DESC;
+
+-- 7b. Coverage of 100 rows, plus the below-0.75 half read at the same time -
+--     this group is small enough that one query can cover both halves, which
+--     was not true of teaching_academic or researcher_early.
+SELECT
+    CASE WHEN similarity >= 0.75 THEN '1. above 0.75' ELSE '2. below 0.75' END AS band,
+    COUNT(*)                                        AS titles,
+    SUM(frequency)                                  AS records,
+    SUM(IF(rn <= 100, frequency, 0))                AS covered_by_top_100_of_band,
+    ROUND(SUM(IF(rn <= 100, frequency, 0)) / SUM(frequency), 4) AS share_covered
+FROM (
+    SELECT frequency, similarity,
+           ROW_NUMBER() OVER (
+               PARTITION BY similarity >= 0.75 ORDER BY frequency DESC
+           ) AS rn
+    FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    WHERE title_group = 'trainee_clinical' AND is_assigned
+)
+GROUP BY band
+ORDER BY band;
+
+-- 7c. The below-0.75 half, 60 titles, since 7b will show it is reachable.
+SELECT
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'trainee_clinical'
+  AND is_assigned
+  AND similarity < 0.75
+ORDER BY frequency DESC
+LIMIT 60;
