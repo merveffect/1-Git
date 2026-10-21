@@ -191,3 +191,11 @@ director of the doctoral school,leadership,ACCEPT,analytics-engineering@springer
 director of graduate studies,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-21,229 records. Directs a student programme rather than being enrolled on one. Reached a student anchor because the subject of the title is 'graduate' or 'doctoral'.
 direttore,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"1,283 records. Italian for 'director', reached `dirigente medico` at 0.764 because the two share the managerial half. Generic, and not clinical."
 dirigenti,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"712 records. Italian plural for 'executives', reached `dirigente medico` at 0.803. Same cause as direttore."
+editor-in-chief,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"3,592 records. Reached `chief` at 0.672 on the word chief. An editorial role, not institutional leadership - and for a publisher, a distinction worth getting right."
+editor in chief,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"1,580 records. The unhyphenated spelling. See editor-in-chief."
+personal chair,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"1,308 records. Reached `chair` at 0.832. In UK universities a personal chair IS a full professorship - being given a chair, not chairing anything."
+chancellor s fellow,researcher_early,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"846 records. Reached `vice chancellor` at 0.771 on the word chancellor. A Chancellor's Fellow is an early-career research fellowship, and researcher_early was the runner-up."
+vice professor,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,673 records. Reached `vice dean` at 0.883 on the word vice. A translation of associate professor.
+prefessor,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,529 records. Reached `provost` at 0.670. A misspelling of professor.
+univ -prof,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,423 records. Reached `provost` at 0.738. An abbreviation of university professor.
+lieutenant,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,517 records. Reached `chief` at 0.686. A military rank.

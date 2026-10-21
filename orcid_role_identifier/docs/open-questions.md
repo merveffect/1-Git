@@ -73,11 +73,56 @@ holding them there. *Source: analyses/22 query 7.*
 treat patients. They are already in the Researcher audience. We kept
 healthcare clinical; one word of configuration reverses it.
 
-### 1.3 Is a "Director" at a university a head of faculty?
+### 1.3 Which leadership titles count as a head of faculty?
 
-**~2,900 people.** Some are deans. Some run administration, a building or an
-IT department. The data says "Director" and the organisation is a university,
-and we cannot tell them apart.
+Asked originally as "is a Director at a university a head of faculty?", worth
+**~2,900 people**. Reading the leadership group on 2026-10-21 showed the
+question is much larger than that, and that it splits cleanly in two.
+
+**Titles that are never academic — 53,599 records.**
+
+| Title | Records | | Title | Records |
+| --- | --- | --- | --- | --- |
+| `ceo` | 15,918 | | `founder & ceo` | 1,882 |
+| `founder` | 6,952 | | `founder and ceo` | 1,443 |
+| `managing director` | 5,568 | | `managing partner` | 1,305 |
+| `general manager` | 3,513 | | `founder and director` | 864 |
+| `owner` | 3,395 | | `gerente` | 751 |
+| `chief executive officer` | 2,912 | | `branch manager` | 671 |
+| `executive` | 2,003 | | `founder & director` | 678 |
+
+**Titles that could be either — 172,611 records.**
+
+| Title | Records | Why it is ambiguous |
+| --- | --- | --- |
+| `director` | **144,252** | the original question, and the single biggest title in the group |
+| `president` | 11,625 | a university president IS its most senior leader |
+| `vice president` | 6,324 | Vice President for Research is an academic post |
+| `principal` | 5,482 | the principal of a college, or a principal investigator |
+| `board member` | 1,706 | governance rather than management |
+
+*Source: analyses/23 queries 3 and 3a.*
+
+**What already happens, so the decision is narrower than the numbers look.**
+The organisation axis is doing most of this work: faculty_head scores a
+company at 0.00, so a corporate title at a company cannot confirm.
+analyses/17 measured `ceo` at 879 people with only **55 confirmed**, `founder`
+411 with 31, `owner` 188 with 2.
+
+So the real question is not "should a CEO be a head of faculty" - almost none
+are. It is whether those 55, and the equivalent residue on every other title,
+should be excluded outright by name. Our view is that the never-academic list
+should be, and that the ambiguous list must stay, because excluding
+`president` would lose real university presidents. But the call belongs to
+marketing.
+
+Two measured notes for that conversation. `editor-in-chief`, 5,172 records
+with the hyphenated and unhyphenated spellings together, was in this group
+until 2026-10-21 - an editorial role reading as institutional leadership,
+which for a publisher is a distinction worth getting right. And `jefe de
+servicio`, 2,090 records, is a Spanish clinical head of service: correctly in
+leadership, and it reaches hcp_administrator through the department axis
+rather than faculty_head.
 
 ### 1.4 Are psychologists healthcare professionals?
 
