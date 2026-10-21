@@ -256,9 +256,11 @@ teaching assistant is plausibly a *better* target than a professor for
 textbook and course-material campaigns, which is the same conclusion from
 the other direction.
 
-### 1.16 Should Researcher be split into early-career and senior?
+### 1.16 Researcher could be split into early-career and senior — RECORDED AS POSSIBLE, NOT PROPOSED
 
-Merve's question, 2026-10-21. We already classify every research title into
+Merve asked on 2026-10-21 whether this is feasible, and decided the same day
+not to pursue it now. It is written down so the option is known, not because
+anyone is asking for it. Nothing has changed in the pipeline. We already classify every research title into
 one of two groups, and both of them feed the same single `researcher`
 audience - so the distinction is carried and never used. Splitting it into
 two audiences is **a configuration change and nothing else**:
@@ -300,10 +302,10 @@ seniority measure INDEPENDENT of what someone called their job, and it is
 what the external role library's MORE4 R1-R4 career stages are built on,
 anchored to PhD completion year.
 
-So the recommended order is measure first, split second: find out whether
-dates can carry seniority before shipping an audience that rests on job-title
-words. Shipping the word-based split would repeat the mistake we found
-yesterday rather than fix it.
+So if it is ever wanted, the order would be measure first and split second:
+find out whether dates can carry seniority before shipping an audience that
+rests on job-title words. Shipping the word-based split as it stands would
+repeat the mistake we found on 2026-10-21 rather than fix it.
 
 ### 1.13 Are visiting scholars and fellows teaching staff?
 
