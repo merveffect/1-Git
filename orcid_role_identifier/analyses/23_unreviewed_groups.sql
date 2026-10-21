@@ -13,15 +13,29 @@
 
     Ranked by how dirty they are, against what they feed:
 
-      support_technical       35.95%   feeds nothing
-      practitioner            34.27%   reviewed
-      pharmacist              31.88%   the pharmacist audience, 2,335 people
-      leadership              27.63%   faculty_head + hcp_administrator
-      trainee_clinical        18.44%   the hcp roles
-      researcher_established  16.29%   researcher - 322,266 people - and hcp_researcher
+      support_technical       36.64%   feeds nothing, and gets dirtier by
+                                       design - it is where rejected titles
+                                       are parked
+      practitioner            33.80%   REVIEWED 2026-10-20, from 40.64%
+      pharmacist              31.71%   the pharmacist audience, 2,335 people
+      leadership              27.76%   faculty_head + hcp_administrator, and
+                                       it received 2,271 records from the
+                                       researcher review without having been
+                                       read itself
+      trainee_clinical        18.40%   the hcp roles
+      researcher_established  15.61%   REVIEWED 2026-10-21, from 16.29%
       student                  8.94%   feeds nothing
       researcher_early         6.94%   researcher + hcp_researcher
-      teaching_academic        6.77%   lecturer - 400,445 people
+      teaching_academic        6.74%   lecturer, 400,445 people - the LOWEST
+                                       share anywhere and the LARGEST
+                                       absolute count of low-confidence
+                                       records, 813,682
+
+    Two of the ten are reviewed. A group is finished here when nothing in
+    its remainder is unexplained, not when the number is low:
+    researcher_established stopped at 15.61% because what is left is
+    accounted for - long titles scoring lower against short anchors, and the
+    sciences all leaning correctly on the single anchor `scientist`.
 
     THIS FILE DELIBERATELY SKIPS support_technical AND student. They are the
     dirtiest and the second cleanest, and both feed no audience, so reviewing
@@ -128,7 +142,7 @@ ORDER BY records DESC;
 
 
 -- ###########################################################################
--- 3. LEADERSHIP — 27.63%, AND IT FEEDS TWO AUDIENCES
+-- 3. LEADERSHIP — 27.76%, AND IT FEEDS TWO AUDIENCES
 --
 --    Read alongside analyses/17 query 1, which lists this group's biggest
 --    titles and how many of each confirm. That query already showed the
@@ -152,7 +166,7 @@ LIMIT 50;
 
 
 -- ###########################################################################
--- 4. PHARMACIST — 31.88%, AND IT IS A STANDALONE AUDIENCE
+-- 4. PHARMACIST — 31.71%, AND IT IS A STANDALONE AUDIENCE
 --
 --    Only 2,335 confirmed people, so the absolute numbers are small, but it
 --    is the one audience where a single title group is the whole thing. Ten

@@ -145,7 +145,7 @@ classified and feed nothing:
 | Group | Records | |
 | --- | --- | --- |
 | `student` | 1,914,587 | doctoral and medical students, the largest expansion available |
-| `support_technical` | 1,401,179 | technicians, administrators, research support |
+| `support_technical` | 1,416,277 | technicians, administrators, research support |
 
 *Source: analyses/19 query 3.* The structure already supports both; this is a
 decision, not a build.
@@ -222,7 +222,7 @@ earth science, mathematics or humanities departments**.
 
 What exists instead, for every classification: how far it stretched from the
 example terms that define each group, and whether a human or the model
-decided. **127 human decisions are pinned** as of 2026-10-20, each carrying
+decided. **158 human decisions are pinned** as of 2026-10-21, each carrying
 the measured reason it was made.
 
 ### 2.2 Coverage is the ceiling, not consent
@@ -255,11 +255,15 @@ behave the same way.
 
 ### 2.4 Healthcare is the weakest group, and we know why ⟳
 
-`practitioner` carries **34.27%** of its 1,637,730 records below 0.75
+`practitioner` carries **33.80%** of its 1,646,932 records below 0.75
 similarity, down from **40.64%** at the start of 2026-10-20 - and the group
-GREW by 177,726 records over the same day, so it became cleaner and wider at
-once. The next worst
-is `support_technical` at 35.95%; `teaching_academic` is 6.81%.
+GREW by 186,928 records over the same day, so it became cleaner and wider at
+once.
+
+Only one group is now worse: `support_technical` at 36.64%, which feeds no
+audience and is where rejected titles are parked, so it gets dirtier by
+design. `teaching_academic` is 6.74%, the lowest share of any group - but
+read 2.4b before comparing those two numbers to each other.
 
 The 6.37 points came from two things measured that day: 31 specialty anchors
 for professions that had none of their own - 2,684 veterinarians were
@@ -421,6 +425,8 @@ the system being clean. All 2026-10-20 unless noted.
 | 13 sciences pulled by `pathologist`, third round (`biologo`, `field geologist`, `anatomist` …) | 2,078 | moved |
 | `horticulturist` → **gynaecologist** at 0.659 | 229 | moved |
 | 13 "senior X" titles pulled by `senior scientist` (`senior manager`, `senior software developer` …) | 10,073 | moved |
+| 9 writing and software titles on `scientist` / `scientific director` (`author`, `scientific editor`, `journalist` …) | 4,126 | moved |
+| 22 directing roles on `head of laboratory` / `scientific director` (`head of innovation`, `vice president r&d` …) | 3,907 | moved |
 | Retired and emeritus titles counted as working researchers | 14 titles | rejected, at marketing's request |
 | "Library" in the molecular-biology sense (lentiviral, chemical) | 89 | rejected |
 
