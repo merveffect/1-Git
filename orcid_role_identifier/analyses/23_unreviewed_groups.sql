@@ -741,3 +741,110 @@ WHERE title_group = 'trainee_clinical'
   AND similarity < 0.75
 ORDER BY frequency DESC
 LIMIT 60;
+
+
+-- ###########################################################################
+-- 8. PHARMACIST — THE LAST UNREAD GROUP
+--
+--    94,784 records at 31.71% below 0.75, and it is the only audience where
+--    one title group is the whole thing: `pharmacist`, 2,336 confirmed
+--    people. Small, and small enough to read both similarity halves in one
+--    pass, as trainee_clinical was.
+--
+--    ELEVEN ANCHORS, AND FIVE OF THEM ARE FOREIGN: pharmacist, hospital
+--    pharmacist, clinical pharmacist, community pharmacist, chief
+--    pharmacist, head of pharmacy, dispensing pharmacist, apotheker,
+--    pharmacien, farmaceutico, eczaci.
+--
+--    Most share the stem `pharmac`, which is distinctive. `apotheker` and
+--    `eczaci` do not, and `eczaci` is short - the `dozent` shape (2.4f).
+--
+--    THE RISK I EXPECT IS NOT THE FOREIGN ANCHORS THOUGH. It is that
+--    PHARMACOLOGY IS NOT PHARMACY. A pharmacologist studies drugs and is a
+--    researcher; a pharmacist dispenses them and is a practitioner. The two
+--    words are nearly identical in spelling and adjacent in meaning, so this
+--    is close to a guaranteed magnet - and `professor of pharmacology`, 954
+--    records, was already seen sitting in this group during the professor
+--    measurement in analyses/22 query 11a.
+--
+--    One thing works in our favour, unusually. The arithmetic filters weak
+--    titles by itself: weights are 0.55 role / 0.15 org / 0.30 dept with a
+--    0.60 threshold, so the weakest assignment plus a fully resolved
+--    organisation comes to 0.535 and does NOT confirm. A pharmacy department
+--    is needed. Where `lecturer` has no second axis at all, this audience
+--    has one - so read the flags with that in mind: a wrong title here is
+--    less likely to reach the audience than a wrong title in teaching.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(title, r'pharmacolog|farmacolog|pharmakolog|toxicolog')
+            THEN '1. PHARMACOLOGY, which is a science not a pharmacy'
+        WHEN REGEXP_CONTAINS(title, r'\b(medical affairs|pharmacovigilance|regulatory|medical science liaison|sales|marketing|market access|commercial|industry|cro|clinical trial manager)\b')
+            THEN '2. a pharmaceutical INDUSTRY role'
+        WHEN REGEXP_CONTAINS(title, r'^(pharmacist|apotheker|pharmacien|farmaceutico|eczaci|pharmacy)$')
+            THEN '3. bare anchor word'
+        WHEN REGEXP_CONTAINS(title, r'\b(technician|assistant|student|intern|trainee|dispenser|aide|clerk)\b')
+            THEN '4. pharmacy support or training, not a pharmacist'
+        ELSE '5. no flag'
+    END                             AS flag,
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    decision_source
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'pharmacist'
+  AND is_assigned
+  AND similarity >= 0.75
+QUALIFY ROW_NUMBER() OVER (ORDER BY frequency DESC) <= 80
+ORDER BY flag, frequency DESC;
+
+-- 8a. Per anchor. RUN FIRST. `eczaci` and `apotheker` are the two without a
+--     shared distinctive stem, so watch their distinct_titles count.
+SELECT
+    matched_anchors[OFFSET(0)]                      AS nearest_anchor,
+    COUNT(*)                                        AS distinct_titles,
+    SUM(frequency)                                  AS records,
+    ROUND(AVG(similarity), 3)                       AS avg_similarity,
+    ROUND(SAFE_DIVIDE(SUM(IF(similarity < 0.75, frequency, 0)),
+                      SUM(frequency)), 4)           AS share_below_075
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'pharmacist'
+  AND is_assigned
+GROUP BY nearest_anchor
+ORDER BY records DESC;
+
+-- 8b. The below-0.75 half, read directly - this group is small enough that
+--     80 titles reach most of it. Coverage reported alongside.
+SELECT
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'pharmacist'
+  AND is_assigned
+  AND similarity < 0.75
+ORDER BY frequency DESC
+LIMIT 60;
+
+-- 8c. Coverage for both halves, so this group can be closed with a number.
+SELECT
+    CASE WHEN similarity >= 0.75 THEN '1. above 0.75' ELSE '2. below 0.75' END AS band,
+    COUNT(*)                                        AS titles,
+    SUM(frequency)                                  AS records,
+    SUM(IF(rn <= 80, frequency, 0))                 AS covered_by_top_80,
+    ROUND(SUM(IF(rn <= 80, frequency, 0)) / SUM(frequency), 4) AS share_covered
+FROM (
+    SELECT frequency, similarity,
+           ROW_NUMBER() OVER (
+               PARTITION BY similarity >= 0.75 ORDER BY frequency DESC
+           ) AS rn
+    FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    WHERE title_group = 'pharmacist' AND is_assigned
+)
+GROUP BY band
+ORDER BY band;
