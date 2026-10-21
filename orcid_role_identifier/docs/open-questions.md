@@ -583,6 +583,32 @@ finding five real ones above 0.75 that nothing else could reach - `officer`
 1,998 records, `staff member` 1,759, `leader` 1,707, `academic director`
 1,382, `staff specialist` 1,644.
 
+### 2.4h A word being generic in English does not predict it being generic in ORCID
+
+Four times now I have predicted which generic anchor would misbehave, and
+four times the prediction has been wrong in the same way.
+
+| Anchor | I predicted | It measured |
+| --- | --- | --- |
+| `audiologist` | the worst -ologist magnet | 0.326, pulled nothing |
+| `researcher` | the most generic word we use | 0.081, clean |
+| `resident` | someone who lives somewhere | **0.032, the cleanest anchor in its group** |
+| `intern` | risky | **0.230 across 3,925 distinct titles** |
+
+The pattern in the misses: I was reasoning about how ambiguous the word is in
+the English language. What decides is whether people in OTHER professions
+actually type it into a job-title field.
+
+Nobody outside medicine writes "resident" as their job - 164,130 records and
+only 490 distinct titles. Everybody outside medicine writes "intern" -
+3,925 distinct titles, carrying engineering intern, data scientist intern,
+machine learning intern, management trainee, industrial trainee.
+
+So the test for a risky anchor is not "is this word ambiguous" but "do people
+in other jobs use it to describe themselves". That is a question about
+vocabulary in the wild, and it can only be answered by measuring - which is
+the fourth argument in this document for measuring before reasoning.
+
 ### 2.4g An accent splits a title into two groups
 
 Found 2026-10-21 in researcher_early:
