@@ -346,3 +346,130 @@ WHERE title_group = 'leadership'
   AND decision_source = 'HUMAN'
   AND is_assigned
 ORDER BY frequency DESC;
+
+
+-- ###########################################################################
+-- 5. TEACHING_ACADEMIC — THE GROUP WHERE ERRORS ARE LEAST FILTERED
+--
+--    Never read. 12,065,457 records, the largest group in the project, and
+--    it feeds the largest audience: lecturer, 400,445 people.
+--
+--    AND IT HAS NO SECOND AXIS. `lecturer` is title_required with weights
+--    0.75 role / 0.25 org / 0.00 dept and a 0.60 threshold, so the weakest
+--    possible assignment - group_score 0.70 - gives 0.525, and a resolved
+--    organisation adds 0.25 for 0.775. Confirmed. Every title that lands in
+--    this group reaches the audience once the organisation resolves, with
+--    nothing to catch it, where hcp_broad has the department axis doing
+--    exactly that job.
+--
+--    So the stakes here are higher than its 6.74% below-0.75 suggests. That
+--    share is the LOWEST of any group, and 2026-10-21 taught us a low share
+--    means little: `junior researcher` hid at 0.870. The absolute count is
+--    813,682 records, the largest anywhere.
+--
+--    THE FLAG COLUMN IS DIFFERENT FOR THIS GROUP. Three of its fifteen
+--    anchors are ordinary English words - `teacher`, `instructor`, `reader`
+--    - and `docente` and `dozent` are the ordinary words in Italian, Spanish
+--    and German. The risk is not a compound anchor's generic half, as it was
+--    everywhere else. It is that the anchor itself is generic:
+--
+--      instructor      - a driving, fitness or flight instructor
+--      trainer         - a corporate trainer, already rejected once by hand
+--      reader          - a UK academic rank, and also just someone reading
+--      teacher         - a school teacher, which is a MARKETING question
+--                        rather than an error: see query 5b
+--
+--    And the reverse case we have already met twice: an academic rank word
+--    on a non-teaching post. `personal chair` was a professorship sitting in
+--    leadership, `vice professor` likewise.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(title, r'\b(driving|fitness|yoga|flight|swimming|ski|tennis|football|music|dance|driver|personal trainer|corporate)\b')
+            THEN '1. non-academic instruction'
+        WHEN REGEXP_CONTAINS(title, r'^(teacher|instructor|reader|trainer|tutor|educator|faculty|docente|dozent|lecturer)$')
+            THEN '2. bare generic anchor word'
+        WHEN REGEXP_CONTAINS(title, r'\b(school|primary|secondary|elementary|high school|kindergarten|college preparatory|vocational|k-12)\b')
+            THEN '3. school rather than university - see 5b'
+        WHEN REGEXP_CONTAINS(title, r'\b(assistant|student|phd|doctoral|graduate|trainee|intern)\b')
+            THEN '4. may belong to student or researcher_early'
+        ELSE '5. no flag'
+    END                             AS flag,
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    decision_source
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'teaching_academic'
+  AND is_assigned
+  AND similarity >= 0.75
+QUALIFY ROW_NUMBER() OVER (ORDER BY frequency DESC) <= 140
+ORDER BY flag, frequency DESC;
+
+-- 5a. Coverage, and the three generic anchors measured on their own.
+--     An anchor that is an ordinary word will carry far more distinct titles
+--     than one that names a profession - that ratio is the thing to read.
+SELECT
+    matched_anchors[OFFSET(0)]                      AS nearest_anchor,
+    COUNT(*)                                        AS distinct_titles,
+    SUM(frequency)                                  AS records,
+    ROUND(AVG(similarity), 3)                       AS avg_similarity,
+    ROUND(SAFE_DIVIDE(SUM(IF(similarity < 0.75, frequency, 0)),
+                      SUM(frequency)), 4)           AS share_below_075
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'teaching_academic'
+  AND is_assigned
+GROUP BY nearest_anchor
+ORDER BY records DESC;
+
+-- 5b. IS A SCHOOL TEACHER IN THE LECTURER AUDIENCE?
+--
+--     A marketing question, not a defect, and nobody has asked it because
+--     nobody had looked at this group. `teacher` is one of our fifteen
+--     anchors, so school teachers land in teaching_academic and reach the
+--     Lecturer audience - and `lecturer` has no field requirement to
+--     separate them from university staff.
+--
+--     This sizes it. If it is small, it does not matter. If it is hundreds
+--     of thousands of records, marketing needs to answer before the next
+--     campaign, because a Lecturer campaign is currently reaching school
+--     teachers.
+--
+--     The organisation axis is the only thing that could separate them, so
+--     org_type is shown: a school resolving as 'education' in ROR scores the
+--     same as a university.
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(d.title, r'\b(primary|elementary|kindergarten|preschool|infant)\b')
+            THEN '1. primary or pre-school'
+        WHEN REGEXP_CONTAINS(d.title, r'\b(secondary|high school|middle school|grammar school|sixth form|k-12)\b')
+            THEN '2. secondary school'
+        WHEN REGEXP_CONTAINS(d.title, r'\b(school)\b')
+            THEN '3. says school, level unclear'
+        ELSE '4. no school word'
+    END                                             AS level,
+    COUNT(*)                                        AS distinct_titles,
+    SUM(d.frequency)                                AS records,
+    ROUND(AVG(d.similarity), 3)                     AS avg_similarity
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` d
+WHERE d.title_group = 'teaching_academic'
+  AND d.is_assigned
+GROUP BY level
+ORDER BY records DESC;
+
+-- 5c. The biggest titles behind the school buckets, so the question can be
+--     judged on examples rather than on a count.
+SELECT
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    runner_up
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'teaching_academic'
+  AND is_assigned
+  AND REGEXP_CONTAINS(title, r'\b(school|primary|secondary|elementary|kindergarten|high school|middle school|k-12|vocational)\b')
+ORDER BY frequency DESC
+LIMIT 40;
