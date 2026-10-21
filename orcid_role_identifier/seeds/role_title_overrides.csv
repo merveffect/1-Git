@@ -199,3 +199,8 @@ vice professor,teaching_academic,ACCEPT,analytics-engineering@springernature.com
 prefessor,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,529 records. Reached `provost` at 0.670. A misspelling of professor.
 univ -prof,teaching_academic,ACCEPT,analytics-engineering@springernature.com,2026-10-21,423 records. Reached `provost` at 0.738. An abbreviation of university professor.
 lieutenant,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,517 records. Reached `chief` at 0.686. A military rank.
+visiting scientist,researcher_established,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"32,662 records. Reached `visiting professor` at 0.855 on the word visiting. A visiting scientist does research and does not teach, and researcher_established was the runner-up. The largest single misassignment in teaching_academic."
+university assistant,researcher_early,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"4,877 records. Reached `assistant lecturer` at 0.769. The Austrian Universitatsassistent is a doctoral or postdoctoral post, and researcher_early was the runner-up."
+associate dean,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"3,976 records. Reached `associate professor` at 0.845 on the word associate. An associate dean is academic leadership, which was the runner-up."
+school counselor,support_technical,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"222 records. Reached `teacher` at 0.701 on the word school. Counselling, not teaching."
+school principal,leadership,ACCEPT,analytics-engineering@springernature.com,2026-10-21,"215 records. Reached `teacher` at 0.735 on the word school. Running a school is leadership, which was the runner-up."

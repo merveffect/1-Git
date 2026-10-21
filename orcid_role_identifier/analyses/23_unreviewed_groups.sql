@@ -473,3 +473,33 @@ WHERE title_group = 'teaching_academic'
   AND REGEXP_CONTAINS(title, r'\b(school|primary|secondary|elementary|kindergarten|high school|middle school|k-12|vocational)\b')
 ORDER BY frequency DESC
 LIMIT 40;
+
+
+-- ###########################################################################
+-- 5d. `reader` AND THE REST OF ITS 732 TITLES
+--
+--    Query 5a measured `reader` at 46,822 records across 732 distinct titles
+--    with 44.91% below 0.75 - the worst share of any anchor in the group
+--    that carries real volume. `dozent` is worse at 54.38% but holds only
+--    5,695 records.
+--
+--    `reader` is a senior academic rank in the UK and an ordinary English
+--    word everywhere else, so it cannot be removed and cannot be trusted.
+--    Query 5 showed only the anchor matching itself at 16,564 records; the
+--    other 731 titles are invisible at that depth.
+-- ###########################################################################
+SELECT
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    runner_up,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'teaching_academic'
+  AND is_assigned
+  AND matched_anchors[OFFSET(0)] IN ('reader', 'dozent', 'faculty member')
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY matched_anchors[OFFSET(0)] ORDER BY frequency DESC
+) <= 25
+ORDER BY matched_anchors[OFFSET(0)], frequency DESC;

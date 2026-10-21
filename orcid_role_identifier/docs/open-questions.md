@@ -225,6 +225,70 @@ department confirms them; otherwise they stay Probable. The question is
 whether that is acceptable or whether a title carrying no occupational
 information should be excluded outright. *Source: analyses/22 query 2.*
 
+### 1.12 Is a teaching assistant in the Lecturer audience?
+
+**178,205 records**, found 2026-10-21 on the first read of teaching_academic.
+
+| Title | Records | Similarity | Runner-up |
+| --- | --- | --- | --- |
+| `teaching assistant` | 134,143 | 0.827 | researcher_early |
+| `graduate teaching assistant` | 32,994 | 0.809 | **student** |
+| `assistant teacher` | 5,558 | 0.840 | support_technical |
+| `teacher assistant` | 5,510 | 0.793 | support_technical |
+
+They do teach, so the group is not obviously wrong. But most are doctoral
+students who teach as part of their funding, and the model itself put
+`student` as the runner-up for the clearest of them.
+
+**Why this one cannot wait for a quiet moment.** `lecturer` is
+title_required with no field requirement, so there is nothing to filter
+them: every one of these reaches the audience as soon as the organisation
+resolves. Where a wrong clinical title needs a clinical department to agree
+with it, a wrong teaching title needs nothing.
+
+Our view, offered as a view: a teaching assistant is plausibly a *better*
+target than a professor for textbook and course-material campaigns, so this
+may not want changing at all. But it should be a decision.
+
+### 1.13 Are visiting scholars and fellows teaching staff?
+
+**81,749 records** sitting in teaching_academic on the word 'visiting':
+`visiting scholar` 60,561, `visiting fellow` 15,832, `visiting research
+scholar` 5,356.
+
+A visiting scholar may teach, or may only do research. `visiting scientist`
+at 32,662 records was clear enough to move to researcher_established without
+asking - a scientist does not teach - but these three are genuinely
+ambiguous and the word 'scholar' leans academic.
+
+### 1.14 Is an honorary professor active?
+
+**6,651 records.** We rejected `honorary researcher`, `emeritus professor`
+and `retired professor` outright at marketing's request on 2026-10-16, on the
+grounds that a retired professor is not a researcher. `honorary professor`
+survived, and it is not obviously different - though an honorary professor is
+often an active practitioner holding a university title rather than a retired
+one, which is the opposite case.
+
+An inconsistency either way, and small enough to settle in one sentence.
+
+### 1.15 A question we measured and are NOT asking
+
+Is a school teacher in the Lecturer audience? `teacher` is one of our
+fifteen anchors, so they do land here, and we flagged this as potentially
+large before measuring it.
+
+**It is 0.2% of the group.** All school-related titles together are 877
+titles and 24,718 records out of 12,065,457, and most of those are academic
+anyway - `medical school affiliates assistant professor` 639 records,
+`professor and head of school` 287, `professor school of risk and disaster
+management` 131, where 'school' means School of Engineering. Genuine
+school-level teaching is roughly 5,000 records.
+
+Recorded here rather than deleted, because the prediction was wrong in a
+useful direction: we sized it before adding it to this list, and a decision
+list that includes negligible items is worse than one that does not.
+
 ### 1.10 Should a job title be allowed in more than one group?
 
 This is new on 2026-10-20 and it is the largest thing the review has turned
