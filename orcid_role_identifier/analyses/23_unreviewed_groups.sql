@@ -503,3 +503,89 @@ QUALIFY ROW_NUMBER() OVER (
     PARTITION BY matched_anchors[OFFSET(0)] ORDER BY frequency DESC
 ) <= 25
 ORDER BY matched_anchors[OFFSET(0)], frequency DESC;
+
+
+-- ###########################################################################
+-- 6. RESEARCHER_EARLY — 8.3 MILLION RECORDS, NEVER READ
+--
+--    The second-largest group in the project and the second-largest
+--    audience: `researcher`, 322,266 people. 8,341,542 records at 6.9%
+--    below 0.75 - a low share, and 2026-10-21 taught us a low share means
+--    little, since `junior researcher` hid at 0.870.
+--
+--    THIS GROUP'S ANCHORS ARE THE MOST GENERIC IN THE PROJECT. Thirteen of
+--    them, and look at what they are made of:
+--
+--      researcher                  the single most generic occupational
+--                                  word we use anywhere
+--      research assistant          'assistant' is the generic half
+--      research associate          'associate' is the generic half
+--      research fellow             'fellow' is the generic half
+--      collaboratori               Italian for 'collaborators'
+--      borsisti                    Italian for 'scholarship holders'
+--      assegnisti                  Italian for 'grant holders'
+--      post doctor                 and this one can reach plain 'doctor'
+--
+--    So every failure mode we have catalogued applies here at once: the
+--    generic half (library manager / manager), the short foreign word in a
+--    sparse region (bibliotecario / biologo), and the ordinary English word
+--    as an anchor (teacher, reader).
+--
+--    Read 6a FIRST - it is the per-anchor table and it will say which of the
+--    thirteen to worry about before anyone reads a title.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(title, r'\b(phd student|doctoral student|doctoral candidate|phd candidate|graduate student|masters student|undergraduate|estudiante|doctorando|doctoranda)\b')
+            THEN '1. a student, not a researcher'
+        WHEN REGEXP_CONTAINS(title, r'^(researcher|research assistant|research associate|research fellow|associate|assistant|fellow|collaborator|collaboratori|borsisti|assegnisti)$')
+            THEN '2. bare generic anchor word'
+        WHEN REGEXP_CONTAINS(title, r'\b(administrative|executive|personal|sales|teaching|clinical trial|laboratory|lab|technical|it|hr)\s+(assistant|associate|officer|coordinator)\b')
+            THEN '3. an assistant or associate of something else'
+        WHEN REGEXP_CONTAINS(title, r'\b(senior|principal|chief|lead|head|distinguished|professor)\b')
+            THEN '4. carries a senior marker - see 1.16'
+        ELSE '5. no flag'
+    END                             AS flag,
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    decision_source
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'researcher_early'
+  AND is_assigned
+  AND similarity >= 0.75
+QUALIFY ROW_NUMBER() OVER (ORDER BY frequency DESC) <= 140
+ORDER BY flag, frequency DESC;
+
+-- 6a. Per anchor. RUN THIS FIRST.
+--     The ratio to read is distinct_titles against records: an anchor that is
+--     an ordinary word carries far more distinct titles per record than one
+--     naming a position. `researcher` and `collaboratori` are the two to
+--     watch.
+SELECT
+    matched_anchors[OFFSET(0)]                      AS nearest_anchor,
+    COUNT(*)                                        AS distinct_titles,
+    SUM(frequency)                                  AS records,
+    ROUND(AVG(similarity), 3)                       AS avg_similarity,
+    ROUND(SAFE_DIVIDE(SUM(IF(similarity < 0.75, frequency, 0)),
+                      SUM(frequency)), 4)           AS share_below_075
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'researcher_early'
+  AND is_assigned
+GROUP BY nearest_anchor
+ORDER BY records DESC;
+
+-- 6b. Coverage, so going deeper than 140 is a decision rather than a guess.
+SELECT
+    COUNT(*)                                        AS titles_above_075,
+    SUM(frequency)                                  AS records_above_075,
+    SUM(IF(rn <= 140, frequency, 0))                AS covered_by_top_140,
+    ROUND(SUM(IF(rn <= 140, frequency, 0)) / SUM(frequency), 4)
+                                                    AS share_covered
+FROM (
+    SELECT frequency, ROW_NUMBER() OVER (ORDER BY frequency DESC) AS rn
+    FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    WHERE title_group = 'researcher_early' AND is_assigned AND similarity >= 0.75
+);

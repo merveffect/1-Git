@@ -256,6 +256,55 @@ teaching assistant is plausibly a *better* target than a professor for
 textbook and course-material campaigns, which is the same conclusion from
 the other direction.
 
+### 1.16 Should Researcher be split into early-career and senior?
+
+Merve's question, 2026-10-21. We already classify every research title into
+one of two groups, and both of them feed the same single `researcher`
+audience - so the distinction is carried and never used. Splitting it into
+two audiences is **a configuration change and nothing else**:
+
+```yaml
+researcher_early:   { title_groups: ['researcher_early'] }
+researcher_senior:  { title_groups: ['researcher_established'] }
+```
+
+No code. This would be the live demonstration of "adding an audience is a
+config change rather than a project".
+
+**Can we tell them apart today? Partly, and only from words.** The split is
+made entirely by job title. It works where the title states a rank -
+`principal investigator` to senior, `postdoctoral fellow` to early - and it
+fails where the title does not, which is a large share.
+
+The clearest failure is structural: bare **`researcher`** is an early-career
+anchor and bare **`scientist`** is a senior one. So a thirty-year veteran who
+typed only "researcher" is classified early career, and someone who typed
+only "scientist" is classified senior. From the person's side that is
+arbitrary.
+
+It shows in the sizes: `researcher_early` carries 8,341,542 records against
+`researcher_established` at 1,878,051, a 4.4x gap driven largely by bare
+`researcher` and the postdoc family sitting in early.
+
+**And the track record is poor.** `junior researcher`, 42,949 records, sat in
+the SENIOR group for the entire life of the project and was found on
+2026-10-21. 125,112 records carry a senior modifier while sitting in early -
+mostly correctly, since a senior postdoc is still a postdoc, but we only
+established that the same day.
+
+**The better route is dates, and the data is already in the pipeline.**
+Merve's own suggestion. `employments[].full_start_date` and the end dates are
+already read, for `is_current` and `recency_rank` - no new source field is
+needed. Career length as "today minus earliest employment start" is a
+seniority measure INDEPENDENT of what someone called their job, and it is
+what the external role library's MORE4 R1-R4 career stages are built on,
+anchored to PhD completion year.
+
+So the recommended order is measure first, split second: find out whether
+dates can carry seniority before shipping an audience that rests on job-title
+words. Shipping the word-based split would repeat the mistake we found
+yesterday rather than fix it.
+
 ### 1.13 Are visiting scholars and fellows teaching staff?
 
 **81,749 records** sitting in teaching_academic on the word 'visiting':
