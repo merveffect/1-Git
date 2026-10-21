@@ -182,7 +182,20 @@ posts only — a former dean is not a dean.
 If marketing wants the others to behave the same way, it is one line per role.
 **The size of that change is not measured** and should be before it is made.
 
-### 1.7 Which audiences should exist that do not?
+### 1.7 Which audiences should exist that do not? — DEPRIORITISED
+
+**Not now.** Merve, 2026-10-21: *"şuanda hedeflediğimiz meslekleri
+onaylayabilsek yeter. başka gruba gerek yok"* - getting the nine audiences we
+already target approved and correct is the job, and no new group is wanted.
+
+Kept here because the measurement stands and the opportunity does not go
+away, but it is off the agenda and should not be raised again until marketing
+asks. The practical consequence is that `support_technical` and `student` are
+**out of scope**: neither feeds a role, so `support_technical` being the
+dirtiest group in the project at 36.19% is now irrelevant rather than
+alarming, and it is also where we park titles that belong nowhere.
+
+The original measurement follows.
 
 Coverage, not consent, is now the ceiling — see 2.2. Two groups are
 classified and feed nothing:
@@ -321,6 +334,28 @@ Clinical job titles are the least standardised vocabulary in the data:
 Resident, Registrar, Facharzt, Interno, Jefe de Servicio and Senior House
 Officer describe overlapping things and share no common stem, so only a
 meaning-based match can connect them. *Source: analyses/19 query 3.*
+
+### 2.4a "Reviewed" means read in part, and coverage is not confidence
+
+**Coverage is not confidence, and the distinction matters more than the
+number.** "62% coverage" means a list of titles carrying 62% of the group's
+records was READ - looked at, and not objected to. It does not mean 62% is
+verified, because there is nothing to verify against (2.1). And the other
+38% was not looked at in any form.
+
+Coverage of the three groups read so far, as a share of all the group's
+records rather than of one similarity band:
+
+| Group | Read | Feeds |
+| --- | --- | --- |
+| `leadership` | ~62% | faculty_head, hcp_administrator |
+| `researcher_established` | ~62% | researcher, hcp_researcher |
+| `practitioner` | ~38% | all four healthcare audiences |
+
+Note which one is lowest. practitioner feeds four audiences and is the least
+read of the three, because clinical vocabulary is the most scattered - 150
+titles reached only 52% of its high-similarity records against 71% for
+leadership.
 
 ### 2.4a "Reviewed" means read in part, and the part is small
 
