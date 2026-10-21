@@ -297,6 +297,26 @@ exactly that range.
 
 The same correction applies to practitioner, also called reviewed.
 
+**WHAT THE GAP ACTUALLY CONTAINED, measured 2026-10-21.** The largest single
+error in the project to date was sitting in it: `junior researcher`, **42,949
+records**, classified as researcher_ESTABLISHED. With `junior group leader`
+and `junior scientist` that is **52,279 records** in the group that means the
+opposite. It reached the `senior researcher` anchor at 0.870 because
+'researcher' dominates the phrase and the embedding places junior and senior
+close together - two ends of one axis rather than opposites. No review query
+could see it, because every one of them filtered `similarity < 0.75`.
+
+**AND HAND-READING IS NOT A COMPLETE METHOD, which is a structural answer
+rather than a defect.** Query 1 measured it for researcher_established:
+reading the top 100 titles by frequency covers 23.65% of the records below
+0.75. Reaching half needs 1,150 titles; reaching 80% needs 3,800. So a
+top-60 list is a way of fixing the loudest quarter, and calling that a review
+is the mistake - not the reading itself, which is still the only way to judge
+a title.
+
+What follows is that completeness has to come from computable tests, and
+hand-reading is for the loud cases and for judging what a test flags.
+
 analyses/24 closes the gap in two ways. It measures whether hand-reading is
 even a viable method for a given group, by bucketing the problem by
 frequency - if most of it sits in titles appearing twice, no top-60 list
@@ -311,6 +331,16 @@ found: `library manager` attracting `manager`, `senior scientist` attracting
 It does not catch `business consultant`, which contains the distinctive stem
 and is simply the right word from the wrong domain. Nothing computable
 catches that one.
+
+And it over-flags, which is worth stating since the next person will run it.
+Of the 80 titles it surfaced, most were CORRECT - `principal scientist` at
+0.893, `biologist` at 0.825, `senior investigator` at 0.917, `physicist`,
+`geologist`, `staff researcher`. The stems were written too narrowly: a
+principal scientist really is a principal investigator. Read it as a
+shortlist to judge, not a list of errors. It earned its place anyway, by
+finding five real ones above 0.75 that nothing else could reach - `officer`
+1,998 records, `staff member` 1,759, `leader` 1,707, `academic director`
+1,382, `staff specialist` 1,644.
 
 ### 2.4b share_below_075 is partly a measure of title LENGTH
 
