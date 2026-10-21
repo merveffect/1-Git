@@ -342,6 +342,50 @@ finding five real ones above 0.75 that nothing else could reach - `officer`
 1,998 records, `staff member` 1,759, `leader` 1,707, `academic director`
 1,382, `staff specialist` 1,644.
 
+### 2.4e A modifier that reverses a title barely moves it in the space
+
+The structural blind spot behind the largest error we have found, and worth
+stating on its own because it is not about any one group.
+
+The embedding places `junior` and `senior` CLOSE together, because they are
+two ends of one axis rather than opposites. So a word that reverses what a
+title means barely moves it. `junior researcher` reached the
+`senior researcher` anchor at 0.870 and sat in researcher_established -
+42,949 records in the group that means the opposite.
+
+analyses/24 query 5 looks for the whole class on purpose rather than by
+accident. Measured 2026-10-21:
+
+| Mismatch | Titles | Records |
+| --- | --- | --- |
+| senior-ish modifier in researcher_**early** | 2,311 | 125,112 |
+| junior-ish modifier in researcher_**established** | 759 | 23,150 |
+| junior-ish in leadership | 246 | 4,541 |
+| senior-ish in student | 222 | 4,524 |
+
+**And most of the largest row is CORRECT**, which is the part worth
+remembering. `senior postdoc` at 0.951, `senior research associate` at
+0.933, `senior research assistant` at 0.938 all sit in researcher_early and
+belong there: 'senior' grades you WITHIN the postdoc rank, it does not lift
+you out of it, and every career framework including the MORE4 R1-R4 stages
+puts postdocs at early career. The exceptions are the genuinely senior
+grades - `principal research fellow` 4,487 records, `distinguished
+researcher` 1,274, `chief research fellow` 924 - perhaps 9,000 of the
+125,112.
+
+**It also caught me making the model's mistake.** On 2026-10-20 I moved
+`junior group leader`, 5,943 records, out of researcher_established and into
+researcher_early. That was wrong: a Nachwuchsgruppenleiter runs their own
+group on their own funding and is an independent researcher. The evidence
+was already in the data - `junior research group leader` and `head of junior
+research group` were both left in established by the vector, and my own
+override contradicted them. I read the word 'junior' and reacted, exactly as
+the embedding had. The override is withdrawn.
+
+So the lesson is not "distrust the modifier" but "the modifier is a question
+about the GROUP, not about the title". It matters only where the group
+itself encodes seniority.
+
 ### 2.4c share_below_075 is not a quality metric, and here is the proof
 
 On 2026-10-21 we removed 70,977 wrong records from researcher_established -
