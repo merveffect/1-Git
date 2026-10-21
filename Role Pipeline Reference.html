@@ -1,0 +1,1024 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Role Pipeline Reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ink:#1c1f23; --ink-2:#464b52; --muted:#6f757e;
+    --ground:#f5f5f4; --surface:#ffffff; --surface-2:#eceded; --surface-3:#f9f9f8;
+    --rule:#d9dad8; --rule-soft:#e7e8e6;
+    --machine:#1f6f6a; --machine-soft:#dfece9;
+    --human:#8a3d5e; --human-soft:#f3e3ea;
+    --pattern:#8a6410; --pattern-soft:#f5ecd9;
+    --serif:"Newsreader",Georgia,serif;
+    --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ink:#e6e7e5; --ink-2:#b4b8b5; --muted:#888d8a;
+      --ground:#141615; --surface:#1c1f1e; --surface-2:#262a28; --surface-3:#1a1d1c;
+      --rule:#313634; --rule-soft:#282c2a;
+      --machine:#6cb3ac; --machine-soft:#1a302e;
+      --human:#cf8ca6; --human-soft:#331d26;
+      --pattern:#d2a456; --pattern-soft:#322717;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#e6e7e5; --ink-2:#b4b8b5; --muted:#888d8a;
+    --ground:#141615; --surface:#1c1f1e; --surface-2:#262a28; --surface-3:#1a1d1c;
+    --rule:#313634; --rule-soft:#282c2a;
+    --machine:#6cb3ac; --machine-soft:#1a302e;
+    --human:#cf8ca6; --human-soft:#331d26;
+    --pattern:#d2a456; --pattern-soft:#322717;
+  }
+
+  body{background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .page{max-width:840px;margin:0 auto;padding-inline:20px;padding-block:38px 70px;}
+
+  h1{font-family:var(--serif);font-size:clamp(26px,5vw,36px);line-height:1.12;
+    font-weight:600;letter-spacing:-.015em;margin:0 0 12px;text-wrap:balance;max-width:600px;}
+  h2{font-family:var(--serif);font-size:clamp(21px,3.4vw,27px);line-height:1.18;
+    font-weight:600;margin:0 0 8px;text-wrap:balance;}
+  h3{font-family:var(--serif);font-size:19px;font-weight:600;margin:0 0 6px;line-height:1.25;}
+  h4{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:500;margin:18px 0 7px;}
+  p{margin:0 0 12px;}
+  .lede{font-size:16.5px;color:var(--ink-2);max-width:640px;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--machine);margin:0 0 9px;}
+  .note{font-size:13px;color:var(--muted);}
+  .m,code{font-family:var(--mono);font-size:.9em;}
+  code{background:var(--surface-2);padding:1px 4px;border-radius:2px;}
+  .num{font-variant-numeric:tabular-nums;}
+  strong{font-weight:600;}
+  ul{margin:0 0 12px;padding-left:19px;}
+  li{margin-bottom:5px;}
+
+  section{padding-block:30px;border-top:1px solid var(--rule);}
+  section:first-of-type{border-top:0;padding-top:4px;}
+
+  /* contents */
+  .toc{background:var(--surface);border:1px solid var(--rule);padding:16px 18px;margin:22px 0 0;}
+  .toc ol{margin:0;padding-left:20px;font-size:14px;color:var(--ink-2);}
+  .toc ol ol{margin:4px 0 6px;font-size:13.5px;}
+  .toc b{color:var(--ink);font-weight:500;}
+
+  /* tables */
+  .tw{overflow-x:auto;margin:14px 0 0;border:1px solid var(--rule);}
+  table{border-collapse:collapse;width:100%;background:var(--surface);font-size:13px;}
+  th,td{text-align:left;padding:7px 12px;border-top:1px solid var(--rule-soft);vertical-align:top;}
+  thead th{border-top:0;font-family:var(--mono);font-size:10px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);font-weight:500;white-space:nowrap;}
+  td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  td.c{font-family:var(--mono);font-size:12px;white-space:nowrap;}
+  tfoot td{border-top:1px solid var(--rule);font-weight:600;}
+
+  /* decision-source chips, used consistently throughout */
+  .src{font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+    padding:2px 6px;white-space:nowrap;}
+  .src.v{background:var(--machine-soft);color:var(--machine);}
+  .src.h{background:var(--human-soft);color:var(--human);}
+  .src.p{background:var(--pattern-soft);color:var(--pattern);}
+
+  /* group card */
+  .grp{background:var(--surface);border:1px solid var(--rule);margin:20px 0 0;}
+  .grp > .hd{padding:15px 18px;border-bottom:1px solid var(--rule);background:var(--surface-3);}
+  .grp > .hd .feeds{font-size:13px;color:var(--ink-2);margin-top:3px;}
+  .grp > .bd{padding:15px 18px;}
+  .grp .anch{font-family:var(--mono);font-size:12px;line-height:1.75;color:var(--ink-2);
+    background:var(--surface-2);padding:9px 11px;margin:0 0 4px;}
+  .grp p{font-size:14px;}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:1px;
+    background:var(--rule);border:1px solid var(--rule);margin:14px 0 0;}
+  .kv > div{background:var(--surface);padding:10px 12px;}
+  .kv b{display:block;font-family:var(--mono);font-size:16px;font-variant-numeric:tabular-nums;}
+  .kv span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.35;}
+  .kv .up b{color:var(--human);} .kv .down b{color:var(--machine);}
+
+  /* formula */
+  .calc{font-family:var(--mono);font-size:13px;background:var(--surface);
+    border:1px solid var(--rule);padding:13px 16px;margin:14px 0 0;overflow-x:auto;
+    line-height:1.8;font-variant-numeric:tabular-nums;}
+  .calc .c{color:var(--muted);}
+
+  /* pipeline flow */
+  .flow{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:16px 0 0;}
+  .flow .lay{background:var(--surface);padding:13px 16px;display:grid;
+    grid-template-columns:minmax(92px,auto) 1fr;gap:14px;}
+  .flow .lay .nm{font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--machine);padding-top:2px;}
+  .flow .lay p{margin:0;font-size:13.5px;color:var(--ink-2);}
+  .flow .lay .mods{font-family:var(--mono);font-size:12px;color:var(--ink);margin-top:5px;}
+  @media (max-width:560px){ .flow .lay{grid-template-columns:1fr;gap:5px;} }
+
+  pre{background:var(--surface);border:1px solid var(--rule);padding:12px 14px;
+    overflow-x:auto;margin:12px 0 0;font-family:var(--mono);font-size:12px;line-height:1.6;}
+  .foot{margin-top:36px;padding-top:16px;border-top:1px solid var(--rule);
+    font-size:12.5px;color:var(--muted);}
+</style>
+
+<div class="page">
+
+<p class="eyebrow">Researcher 360 &middot; internal reference &middot; build of 21 October 2026</p>
+<h1>Role pipeline reference</h1>
+<p class="lede">Everything this project does, written for someone who has not seen it before.
+Nine audiences, ten job-title groups, twenty-six models. Each profession gets its own
+section: the example words behind it, where the machine decided and where a person did,
+what went wrong, what we changed, and the numbers before and after.</p>
+
+<div class="toc">
+  <ol>
+    <li><b>How the system works</b> — the one idea, the two axes, the score</li>
+    <li><b>The map</b> — ten groups, nine audiences, who feeds what</li>
+    <li><b>What the quality numbers mean</b> — and why there is no false-positive rate</li>
+    <li><b>The eight professions, one by one</b>
+      <ol>
+        <li>Practitioner</li><li>Clinical trainee</li><li>Teaching academic</li>
+        <li>Researcher, early career</li><li>Researcher, established</li>
+        <li>Leadership</li><li>Pharmacist</li><li>Librarian</li>
+      </ol>
+    </li>
+    <li><b>The two groups that feed nothing</b> — student, support &amp; technical</li>
+    <li><b>Every model in the pipeline</b> — what, why, and the output columns</li>
+    <li><b>Queries you can run</b></li>
+  </ol>
+</div>
+
+<!-- ========================= 1 ========================= -->
+<section>
+  <p class="eyebrow">1</p>
+  <h2>How the system works</h2>
+
+  <h4>The problem</h4>
+  <p>ORCID is where researchers type their own employment history. Every field is free
+  text: the job title, the organisation, the department. One person writes
+  <code>Professor</code>, another writes <code>Resident Physician</code>, a third writes
+  only <code>Dr</code>. There is no profession field anywhere. So the data existed and
+  could not be used to build an audience.</p>
+
+  <h4>The one idea</h4>
+  <p><strong>We never classify people. We classify the vocabulary, once.</strong> There are
+  310,299 different job titles in ORCID and 450,307 different department names. Those are
+  what get classified, and the answers are stored. After that, giving 1.8 million people
+  their profession is an ordinary database join.</p>
+  <p>This is why the AI cost does not grow with the audience. The thinking happens once
+  over the words; the daily refresh is a normal query.</p>
+
+  <h4>How a word gets classified</h4>
+  <p>An AI model turns each job title into 768 numbers that stand for its meaning. Titles
+  that mean similar things land near each other. We hand-write a small number of
+  <strong>example words</strong> — called anchors — and place them in the same space. Then
+  every real title is compared against all the anchors at once, and whichever group owns
+  the nearest anchor wins.</p>
+  <p>The number that comes back is the similarity, from 0 to 1. An exact match is 1.00.
+  Below <code>0.65</code> we refuse to guess and the title gets no group at all. In
+  between is a real match carrying less confidence, and that confidence flows through to
+  the person&rsquo;s final score.</p>
+
+  <h4>Three ways a title gets its group</h4>
+  <p>In strict order of precedence, and the first one that applies wins:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Source</th><th>Set by</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td><span class="src h">human</span></td><td><code>seeds/role_title_overrides.csv</code></td>
+        <td>A person read the evidence and decided. Always wins. 348 of these exist.</td></tr>
+      <tr><td><span class="src p">pattern</span></td><td><code>seeds/title_group_patterns.csv</code></td>
+        <td>The title literally contains the word, so no similarity is involved. Used only for Librarian.</td></tr>
+      <tr><td><span class="src v">vector</span></td><td>the embedding</td>
+        <td>The nearest anchor group, scored by similarity. This is how almost everything is decided.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px;">A fourth value, <code>REJECTED</code>, means the
+  nearest anchor was below 0.65 and the title was left unassigned. That is a real outcome,
+  not a failure: not every job title names a profession we recognise.</p>
+
+  <h4>The two axes</h4>
+  <p>A job title tells you the <em>kind</em> of work. A department tells you the
+  <em>subject</em>. Those are different questions, so they are answered separately and
+  combined afterwards.</p>
+  <p>This was measured rather than assumed. If you try to read the research field out of
+  the job title, <strong>73.5% of records tell you nothing</strong> — &ldquo;professor&rdquo;
+  has no field. Read it from the department instead and only <strong>1.6%</strong> are
+  unusable.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Axis</th><th>Source field</th><th class="n">Distinct values</th><th>Groups</th><th>Dictionary table</th></tr></thead>
+    <tbody>
+      <tr><td>Title</td><td><code>employments[].role</code></td><td class="n">310,299</td><td class="n">10</td><td class="c">dim_title_group</td></tr>
+      <tr><td>Field</td><td><code>employments[].department_name</code></td><td class="n">450,307</td><td class="n">12</td><td class="c">dim_department_discipline</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>The score</h4>
+  <p>Each audience weighs three pieces of evidence. The weights differ per audience and
+  are set in <code>dbt_project.yml</code>.</p>
+  <div class="calc">
+role_final_score = w<sub>role</sub>&nbsp;&times;&nbsp;title_score
+                 + w<sub>org</sub>&nbsp;&nbsp;&times;&nbsp;organisation_score
+                 + w<sub>dept</sub>&nbsp;&times;&nbsp;department_score
+
+<span class="c">title_score  = 0.70 + (similarity &minus; 0.65) / 0.35 &times; 0.30   (so 0.65 &rarr; 0.70, exact match &rarr; 1.00)</span>
+<span class="c">             = 1.00 forced, if a human or a pattern decided it</span>
+<span class="c">org_score    = from the ROR organisation type, per audience</span>
+<span class="c">dept_score   = same shape as title_score, on the field axis</span>
+  </div>
+  <p style="margin-top:12px;">Above the audience&rsquo;s <em>confirmed</em> threshold the
+  person is delivered. Between <em>probable</em> and <em>confirmed</em> they are held back.
+  Only confirmed people go out today.</p>
+
+  <h4>Three match modes</h4>
+  <ul>
+    <li><code>title_required</code> — the title group must match. The field only adds score.</li>
+    <li><code>title_and_field</code> — both must match. The narrowest and safest.</li>
+    <li><code>title_or_field</code> — either is enough. The widest, used only for Healthcare professional.</li>
+  </ul>
+</section>
+
+<!-- ========================= 2 ========================= -->
+<section>
+  <p class="eyebrow">2</p>
+  <h2>The map</h2>
+  <p>Ten title groups feed nine audiences, and neither direction is one-to-one. One group
+  can feed two audiences; one audience can draw on two groups.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Title group</th><th class="n">Records</th><th>Feeds which audiences</th></tr></thead>
+    <tbody>
+      <tr><td class="c">teaching_academic</td><td class="n">12,024,436</td><td>Lecturer</td></tr>
+      <tr><td class="c">researcher_early</td><td class="n">8,343,585</td><td>Researcher, Clinical researcher</td></tr>
+      <tr><td class="c">student</td><td class="n">1,968,320</td><td><em>nothing</em></td></tr>
+      <tr><td class="c">researcher_established</td><td class="n">1,917,931</td><td>Researcher, Clinical researcher</td></tr>
+      <tr><td class="c">practitioner</td><td class="n">1,656,354</td><td>Healthcare professional, Practitioner</td></tr>
+      <tr><td class="c">support_technical</td><td class="n">1,458,782</td><td><em>nothing</em></td></tr>
+      <tr><td class="c">leadership</td><td class="n">953,819</td><td>Head of faculty, Clinical administrator</td></tr>
+      <tr><td class="c">trainee_clinical</td><td class="n">801,282</td><td>Healthcare professional, Practitioner</td></tr>
+      <tr><td class="c">pharmacist</td><td class="n">74,941</td><td>Pharmacist</td></tr>
+      <tr><td class="c">librarian</td><td class="n">21,832</td><td>Librarian</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px;">Two consequences worth holding onto. Moving a
+  title between <code>practitioner</code> and <code>trainee_clinical</code> changes no
+  audience, because they feed the same two. And <code>student</code> and
+  <code>support_technical</code> are where titles that belong nowhere are parked — they
+  feed nothing, so their quality numbers do not matter today.</p>
+
+  <h4>The nine audiences and their settings</h4>
+  <div class="tw"><table>
+    <thead><tr><th>Audience</th><th>Mode</th><th class="n">Weights<br>title/org/dept</th><th class="n">Confirm</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="c">lecturer</td><td class="c">title_required</td><td class="n">0.75/0.25/0.00</td><td class="n">0.60</td><td>no field filter at all</td></tr>
+      <tr><td class="c">researcher</td><td class="c">title_required</td><td class="n">0.75/0.25/0.00</td><td class="n">0.60</td><td>no field filter</td></tr>
+      <tr><td class="c">hcp_broad</td><td class="c">title_or_field</td><td class="n">0.35/0.25/0.40</td><td class="n">0.60</td><td>widest; title alone can confirm at the edge</td></tr>
+      <tr><td class="c">hcp_practitioner</td><td class="c">title_and_field</td><td class="n">0.45/0.15/0.40</td><td class="n">0.70</td><td>rolls up into hcp_broad</td></tr>
+      <tr><td class="c">hcp_researcher</td><td class="c">title_and_field</td><td class="n">0.40/0.20/0.40</td><td class="n">0.70</td><td>rolls up</td></tr>
+      <tr><td class="c">hcp_administrator</td><td class="c">title_and_field</td><td class="n">0.35/0.25/0.40</td><td class="n">0.70</td><td>rolls up</td></tr>
+      <tr><td class="c">faculty_head</td><td class="c">title_required</td><td class="n">0.60/0.40/0.00</td><td class="n">0.65</td><td>current post only</td></tr>
+      <tr><td class="c">pharmacist</td><td class="c">title_required</td><td class="n">0.55/0.15/0.30</td><td class="n">0.60</td><td>rolls up into hcp_broad</td></tr>
+      <tr><td class="c">librarian</td><td class="c">title_required</td><td class="n">1.00/0.00/0.00</td><td class="n">0.60</td><td>current post only; pattern-decided</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px;"><strong>Read the weights, because they decide
+  how much a mistake costs.</strong> <code>lecturer</code> and <code>researcher</code> have
+  a dept weight of zero, so there is nothing to catch a wrong title — the weakest possible
+  assignment plus a resolved organisation still confirms. <code>hcp_practitioner</code>
+  needs both axes to agree. That difference is why the same error matters more in teaching
+  than in healthcare.</p>
+</section>
+
+<!-- ========================= 3 ========================= -->
+<section>
+  <p class="eyebrow">3</p>
+  <h2>What the quality numbers mean</h2>
+
+  <h4>There is no false-positive rate, and we will not invent one</h4>
+  <p>A false-positive rate needs a correct answer to compare against. ORCID has no
+  profession field, so there is nothing to compare to. The previous keyword system is not
+  a reference either: around 53,000 of the people it called healthcare professionals work
+  in engineering, earth science, mathematics or the humanities.</p>
+  <p>So every number below is one of three things, and they are not interchangeable:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Number</th><th>What it is</th><th>What it is NOT</th></tr></thead>
+    <tbody>
+      <tr><td class="c">share&nbsp;below&nbsp;0.75</td>
+        <td>How much of a group the model was <em>unsure</em> about.</td>
+        <td>An error rate. See the two proofs below.</td></tr>
+      <tr><td class="c">records&nbsp;corrected</td>
+        <td>Titles a person read and judged wrong, with the records they carry.</td>
+        <td>All the errors — only the part that was read.</td></tr>
+      <tr><td class="c">coverage</td>
+        <td>The share of a group&rsquo;s records sitting in titles a person actually read.</td>
+        <td>Confidence. It means looked at and not objected to.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Proof one: we removed 70,977 wrong records and the number got worse</h4>
+  <p>On 21 October we moved <code>junior researcher</code> and its family out of the senior
+  researcher group — records that were plainly in the wrong place. The share below 0.75
+  went from <strong>0.1561 to 0.1620</strong>. The count of low-confidence records was
+  304,478 before and 304,478 after, identical, because everything removed had scored
+  <em>above</em> 0.75. The denominator shrank and the numerator did not.</p>
+
+  <h4>Proof two: the number is partly a measure of title length</h4>
+  <p>The embedding averages over the whole string, so a long title can only ever sit so
+  close to a two-word anchor.</p>
+  <div class="calc">
+<span class="c">head of national reference laboratory nrl for bovine tuberculosis</span>  &rarr;  0.711
+<span class="c">librarian</span>                                                          &rarr;  1.000
+  </div>
+  <p style="margin-top:12px;">Both are correct. One is nine words and one is one word. So a
+  group whose vocabulary is long and specific will always look dirtier than a group whose
+  vocabulary is short, whatever its accuracy — and the number is <strong>not comparable
+  between groups</strong>.</p>
+
+  <h4>What we use instead</h4>
+  <p>Every classification records how far it stretched from the example words and who
+  decided it. For any person we can show the words they typed, the example word it matched,
+  the distance, and whether a human or the model chose. Ten automated tests guard the
+  specific ways this system has failed before. That is inspectability rather than a
+  percentage, and it is what we have.</p>
+</section>
+
+<!-- ========================= 4 ========================= -->
+<section>
+  <p class="eyebrow">4</p>
+  <h2>The eight professions, one by one</h2>
+  <p class="note">Each card has the same shape: the example words, what feeds off it, where
+  the machine and a person decided, what went wrong, and the numbers. &ldquo;Read&rdquo;
+  means a person looked at titles carrying that share of the group&rsquo;s records.</p>
+
+  <!-- PRACTITIONER -->
+  <div class="grp">
+    <div class="hd">
+      <h3>Practitioner <span class="note">— clinicians who treat patients</span></h3>
+      <div class="feeds">Feeds <strong>Healthcare professional</strong> (title or field, 0.35/0.25/0.40)
+        and <strong>Practitioner</strong> (title and field, 0.45/0.15/0.40)</div>
+    </div>
+    <div class="bd">
+      <h4>58 example words</h4>
+      <div class="anch">consultant · physician · medical doctor · general practitioner · attending physician ·
+      staff physician · chief physician · surgeon · neurosurgeon · cardiologist · radiologist ·
+      neurologist · psychiatrist · nurse · registered nurse · physiotherapist · dentist ·
+      medical officer · dirigente medico · <strong>anesthesiologist · anaesthetist · veterinarian ·
+      urologist · midwife · optometrist · neonatologist · endocrinologist · dermatologist ·
+      haematologist · hematologist · gastroenterologist · paediatrician · pediatrician ·
+      obstetrician · gynaecologist · ophthalmologist · oncologist · pathologist · paramedic ·
+      audiologist · dietitian · podiatrist · occupational therapist · speech and language therapist ·
+      emergency physician · geriatrician · intensivist · rheumatologist · nephrologist ·
+      pulmonologist · orthodontist · periodontist · endodontist · prosthodontist ·
+      oral and maxillofacial surgeon · oral surgeon · dental surgeon · dental hygienist</strong></div>
+      <p class="note">The 39 in bold were added in October. It started with 19.</p>
+
+      <h4>Where the machine decided, and where a person did</h4>
+      <p>Almost everything here is <span class="src v">vector</span>. 32 human decisions
+      moved titles <em>into</em> this group and roughly 54,000 records were moved out of it.
+      No patterns are used.</p>
+
+      <h4>What went wrong</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Problem</th><th class="n">Records</th><th>What we did</th></tr></thead>
+        <tbody>
+          <tr><td>No example word existed for whole professions, so the model picked the nearest it had. <strong>2,684 veterinarians matched <code>dentist</code></strong>; optometrists did too; 2,765 anaesthetists matched <code>neurosurgeon</code>; 2,325 midwives matched <code>nurse</code>.</td><td class="n">~24,000</td><td>Added 25 specialty anchors</td></tr>
+          <tr><td>Dentistry had <em>one</em> word for the whole profession. <code>specialist orthodontist</code> 218 records, <code>consultant endodontist</code> 63, and 315 on a misspelling of <code>oral and maxillofacial surgeron</code>, all leaning on <code>dentist</code>.</td><td class="n">—</td><td>Added 8 dental anchors</td></tr>
+          <tr><td><code>pathologist</code> attracted every science ending the same way — epidemiologist 7,779, toxicologist, entomologist, hydrologist, field geologist, anatomist. This happened <strong>three separate times</strong> as new crops appeared.</td><td class="n">~9,200</td><td>Moved back by hand; anchor kept</td></tr>
+          <tr><td>Titles naming no clinical occupation: <code>advisor</code> 3,307, <code>expert</code> 5,198, <code>designer</code> 1,032, <code>business consultant</code>, <code>it consultant</code>, <code>seismologist</code>, <code>lawyer</code>, <code>minister</code>, <code>personal trainer</code>.</td><td class="n">~28,000</td><td>Rejected or moved</td></tr>
+          <tr><td>Academic ranks read as physicians: <code>doç dr</code> 2,547 (Turkish associate professor), <code>ayudante doctor</code> 1,861 (Spanish teaching post), <code>nursing tutor</code> 737.</td><td class="n">5,145</td><td>Moved to teaching</td></tr>
+          <tr><td>Medical writers and pharma commercial roles: <code>medical writer</code> 1,203, <code>medical science liaison</code> 201.</td><td class="n">1,990</td><td>Moved to support</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>The one we chose not to fix</h4>
+      <p><code>consultant</code> carries 253,841 records and is the single largest anchor.
+      In Britain it is a hospital specialist; everywhere else it is a business adviser. The
+      wrong ones score <em>higher</em> than the right ones — <code>business consultant</code>
+      0.843 against <code>consultant paediatrician</code> 0.699 — so no threshold separates
+      them and removing the anchor would lose real UK consultants.</p>
+      <p>We measured the leak instead. Confirming on a title alone needs an exact anchor
+      match <em>and</em> a fully resolved organisation, which comes to exactly 0.60. So
+      <code>business consultant</code> at 0.843 <strong>cannot get in arithmetically</strong>,
+      and only about 1,008 people are in the audience on a title alone. The department axis
+      is doing the work: where consultant means a hospital doctor, 68–88% of records carry a
+      clinical department, against 20% in the United States and 8% in Brazil.</p>
+
+      <h4>The biggest titles in the group</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Title</th><th class="n">Records</th><th class="n">Similarity</th></tr></thead>
+        <tbody>
+          <tr><td class="c">consultant</td><td class="n">83,636</td><td class="n">1.00</td></tr>
+          <tr><td class="c">doctor</td><td class="n">46,738</td><td class="n">0.925</td></tr>
+          <tr><td class="c">attending physician</td><td class="n">30,799</td><td class="n">1.00</td></tr>
+          <tr><td class="c">medical doctor</td><td class="n">26,600</td><td class="n">1.00</td></tr>
+          <tr><td class="c">physician</td><td class="n">24,756</td><td class="n">1.00</td></tr>
+          <tr><td class="c">nurse</td><td class="n">15,102</td><td class="n">1.00</td></tr>
+          <tr><td class="c">medical officer</td><td class="n">13,696</td><td class="n">1.00</td></tr>
+          <tr><td class="c">dr</td><td class="n">96,676</td><td class="n">0.741</td></tr>
+          <tr><td class="c">md</td><td class="n">50,189</td><td class="n">0.729</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note" style="margin-top:9px;">The last two carry 146,865 records between
+      them and say nothing about a profession beyond holding a doctorate. They are a quarter
+      of this group&rsquo;s low-confidence total on their own, and only the department axis
+      resolves them. The degree field would fix this — see the end of this document.</p>
+
+      <div class="kv">
+        <div class="down"><b>41% &rarr; 34%</b><span>unsure, over October</span></div>
+        <div><b>~38%</b><span>of records read</span></div>
+        <div class="up"><b>+204,930</b><span>net records, from the new anchors</span></div>
+        <div><b>60,937</b><span>Practitioner audience</span></div>
+      </div>
+      <p class="note" style="margin-top:10px;">The lowest coverage of any group, and it
+      feeds the most. Clinical job titles are the most scattered vocabulary in the data:
+      150 titles reached only 52% of its high-similarity records, where 120 titles reached
+      71% in Leadership.</p>
+    </div>
+  </div>
+
+  <!-- TRAINEE CLINICAL -->
+  <div class="grp">
+    <div class="hd">
+      <h3>Clinical trainee <span class="note">— doctors in training</span></h3>
+      <div class="feeds">Feeds the same two audiences as Practitioner, which is why moving a
+        title between the two changes nothing</div>
+    </div>
+    <div class="bd">
+      <h4>8 example words</h4>
+      <div class="anch">resident · resident physician · senior resident · specialist registrar ·
+      clinical fellow · intern · house officer · medical resident</div>
+
+      <h4>What went wrong</h4>
+      <p><strong>Two of the eight anchors are ordinary English words</strong>, and that is
+      the whole story of this group. <code>intern</code> carries 3,925 distinct titles
+      because every industry has interns. <code>resident</code> carries only 490 for
+      164,130 records, because nobody outside medicine writes it as a job title.</p>
+      <div class="tw"><table>
+        <thead><tr><th>Problem</th><th class="n">Records</th><th>What we did</th></tr></thead>
+        <tbody>
+          <tr><td>Training positions with no clinical content. <code>internship</code> 19,557 — a word naming no profession at all — <code>trainee</code> 15,298, <code>summer intern</code> 3,887, <code>estagiário</code>, <code>stagiaire</code>, <code>praktikant</code>.</td><td class="n">52,570</td><td>Moved to student</td></tr>
+          <tr><td>Industry internships and non-trainee roles: engineering, data science and machine learning interns, <code>volunteer</code> 2,010, <code>visitor</code> 1,594, <code>observer</code> 672, <code>junior architect</code>, <code>inspector</code>.</td><td class="n">12,312</td><td>Moved to support</td></tr>
+          <tr><td><strong>Seven fully qualified clinicians were sitting in the trainee group.</strong> <code>internist</code> 1,286 — a qualified specialist physician that reached <code>intern</code> on its first six letters — <code>clinician</code> 1,597, <code>副主任医师</code> 594 (deputy chief physician), <code>senior staff specialist</code> 675 (a consultant grade in Australia).</td><td class="n">6,104</td><td>Moved to practitioner</td></tr>
+          <tr><td><code>retired</code> reached <code>senior resident</code> on the word senior.</td><td class="n">601</td><td>Rejected</td></tr>
+        </tbody>
+      </table></div>
+      <p>Left alone deliberately: bare <code>specialist</code>, 19,521 records. It cannot
+      confirm on a title alone — 0.35 × 0.775 + 0.25 comes to 0.521, under the threshold —
+      so the department decides it, and a specialist with a clinical department is one we
+      want.</p>
+      <div class="kv">
+        <div class="down"><b>20% &rarr; 16%</b><span>unsure</span></div>
+        <div><b>~68%</b><span>of records read, both halves</span></div>
+        <div class="down"><b>&minus;108,823</b><span>net records</span></div>
+        <div><b>8</b><span>anchors, the fewest of any group</span></div>
+      </div>
+      <p class="note" style="margin-top:10px;">The first group small enough to read both
+      similarity halves in one pass — 801,282 records, where teaching has 12 million.</p>
+    </div>
+  </div>
+
+  <!-- TEACHING -->
+  <div class="grp">
+    <div class="hd">
+      <h3>Teaching academic <span class="note">— the largest group in the project</span></h3>
+      <div class="feeds">Feeds <strong>Lecturer</strong> (title only, 0.75/0.25/0.00, confirm 0.60)</div>
+    </div>
+    <div class="bd">
+      <h4>15 example words</h4>
+      <div class="anch">professor · assistant professor · associate professor · full professor ·
+      adjunct professor · visiting professor · lecturer · senior lecturer · assistant lecturer ·
+      instructor · teacher · docente · dozent · faculty member · reader</div>
+
+      <h4>Why this group matters more than its numbers suggest</h4>
+      <p><code>lecturer</code> has a department weight of <strong>zero</strong>. The weakest
+      possible assignment gives 0.75 × 0.70 = 0.525, and a resolved organisation adds 0.25
+      for 0.775 — confirmed. So <strong>every title landing here reaches the audience as
+      soon as the organisation resolves, with nothing to catch it.</strong> Healthcare has
+      the department axis doing exactly that job; teaching has no second axis at all.</p>
+      <p>Its share below 0.75 is the <em>lowest</em> of any group at 6.7%, but the absolute
+      count is the largest anywhere: 810,767 records.</p>
+
+      <h4>What went wrong</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Problem</th><th class="n">Records</th><th>What we did</th></tr></thead>
+        <tbody>
+          <tr><td><code>visiting scientist</code> reached <code>visiting professor</code> on the word visiting. A scientist does not teach. The largest single misassignment in the group.</td><td class="n">32,662</td><td>Moved to research</td></tr>
+          <tr><td><code>dozent</code> is a short foreign word in a nearly empty part of the space, so it attracted anything beginning &ldquo;do&rdquo;: <code>doutoranda</code> 923 (Portuguese doctoral candidate), <code>uzm dr</code> 338 (Turkish specialist physician), and four separate misspellings of <code>doctor</code>.</td><td class="n">~1,700</td><td>Moved by hand</td></tr>
+          <tr><td><strong><code>zitna 25</code> — a street address in Prague</strong>, typed into the job-title field, reaching a teaching anchor at 0.655 on its letters alone.</td><td class="n">58</td><td>Rejected</td></tr>
+          <tr><td><code>dst inspire faculty</code> and its two spellings. India&rsquo;s DST INSPIRE scheme is an independent research fellowship, not a teaching post, and it reached <code>faculty member</code> on the word faculty.</td><td class="n">3,178</td><td>Moved to research</td></tr>
+          <tr><td><code>associate dean</code> and <code>school principal</code> are leadership; <code>university assistant</code> is an Austrian doctoral post; <code>school counselor</code> is neither.</td><td class="n">~5,300</td><td>Moved</td></tr>
+          <tr><td><code>writer</code> and <code>reporter</code> reached <code>reader</code> — the opposite activity, matched on the shape of the word.</td><td class="n">506</td><td>Moved to support</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>The anchor doing the most quiet work</h4>
+      <p><code>docente</code> carries <strong>499,135 records across 9,350 titles</strong> at
+      31.6% below 0.75, and almost all of it is correct. One Italian word is serving Spanish,
+      Portuguese, Italian <em>and</em> Turkish academic ranks: <code>profesor asociado</code>
+      22,217, <code>docenti di ruolo di iia fascia</code> 31,945, <code>profesor titular</code>
+      11,789, <code>öğretim görevlisi</code> 4,188, <code>professore ordinario</code> 4,184.
+      Not touched.</p>
+
+      <h4>A question we measured and did not ask</h4>
+      <p><code>teacher</code> is one of our anchors, so school teachers do land here. We
+      flagged it as possibly large before measuring. All school-related titles together are
+      877 titles and 24,718 records — <strong>0.2% of the group</strong> — and most of those
+      are academic anyway, where &ldquo;school&rdquo; means School of Engineering. Genuine
+      school-level teaching is roughly 5,000 records.</p>
+
+      <h4>The biggest titles in the group</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Title</th><th class="n">Records</th><th class="n">Similarity</th></tr></thead>
+        <tbody>
+          <tr><td class="c">assistant professor</td><td class="n">2,519,128</td><td class="n">1.00</td></tr>
+          <tr><td class="c">associate professor</td><td class="n">1,719,302</td><td class="n">1.00</td></tr>
+          <tr><td class="c">professor</td><td class="n">1,484,514</td><td class="n">1.00</td></tr>
+          <tr><td class="c">lecturer</td><td class="n">905,156</td><td class="n">1.00</td></tr>
+          <tr><td class="c">senior lecturer</td><td class="n">252,511</td><td class="n">1.00</td></tr>
+          <tr><td class="c">teaching assistant</td><td class="n">134,143</td><td class="n">0.827</td></tr>
+        </tbody>
+      </table></div>
+      <div class="kv">
+        <div><b>6.7%</b><span>unsure — the lowest anywhere</span></div>
+        <div><b>~69%</b><span>of records read</span></div>
+        <div><b>810,767</b><span>low-confidence records — the most anywhere</span></div>
+        <div><b>399,884</b><span>Lecturer audience</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESEARCHER EARLY -->
+  <div class="grp">
+    <div class="hd">
+      <h3>Researcher, early career</h3>
+      <div class="feeds">Feeds <strong>Researcher</strong> (title only, 0.75/0.25/0.00) and
+        <strong>Clinical researcher</strong> (title and field, 0.40/0.20/0.40)</div>
+    </div>
+    <div class="bd">
+      <h4>13 example words</h4>
+      <div class="anch">postdoctoral researcher · postdoc · postdoctoral research associate ·
+      postdoctoral fellow · post doctor · research fellow · research assistant · research associate ·
+      researcher · wissenschaftlicher mitarbeiter · assegnisti · borsisti · collaboratori</div>
+
+      <h4>The cleanest group, and the prediction that was wrong</h4>
+      <p>Before reading it we expected trouble: <code>researcher</code> is the most generic
+      occupational word in the project, three anchors carry a generic half
+      (<code>assistant</code>, <code>associate</code>, <code>fellow</code>), three are short
+      Italian words, and <code>post doctor</code> could reach plain <code>doctor</code>.</p>
+      <p>It came back at <strong>6.9% unsure</strong> and <strong>no fixes were needed</strong>
+      — the only group where that happened on a first read. <code>researcher</code> itself
+      measured 8.1% below 0.75. Being generic did not make it dirty, because the region
+      around it is densely packed with real research vocabulary.</p>
+
+      <h4>What the three dirty anchors actually held</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Anchor</th><th class="n">Unsure</th><th>And it turned out to be</th></tr></thead>
+        <tbody>
+          <tr><td class="c">collaboratori</td><td class="n">54.6%</td><td><strong>83% of it one correct title:</strong> <code>dottorandi</code>, 47,810 records, Italian for doctoral students. Real noise about 4,000 records.</td></tr>
+          <tr><td class="c">research fellow</td><td class="n">16.1%</td><td>Named fellowship programmes, all correct: <code>marie curie fellow</code> 6,839, <code>jsps fellow</code> 3,259, <code>ramón y cajal fellow</code> 1,560, <code>arc decra fellow</code> 1,611, <code>newton international fellow</code> 1,116. The programme name dominates a two-word anchor.</td></tr>
+          <tr><td class="c">post doctor</td><td class="n">21.1%</td><td>Misspellings of postdoc, all landing correctly: <code>posdoc</code> 4,943, <code>pos-doc</code> 1,437, <code>potsdoc</code>, <code>postodc</code>, <code>poctdoc</code>.</td></tr>
+        </tbody>
+      </table></div>
+      <p>The fixes that <em>were</em> made came from the foreign anchors: <code>partner</code>
+      957, <code>colaborador</code>, <code>external cooperation</code>, <code>contratista</code>,
+      <code>sócio</code> — generic words carrying no research meaning — plus four clinical
+      titles (<code>op dr</code> 417, a Turkish surgeon) and four academic ranks
+      (<code>conferentiar</code> 192, Romanian for associate professor).</p>
+      <div class="kv">
+        <div><b>6.9%</b><span>unsure</span></div>
+        <div><b>~75%</b><span>of records read — the best coverage</span></div>
+        <div><b>0</b><span>fixes on the first read</span></div>
+        <div><b>321,824</b><span>Researcher audience, with the senior group</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESEARCHER ESTABLISHED -->
+  <div class="grp">
+    <div class="hd">
+      <h3>Researcher, established</h3>
+      <div class="feeds">Feeds the same two audiences as the early-career group</div>
+    </div>
+    <div class="bd">
+      <h4>9 example words</h4>
+      <div class="anch">senior researcher · senior scientist · research scientist ·
+      principal investigator · group leader · staff scientist · scientist ·
+      head of laboratory · scientific director</div>
+      <p class="note">The split between early and established is made <strong>entirely by
+      job title</strong>, and both groups feed the same audiences — so the distinction is
+      carried and never used. Splitting Researcher into two audiences would be a
+      configuration change and nothing else.</p>
+
+      <h4>The largest single error in the project</h4>
+      <p><code>junior researcher</code>, <strong>42,949 records</strong>, sat in the
+      <em>senior</em> group for the project&rsquo;s entire life. With
+      <code>junior scientific researcher</code> and the rest that is 52,279 records in the
+      group that means the opposite.</p>
+      <p>It reached <code>senior researcher</code> at 0.870 because &ldquo;researcher&rdquo;
+      dominates the phrase and the embedding places <em>junior</em> and <em>senior</em>
+      close together — two ends of one axis rather than opposites. <strong>A word that
+      reverses a title barely moves it in the space.</strong> Every review query written
+      before 21 October filtered <code>similarity &lt; 0.75</code>, so none of them could
+      see it.</p>
+      <p>And the same test caught us making the model&rsquo;s mistake in reverse: we moved
+      <code>junior group leader</code> out of this group, then withdrew it — a German
+      <em>Nachwuchsgruppenleiter</em> runs their own group on their own funding and is an
+      independent researcher.</p>
+
+      <h4>What else went wrong</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Problem</th><th class="n">Records</th><th>What we did</th></tr></thead>
+        <tbody>
+          <tr><td><code>senior scientist</code> and <code>senior researcher</code> attracted every &ldquo;senior X&rdquo;: <code>senior manager</code> 2,772, <code>senior technical officer</code> 1,158, <code>senior software developer</code> 810, <code>senior officer</code> 768.</td><td class="n">10,073</td><td>Moved one title at a time</td></tr>
+          <tr><td>Writing and software roles on <code>scientist</code> and <code>scientific director</code>: <code>author</code> 704, <code>scientific editor</code> 544, <code>scientific programmer</code> 735, <code>journalist</code> 362.</td><td class="n">4,126</td><td>Moved to support</td></tr>
+          <tr><td>Directing roles on <code>head of laboratory</code> and <code>scientific director</code>: <code>head of innovation</code> 253, <code>vice president r&amp;d</code> 157, <code>head of quality</code> 154.</td><td class="n">3,907</td><td>Moved to leadership</td></tr>
+          <tr><td><code>pathologist</code> pulling the sciences, third round: <code>biologo</code> 294, <code>field geologist</code> 180, <code>anatomist</code> 104.</td><td class="n">2,078</td><td>Moved back</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>The anchors could not simply be removed.</strong> <code>senior researcher</code>
+      alone carries 447,319 records at a clean 5.9% below 0.75, and dropping it would move all
+      of them into the early-career group and destroy the seniority split. So the leakage was
+      handled title by title.</p>
+
+      <h4>What remains, and why it is not an error</h4>
+      <p><code>head of laboratory</code> sits at 36% unsure across 5,195 titles and almost
+      all of it is correct: <code>head of phycology research group</code>,
+      <code>head of national reference laboratory nrl for bovine tuberculosis</code>,
+      <code>head of textile metrology laboratory since 2014</code>. They score low because
+      they are long. Likewise about 14,000 records of real scientists —
+      <code>microbiologist</code> 2,559, <code>geophysicist</code> 1,498,
+      <code>ecologist</code> 1,101 — all leaning correctly on the single word
+      <code>scientist</code>. Giving each its own anchor would lift the metric and change
+      nobody&rsquo;s audience, while risking what <code>pathologist</code> did three times.</p>
+      <div class="kv">
+        <div class="down"><b>16% &rarr; 16%</b><span>unsure — see proof one above</span></div>
+        <div><b>~62%</b><span>of records read</span></div>
+        <div class="down"><b>&minus;51,275</b><span>net records</span></div>
+        <div><b>48</b><span>human decisions, the most of any group</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERSHIP -->
+  <div class="grp">
+    <div class="hd">
+      <h3>Leadership</h3>
+      <div class="feeds">Feeds <strong>Head of faculty</strong> (title only, 0.60/0.40/0.00,
+        current post only) and <strong>Clinical administrator</strong> (title and field)</div>
+    </div>
+    <div class="bd">
+      <h4>13 example words</h4>
+      <div class="anch">dean · vice dean · head of department · department head · department chair ·
+      director · deputy director · chief · chair · chairman · vice chancellor · provost · rector</div>
+
+      <h4>Why this group is conditional, and why that is the point</h4>
+      <p>A leadership title alone says nothing about whether the person is academic. The
+      organisation and department decide: <code>faculty_head</code> scores a company at
+      <strong>0.00</strong>, so a corporate title cannot confirm there, and
+      <code>hcp_administrator</code> needs a clinical department. So the same word lands
+      correctly in different places — <code>clinic director</code> becomes a clinical
+      administrator, <code>chief technology officer</code> becomes nothing.</p>
+      <p>Measured: <code>ceo</code> produces 879 people of whom only <strong>55</strong> are
+      confirmed, <code>founder</code> 31 of 411, <code>owner</code> 2 of 188.</p>
+
+      <h4>What went wrong</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Problem</th><th class="n">Records</th><th>What we did</th></tr></thead>
+        <tbody>
+          <tr><td><code>editor-in-chief</code> and its unhyphenated spelling reached <code>chief</code> and read as institutional leadership. For a publisher, a distinction worth getting right.</td><td class="n">5,172</td><td>Moved to support</td></tr>
+          <tr><td><code>personal chair</code> is a full professorship in UK usage, not chairing anything. <code>vice professor</code>, <code>prefessor</code>, <code>univ -prof</code> are all professors.</td><td class="n">2,933</td><td>Moved to teaching</td></tr>
+          <tr><td><code>chancellor s fellow</code> is an early-career research fellowship that reached <code>vice chancellor</code> on one word.</td><td class="n">846</td><td>Moved to research</td></tr>
+          <tr><td><code>lieutenant</code> reached <code>chief</code>. A military rank.</td><td class="n">517</td><td>Moved to support</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>A rule we checked and kept</h4>
+      <p>Three rows in <code>org_name_patterns</code> veto a leadership title at a company
+      by name. They were written to stop corporate executives arriving — but we later found
+      the real cause was that the anchor table could not shrink, so removing
+      <code>chief executive officer</code> and <code>founder</code> from the anchors had
+      never taken effect. The veto was built around a bug that is now fixed, so we measured
+      whether it still earns its place. It catches <strong>79 people</strong>, all of them
+      in the second tier, where without it an academically-named company could lift them
+      over the line. Small, and exactly its job. Kept.</p>
+      <div class="kv">
+        <div class="up"><b>26% &rarr; 27%</b><span>unsure — it received titles from other groups</span></div>
+        <div><b>~62%</b><span>of records read</span></div>
+        <div><b>144,252</b><span>records on <code>director</code> alone</span></div>
+        <div><b>20,347</b><span>Head of faculty audience</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHARMACIST -->
+  <div class="grp">
+    <div class="hd">
+      <h3>Pharmacist</h3>
+      <div class="feeds">Feeds <strong>Pharmacist</strong> (title only, 0.55/0.15/0.30, confirm 0.60)</div>
+    </div>
+    <div class="bd">
+      <h4>11 example words, five of them foreign</h4>
+      <div class="anch">pharmacist · hospital pharmacist · clinical pharmacist · community pharmacist ·
+      chief pharmacist · head of pharmacy · dispensing pharmacist · <strong>apotheker · pharmacien ·
+      farmaceutico · eczaci</strong></div>
+
+      <h4>Proportionally the dirtiest group — and French did it</h4>
+      <p>57 human decisions covering about 19,800 records, which is <strong>21% of the
+      group</strong>. The foreign anchors were the cause, not the pharmacology confusion we
+      expected.</p>
+      <div class="tw"><table>
+        <thead><tr><th>Anchor</th><th class="n">Was unsure</th><th>What it attracted</th><th class="n">Now</th></tr></thead>
+        <tbody>
+          <tr><td class="c">pharmacien</td><td class="n">54%</td><td><strong><code>praticien</code> — French for practitioner, three letters away.</strong> <code>praticien hospitalier</code> 1,359 records, <code>praticien hospitalier universitaire</code> 345, and five more. Plus <code>infirmière</code> 198 and <code>pielęgniarka</code> 107, both nurses.</td><td class="n">57%*</td></tr>
+          <tr><td class="c">apotheker</td><td class="n">91%</td><td>German and Nordic <em>doctor</em> words: <code>arzt</code> 305, <code>oberarztin</code> 126, <code>at-läkare</code> 100 — and <code>аспірант</code> 127, Ukrainian for a postgraduate student.</td><td class="n">81%</td></tr>
+          <tr><td class="c">farmaceutico</td><td class="n">72%</td><td>Any Romance word ending <em>-ico</em> or <em>-ica</em>: <code>facultativo</code> 337 (Spanish physician), <code>químico</code> 261, <code>tecnologista</code> 270, <code>bioquímica</code> 100.</td><td class="n">62%</td></tr>
+          <tr><td class="c">chief pharmacist</td><td class="n">55%</td><td>Every chief-something-officer. <code>chief technology officer</code> <strong>1,841</strong>, which had been in Librarian under <code>chief librarian</code> until that group lost its anchors and migrated here.</td><td class="n">30%</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">*<code>pharmacien</code>&rsquo;s share rose while its records halved from
+      5,219 to 2,400 — proof one again, in miniature.</p>
+      <p>The largest single cluster was <code>chemist</code> and its family,
+      <strong>6,923 records</strong>. In British English a chemist is a pharmacy; as an ORCID
+      job title it is a chemistry researcher, and the model offered
+      <code>researcher_established</code> as the runner-up for most of them.</p>
+
+      <h4>The arithmetic is on our side here, unusually</h4>
+      <p>Weights 0.55 / 0.15 / 0.30 with a 0.60 threshold mean the weakest assignment plus a
+      fully resolved organisation reaches only <strong>0.535</strong> — a pharmacy department
+      is required. That is why 21% of the group&rsquo;s records being wrong cost the audience
+      only <strong>91 people</strong>: a chemist without a pharmacy department was never
+      confirmed in the first place.</p>
+      <div class="kv">
+        <div class="down"><b>35% &rarr; 29%</b><span>unsure</span></div>
+        <div><b>~51%</b><span>of records read</span></div>
+        <div class="down"><b>&minus;27,459</b><span>net records</span></div>
+        <div><b>2,245</b><span>Pharmacist audience, from 2,336</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIBRARIAN -->
+  <div class="grp">
+    <div class="hd">
+      <h3>Librarian <span class="note">— the one group decided by the word, not the model</span></h3>
+      <div class="feeds">Feeds <strong>Librarian</strong> (1.00/0.00/0.00, current post only)</div>
+    </div>
+    <div class="bd">
+      <h4>No example words at all. Eleven patterns instead.</h4>
+      <div class="anch">librar · bibliotec · bibliotek · bibliothek · bibliothé · bibliothè ·
+      библиотек · бібліотек · kütüphane · 図書館 · 图书馆</div>
+      <p>A title containing any of these <em>is</em> a librarian. No similarity, no
+      threshold, <span class="src p">pattern</span> rather than
+      <span class="src v">vector</span>. Every assignment is exact, so the score is always
+      1.000 and there is no second tier.</p>
+
+      <h4>Why it works this way — it failed twice with anchors</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Attempt</th><th class="n">Wrong</th><th>What happened</th></tr></thead>
+        <tbody>
+          <tr><td>25 anchors, 11 of them translations</td><td class="n">69%</td><td>In Spanish and Portuguese a short occupational noun sits in a thin part of the space, so <code>bibliotecario</code> matched on <strong>spelling</strong>: <code>biólogo</code>, <code>catedrática</code>, <code>nutricionista</code>, <code>pielęgniarka</code>. <code>catedrática</code> is a full professor and we called it a librarian.</td></tr>
+          <tr><td>19 anchors, rule: library must be the head noun</td><td class="n">73%</td><td>Grammatically right and embedding-wrong. In <code>library manager</code> the head noun <em>is</em> manager, so every compound attracted its generic half: <code>library manager</code> pulled <code>manager</code> — 17,340 records — <code>library officer</code> pulled every officer, <code>chief librarian</code> pulled <code>chief technology officer</code>.</td></tr>
+          <tr><td>No anchors, 11 patterns</td><td class="n">—</td><td>Every assignment exact. And because the group has no anchors it can never be returned by the vector search, so it <strong>cannot take a title from another group</strong>. The cross-group damage is gone by construction rather than by tuning.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Two false positives remain findable and both were fixed by hand:
+      <code>guest scientist-lentiviral library oxstress dna-sensing</code> and
+      <code>manager of the chemical library and molecular modeler</code>. A lentiviral
+      library is a collection of genetic constructs; a chemical library is a compound
+      collection. 89 records out of 21,832 — <strong>0.4%</strong> — which is the price of a
+      stem match and worth paying.</p>
+      <p class="note">Deliberately excluded: archivists, because <code>archivist</code> as
+      an anchor pulled archaeologists, glaciologists and clerks. And anyone whose title says
+      only <code>information specialist</code>, because it pulled every IT role. Either is
+      one pattern row to add.</p>
+      <div class="kv">
+        <div><b>668</b><span>people, 361 reachable</span></div>
+        <div><b>1.000</b><span>score, always</span></div>
+        <div><b>0.4%</b><span>known false positives</span></div>
+        <div><b>54%</b><span>reachable rate — the lowest, see below</span></div>
+      </div>
+      <p class="note" style="margin-top:10px;">Librarians are reachable at 54% against
+      70–78% for every other audience. The cause is visible in the consent flags: the
+      legitimate-interest basis is author-based, and it covers 40% of librarians against 72%
+      of lecturers. Librarians publish less. Any future non-academic audience should be
+      expected to behave the same way.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= 5 ========================= -->
+<section>
+  <p class="eyebrow">5</p>
+  <h2>The two groups that feed nothing</h2>
+  <p><code>student</code> (1,968,320 records, 11 anchors) and <code>support_technical</code>
+  (1,458,782 records, 13 anchors) are classified and feed no audience. They are also where
+  titles that belong nowhere else get parked, which is why their quality numbers move the
+  wrong way as the review progresses — <code>support_technical</code> went from 34% to 37%
+  unsure <em>because</em> we moved low-confidence noise into it.</p>
+  <p>That is deliberate and costs nothing today. It would matter immediately if a student or
+  support-staff audience were ever opened, and at that point both groups need reading from
+  scratch. <code>support_technical</code> is currently the dirtiest group in the project and
+  that is a side effect of the review rather than a problem with it.</p>
+</section>
+
+<!-- ========================= 6 ========================= -->
+<section>
+  <p class="eyebrow">6</p>
+  <h2>Every model in the pipeline</h2>
+  <p>Twenty-six models in five layers. Each layer does one thing and hands off.</p>
+
+  <div class="flow">
+    <div class="lay"><span class="nm">raw</span><div>
+      <p>Surface the sources as-is, with nothing but the visibility filter applied. Three views.</p>
+      <div class="mods">raw_orcid_researchers · raw_audience_builder_big · raw_ror_data_refresh</div></div></div>
+    <div class="lay"><span class="nm">staging</span><div>
+      <p>Reshape each source into one common schema, so a second source could be added without touching anything downstream.</p>
+      <div class="mods">stg_orcid__employment · stg_role_records · stg_ror__organisations · stg_ror__external_ids</div></div></div>
+    <div class="lay"><span class="nm">dictionary</span><div>
+      <p>The expensive part, and the whole reason the project is affordable. Classify every distinct title and department ONCE. Twelve models.</p>
+      <div class="mods">int_title_distinct · int_title_embeddings · int_anchor_terms · int_anchor_embeddings · int_title_group_match · <strong>dim_title_group</strong> · int_department_distinct · int_department_embeddings · int_discipline_match · <strong>dim_department_discipline</strong> · int_org_resolved · int_title_group_registry</div></div></div>
+    <div class="lay"><span class="nm">scoring</span><div>
+      <p>Join the dictionaries back to people, score every (person, audience) pair, label it. Three models.</p>
+      <div class="mods">int_employment_scored · int_role_detail · <strong>fct_researcher_roles</strong></div></div></div>
+    <div class="lay"><span class="nm">presentation</span><div>
+      <p>What people and systems actually read. Five models.</p>
+      <div class="mods">fct_role_audience · <strong>fct_role_audience_summary</strong> · fct_braze_contact_roles · dim_researcher_role_flags · rpt_title_review_queue</div></div></div>
+  </div>
+
+  <h4>Raw layer</h4>
+  <div class="tw"><table>
+    <thead><tr><th>Model</th><th>What it does and why we need it</th></tr></thead>
+    <tbody>
+      <tr><td class="c">raw_orcid_researchers</td><td>The ORCID source, one row per person after deduplication. <strong>Why it exists:</strong> the source keeps roughly fourteen rows per profile — every saved version — and nothing in the column names says so. Before the dedup every downstream count was inflated and still looked plausible. It also applies the <code>visibility = 'PUBLIC'</code> filter once, here, so non-public data can never leak downstream. It carries the <code>educations</code> array, which nothing uses yet.</td></tr>
+      <tr><td class="c">raw_audience_builder_big</td><td>The CDP, one row per SNID. Reads three consent flags and aggregates with <code>LOGICAL_AND</code>, so every row for a person must consent. <strong>Why:</strong> the source has several rows per person and the conservative reading is the defensible one.</td></tr>
+      <tr><td class="c">raw_ror_data_refresh</td><td>The ROR organisation registry, from another project. Gives us the organisation <em>type</em> — university, hospital, company — which is the whole second axis of the score.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Staging layer</h4>
+  <div class="tw"><table>
+    <thead><tr><th>Model</th><th>What it does and why we need it</th></tr></thead>
+    <tbody>
+      <tr><td class="c">stg_orcid__employment</td><td>Flattens <code>employments[]</code> into one row per employment record and normalises every text field. This model is the only ORCID-specific thing in the pipeline; its output schema is source-agnostic.</td></tr>
+      <tr><td class="c">stg_role_records</td><td>The single door role records come through. Today it reads one source. <strong>Why it exists at all:</strong> so that adding a second source — scraped profiles, CDP self-reported titles — means writing one staging model and nothing else.</td></tr>
+      <tr><td class="c">stg_ror__organisations</td><td>One row per organisation with its type and country.</td></tr>
+      <tr><td class="c">stg_ror__external_ids</td><td>Flattens ROR&rsquo;s external identifier array, so an organisation can be matched by GRID or Ringgold as well as by ROR id.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Dictionary layer — the part worth understanding</h4>
+  <div class="tw"><table>
+    <thead><tr><th>Model</th><th>What it does and why we need it</th></tr></thead>
+    <tbody>
+      <tr><td class="c">int_title_distinct</td><td>Every distinct job title and how many records use it. <strong>Why:</strong> everything expensive runs on this table — 310,299 rows — instead of on 38 million employment records. This single choice is why the AI cost does not scale with the audience.</td></tr>
+      <tr><td class="c">int_title_embeddings</td><td>Each distinct title turned into 768 numbers, once. Incremental, so a title already embedded is never embedded again.</td></tr>
+      <tr><td class="c">int_anchor_terms</td><td>The hand-written example words for both axes, unioned from two seeds. 151 title anchors, 162 field anchors.</td></tr>
+      <tr><td class="c">int_anchor_embeddings</td><td>The anchors embedded with the same model. <strong>A table, not incremental, and the reason matters:</strong> it was incremental until 16 October, and incremental only inserts — so an anchor deleted from the seed kept its vector and stayed a live search target for ever. Removing an anchor did nothing, silently. It cost us twice: once on Librarian, where the next build came back worse, and once on Leadership, where the removal of <code>chief executive officer</code> and <code>founder</code> had never taken effect and we wrongly concluded the model simply generalises to corporate titles.</td></tr>
+      <tr><td class="c">int_title_group_match</td><td>The vector search. Each title is compared against all anchors, the nearest group wins, and the margin to the runner-up is recorded.</td></tr>
+      <tr><td class="c"><strong>dim_title_group</strong></td><td><strong>Dictionary 1.</strong> One row per distinct job title with its final group, after human overrides and patterns are applied in precedence order. This is the table to query when you want to know why a title got its group.</td></tr>
+      <tr><td class="c">int_department_distinct<br>int_department_embeddings<br>int_discipline_match</td><td>The same three steps for the field axis, on 450,307 distinct department names.</td></tr>
+      <tr><td class="c"><strong>dim_department_discipline</strong></td><td><strong>Dictionary 2.</strong> One row per distinct department with its discipline.</td></tr>
+      <tr><td class="c">int_org_resolved</td><td>Resolves each organisation to a ROR record by three routes: a direct ROR id (35.3% of records), an external identifier, or a name match. Where nothing resolves, name patterns supply a fallback score.</td></tr>
+      <tr><td class="c">int_title_group_registry</td><td>The list of valid title groups, which is <em>not</em> the anchor seed: a group is real if it has anchors <strong>or</strong> patterns. Exists so the test on override targets has something true to check against — Librarian has zero anchors and an override naming it is perfectly valid.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Scoring layer</h4>
+  <div class="tw"><table>
+    <thead><tr><th>Model</th><th>What it does and why we need it</th></tr></thead>
+    <tbody>
+      <tr><td class="c">int_employment_scored</td><td>Joins both dictionaries back to every employment record and produces the three sub-scores per (person, audience). Also picks the <strong>representative record</strong>: one row per person per audience, their most recent post <em>of that type</em>, so the evidence shown for Lecturer is their newest teaching post and for Researcher their newest research post.</td></tr>
+      <tr><td class="c">int_role_detail</td><td>The second half of the detail label. Each audience has its own detail dimension — Healthcare splits into Practitioner / Researcher / Administrator, Pharmacist into Hospital / Community / Industry / Academia — assigned by title regex and organisation type.</td></tr>
+      <tr><td class="c"><strong>fct_researcher_roles</strong></td><td><strong>The core model.</strong> One row per (person, audience) with the final score and label. Parent roll-ups are unioned here, and the label is <em>recomputed after</em> the union — a parent inherits a child&rsquo;s score, so labelling before the union would be wrong. The whole presentation layer is built from this table.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Presentation layer</h4>
+  <div class="tw"><table>
+    <thead><tr><th>Model</th><th>What it does and why we need it</th></tr></thead>
+    <tbody>
+      <tr><td class="c">fct_role_audience</td><td><code>fct_researcher_roles</code> with the consent flags and email joined on. The table to query when you want people plus reachability.</td></tr>
+      <tr><td class="c"><strong>fct_role_audience_summary</strong></td><td>One row per audience and label. The headline table — identified, in CDP, each consent flag, reachable, and the two rates.</td></tr>
+      <tr><td class="c">fct_braze_contact_roles</td><td>The delivery contract. One row per contact, with positionally-aligned arrays: <code>role_inferred[i]</code> and <code>role_detailed_inferred[i]</code> describe the same role. A test asserts that alignment, because nothing in the schema enforces it.</td></tr>
+      <tr><td class="c">dim_researcher_role_flags</td><td>One row per person, one column per audience, for BI tools. The columns are generated from the registry, so a new audience becomes a new column automatically.</td></tr>
+      <tr><td class="c">rpt_title_review_queue</td><td>The human review queue: ambiguous values from both axes, ordered by frequency. The highest-leverage table in the project, because the distributions are so skewed that reviewing the top few hundred values decides millions of records.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Output columns, for the tables you will actually query</h4>
+  <div class="tw"><table>
+    <thead><tr><th>Column</th><th>In</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td class="c">title / department</td><td class="c">dim_*</td><td>The normalised value: lowercased, punctuation stripped, abbreviations expanded. Accents are <em>kept</em>.</td></tr>
+      <tr><td class="c">title_key / department_key</td><td class="c">dim_*</td><td>MD5 of the normalised value. The join key everywhere.</td></tr>
+      <tr><td class="c">frequency</td><td class="c">dim_*</td><td>How many employment records carry this exact value. Heavily skewed — <code>assistant professor</code> is 2.5M, and 3,346 titles appear fewer than five times.</td></tr>
+      <tr><td class="c">title_group / discipline</td><td class="c">dim_*</td><td>The final group, after overrides and patterns.</td></tr>
+      <tr><td class="c">similarity</td><td class="c">dim_*</td><td>Distance to the nearest anchor, 0 to 1. <strong>Meaningless for a pattern-decided row</strong>, because no similarity was involved — for Librarian it records how far the title sits from the <em>other</em> groups&rsquo; anchors.</td></tr>
+      <tr><td class="c">runner_up</td><td class="c">dim_*</td><td>The second-placed group. The most useful column in the table when judging a decision — it tells you what the model nearly chose.</td></tr>
+      <tr><td class="c">margin</td><td class="c">dim_*</td><td>Similarity minus the runner-up&rsquo;s. A margin near zero is a coin flip.</td></tr>
+      <tr><td class="c">matched_anchors</td><td class="c">dim_*</td><td>The three nearest anchor terms. For a HUMAN or PATTERN row this shows what the <em>vector</em> would have chosen, which is why it can look unrelated.</td></tr>
+      <tr><td class="c">is_assigned</td><td class="c">dim_*</td><td>False when the nearest anchor was below 0.65, or a human rejected it. An unassigned title contributes nothing.</td></tr>
+      <tr><td class="c">decision_source</td><td class="c">dim_title_group</td><td><span class="src h">human</span> <span class="src p">pattern</span> <span class="src v">vector</span> <code>REJECTED</code>. Note that a human REJECT shows as HUMAN — the column records <em>who</em> decided, not what they decided.</td></tr>
+      <tr><td class="c">group_score / discipline_score</td><td class="c">dim_*</td><td>The similarity rescaled to 0.70–1.00, or forced to 1.0 by a human ACCEPT or a pattern, or 0.0 if unassigned.</td></tr>
+      <tr><td class="c">needs_human_review</td><td class="c">dim_*</td><td>True when the margin to the runner-up is under <code>sim_review_margin</code> (0.02). Feeds the review queue.</td></tr>
+      <tr><td class="c">role_score / org_score / dept_score</td><td class="c">fct_researcher_roles</td><td>The three weighted inputs, before the weights are applied.</td></tr>
+      <tr><td class="c">role_final_score</td><td class="c">fct_researcher_roles</td><td>The weighted sum. Compared against the audience&rsquo;s thresholds to get the label.</td></tr>
+      <tr><td class="c">role_label</td><td class="c">fct_researcher_roles</td><td><code>CONFIRMED</code> or <code>PROBABLE</code>. Only CONFIRMED is delivered.</td></tr>
+      <tr><td class="c">evidence_title / evidence_org / evidence_dept</td><td class="c">fct_researcher_roles</td><td>The <strong>raw</strong> text from the representative record — what the person actually typed. Use these to explain a decision to someone.</td></tr>
+      <tr><td class="c">derived_from_role</td><td class="c">fct_researcher_roles</td><td>Set when this row is a parent roll-up, naming the child audience it came from.</td></tr>
+      <tr><td class="c">country_code</td><td class="c">fct_*</td><td>From the employment organisation&rsquo;s address, not the person&rsquo;s. 100% populated on these records.</td></tr>
+      <tr><td class="c">in_cdp / is_marketable /<br>is_advertisable / is_legitimate_interest</td><td class="c">fct_role_audience</td><td>Consent. Any one of the three bases counts a person as reachable, by marketing&rsquo;s instruction of 16 October.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ========================= 7 ========================= -->
+<section>
+  <p class="eyebrow">7</p>
+  <h2>Queries you can run</h2>
+  <p class="note">Dataset prefix throughout:
+  <code>dat-analytics-eng-ec869189.dev_orcid_role_identifier_</code></p>
+
+  <h4>Why is this person in this audience?</h4>
+  <pre>SELECT role_key, role_label, role_final_score,
+       role_score, org_score, dept_score,
+       evidence_title, evidence_org, evidence_dept, country_code
+FROM   `...scoring.fct_researcher_roles`
+WHERE  snid = &lt;the snid&gt;
+ORDER BY role_final_score DESC;</pre>
+
+  <h4>Why did this title get its group?</h4>
+  <pre>SELECT title, frequency, title_group, decision_source,
+       ROUND(similarity,3) AS similarity, runner_up, ROUND(margin,3) AS margin,
+       matched_anchors, is_assigned, group_score
+FROM   `...dictionary.dim_title_group`
+WHERE  title = 'consultant';</pre>
+
+  <h4>What is each group carrying, and how unsure is it?</h4>
+  <pre>SELECT title_group,
+       COUNT(*)                                  AS distinct_titles,
+       COUNTIF(decision_source = 'PATTERN')      AS pattern_decided,
+       SUM(frequency)                            AS records,
+       ROUND(SUM(IF(similarity &lt; 0.75, frequency, 0)) / SUM(frequency), 4)
+                                                 AS share_below_075
+FROM   `...dictionary.dim_title_group`
+WHERE  is_assigned
+GROUP BY title_group
+ORDER BY records DESC;</pre>
+  <p class="note">This is the number section 3 warns about. Read it per group over time, never
+  across groups.</p>
+
+  <h4>Which anchor is carrying a group, and which one is leaking?</h4>
+  <pre>SELECT matched_anchors[OFFSET(0)]               AS nearest_anchor,
+       COUNT(*)                                 AS distinct_titles,
+       SUM(frequency)                           AS records,
+       ROUND(SUM(IF(similarity &lt; 0.75, frequency, 0)) / SUM(frequency), 4)
+                                                AS share_below_075
+FROM   `...dictionary.dim_title_group`
+WHERE  is_assigned AND title_group = 'practitioner'
+GROUP BY nearest_anchor
+ORDER BY records DESC;</pre>
+  <p class="note">The diagnostic that found most of this document&rsquo;s fixes. A high share
+  on one anchor usually means a <em>missing</em> anchor — the titles arriving there are
+  correct and merely unconfident, because the nearest word we gave the model was the closest
+  thing available. 2,684 veterinarians matching <code>dentist</code> was found this way.</p>
+
+  <h4>Every decision a person has made</h4>
+  <pre>SELECT title, title_group, decision, reviewer, reviewed_at, note
+FROM   `...seeds.role_title_overrides`
+ORDER BY reviewed_at DESC, title;</pre>
+  <p class="note">348 rows. Each note carries the measured reason, so a decision can be
+  re-argued later rather than just re-made.</p>
+
+  <h4>The headline</h4>
+  <pre>SELECT * FROM `...presentation.fct_role_audience_summary` ORDER BY identified DESC;</pre>
+</section>
+
+<!-- ========================= 8 ========================= -->
+<section>
+  <p class="eyebrow">8</p>
+  <h2>What would change the most next</h2>
+  <p>ORCID records each person&rsquo;s <strong>degrees</strong>, in an
+  <code>educations</code> array that <code>raw_orcid_researchers</code> already reads and
+  that nothing downstream consumes. It is the largest unused signal in the project.</p>
+  <p>A degree is a far more standardised vocabulary than a job title. MD, MBBS, BDS, PharmD
+  and MLIS mean one thing worldwide — which is the exact opposite of clinical job titles,
+  where Resident, Registrar, Facharzt and Interno share no common word. That is what would
+  settle the <strong>146,865 records</strong> where the job title is only <code>dr</code> or
+  <code>md</code> and carries no occupational information at all.</p>
+  <p>Two things to design around. A degree is evidence of <em>training</em>, not of current
+  work: someone with an MD who now works in venture capital still has an MD, so it should
+  raise confidence in a profession the employment already suggests rather than assign one on
+  its own. And the coverage is unmeasured — <code>analyses/archive/04</code> asked exactly
+  this question and has no recorded answer, so the first step is a measurement, not a
+  design.</p>
+  <p>The dates in the same array are the other half. <code>full_start_date</code> is already
+  read for recency, so career length — today minus the earliest employment start — is
+  available without new data, and it is a seniority measure independent of what someone
+  called their job. That is what the external role library&rsquo;s career stages are built
+  on.</p>
+</section>
+
+<p class="foot">Springer Nature &middot; Researcher 360 &middot; analytics engineering.
+All figures from the build of 21 October 2026. The full register of open questions and
+measured limitations is <code>docs/open-questions.md</code>; the review queries are
+<code>analyses/19</code> and <code>analyses/22</code> to <code>analyses/24</code>.</p>
+
+</div>
+
+</body></html>
