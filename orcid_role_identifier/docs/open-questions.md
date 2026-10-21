@@ -277,6 +277,41 @@ Resident, Registrar, Facharzt, Interno, Jefe de Servicio and Senior House
 Officer describe overlapping things and share no common stem, so only a
 meaning-based match can connect them. *Source: analyses/19 query 3.*
 
+### 2.4a "Reviewed" means read in part, and the part is small
+
+Added 2026-10-21 after Merve asked how we had established that
+researcher_established was finished. We had not, and the claim was wrong.
+
+What the review of that group actually read: about **150 titles of 27,963**,
+carrying ~70,000 records against 304,478 below 0.75 similarity and 1,950,686
+in the group. So roughly **23% of the low-confidence records and 3.6% of the
+group**.
+
+And every query was filtered `similarity < 0.75`, which means **1,646,208
+records - 84% of the group - were never examined in any form**. That filter
+looked reasonable until you remember where it came from: we found
+`business consultant` at **0.843**, `independent consultant` at 0.867 and
+`medical director` at 0.821, all wrong, and wrote at the time that "the wrong
+ones score higher than the right ones". Then every query since excluded
+exactly that range.
+
+The same correction applies to practitioner, also called reviewed.
+
+analyses/24 closes the gap in two ways. It measures whether hand-reading is
+even a viable method for a given group, by bucketing the problem by
+frequency - if most of it sits in titles appearing twice, no top-60 list
+will ever reach it. And it adds a test that needs no similarity threshold at
+all: for each compound anchor, name the stem that makes it distinctive, and
+flag any title that reached it WITHOUT containing that stem. Such a title
+cannot have matched on meaning - it matched the word the anchor shares with
+the labour market. That is the shape of every failure of this kind we have
+found: `library manager` attracting `manager`, `senior scientist` attracting
+`senior manager`, `medical officer` attracting `education officer`.
+
+It does not catch `business consultant`, which contains the distinctive stem
+and is simply the right word from the wrong domain. Nothing computable
+catches that one.
+
 ### 2.4b share_below_075 is partly a measure of title LENGTH
 
 Found on 2026-10-21 while reading `head of laboratory`, which carries 5,203

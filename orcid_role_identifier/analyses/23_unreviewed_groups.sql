@@ -16,14 +16,18 @@
       support_technical       36.64%   feeds nothing, and gets dirtier by
                                        design - it is where rejected titles
                                        are parked
-      practitioner            33.80%   REVIEWED 2026-10-20, from 40.64%
+      practitioner            33.80%   PARTLY reviewed 2026-10-20, from
+                                       40.64% - see analyses/24, the reading
+                                       covered a fraction of it
       pharmacist              31.71%   the pharmacist audience, 2,335 people
       leadership              27.76%   faculty_head + hcp_administrator, and
                                        it received 2,271 records from the
                                        researcher review without having been
                                        read itself
       trainee_clinical        18.40%   the hcp roles
-      researcher_established  15.61%   REVIEWED 2026-10-21, from 16.29%
+      researcher_established  15.61%   PARTLY reviewed 2026-10-21, from
+                                       16.29% - ~3.6% of its records were
+                                       actually read, see analyses/24
       student                  8.94%   feeds nothing
       researcher_early         6.94%   researcher + hcp_researcher
       teaching_academic        6.74%   lecturer, 400,445 people - the LOWEST
@@ -31,11 +35,20 @@
                                        absolute count of low-confidence
                                        records, 813,682
 
-    Two of the ten are reviewed. A group is finished here when nothing in
-    its remainder is unexplained, not when the number is low:
-    researcher_established stopped at 15.61% because what is left is
-    accounted for - long titles scoring lower against short anchors, and the
-    sciences all leaning correctly on the single anchor `scientist`.
+    Two of the ten have been READ IN PART, which is not the same as
+    reviewed, and the difference is measured in analyses/24. For
+    researcher_established the hand-reading covered about 150 of 27,963
+    titles - roughly 23% of the records below 0.75 and 3.6% of the group -
+    and every query was filtered `similarity < 0.75`, so 84% of it was never
+    looked at in any form.
+
+    What IS established for that group is narrower and still worth something:
+    the largest offenders by frequency are handled, and the remaining
+    low-confidence records are substantially explained by long titles scoring
+    lower against short anchors and by the sciences leaning correctly on the
+    single anchor `scientist`. What is NOT established is that nothing is
+    wrong above the threshold, and `business consultant` at 0.843 is the
+    standing reminder that wrong answers live up there too.
 
     THIS FILE DELIBERATELY SKIPS support_technical AND student. They are the
     dirtiest and the second cleanest, and both feed no audience, so reviewing
