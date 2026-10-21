@@ -225,9 +225,14 @@ department confirms them; otherwise they stay Probable. The question is
 whether that is acceptable or whether a title carrying no occupational
 information should be excluded outright. *Source: analyses/22 query 2.*
 
-### 1.12 Is a teaching assistant in the Lecturer audience?
+### 1.12 Is a teaching assistant in the Lecturer audience? — DECIDED, YES
 
-**178,205 records**, found 2026-10-21 on the first read of teaching_academic.
+**Merve, 2026-10-21: if they teach, assign them to Lecturer, doctoral
+student or not.** No change is made; this is recorded so the reasoning
+exists and so the Thursday document can state it as a decision rather than
+an open question.
+
+**178,205 records** turn on it, found on the first read of teaching_academic.
 
 | Title | Records | Similarity | Runner-up |
 | --- | --- | --- | --- |
@@ -246,9 +251,10 @@ them: every one of these reaches the audience as soon as the organisation
 resolves. Where a wrong clinical title needs a clinical department to agree
 with it, a wrong teaching title needs nothing.
 
-Our view, offered as a view: a teaching assistant is plausibly a *better*
-target than a professor for textbook and course-material campaigns, so this
-may not want changing at all. But it should be a decision.
+And that is the answer: they teach, so they belong in the audience. A
+teaching assistant is plausibly a *better* target than a professor for
+textbook and course-material campaigns, which is the same conclusion from
+the other direction.
 
 ### 1.13 Are visiting scholars and fellows teaching staff?
 
@@ -485,6 +491,34 @@ shortlist to judge, not a list of errors. It earned its place anyway, by
 finding five real ones above 0.75 that nothing else could reach - `officer`
 1,998 records, `staff member` 1,759, `leader` 1,707, `academic director`
 1,382, `staff specialist` 1,644.
+
+### 2.4f Short foreign anchors attract their spelling, not their meaning
+
+Four instances now, enough to call it a rule rather than an incident.
+
+| Anchor | Attracted | Why |
+| --- | --- | --- |
+| `bibliotecario` | `biologo`, `catedratica`, `nutricionista` | Spanish occupational nouns of similar shape |
+| `dozent` | `doutoranda`, `uzm dr`, `docotor`, `doctoor` | anything beginning 'do' |
+| `dozent` | **`zitna 25`** | a street address in Prague |
+| `dirigente medico` | 2,078 titles at 0.717 average | one Italian word serving every Romance clinical rank |
+
+The mechanism is the same each time: a short word in a sparsely populated
+part of the embedding has weak, diffuse neighbours, so orthographic
+similarity starts to outweigh meaning. It is why the librarian translations
+were removed and why none have been added since.
+
+`zitna 25` deserves its own line. A street address, entered in the job title
+field, reaching a teaching anchor at 0.655 on its letters. It is the
+clearest single illustration of what free-text entry produces, and it is now
+rejected by hand.
+
+And the counter-example matters as much: `docente`, also a short foreign
+word, carries 499,135 records across 9,350 titles and almost all of it is
+correct - Spanish, Italian, Portuguese and Turkish academic ranks on one
+Italian word. The difference is that the region around `docente` is densely
+populated with real academic vocabulary, where the region around `dozent` is
+nearly empty. Density, not length, is what decides.
 
 ### 2.4e A modifier that reverses a title barely moves it in the space
 
