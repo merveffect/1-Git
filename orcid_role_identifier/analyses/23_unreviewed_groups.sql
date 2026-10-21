@@ -171,3 +171,58 @@ WHERE title_group = 'pharmacist'
   AND similarity < 0.75
 ORDER BY frequency DESC
 LIMIT 40;
+
+
+-- ###########################################################################
+-- 2b. THE TWO ANCHORS WHOSE DAMAGE IS IN THE LONG TAIL
+--
+--    Query 2a on 2026-10-21, after 37 overrides had cleared the obvious
+--    cases, left two anchors untouched and they are the worst in the group:
+--
+--      scientific director   3,123 titles   84,691 records   39.65% below 0.75
+--      head of laboratory    5,203 titles  128,050 records   37.19% below 0.75
+--
+--    Query 2 cannot show why. Ordered by frequency it surfaces about 2,583
+--    of their records, because ~47,600 records below 0.75 on 'head of
+--    laboratory' alone are spread across thousands of small titles. 5,203
+--    distinct titles leaning on one anchor is the signal: 'head of' and
+--    'director' are generic heads, the same failure as 'library manager'
+--    attracting 'manager' and 'senior scientist' attracting every senior X.
+--
+--    So this reads them per anchor instead, 30 each, which is the shape that
+--    worked on dentist, gynaecologist and pathologist in analyses/22 query
+--    10.
+--
+--    DECIDE WHAT YOU ARE LOOKING AT BEFORE ACTING. A head of a real
+--    laboratory arriving unconfidently needs nothing - the assignment is
+--    right and 'researcher' confirms at 0.60, so even the weakest match
+--    clears it once the organisation resolves. A head of something that is
+--    not a laboratory needs an override. There is no anchor to add here:
+--    unlike the dental specialties, 'head of laboratory' is not missing a
+--    word, it is holding one that is too general.
+--
+--    AND LEAVE THE SCIENCES ALONE. microbiologist 2,559 records,
+--    geophysicist 1,498, computational biologist 1,331, ecologist 1,101,
+--    archaeologist 878 and a dozen more are all CORRECT and all leaning on
+--    the single word 'scientist'. Giving each its own anchor would lift the
+--    metric and change nobody's audience, while risking exactly what
+--    'pathologist' did three times over. A high share below 0.75 can be
+--    honest low confidence rather than error - the same as 'dr' and 'md'
+--    carrying 146,865 records in the clinical group.
+-- ###########################################################################
+SELECT
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    runner_up,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'researcher_established'
+  AND is_assigned
+  AND similarity < 0.75
+  AND matched_anchors[OFFSET(0)] IN ('head of laboratory', 'scientific director')
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY matched_anchors[OFFSET(0)] ORDER BY frequency DESC
+) <= 30
+ORDER BY matched_anchors[OFFSET(0)], frequency DESC;
