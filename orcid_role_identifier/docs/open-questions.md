@@ -225,6 +225,46 @@ department confirms them; otherwise they stay Probable. The question is
 whether that is acceptable or whether a title carrying no occupational
 information should be excluded outright. *Source: analyses/22 query 2.*
 
+### 1.10 Should a job title be allowed in more than one group?
+
+This is new on 2026-10-20 and it is the largest thing the review has turned
+up that is not a defect.
+
+A title belongs to exactly one title group today. Measured: **463,603
+records contain the word "professor" and sit OUTSIDE teaching_academic** -
+and almost all of them belong where they are.
+
+| Title | Records | Group | Match |
+| --- | --- | --- | --- |
+| `research assistant professor` | 71,785 | researcher_early | 0.911 |
+| `research professor` | 48,609 | researcher_established | 0.886 |
+| `research associate professor` | 12,374 | researcher_established | 0.917 |
+| `professor and director` | 4,601 | leadership | 0.835 |
+| `professor of neurology` | 1,815 | practitioner | 0.860 |
+
+*Source: analyses/22 queries 11 and 11a.* These are not errors. A research
+assistant professor really is a research post; a professor of neurology
+really is a neurologist. The matches sit at 0.80-0.92, so the model is
+confident and correct.
+
+But a research assistant professor also **teaches**, and the Lecturer
+audience - 400,445 people - does not contain them. So Lecturer undercounts
+professors by some part of those 463,603 records, and the only way to fix it
+is to let one title carry two groups, which is a design change rather than a
+tuning one.
+
+Worth recording how this was found: I expected the opposite. I thought
+"professor of X" titles outside teaching_academic were a defect and was
+about to write a rule moving them. The measurement killed it - that rule
+would have pulled 71,785 research professors out of the Researcher audience.
+
+### 1.11 Is "healthcare professional" about the work or the subject?
+
+Several questions in 1.4 and 1.5 are really this one question asked about
+different jobs. A psychologist, a medical physicist, a mental health support
+worker, a genetic counsellor and a clinical embryologist all work in health
+without practising medicine. One answer settles all of them and several that
+have not come up yet.
 ### 1.12 Is a teaching assistant in the Lecturer audience? — DECIDED, YES
 
 **Merve, 2026-10-21: if they teach, assign them to Lecturer, doctoral
@@ -255,6 +295,45 @@ And that is the answer: they teach, so they belong in the audience. A
 teaching assistant is plausibly a *better* target than a professor for
 textbook and course-material campaigns, which is the same conclusion from
 the other direction.
+
+### 1.13 Are visiting scholars and fellows teaching staff?
+
+**81,749 records** sitting in teaching_academic on the word 'visiting':
+`visiting scholar` 60,561, `visiting fellow` 15,832, `visiting research
+scholar` 5,356.
+
+A visiting scholar may teach, or may only do research. `visiting scientist`
+at 32,662 records was clear enough to move to researcher_established without
+asking - a scientist does not teach - but these three are genuinely
+ambiguous and the word 'scholar' leans academic.
+
+### 1.14 Is an honorary professor active?
+
+**6,651 records.** We rejected `honorary researcher`, `emeritus professor`
+and `retired professor` outright at marketing's request on 2026-10-16, on the
+grounds that a retired professor is not a researcher. `honorary professor`
+survived, and it is not obviously different - though an honorary professor is
+often an active practitioner holding a university title rather than a retired
+one, which is the opposite case.
+
+An inconsistency either way, and small enough to settle in one sentence.
+
+### 1.15 A question we measured and are NOT asking
+
+Is a school teacher in the Lecturer audience? `teacher` is one of our
+fifteen anchors, so they do land here, and we flagged this as potentially
+large before measuring it.
+
+**It is 0.2% of the group.** All school-related titles together are 877
+titles and 24,718 records out of 12,065,457, and most of those are academic
+anyway - `medical school affiliates assistant professor` 639 records,
+`professor and head of school` 287, `professor school of risk and disaster
+management` 131, where 'school' means School of Engineering. Genuine
+school-level teaching is roughly 5,000 records.
+
+Recorded here rather than deleted, because the prediction was wrong in a
+useful direction: we sized it before adding it to this list, and a decision
+list that includes negligible items is worse than one that does not.
 
 ### 1.16 Researcher could be split into early-career and senior — RECORDED AS POSSIBLE, NOT PROPOSED
 
@@ -338,85 +417,6 @@ and post are two ends of one axis, so the embedding places them close - the
 same blind spot as `junior` against `senior` in 2.4e. Here it happens to
 produce the right answer, which is why it is evidence rather than a defect.
 
-### 1.13 Are visiting scholars and fellows teaching staff?
-
-**81,749 records** sitting in teaching_academic on the word 'visiting':
-`visiting scholar` 60,561, `visiting fellow` 15,832, `visiting research
-scholar` 5,356.
-
-A visiting scholar may teach, or may only do research. `visiting scientist`
-at 32,662 records was clear enough to move to researcher_established without
-asking - a scientist does not teach - but these three are genuinely
-ambiguous and the word 'scholar' leans academic.
-
-### 1.14 Is an honorary professor active?
-
-**6,651 records.** We rejected `honorary researcher`, `emeritus professor`
-and `retired professor` outright at marketing's request on 2026-10-16, on the
-grounds that a retired professor is not a researcher. `honorary professor`
-survived, and it is not obviously different - though an honorary professor is
-often an active practitioner holding a university title rather than a retired
-one, which is the opposite case.
-
-An inconsistency either way, and small enough to settle in one sentence.
-
-### 1.15 A question we measured and are NOT asking
-
-Is a school teacher in the Lecturer audience? `teacher` is one of our
-fifteen anchors, so they do land here, and we flagged this as potentially
-large before measuring it.
-
-**It is 0.2% of the group.** All school-related titles together are 877
-titles and 24,718 records out of 12,065,457, and most of those are academic
-anyway - `medical school affiliates assistant professor` 639 records,
-`professor and head of school` 287, `professor school of risk and disaster
-management` 131, where 'school' means School of Engineering. Genuine
-school-level teaching is roughly 5,000 records.
-
-Recorded here rather than deleted, because the prediction was wrong in a
-useful direction: we sized it before adding it to this list, and a decision
-list that includes negligible items is worse than one that does not.
-
-### 1.10 Should a job title be allowed in more than one group?
-
-This is new on 2026-10-20 and it is the largest thing the review has turned
-up that is not a defect.
-
-A title belongs to exactly one title group today. Measured: **463,603
-records contain the word "professor" and sit OUTSIDE teaching_academic** -
-and almost all of them belong where they are.
-
-| Title | Records | Group | Match |
-| --- | --- | --- | --- |
-| `research assistant professor` | 71,785 | researcher_early | 0.911 |
-| `research professor` | 48,609 | researcher_established | 0.886 |
-| `research associate professor` | 12,374 | researcher_established | 0.917 |
-| `professor and director` | 4,601 | leadership | 0.835 |
-| `professor of neurology` | 1,815 | practitioner | 0.860 |
-
-*Source: analyses/22 queries 11 and 11a.* These are not errors. A research
-assistant professor really is a research post; a professor of neurology
-really is a neurologist. The matches sit at 0.80-0.92, so the model is
-confident and correct.
-
-But a research assistant professor also **teaches**, and the Lecturer
-audience - 400,445 people - does not contain them. So Lecturer undercounts
-professors by some part of those 463,603 records, and the only way to fix it
-is to let one title carry two groups, which is a design change rather than a
-tuning one.
-
-Worth recording how this was found: I expected the opposite. I thought
-"professor of X" titles outside teaching_academic were a defect and was
-about to write a rule moving them. The measurement killed it - that rule
-would have pulled 71,785 research professors out of the Researcher audience.
-
-### 1.11 Is "healthcare professional" about the work or the subject?
-
-Several questions in 1.4 and 1.5 are really this one question asked about
-different jobs. A psychologist, a medical physicist, a mental health support
-worker, a genetic counsellor and a clinical embryologist all work in health
-without practising medicine. One answer settles all of them and several that
-have not come up yet.
 
 ---
 
@@ -518,7 +518,7 @@ grades were left alone - while a non-clinical title entering either of them
 does reach the audience, because hcp_broad is title_or_field and can confirm
 on a title alone at the edge.
 
-### 2.4a "Reviewed" means read in part, and the part is small
+### 2.4a (continued) What the gap contained, and why reading alone cannot close it
 
 Added 2026-10-21 after Merve asked how we had established that
 researcher_established was finished. We had not, and the claim was wrong.
@@ -583,85 +583,71 @@ finding five real ones above 0.75 that nothing else could reach - `officer`
 1,998 records, `staff member` 1,759, `leader` 1,707, `academic director`
 1,382, `staff specialist` 1,644.
 
-### 2.4h A word being generic in English does not predict it being generic in ORCID
+### 2.4b share_below_075 is partly a measure of title LENGTH
 
-Four times now I have predicted which generic anchor would misbehave, and
-four times the prediction has been wrong in the same way.
+Found on 2026-10-21 while reading `head of laboratory`, which carries 5,203
+distinct titles and 37.19% of its records below 0.75 - the worst anchor in
+researcher_established. Almost everything arriving there is CORRECT: head of
+phycology research group, head of national reference laboratory NRL for
+bovine tuberculosis, head of textile metrology laboratory since 2014,
+director of metal materials research institute.
 
-| Anchor | I predicted | It measured |
-| --- | --- | --- |
-| `audiologist` | the worst -ologist magnet | 0.326, pulled nothing |
-| `researcher` | the most generic word we use | 0.081, clean |
-| `resident` | someone who lives somewhere | **0.032, the cleanest anchor in its group** |
-| `intern` | risky | **0.230 across 3,925 distinct titles** |
+They score low because they are LONG. The embedding averages over the whole
+string, so a nine-word title can only ever sit so close to a two-word anchor.
+`head of national reference laboratory nrl for bovine tuberculosis` reaches
+0.711; `librarian` reaches 1.000 because it is one word that matches one word.
 
-The pattern in the misses: I was reasoning about how ambiguous the word is in
-the English language. What decides is whether people in OTHER professions
-actually type it into a job-title field.
+So a group that attracts long, specific, one-off titles will always look
+dirtier than a group whose vocabulary is short, whatever its accuracy. That
+is a reason to read the metric alongside the titles rather than on its own,
+and it is the second time the same caution has come up - `dr` and `md` carry
+146,865 records of honest low confidence in the clinical group, and the
+sciences carry about 14,000 more in researcher_established, all correct, all
+leaning on the single word `scientist`.
 
-Nobody outside medicine writes "resident" as their job - 164,130 records and
-only 490 distinct titles. Everybody outside medicine writes "intern" -
-3,925 distinct titles, carrying engineering intern, data scientist intern,
-machine learning intern, management trainee, industrial trainee.
+It also means the number is NOT comparable between groups. teaching_academic
+at 6.74% and researcher_established at 15.95% are not 2.4x apart in quality;
+part of that gap is that one group's vocabulary is `professor` and the
+other's is `head of national reference laboratory for bovine tuberculosis`.
 
-So the test for a risky anchor is not "is this word ambiguous" but "do people
-in other jobs use it to describe themselves". That is a question about
-vocabulary in the wild, and it can only be answered by measuring - which is
-the fourth argument in this document for measuring before reasoning.
+### 2.4c share_below_075 is not a quality metric, and here is the proof
 
-### 2.4g An accent splits a title into two groups
+On 2026-10-21 we removed 70,977 wrong records from researcher_established -
+`junior researcher` and its family, sitting in the group that means the
+opposite of what they say - and the metric got **worse**: 0.1561 -> 0.1620.
 
-Found 2026-10-21 in researcher_early:
+`records_below_075` was 304,478 before and 304,478 after, identical, because
+everything removed had scored ABOVE 0.75. The denominator shrank, the
+numerator did not, so the share rose.
 
-| Title | Records | Group |
-| --- | --- | --- |
-| `científico titular` | 2,153 | researcher_**early** |
-| `cientifico titular` | 402 | researcher_**established** |
+The group became more correct and the number deteriorated. Read
+share_below_075 as what it is - a measure of how much of a group the model
+was unsure about - and never as a measure of how much of it is wrong. Those
+are different quantities and this is the cleanest demonstration we have that
+they can move in opposite directions.
 
-The same Spanish job title - a CSIC tenured scientist - in two different
-groups, because one spelling carries its accents and the other does not.
-clean_text uses NFKC, which preserves accents, so the two normalise to
-different strings, get different embeddings and land wherever each happens
-to fall.
+### 2.4d Reading is viable where titles are common, and not where they are not
 
-It changes no audience today, since both groups feed `researcher` and
-`hcp_researcher` identically. It would matter immediately if 1.16 were ever
-acted on, because the same person would be early career or senior depending
-on whether they typed an accent.
+Measured both halves of researcher_established on 2026-10-21.
 
-Related to the decision recorded in `macros/normalize.sql` about HTML
-entities: that one was measured at 19 titles and left alone. This is the
-same class of problem and the same reasoning applies - but it is worth
-knowing that normalisation differences do not only duplicate a title, they
-can also split it between groups.
+**Below 0.75**, the top 100 titles by frequency reach 23.65% of the records,
+half needs 1,150 titles and 80% needs 3,800. Long, specific, one-off titles -
+`head of national reference laboratory nrl for bovine tuberculosis` - and
+there are thousands of them.
 
-### 2.4f Short foreign anchors attract their spelling, not their meaning
+**Above 0.75**, 40 titles reach about 69% of the records. Short common
+vocabulary - `senior researcher` alone is 152,430 records - so the
+distribution is concentrated enough to read.
 
-Four instances now, enough to call it a rule rather than an incident.
+Which gives a method rather than a feeling. Read the high-similarity region
+by hand, because it is concentrated and because that is where errors are
+invisible to every other check. Use computable tests for the long tail, and
+accept the remainder as unreviewed with a number attached rather than a
+claim.
 
-| Anchor | Attracted | Why |
-| --- | --- | --- |
-| `bibliotecario` | `biologo`, `catedratica`, `nutricionista` | Spanish occupational nouns of similar shape |
-| `dozent` | `doutoranda`, `uzm dr`, `docotor`, `doctoor` | anything beginning 'do' |
-| `dozent` | **`zitna 25`** | a street address in Prague |
-| `dirigente medico` | 2,078 titles at 0.717 average | one Italian word serving every Romance clinical rank |
-
-The mechanism is the same each time: a short word in a sparsely populated
-part of the embedding has weak, diffuse neighbours, so orthographic
-similarity starts to outweigh meaning. It is why the librarian translations
-were removed and why none have been added since.
-
-`zitna 25` deserves its own line. A street address, entered in the job title
-field, reaching a teaching anchor at 0.655 on its letters. It is the
-clearest single illustration of what free-text entry produces, and it is now
-rejected by hand.
-
-And the counter-example matters as much: `docente`, also a short foreign
-word, carries 499,135 records across 9,350 titles and almost all of it is
-correct - Spanish, Italian, Portuguese and Turkish academic ranks on one
-Italian word. The difference is that the region around `docente` is densely
-populated with real academic vocabulary, where the region around `dozent` is
-nearly empty. Density, not length, is what decides.
+Coverage for researcher_established after both passes: roughly **62% of its
+records have now been looked at**, against 3.6% when it was first called
+finished.
 
 ### 2.4e A modifier that reverses a title barely moves it in the space
 
@@ -707,71 +693,85 @@ So the lesson is not "distrust the modifier" but "the modifier is a question
 about the GROUP, not about the title". It matters only where the group
 itself encodes seniority.
 
-### 2.4c share_below_075 is not a quality metric, and here is the proof
+### 2.4f Short foreign anchors attract their spelling, not their meaning
 
-On 2026-10-21 we removed 70,977 wrong records from researcher_established -
-`junior researcher` and its family, sitting in the group that means the
-opposite of what they say - and the metric got **worse**: 0.1561 -> 0.1620.
+Four instances now, enough to call it a rule rather than an incident.
 
-`records_below_075` was 304,478 before and 304,478 after, identical, because
-everything removed had scored ABOVE 0.75. The denominator shrank, the
-numerator did not, so the share rose.
+| Anchor | Attracted | Why |
+| --- | --- | --- |
+| `bibliotecario` | `biologo`, `catedratica`, `nutricionista` | Spanish occupational nouns of similar shape |
+| `dozent` | `doutoranda`, `uzm dr`, `docotor`, `doctoor` | anything beginning 'do' |
+| `dozent` | **`zitna 25`** | a street address in Prague |
+| `dirigente medico` | 2,078 titles at 0.717 average | one Italian word serving every Romance clinical rank |
 
-The group became more correct and the number deteriorated. Read
-share_below_075 as what it is - a measure of how much of a group the model
-was unsure about - and never as a measure of how much of it is wrong. Those
-are different quantities and this is the cleanest demonstration we have that
-they can move in opposite directions.
+The mechanism is the same each time: a short word in a sparsely populated
+part of the embedding has weak, diffuse neighbours, so orthographic
+similarity starts to outweigh meaning. It is why the librarian translations
+were removed and why none have been added since.
 
-### 2.4d Reading is viable where titles are common, and not where they are not
+`zitna 25` deserves its own line. A street address, entered in the job title
+field, reaching a teaching anchor at 0.655 on its letters. It is the
+clearest single illustration of what free-text entry produces, and it is now
+rejected by hand.
 
-Measured both halves of researcher_established on 2026-10-21.
+And the counter-example matters as much: `docente`, also a short foreign
+word, carries 499,135 records across 9,350 titles and almost all of it is
+correct - Spanish, Italian, Portuguese and Turkish academic ranks on one
+Italian word. The difference is that the region around `docente` is densely
+populated with real academic vocabulary, where the region around `dozent` is
+nearly empty. Density, not length, is what decides.
 
-**Below 0.75**, the top 100 titles by frequency reach 23.65% of the records,
-half needs 1,150 titles and 80% needs 3,800. Long, specific, one-off titles -
-`head of national reference laboratory nrl for bovine tuberculosis` - and
-there are thousands of them.
+### 2.4g An accent splits a title into two groups
 
-**Above 0.75**, 40 titles reach about 69% of the records. Short common
-vocabulary - `senior researcher` alone is 152,430 records - so the
-distribution is concentrated enough to read.
+Found 2026-10-21 in researcher_early:
 
-Which gives a method rather than a feeling. Read the high-similarity region
-by hand, because it is concentrated and because that is where errors are
-invisible to every other check. Use computable tests for the long tail, and
-accept the remainder as unreviewed with a number attached rather than a
-claim.
+| Title | Records | Group |
+| --- | --- | --- |
+| `científico titular` | 2,153 | researcher_**early** |
+| `cientifico titular` | 402 | researcher_**established** |
 
-Coverage for researcher_established after both passes: roughly **62% of its
-records have now been looked at**, against 3.6% when it was first called
-finished.
+The same Spanish job title - a CSIC tenured scientist - in two different
+groups, because one spelling carries its accents and the other does not.
+clean_text uses NFKC, which preserves accents, so the two normalise to
+different strings, get different embeddings and land wherever each happens
+to fall.
 
-### 2.4b share_below_075 is partly a measure of title LENGTH
+It changes no audience today, since both groups feed `researcher` and
+`hcp_researcher` identically. It would matter immediately if 1.16 were ever
+acted on, because the same person would be early career or senior depending
+on whether they typed an accent.
 
-Found on 2026-10-21 while reading `head of laboratory`, which carries 5,203
-distinct titles and 37.19% of its records below 0.75 - the worst anchor in
-researcher_established. Almost everything arriving there is CORRECT: head of
-phycology research group, head of national reference laboratory NRL for
-bovine tuberculosis, head of textile metrology laboratory since 2014,
-director of metal materials research institute.
+Related to the decision recorded in `macros/normalize.sql` about HTML
+entities: that one was measured at 19 titles and left alone. This is the
+same class of problem and the same reasoning applies - but it is worth
+knowing that normalisation differences do not only duplicate a title, they
+can also split it between groups.
 
-They score low because they are LONG. The embedding averages over the whole
-string, so a nine-word title can only ever sit so close to a two-word anchor.
-`head of national reference laboratory nrl for bovine tuberculosis` reaches
-0.711; `librarian` reaches 1.000 because it is one word that matches one word.
+### 2.4h A word being generic in English does not predict it being generic in ORCID
 
-So a group that attracts long, specific, one-off titles will always look
-dirtier than a group whose vocabulary is short, whatever its accuracy. That
-is a reason to read the metric alongside the titles rather than on its own,
-and it is the second time the same caution has come up - `dr` and `md` carry
-146,865 records of honest low confidence in the clinical group, and the
-sciences carry about 14,000 more in researcher_established, all correct, all
-leaning on the single word `scientist`.
+Four times now I have predicted which generic anchor would misbehave, and
+four times the prediction has been wrong in the same way.
 
-It also means the number is NOT comparable between groups. teaching_academic
-at 6.74% and researcher_established at 15.95% are not 2.4x apart in quality;
-part of that gap is that one group's vocabulary is `professor` and the
-other's is `head of national reference laboratory for bovine tuberculosis`.
+| Anchor | I predicted | It measured |
+| --- | --- | --- |
+| `audiologist` | the worst -ologist magnet | 0.326, pulled nothing |
+| `researcher` | the most generic word we use | 0.081, clean |
+| `resident` | someone who lives somewhere | **0.032, the cleanest anchor in its group** |
+| `intern` | risky | **0.230 across 3,925 distinct titles** |
+
+The pattern in the misses: I was reasoning about how ambiguous the word is in
+the English language. What decides is whether people in OTHER professions
+actually type it into a job-title field.
+
+Nobody outside medicine writes "resident" as their job - 164,130 records and
+only 490 distinct titles. Everybody outside medicine writes "intern" -
+3,925 distinct titles, carrying engineering intern, data scientist intern,
+machine learning intern, management trainee, industrial trainee.
+
+So the test for a risky anchor is not "is this word ambiguous" but "do people
+in other jobs use it to describe themselves". That is a question about
+vocabulary in the wild, and it can only be answered by measuring - which is
+the fourth argument in this document for measuring before reasoning.
 
 ### 2.5 About 1,008 people are confirmed on a title alone ⟳
 
