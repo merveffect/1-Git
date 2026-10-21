@@ -253,3 +253,96 @@ QUALIFY ROW_NUMBER() OVER (
     PARTITION BY matched_anchors[OFFSET(0)] ORDER BY frequency DESC
 ) <= 30
 ORDER BY matched_anchors[OFFSET(0)], frequency DESC;
+
+
+-- ###########################################################################
+-- 3a. LEADERSHIP, THE HALF WE LEARNED TO LOOK AT FIRST
+--
+--    Query 3 above reads similarity < 0.75, which is the half 2026-10-21
+--    taught us is the less informative one: `junior researcher` hid at 0.870
+--    and 42,949 records, invisible to every query written before that day.
+--    So read this one first and query 3 second.
+--
+--    leadership is the group with the strongest claim on attention. 27.6% of
+--    its records sit below 0.75, the highest of any group that feeds an
+--    audience. It feeds TWO - faculty_head at 20,222 people and
+--    hcp_administrator at 6,855. And over 2026-10-20 and 21 I moved 11,259
+--    records INTO it while reviewing other groups, without ever reading it:
+--    2,271 from the practitioner pass, 6,227 from researcher_established,
+--    and 2,761 from the student and Italian-director fixes.
+--
+--    THE FLAG COLUMN carries this group's own failure modes rather than the
+--    generic ones:
+--
+--      a corporate title - ceo, founder, owner, managing director. We know
+--      these arrive: analyses/17 query 1 measured ceo at 879 people with 55
+--      confirmed, founder 411 with 31, owner 188 with 2. They are supposed
+--      to fail on the organisation axis, and this checks whether the title
+--      axis is letting them in first.
+--
+--      a bare generic word - director, head, chief, chair. One single title
+--      carries 16.5% of this group's below-0.75 records, 43,456 of them,
+--      and it is almost certainly one of these.
+--
+--      a non-leadership role that matched on a leadership word - how
+--      `director of studies` and `clinic director` got in, both already
+--      moved out.
+-- ###########################################################################
+SELECT
+    CASE
+        WHEN REGEXP_CONTAINS(title, r'\b(ceo|cto|cfo|coo|founder|owner|proprietor|entrepreneur|managing director|general manager|partner|president|vice president|vp|board member|shareholder)\b')
+            THEN '1. corporate title'
+        WHEN REGEXP_CONTAINS(title, r'^(director|head|chief|chair|chairman|chairperson|manager|lead|leader|coordinator|supervisor|administrator|executive|officer|principal)$')
+            THEN '2. bare generic word'
+        WHEN REGEXP_CONTAINS(title, r'\b(editor|studies|programme|program|course|curriculum|library|nurse|clinic|school|museum|press|communications|marketing|sales|hr|human resources|finance|it)\b')
+            THEN '3. a non-leadership role wearing a leadership word'
+        ELSE '4. no flag'
+    END                             AS flag,
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity,
+    matched_anchors[OFFSET(0)]      AS nearest_anchor,
+    runner_up,
+    decision_source
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'leadership'
+  AND is_assigned
+  AND similarity >= 0.75
+QUALIFY ROW_NUMBER() OVER (ORDER BY frequency DESC) <= 120
+ORDER BY flag, frequency DESC;
+
+-- 3b. How far did 120 rows get, so the next pass is a decision rather than
+--     a guess. Compare with practitioner, where 150 reached 52%.
+SELECT
+    COUNT(*)                                        AS titles_above_075,
+    SUM(frequency)                                  AS records_above_075,
+    SUM(IF(rn <= 120, frequency, 0))                AS covered_by_top_120,
+    ROUND(SUM(IF(rn <= 120, frequency, 0)) / SUM(frequency), 4)
+                                                    AS share_covered
+FROM (
+    SELECT frequency, ROW_NUMBER() OVER (ORDER BY frequency DESC) AS rn
+    FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    WHERE title_group = 'leadership' AND is_assigned AND similarity >= 0.75
+);
+
+-- 3c. MY OWN DECISIONS, AUDITED.
+--     Every title a human put into leadership, at any similarity. 11,259
+--     records were moved here during other groups' reviews on the reasoning
+--     that leadership is conditional - faculty_head needs an academic
+--     organisation and hcp_administrator needs a clinical department, so a
+--     corporate or a clinical title should land correctly or not at all.
+--
+--     That reasoning is unverified. This lists the decisions so they can be
+--     read as a set, which is something no amount of reading the VECTOR
+--     assignments would surface.
+SELECT
+    title,
+    frequency,
+    ROUND(similarity, 3)            AS similarity_to_vector_choice,
+    matched_anchors[OFFSET(0)]       AS vector_nearest_anchor,
+    runner_up                        AS vector_runner_up
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'leadership'
+  AND decision_source = 'HUMAN'
+  AND is_assigned
+ORDER BY frequency DESC;
