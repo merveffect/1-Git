@@ -307,6 +307,37 @@ find out whether dates can carry seniority before shipping an audience that
 rests on job-title words. Shipping the word-based split as it stands would
 repeat the mistake we found on 2026-10-21 rather than fix it.
 
+### 1.17 Are doctoral students doing research in the Researcher audience?
+
+**197,895 records**, found 2026-10-21 on the first read of researcher_early.
+
+| Title | Records | Model's runner-up |
+| --- | --- | --- |
+| `graduate research assistant` | 106,438 | **student** |
+| `phd researcher` | 49,317 | **student** |
+| `phd fellow` | 19,424 | **student** |
+| `predoctoral researcher` | 15,368 | researcher_established |
+| `undergraduate research assistant` | 7,348 | support_technical |
+
+All sit in researcher_early today, and the model itself offered `student` as
+the runner-up for the three largest.
+
+**Merve's own precedent answers it.** On 1.12 the decision was: if a teaching
+assistant teaches, they go in the Lecturer audience, doctoral student or not.
+The parallel reads straight across - if they research, they go in the
+Researcher audience, doctoral student or not - and that is what currently
+happens, so no change is needed.
+
+Recorded as a question only to confirm the precedent extends, and because the
+alternative is not unreasonable: an undergraduate research assistant on a
+summer placement is a weaker target than a postdoc.
+
+A mechanism note worth keeping, separate from the decision.
+`predoctoral researcher` reached the **POST**doctoral anchor at 0.908. Pre
+and post are two ends of one axis, so the embedding places them close - the
+same blind spot as `junior` against `senior` in 2.4e. Here it happens to
+produce the right answer, which is why it is evidence rather than a defect.
+
 ### 1.13 Are visiting scholars and fellows teaching staff?
 
 **81,749 records** sitting in teaching_academic on the word 'visiting':

@@ -589,3 +589,46 @@ FROM (
     FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
     WHERE title_group = 'researcher_early' AND is_assigned AND similarity >= 0.75
 );
+
+
+-- ###########################################################################
+-- 6c. THE THREE DIRTY ANCHORS IN researcher_early
+--
+--    Query 6 covered 80.58% of the group's above-0.75 records with 140
+--    titles - the best coverage of any group so far, because the
+--    distribution is extremely concentrated. `researcher` alone is 744,598
+--    records.
+--
+--    It also showed the group is cleaner than expected. `researcher`, which
+--    I flagged as the most generic anchor in the project, came in at 8.1%
+--    below 0.75. Three anchors did not:
+--
+--      collaboratori                  104,162 records   54.6% below 0.75
+--      wissenschaftlicher mitarbeiter 148,253           27.4%
+--      post doctor                     60,590           21.1%
+--
+--    `collaboratori` is Italian for 'collaborators' - a short foreign word
+--    in a sparse region, which is the `dozent` pattern (2.4f), and it should
+--    be read the same way. `post doctor` is the one that could reach plain
+--    `doctor`, which is why it was flagged before the group was opened.
+--    `wissenschaftlicher mitarbeiter` is long and specific, so its 27.4% is
+--    more likely the title-length effect (2.4b) than contamination - the
+--    query will say which.
+-- ###########################################################################
+SELECT
+    matched_anchors[OFFSET(0)]  AS nearest_anchor,
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    runner_up,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE title_group = 'researcher_early'
+  AND is_assigned
+  AND similarity < 0.75
+  AND matched_anchors[OFFSET(0)] IN ('collaboratori', 'wissenschaftlicher mitarbeiter',
+                                     'post doctor', 'research fellow')
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY matched_anchors[OFFSET(0)] ORDER BY frequency DESC
+) <= 22
+ORDER BY matched_anchors[OFFSET(0)], frequency DESC;
