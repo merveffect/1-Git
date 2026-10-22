@@ -31,7 +31,16 @@ SELECT
   LOWER(adnetwork) AS adnetwork,
   sub_channels
 FROM
-  {{source('ae_metadata','channel_groupings')}} ),
+  {{source('ae_metadata','channel_groupings')}}
+  QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY
+            LOWER(source),
+            LOWER(medium),
+            LOWER(adnetwork)
+        ORDER BY sub_channels
+    ) = 1
+  
+   ),
   -- Step 3: Join and aggregate metrics
   aggregated_metrics AS (
 SELECT
