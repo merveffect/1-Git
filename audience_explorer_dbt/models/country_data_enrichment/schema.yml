@@ -122,44 +122,5 @@ models:
       - name: is_enriched
         description: "Boolean flag indicating whether enrichment came from a non-original source."
 
-  - name: country_enrichment_final
-    description: "Presentation model containing the latest country enrichment result per canonical segment."
-    columns:
-      - name: canonical_segment_id
-        description: "Canonical segment identifier."
-        tests:
-          - not_null
-          - unique
-
-      - name: country
-        description: "Latest enriched country value."
-
-      - name: iso_code
-        description: "Latest enriched ISO alpha-2 country code."
-
-      - name: enrichment_source
-        description: "Source used for the latest country assignment. Only TLD, ROR, or IP are valid after deduplication and filtering."
-        tests:
-          - not_null
-          - accepted_values:
-              values: ['TLD', 'ROR', 'IP']
-              config:
-                severity: error
-
-      - name: is_enriched
-        description: "Boolean flag indicating whether the record was enriched."
-
-      - name: last_enriched_at
-        description: "Timestamp of the latest enrichment event."
-
-      - name: snid
-        description: "SNID from audience profile data."
-        tests:
-          - unique
-
-      - name: email
-        description: "Email from audience profile data."
-        tests:
-          - unique
-
+  
  
