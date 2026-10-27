@@ -3,7 +3,6 @@ SELECT
     audience_builder_big.canonical_segment_id,
 
         audience_builder_big.email,
-        audience_builder_big.country AS original_raw_cdp_country,
         audience_builder_big.most_seen_ip_country,
     
     -- Key fields for Tier 2 & Tier 3

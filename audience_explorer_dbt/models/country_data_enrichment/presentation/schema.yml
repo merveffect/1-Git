@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: country_enrichment_final
+    description: >
+      Enriched country per user, sent to CDI. Contains one row per email for
+      marketing opt-in users that got a country from TLD, ROR or IP enrichment.
+      Every user in Segment is enriched regardless of any existing country;
+      CDI decides when to use these values (JSD first, then AE enrichment, then SMC).
+    columns:
+      - name: canonical_segment_id
+        description: Segment canonical user ID.
+        tests:
+          - unique
+          - not_null
+
+      - name: snid
+        description: SN identifier from audience_builder_big.
+
+      - name: email
+        description: User email. Table is deduplicated on email, so each email appears once.
+        tests:
+          - unique
+          - not_null
+
+      - name: iso_code
+        description: ISO 3166-1 alpha-2 country code of the enriched country.
+        tests:
+          - not_null
+
+      - name: country
+        description: Standardised country name of the enriched country.
+        tests:
+          - not_null
+
+      - name: enrichment_source
+        description: >
+          Where the country came from, in priority order:
+          TLD (email domain extension), ROR (institution domain), IP (most seen IP country).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TLD', 'ROR', 'IP']
+
+      - name: is_enriched
+        description: Always true in this table; UNKNOWN records are filtered out upstream.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true]
+              quote: false
+
+      - name: last_enriched_at
+        description: Timestamp of the latest enrichment record for this user.
+        tests:
+          - not_null

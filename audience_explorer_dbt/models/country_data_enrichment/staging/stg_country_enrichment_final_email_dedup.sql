@@ -27,7 +27,6 @@ WITH base_final AS (
         ON latest.canonical_segment_id = audience.canonical_segment_id
     WHERE audience.mkt_pref_opt_in = TRUE
       AND latest.enrichment_source != 'UNKNOWN'
-      AND latest.enrichment_source != 'ORIGINAL_DATA'
       AND audience.email IS NOT NULL
 ),
 
