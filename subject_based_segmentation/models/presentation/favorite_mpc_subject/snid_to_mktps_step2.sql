@@ -18,7 +18,9 @@ ranked_cte AS (
     marketing_preference_id,
     marketing_preference,
     COUNT(*) AS freq,
-    ROW_NUMBER() OVER(PARTITION BY snid ORDER BY COUNT(*) DESC) AS rn
+    -- marketing_preference_id breaks ties so the top 3 is deterministic across
+    -- runs; without it, equal-frequency subjects at rank 3 swap arbitrarily
+    ROW_NUMBER() OVER(PARTITION BY snid ORDER BY COUNT(*) DESC, marketing_preference_id) AS rn
   FROM {{ ref('snid_to_mktps_step1') }}
   WHERE marketing_preference IS NOT NULL
   GROUP BY snid, marketing_preference_id, marketing_preference
