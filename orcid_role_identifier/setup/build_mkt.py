@@ -31,7 +31,7 @@ table(d,["#","Question","Size","Our working answer","Need"],
   ["2","Are biomedical researchers healthcare professionals?","15,588 people","No","**High**"],
   ["3","Is \"healthcare professional\" about the work or the subject?","settles 5 others","Work (treats patients)","**High**"],
   ["4","Which leadership titles are a head of faculty?","226,210 records","Keep ambiguous ones in. **Hospitals now excluded**","**High**"],
-  ["5","Are statisticians researchers?","7,094 records","No — NEW","Medium"],
+  ["5","Does the word \"research\" in a title decide the audience?","~55,000 records","No — **NEW**","**High**"],
   ["6","Are psychologists healthcare professionals?","~4,500 records","Yes, currently in","Medium"],
   ["7","Four smaller versions of the same question","2,743 records","Yes, currently in","Medium"],
   ["8","Are visiting scholars and fellows teaching staff?","81,749 records","Yes, currently in","Medium"],
@@ -177,30 +177,42 @@ box(d,"WHAT WE DID, AND WHY WE ARE TELLING YOU",[
 ], fill="FDF8EF", accent=AMBER)
 
 # ---------------------------------------------------------------- 5 NEW
-h(d,"4.  NEW — Are statisticians researchers?")
-para(d,"**7,094 records.** Today `statistician` sits in a group that feeds no audience at "
-       "all. But `biostatistician` (7,723 records) and `bioinformatician` (9,626) were "
-       "both put in the Researcher group by hand.")
-box(d,"THE INCONSISTENCY, PLAINLY",[
- "`biostatistician    7,723 records  ->  Researcher audience`",
- "`bioinformatician   9,626 records  ->  Researcher audience`",
- "`statistician       7,094 records  ->  no audience at all`",
+h(d,"4.  NEW — Does the word \"research\" in a job title decide the audience?")
+para(d,"This started as one question about statisticians. Running a check against the "
+       "role library on 29 October showed it is a pattern, not a one-off, and the same "
+       "answer settles all of it.")
+box(d,"THE PATTERN, IN ONE PLACE",[
+ "`biostatistician        7,723  ->  Researcher audience`",
+ "`research statistician    299  ->  Researcher audience`",
+ "`research economist     1,125  ->  Researcher audience`",
  "",
- "The only difference between the first and the third is the prefix **bio**, which tells "
- "you the **subject**, not the **job**.",
+ "`statistician           7,094  ->  no audience at all`",
+ "`medical statistician     969  ->  no audience at all`",
+ "`economist              4,406  ->  no audience at all`",
  "",
- "Market Intelligence's own role library classes all three the same way, as "
- "\"specialist researcher\", and describes a statistician as *\"a specialist who designs "
- "data collection and applies statistical methods to produce reliable evidence\"* — "
- "which is research work.",
+ "**The only difference is whether the person typed the word \"research\".** Not what "
+ "they do — what they typed.",
+ "",
+ "Market Intelligence's own role library lists each pair as ONE job. It describes a "
+ "statistician as *\"a specialist who designs data collection and applies statistical "
+ "methods to produce reliable evidence\"*, which is research work either way.",
 ])
+para(d,"**20,000 records turn on this**, and it is one answer, not six.")
 para(d,"**The argument for leaving it out.** The job title on its own does not say whether "
        "the person does research or provides statistical support to a research office. And "
        "the Researcher audience has **no subject check** — there is no second signal to "
        "catch a wrong one, unlike healthcare where the department has to agree. Moving "
        "7,094 records into an audience with no safety net is riskier than it looks.")
-para(d,"**Our working answer: leave it out**, on the grounds of that missing safety net — "
-       "but the inconsistency with biostatistician is real and we would rather you settled it.")
+para(d,"**Our working answer: leave them out**, on the grounds of that missing safety net — "
+       "but the inconsistency is real, it is now six titles rather than one, and we would "
+       "rather you settled it.")
+
+h(d,"4a.  The biggest single case of the same pattern",2)
+para(d,"`research officer` carries **34,376 records** and sits in the group that feeds no "
+       "audience. `research analyst` (5,894 records) is in the Researcher audience. The "
+       "role library lists them as the same job.")
+para(d,"This one is larger than the whole statistician family put together, and it moves "
+       "in whichever direction you choose for question 4.")
 
 # ---------------------------------------------------------------- 12 NEW
 h(d,"5.  NEW — Does book-author consent cover a role-based campaign?")
@@ -296,6 +308,28 @@ para(d,"**Head of faculty and Librarian are the exceptions** and count current p
        "should be before it is made.")
 
 # ---------------------------------------------------------------- LOW
+h(d,"6.7  NEW — What the Students audience will and will not contain",2)
+para(d,"The Students audience is being built now. One thing about its scope should be "
+       "said before it ships, because it is not obvious and it is not a mistake.")
+box(d,"THE SAME PERSON, TWO DIFFERENT AUDIENCES",[
+ "`phd student           472,677  ->  Students`",
+ "`phd candidate         184,217  ->  Students`",
+ "`doctoral researcher    42,231  ->  Researcher`",
+ "`postgraduate researcher 5,427  ->  Researcher`",
+ "",
+ "All four are doctoral students. The role library lists them as **one job**.",
+ "",
+ "They are split because of a decision you already made: *if they research, they go in "
+ "the Researcher audience, doctoral student or not*. Somebody who describes themselves "
+ "as a doctoral researcher is telling us they research.",
+ "",
+ "**The consequence:** the Students audience will not contain every doctoral student. "
+ "About 48,000 records' worth describe themselves in research terms and sit in Researcher "
+ "instead. Some people will be in both.",
+], fill="FDF8EF", accent=AMBER)
+para(d,"Nothing needs changing. We are flagging it so that nobody later reports the "
+       "Students audience as undercounting — it is working as decided.")
+
 h(d,"7.  Three longer-term questions")
 h(d,"7.1  Should a job title be allowed in two professions?  (463,603 records)",2)
 para(d,"A title belongs to exactly one profession today. That is a design choice and it "
