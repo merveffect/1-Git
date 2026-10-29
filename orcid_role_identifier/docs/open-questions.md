@@ -318,6 +318,15 @@ one, which is the opposite case.
 
 An inconsistency either way, and small enough to settle in one sentence.
 
+**New evidence, 2026-10-29.** The Market Intelligence role library puts
+`Honorary Researcher` on the same line as `Emeritus Researcher` and
+`Emeritus Scientist`, under "Former or inactive", describing all three as "a
+retired researcher honoured for prior contributions". That supports rejecting
+it — but the library is a curated vocabulary rather than a reading of ORCID,
+and in ORCID "honorary" is frequently an unpaid university affiliation held by
+somebody actively employed elsewhere. One word, two meanings. Worth putting
+both readings in front of marketing rather than taking the library's.
+
 ### 1.15 A question we measured and are NOT asking
 
 Is a school teacher in the Lecturer audience? `teacher` is one of our
@@ -773,6 +782,36 @@ in other jobs use it to describe themselves". That is a question about
 vocabulary in the wild, and it can only be answered by measuring - which is
 the fourth argument in this document for measuring before reasoning.
 
+### 2.4i Record frequency and audience membership are different orderings
+
+Every review in this project has been prioritised by `dim_title_group.frequency`,
+on the reasoning that a title carrying more records decides more. For finding
+classification errors that is right. For finding **people who are in an audience
+wrongly** it is the wrong sort order, and the retirement work measured the gap.
+
+| | |
+| --- | --- |
+| Records still assigned under a retirement title | 15,317 |
+| People those records actually put in an audience | **1,065** |
+
+A ratio of fourteen to one. The reason is that roles are computed over a
+person's whole employment history: rejecting one title only removes somebody
+if that title was their *only* qualifying record. Most people who typed
+"Professor Emeritus" also have "Professor, 1990-2020" behind it, and that
+record keeps them in Lecturer regardless.
+
+So the two orderings disagree, and they disagree badly. Ranked by records the
+largest remaining title was `professor retired` at 459; ranked by people it was
+bare `emeritus` at 31, carrying 383 records. A title can be large in the
+dictionary and move nobody.
+
+**The rule:** when the question is "is the dictionary wrong", rank by
+`dim_title_group.frequency`. When the question is "who is in the audience
+wrongly", rank by `count(distinct snid)` over
+`fct_researcher_roles.evidence_title`. Using the first to answer the second
+over-states the problem by an order of magnitude, which is how this one nearly
+got a model change it did not need.
+
 ### 2.5 About 1,008 people are confirmed on a title alone ⟳
 
 Healthcare professional is the one role that accepts a title without a
@@ -815,6 +854,65 @@ pairs — all three landing in the same group, so no classification is wrong.
 Fixing it would re-key and re-embed the entire dictionary. Left alone on
 purpose; recorded in `macros/normalize.sql`. *Source: analyses/22 queries 9
 and 9a.*
+
+### 2.9 Retired and emeritus titles: the rule, and the floor it hits
+
+**The rule, set by marketing on 2026-10-16 and reaffirmed 2026-10-29:** a title
+whose plain meaning is that the person has retired does not qualify them for any
+audience. A retired professor is not a lecturer. Recorded as REJECT overrides,
+so it is reversible in a seed edit if an emeritus audience is ever wanted.
+
+**How far the rule got, measured 2026-10-29:**
+
+| | Titles | Records |
+| --- | --- | --- |
+| Already rejected | 95 | 17,277 |
+| Still assigned | 878 | 15,317 |
+
+**What the remainder actually costs**, by 2.4i's ordering: **1,065 people**
+across all nine audiences — 692 in Lecturer, which is **0.17%** of that
+audience. Librarian has the highest rate at 0.30%, and that is two people.
+
+**Why we stopped there.** The remaining distribution is flat in a way nothing
+else in this project is. Ranked by people, the largest title is 31 and the
+fortieth is 2; the top forty together account for about 264 of the 1,065. There
+is no leverage to exploit: 40 override rows would buy a quarter of it, and
+clearing the rest would take roughly 800 more. The cause is visible in the
+titles themselves — people write their whole career into the field, so almost
+every spelling is unique: `honorary and visiting academic, emeritus professor`,
+`retired, full professor, full professor (emeritus)`,
+`dvip-emeritus, associate professor emeritus`.
+
+**The alternative we considered and rejected.** A pattern that UNASSIGNS would
+catch all of it and stay correct as new spellings arrive. The pattern layer
+cannot currently do this - `dim_title_group` sets `is_assigned` to true for any
+pattern hit - so it is a model change plus a new collision test, roughly half a
+day. Not justified for 1,065 people, and recorded here so the next person does
+not re-derive it.
+
+**If that change is ever made, two things are already known.** First, `emerit`
+and `émérit` are safe stems but **`retir` is not**: it would reject researchers
+who STUDY retirement. The Survey of Health, Ageing and Retirement in Europe
+alone contributes five titles and about 60 records, plus
+`specialist adviser retirement and income modelling unit` (36) and
+`retirement fund manager` (11). `head of retiro mental health service` (15)
+matches on a Madrid district. This is the `library manager` → `manager` failure
+in a new costume: a stem match catches the subject, not the employment status.
+Second, `librarian emeritus` (11) and `principal librarian emeritus` (4) are
+currently assigned by the librarian PATTERN, so an unassigning pattern would
+need a precedence rule against an assigning one.
+
+**What is deliberately still in.** Titles that say the person remains active -
+`emeritus professor with formal duties` (107), `emeritus professor remain
+active` (46), `researcher and professor - now retired but active` (27),
+`full professor of public health sciences emeritus supervisor of 2 phd
+students` (26). The Market Intelligence role library agrees these are not
+simply inactive: it classes emeritus under "Former or inactive" but describes
+them as people who "may remain intellectually active", with publications and
+mentoring among their typical outputs. Blanket rejection would take these too.
+
+*Source: analyses/27 and the retirement sweep of 2026-10-29. See also 1.14,
+which asks the same question about honorary professors and is still open.*
 
 ---
 
