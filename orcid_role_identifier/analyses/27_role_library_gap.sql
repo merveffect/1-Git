@@ -8,7 +8,13 @@
     than the 21-option list used in their surveys.
 
     60 of our 151 anchors appear in it, which is an independent confirmation of
-    those. The 238 titles below do NOT appear in our anchor list.
+    those - the first outside check our anchor list has had. The 238 titles
+    below do NOT appear in our anchor list.
+
+    NOTE ON ENCODING. The source file is CP1252, not UTF-8. Read as UTF-8 it
+    silently mangles every accented title: `maitre de conferences` arrives as
+    `ma tre de conf rences` and then matches nothing, which would have quietly
+    dropped the most interesting non-English candidate in the file.
 
     A GAP IS NOT AUTOMATICALLY AN ANCHOR. The question this query answers is
     which of these gaps are real in ORCID: a title nobody types is not worth an
@@ -27,12 +33,12 @@
 */
 
 select
-    lib.title                       as library_title,
+    lib.title                         as library_title,
     lib.sector,
     lib.role_type,
-    coalesce(d.frequency, 0)        as orcid_frequency,
-    d.title_group                   as currently_assigned,
-    round(d.similarity, 3)          as similarity,
+    coalesce(d.frequency, 0)          as orcid_frequency,
+    d.title_group                     as currently_assigned,
+    round(d.similarity, 3)            as similarity,
     d.runner_up,
     d.decision_source,
     d.matched_anchors[safe_offset(0)] as nearest_anchor
@@ -121,7 +127,7 @@ from unnest([
     struct('visiting faculty' as title, 'Academia' as sector, 'Affiliated / temporary academic' as role_type),
     struct('university lecturer' as title, 'Academia' as sector, 'Independent academic researcher' as role_type),
     struct('junior professor' as title, 'Academia' as sector, 'Independent academic researcher' as role_type),
-    struct('ma tre de conf rences' as title, 'Academia' as sector, 'Independent academic researcher' as role_type),
+    struct('maître de conférences' as title, 'Academia' as sector, 'Independent academic researcher' as role_type),
     struct('privatdozent' as title, 'Academia' as sector, 'Independent academic researcher' as role_type),
     struct('pd' as title, 'Academia' as sector, 'Independent academic researcher' as role_type),
     struct('private lecturer' as title, 'Academia' as sector, 'Independent academic researcher' as role_type),
