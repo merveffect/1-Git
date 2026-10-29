@@ -124,6 +124,14 @@ servicio`, 2,090 records, is a Spanish clinical head of service: correctly in
 leadership, and it reaches hcp_administrator through the department axis
 rather than faculty_head.
 
+**A third part of this question, measured 2026-10-29.** About 2,000 people reach
+faculty_head through an organisation that reads as a hospital rather than a
+university. Some of that is right - medical school departments are frequently
+based in teaching hospitals - and some is not. `medical director` (95 people)
+is clearly not a faculty head and is recorded as an accepted residue in 2.8a.
+But `head of department` (294), `chief` (213) and `head` (225) on the hospital
+path are genuinely ambiguous, and the same decision covers all of them.
+
 ### 1.4 Are psychologists healthcare professionals?
 
 **~4,500 records across six titles**, currently all matched to the
@@ -854,6 +862,69 @@ pairs — all three landing in the same group, so no classification is wrong.
 Fixing it would re-key and re-embed the entire dictionary. Left alone on
 purpose; recorded in `macros/normalize.sql`. *Source: analyses/22 queries 9
 and 9a.*
+
+### 2.8a `medical director` reaches Head of Faculty, and we are leaving it there
+
+**145 people**, 0.7% of faculty_head. Measured 2026-10-29, the day after the move
+that caused it.
+
+**How it happened, and it is a design fact rather than a mistake.** Moving
+`medical director` from practitioner to leadership on 2026-10-29 was right for
+hcp_administrator. But `leadership` is the only title group feeding BOTH
+hcp_administrator and faculty_head, and nothing in the system can say "this
+title must not feed that audience" — the only veto available works on the
+organisation NAME, in `org_name_patterns`, not on the job title.
+
+The arithmetic lets them straight through, because a human override forces the
+title score to full marks:
+
+    0.60 x 1.000  (the title, forced by the override)
+    0.40 x 0.500  (a hospital)
+                   0.800   against a 0.65 threshold
+
+**Worse, faculty_head is the EASIER of the two to enter for this title.**
+hcp_administrator is title_and_field and needs a clinical department;
+faculty_head is title_required and needs nothing. Many medical directors have
+no department recorded, so they miss the audience they belong in and reach the
+one they do not. That is the opposite of what "PRECISION ONLY" was meant to
+produce.
+
+**Who they are.** Overwhelmingly clinical directors at hospitals - Brigham and
+Women's, Cleveland Clinic, Children's Hospital of Philadelphia, Chi Mei Medical
+Center - in Ophthalmology, Neonatology, Radiology, Burns, Critical Care. They
+are not faculty heads. The handful at universities are running health units,
+which is not a faculty either.
+
+**Why we are not fixing it.** The only available lever is the Healthcare
+organisation score for faculty_head, currently 0.50. To block an
+override-forced title it would have to fall below 0.125, and that removes
+EVERY faculty head whose record names a hospital. Measured, that path carries:
+
+| Title | People |
+| --- | --- |
+| `director` | 826 |
+| `head of department` | 294 |
+| `head` | 225 |
+| `chief` | 213 |
+| `deputy director` | 125 |
+| **`medical director`** | **95** |
+| `chair` | 77 |
+| `dean` | 17 |
+
+Removing 95 medical directors would cost 294 heads of department and 17 deans.
+Merve's call on 2026-10-29: accept the 145 and record it. The proper fix is a
+title-level exclusion, which is a model change plus a test, and 145 people do
+not justify it.
+
+**The larger question this turned up.** Roughly 2,000 people reach faculty_head
+through the hospital path at all. `medical director` is unambiguous, but
+`head of department` at a teaching hospital is not - medical school departments
+are often based in hospitals, so some of those 294 are genuinely academic. That
+is a definition question and belongs with 1.3 rather than here.
+
+**The pattern worth remembering.** A correction that is right for one audience
+can be wrong for another, because they share a title group. Nothing in the
+current design separates them, and this will come up again.
 
 ### 2.9 Retired and emeritus titles: the rule, and the floor it hits
 
