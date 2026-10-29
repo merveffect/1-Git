@@ -14,7 +14,7 @@ jobs:
   # meant roughly every 6 months.
   - name: subject-based-segmentation-snt-prod
     schedule: 0 8 * * *
-    timeout_seconds: 7200
+    timeout: 7200
     select_criteria: "path:models/raw/favorite_snt path:models/staging/favorite_snt path:models/intermediate/favorite_snt path:models/presentation/favorite_snt"
 
   # favorite_mpc_subject: weekly (Mondays). cdp_inferred_subjects is rebuilt
@@ -22,5 +22,5 @@ jobs:
   # into Braze.
   - name: subject-based-segmentation-mpc-prod
     schedule: 0 8 * * 1
-    timeout_seconds: 7200
+    timeout: 7200
     select_criteria: "path:models/staging/favorite_mpc_subject path:models/presentation/favorite_mpc_subject"
