@@ -16,6 +16,5 @@ researcher,\b(ltd|inc|gmbh|corporation|company)\b,0.60,"industrial R and D is st
 lecturer,\b(universi|üniversi|uniwers|univerz|universit|institut|istitut|enstitü|colleg|colegi|academ|akadem|facult|facolt|fakült|fakulte|hochschule|politecn|polytechn|school|escuela|escola|ecole|scuola|lise|okul|gymnasium),1.00,"prefix stem - facult catches faculty faculties facultad faculte fakülte"
 lecturer,\bcnrs|\binserm|\bcsic\b|\bcnr\b|\bcern\b|\bnasa\b|\bmax planck|\bhelmholtz|\bfraunhofer|\bleibniz,0.90,"teaching staff at a national research body"
 lecturer,\b(hospital|hopital|krankenhaus|ospedale|szpital|ziekenhuis|hastane|medical school),0.70,"prefix stem"
-faculty_head,\b(universi|üniversi|uniwers|univerz|universit|institut|istitut|enstitü|colleg|colegi|academ|akadem|facult|facolt|fakült|fakulte|hochschule|politecn|polytechn),1.00,"prefix stem"
-faculty_head,\b(hospital|hopital|krankenhaus|ospedale|szpital|ziekenhuis|hastane|medical school),0.50,"prefix stem"
+faculty_head,\b(universi|üniversi|uniwers|univerz|universit|institut|istitut|enstitü|colleg|colegi|academ|akadem|facult|facolt|fakült|fakulte|hochschule|politecn|polytechn|medical school|school of medicine),1.00,"prefix stem"
 faculty_head,\b(ltd|limited|inc|llc|plc|gmbh|ag|sa|bv|nv|srl|spa|pty|corp|corporation|company|holdings|group|ventures|capital|partners|consulting|solutions|technologies|labs|bank|insurance)\b,0.00,"VETO. A 0.00 pattern overrides every other match - see int_employment_scored. Without it, Acme Institute Ltd would score 1.00 on institut while the company marker lost the greatest()."

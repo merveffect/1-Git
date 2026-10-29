@@ -41,7 +41,7 @@ researcher,Funder,0.40,funding body - ROR type - weak signal for every role
 researcher,UNKNOWN,0.25,
 faculty_head,Education,1.00,only meaningful at an academic institution
 faculty_head,Facility,0.60,
-faculty_head,Healthcare,0.50,teaching hospital
+faculty_head,Healthcare,0.00,"Merve 2026-10-29: Head of Faculty is university heads only. A hospital medical director is not a faculty head, and nothing in the design can stop a leadership title reaching this audience once it is in the group - see 2.8a. Measured cost of this line: ~2,000 people leave, including 294 heads of department and 17 deans whose record names a hospital. Accepted: a small and certain audience is preferred, and coverage is expected to come back from a faculty-leadership source rather than from loosening this."
 faculty_head,Nonprofit,0.40,
 faculty_head,Government,0.30,
 faculty_head,Company,0.00,a company executive is not a faculty head
