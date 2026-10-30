@@ -223,12 +223,28 @@ def build(d, figdir):
       "argument used to be abstract; it now has a figure attached."])
 
     short("HEAD OF FACULTY — 33,241 people, up from 17,528", [
-      "**23.8% found. Agreement now reads 12.6% on 1,775 people, against 26.3% on 71 "
-      "before** — and the fall is mostly the sample growing 25-fold, not the labels "
-      "getting worse. Asked the way Lecturer was asked — does the person's title say they "
-      "lead something — **about 86% are right**, with roughly 14% having no leadership "
-      "word in any title at all. That 14% is the real error rate and it is the one to "
-      "work on.",
+      "**33,241 people, up from 17,528 — and the audience is now measured properly.** "
+      "Straight agreement reads 12.6% on 1,775 checkable people against 26.3% on 71 "
+      "before, but that number answers the wrong question. Asked the way Lecturer was "
+      "asked — does this person's title actually say they lead something:",
+      "`223 people   said they are leadership themselves`",
+      "`1,186        a title names a faculty-level post - head of department,`",
+      "`             dean, rector, chancellor. They ticked one box on a form`",
+      "`270          UNCERTAIN - their only leadership word is chair, director`",
+      "`             or head, the three we have measured as unreliable`",
+      "`101          no leadership word in ANY of their titles`",
+      "",
+      "**79.4% certainly right, 15.2% uncertain, 5.7% wrong.** So the audience is about "
+      "94% defensible. The first version of this check gave ~14% wrong, because its word "
+      "list counted `chair` as leadership and had no `chancellor` — wrong in both "
+      "directions at once, which is worth remembering before quoting any figure that "
+      "rests on a hand-written word list.",
+      "",
+      "**And those 270 put a price on a question that has been open since October.** What "
+      "to do with the `director` family had no cost attached to it. It now has one: 15.2% "
+      "of this audience is there on nothing but `chair`, `director` or `head`. Whichever "
+      "way marketing answers, that is the number that moves.",
+      "",
       "**But most of the recall gap is not a defect.** Of people who say they head a "
       "department, around 62% wrote only `professor` in ORCID — nothing in their record "
       "says they lead anything. We cannot know, and the standing rule is not to guess.",
@@ -237,9 +253,17 @@ def build(d, figdir):
       "current posts only. And it was narrowed to universities on 29 October at a measured "
       "cost of 2,819 people — a decision taken knowingly, preferring a small certain "
       "audience to a large arguable one.",
-      "**And it is starved by the organisation, not the title.** About 14,600 records carry "
-      "a strong leadership title — average score 0.856 — and can never be confirmed because "
-      "the organisation did not resolve and therefore scores zero."])
+      "**It was starved by the organisation rather than the title, and that eased in the "
+      "30 October build.** About 14,600 records carried a strong leadership title and an "
+      "employer that did not resolve, so they scored zero and could never be confirmed. "
+      "Most of the audience nearly doubling is those people arriving — not the compound "
+      "work, which brought 1,715 of it.",
+      "**A fourth instance of the project's most useful lesson, in the same build.** 37 "
+      "stale-deanship titles were rejected and 33 verbose ones were added, and the "
+      "audience moved by **one person** — 33,241 to 33,242. The people holding an expired "
+      "deanship almost always hold a current leadership title too. A correct dictionary "
+      "and a correct audience are different things, and this is now the fourth time it "
+      "has been measured."])
 
     box(d, "MEASURED 30 OCTOBER: THE COMPOUND TITLES, AND WHAT THEY WOULD BUY", [
      "This is the one route that could materially grow the audience from data we already "
@@ -259,9 +283,10 @@ def build(d, figdir):
      "regular expressions have no way to say \"not\", so \"contains professor and chair "
      "but not research chair\" is not expressible in one row.",
      "",
-     "**The head and dean family: built, and it did what was forecast.** 1,685 titles "
-     "over 48,518 ORCID records, held by 2,333 people. After the build, **1,715 of them "
-     "are in Head of Faculty** against a forecast of 1,778 — within 4%.",
+     "**The head and dean family: built, finished, and it did what was forecast.** 1,685 "
+     "titles over 48,518 ORCID records, held by 2,333 people. After the build, **1,715 of "
+     "them are in Head of Faculty** against a forecast of 1,778 — within 4%. The scoping "
+     "then held across two builds: eight other title groups, zero records moved, twice.",
      "",
      "**And a warning about every record count in this document.** The build showed the "
      "pipeline holds 1,737,768 employment records in total, while the dictionary says "

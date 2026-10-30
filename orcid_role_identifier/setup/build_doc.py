@@ -48,8 +48,9 @@ box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
  "people leave, including 294 heads of department and 17 deans, and that cost was "
  "measured before the decision. A small, certain audience was preferred.",
  "",
- "**Head of Faculty is 33,241 people, up from 17,528 — and only 1,715 of that is our "
- "work.** The professor-plus-leadership compounds now reach the audience and brought "
+ "**Head of Faculty is 33,242 people, up from 17,528, and it is now measured "
+ "properly: 79.4% certainly right, 15.2% uncertain, 5.7% wrong.** Only 1,715 of the "
+ "growth is our work.** The professor-plus-leadership compounds now reach the audience and brought "
  "exactly what was forecast, within 4%. The rest arrived in the same build because "
  "employers resolved to academic organisations, which is the thing this audience has "
  "always been starved by. Two findings, reported as two. Section 6.4.",

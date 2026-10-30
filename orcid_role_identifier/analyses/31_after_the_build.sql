@@ -720,3 +720,78 @@ order by
          when check_name like 'PEOPLE%' then 1
          else 2 end,
     abs(diff) desc;
+
+/*
+    ============================================================================
+    FINISHED 2026-10-30. THE LEADERSHIP COMPOUND WORK IS DONE.
+    ============================================================================
+    QUERY 14, the whole check in one place:
+
+        the 37 ended-post titles, rejected          37 / 37     as expected
+        verbose titles the patterns now reach       33 / 34     one short, -31 records
+        group leadership                        1,010,332       -31 on prediction
+        group teaching_academic                11,946,079       moved by zero
+        the other eight groups                                  moved by zero
+        PEOPLE in faculty_head                     33,242       was 33,241
+        PEOPLE in lecturer                        404,367       unchanged
+
+    THE SCOPING HELD ACROSS TWO BUILDS. Eight groups, zero movement, twice.
+    practitioner, pharmacist, both researcher groups, student, support,
+    trainee_clinical and librarian have not lost a single record to any of this.
+
+    AND A FOURTH INSTANCE OF THE PROJECT'S MOST USEFUL LESSON. 37 titles
+    rejected and 33 added, and the audience moved by ONE PERSON - 33,241 to
+    33,242. The people holding a stale deanship almost always hold a current
+    leadership title too, and the people behind the verbose titles were already
+    in. A correct dictionary and a correct audience are different things, which
+    this project has now measured on `associate` (the audience moved by one
+    person), on pharmacist (91 people), on the Lecturer corrections (one person)
+    and here.
+
+    QUERY 12, the accuracy, asked properly. Of the 1,775 checkable people in
+    faculty_head:
+
+        223    said leadership themselves
+      1,186    a title names a faculty-level post - head of department, dean,
+               rector, chancellor. Not our error, they just ticked one box
+        270    UNCERTAIN - their only leadership word is chair, director or
+               head, the three this project has measured as unreliable
+        101    no leadership word in any title at all
+
+                79.4% certainly right   15.2% uncertain   5.7% wrong
+
+    SO THE AUDIENCE IS ~94% DEFENSIBLE AND 5.7% WRONG. Not the 12.6% that
+    straight agreement suggested, and not the ~14% the first word list gave -
+    that version counted `chair` as leadership and had no `chancellor`, so it
+    was wrong in both directions at once.
+
+    AND THE 270 PRICE OPEN QUESTION 1.3. That question - what to do with the
+    `director` family - has been open since October with no cost attached to
+    it. It now has one: 270 of 1,775 people in this audience, 15.2%, are there
+    on nothing but `chair`, `director` or `head`. Whichever way marketing
+    answers it, that is the number it moves.
+
+    ONE LOOSE END, worth 31 records. 33 of the 34 verbose titles arrived. The
+    missing one is named by query 15 - it changes nothing, so it is only worth
+    running out of tidiness.
+    ============================================================================
+*/
+
+-- ----------------------------------------------------------------------------
+-- 15. WHICH OF THE 34 VERBOSE TITLES DID NOT ARRIVE. Optional.
+-- ----------------------------------------------------------------------------
+select
+    title,
+    frequency,
+    round(similarity, 3)    as similarity,
+    title_group,
+    model_title_group,
+    decision_source,
+    is_assigned
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+where model_title_group = 'teaching_academic'
+  and similarity < 0.65
+  and regexp_contains(title, r'(?i)(head of (the )?(department|dept|school|faculty|'
+                           || r'institute|division)|\bdean\b|decano|dekan)')
+  and (decision_source != 'PATTERN' or title_group != 'leadership')
+order by frequency desc;

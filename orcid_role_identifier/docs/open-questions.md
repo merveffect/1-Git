@@ -506,6 +506,49 @@ title group qualifies for it, so a teaching_academic person has no faculty_head
 row by construction. J asks it properly, through the org type on their existing
 teaching row.
 
+### CLOSED 2026-10-30. What the two builds actually did
+
+| | |
+| --- | --- |
+| the 37 ended-post titles, rejected | 37 / 37 |
+| verbose titles the patterns now reach | 33 / 34, worth 31 records |
+| `teaching_academic` | 11,946,079 - moved by zero |
+| the other eight groups | moved by zero, **in both builds** |
+| faculty_head | 17,528 -> **33,242** |
+| lecturer | 404,367, unchanged |
+
+**Only 1,715 of faculty_head's growth is this work**, against a forecast of
+1,778 - within 4%. The rest is ~14,600 records with strong leadership titles
+whose employers finally resolved. Two findings in one build, reported as two.
+
+**A fourth instance of the project's most useful lesson.** 37 titles rejected
+and 33 added, and the audience moved by **one person** - 33,241 to 33,242. The
+people holding an expired deanship almost always hold a current leadership title
+too. Measured now on `associate`, on pharmacist (91 people), on the Lecturer
+corrections (one person) and here.
+
+### And the accuracy, asked properly
+
+Of 1,775 checkable people in faculty_head:
+
+| | people | |
+| --- | --- | --- |
+| said leadership themselves | 223 | |
+| a title names a faculty-level post | 1,186 | head of department, dean, rector, chancellor |
+| **UNCERTAIN** | 270 | only `chair`, `director` or `head` |
+| **our error** | 101 | no leadership word in any title |
+
+**79.4% certainly right, 15.2% uncertain, 5.7% wrong** - so about 94%
+defensible, not the 12.6% that straight agreement suggested. The first version
+of this check said ~14% wrong because its word list counted `chair` as
+leadership and had no `chancellor`: wrong in both directions at once. Worth
+remembering before quoting any figure that rests on a hand-written word list.
+
+**The 270 put a price on question 1.3.** What to do with the `director` family
+has been open since October with no cost attached. It now has one: 15.2% of this
+audience is there on nothing but `chair`, `director` or `head`. Whichever way
+marketing answers, that is the number that moves.
+
 ### A fourth sighting of the one-word failure, in the possessive
 
 `dean s chair`, `dean s clinical prize`, `dean s clinical research fellow`,
