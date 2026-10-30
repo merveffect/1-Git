@@ -266,6 +266,39 @@ Worth recording how this was found: I expected the opposite. I thought
 about to write a rule moving them. The measurement killed it - that rule
 would have pulled 71,785 research professors out of the Researcher audience.
 
+### 1.10a A title stays in ONE profession — DECIDED, 2026-10-30
+
+Merve, after seeing the measured size of it: a person who writes both jobs into
+one title stays where they are. No change, and 1.10 does not need opening.
+
+| What they wrote | Records | Decision |
+| --- | --- | --- |
+| teaching AND research — `lecturer and researcher`, `teaching and research`, `assistant professor research`, `personal docente e investigador`, `enseignant-chercheur` | **~47,000** | **Stay in Lecturer** |
+| teaching AND leadership — `professor and chair`, `professor and head`, `professor & director`, `professor and dean` | **~31,000** | **Stay in Lecturer** |
+
+That is 78,000 records that would otherwise have argued for letting one title
+carry two professions. It closes the practical case for 1.10 without a model
+change, and it is recorded here so the argument is not re-made.
+
+**One thing it does NOT settle, found the same day.** The compound titles are
+currently split between teaching_academic and leadership by **word order**,
+which is indefensible either way:
+
+    professor and director   4,601  leadership
+    professor & director     2,185  teaching_academic
+    professor director       2,140  teaching_academic
+    director professor       1,110  leadership
+    director/professor       2,033  leadership
+    professor/director       1,256  teaching_academic
+
+Same two words, different separator, different audience, margins of 0.004 to
+0.016. About 68,000 records in total - 44,000 in teaching, 24,000 in
+leadership. One rule has to apply to all of them, and the choice has a cost
+either way: sending them all to teaching removes 24,000 records from
+faculty_head, which is already the weakest audience we have; sending them all
+to leadership removes 44,000 from lecturer, which is 0.4% of a group of twelve
+million. Open.
+
 ### 1.11 Is "healthcare professional" about the work or the subject?
 
 Several questions in 1.4 and 1.5 are really this one question asked about
@@ -925,6 +958,34 @@ is a definition question and belongs with 1.3 rather than here.
 **The pattern worth remembering.** A correction that is right for one audience
 can be wrong for another, because they share a title group. Nothing in the
 current design separates them, and this will come up again.
+
+### 2.8b `doç dr` is an academic rank, not a medical one — measured
+
+Merve raised it on 2026-10-30: in Turkish, `Doç. Dr.` is what physicians put
+before their name, so should it be a practitioner rather than a teaching title?
+
+In a hospital, yes. In ORCID, no. Measured across the records we could resolve
+a discipline for:
+
+| Discipline | People |
+| --- | --- |
+| health_clinical | 16 |
+| humanities_law_edu | 12 |
+| engineering | 7 |
+| social_behavioural | 7 |
+| everything else | 7 |
+
+**Two thirds are not clinical.** The title means "associate professor holding a
+doctorate" and every faculty uses it — literature, engineering, law. Moving it
+to practitioner would make engineering associate professors into healthcare
+professionals.
+
+And nothing is lost by leaving it: hcp_broad matches on title OR field, so a
+`doç dr` in a clinical department already reaches the healthcare audience
+through the department, which is the right route for them.
+
+Recorded because the intuition was reasonable and the measurement was not
+obvious. *Source: the teaching_academic review of 2026-10-30.*
 
 ### 2.9 Retired and emeritus titles: the rule, and the floor it hits
 
