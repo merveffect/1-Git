@@ -286,3 +286,168 @@ where not is_assigned
                            || r'institute|division)|\bdean\b|decano|dekan)')
 order by frequency desc
 limit 60;
+
+/*
+    ============================================================================
+    THE BUILD RAN 2026-10-30. THE MECHANISM IS EXACT AND THE FORECAST WAS NOT.
+    ============================================================================
+    WHAT WORKED, with nothing to qualify:
+
+      2  all ten patterns landed. 1,699 titles / 48,785 records, every one
+         recorded as PATTERN and every one in leadership. Zero exceptions.
+      3  all fourteen human decisions landed as HUMAN. And two of the three
+         collision overrides were genuinely load-bearing: `associate dean of
+         library services` and `associate dean library services and archives`
+         both came back with model_title_group = teaching_academic, so without
+         them `librar` and the scoped `\bdean\b` would have claimed the same
+         title and failed the build. The third had model = leadership and would
+         not have collided.
+      5  THE SCOPING IS EXACT. teaching_academic -48,521, leadership +48,521,
+         and all eight other groups moved by zero. Not approximately zero -
+         zero. practitioner, pharmacist, researcher_early, researcher_
+         established, student, support_technical, trainee_clinical and
+         librarian are untouched to the record.
+
+    WHAT DID NOT MATCH, AND IT IS NOT A SMALL MISS:
+
+      4  faculty_head   17,528 -> 33,241   predicted 19,026   (+90%, not +8.5%)
+         lecturer      399,884 -> 404,367  predicted 398,858  (it went UP)
+
+    Lecturer could only lose people from this change, and it gained 4,483. So at
+    least one thing moved that this change did not move, and until that is
+    named, neither number can be attributed. Two candidates, and query 10 tells
+    them apart:
+
+      a) THE SOURCE GREW. The build re-ran the seeds and both incremental
+         models. A bigger ORCID snapshot or a bigger CDP lifts every audience
+         at once, and +1.1% on lecturer is the right size for that.
+      b) QUERY K COUNTED PEOPLE WRONG. It put 2,354 people behind 48,995
+         records, which is 20.8 records each. Every other ratio in this project
+         is nearer 3:1 - 12M teaching records to 400,000 lecturers is 30:1 but
+         that is across the whole dictionary, not one narrow family. If the
+         real figure is ~15,700 holders then the audience behaved correctly and
+         the forecast was simply built on a bad count.
+
+      (b) is the more likely of the two and it would be my error, not the
+      pipeline's. Either way the +8.5% figure in the status document and in
+      1.10b is not yet earned and should not be quoted until query 10 settles
+      it.
+    ============================================================================
+*/
+
+-- ----------------------------------------------------------------------------
+-- 10. RECONCILE THE GROWTH. Three counts that have to add up, and if they do
+--     not, the one that is wrong is the one to fix.
+-- ----------------------------------------------------------------------------
+with claimed as (
+    select title_key, title, frequency
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where decision_source = 'PATTERN' and title_group = 'leadership'
+),
+
+holders as (
+    select distinct snid
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+    where title_key in (select title_key from claimed)
+)
+
+select
+    'titles the patterns claimed'               as measure,
+    (select count(*) from claimed)              as value
+union all
+select 'records behind them  (dictionary frequency)',
+    (select sum(frequency) from claimed)
+union all
+select 'the same records, counted in stg_role_records',
+    (select count(*)
+     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+     where title_key in (select title_key from claimed))
+union all
+select 'PEOPLE holding at least one  <- query K said 2,354',
+    (select count(*) from holders)
+union all
+select 'of those, in faculty_head today',
+    (select count(distinct a.snid)
+     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience` a
+     join holders h using (snid)
+     where a.role_key = 'faculty_head')
+union all
+select 'faculty_head total  <- was 17,528',
+    (select count(distinct snid)
+     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+     where role_key = 'faculty_head')
+union all
+select 'faculty_head members NOT holding one of these titles',
+    (select count(distinct a.snid)
+     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience` a
+     left join holders h using (snid)
+     where a.role_key = 'faculty_head' and h.snid is null)
+union all
+select 'total employment records in the pipeline  <- is the source bigger?',
+    (select count(*)
+     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`)
+union all
+select 'people in the CDP  <- is the CDP bigger?',
+    (select count(distinct snid)
+     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_audience_builder_big`);
+
+-- ----------------------------------------------------------------------------
+-- 11. DID WE READ THE TITLE RIGHT, for faculty_head.
+--
+--     Precision fell from 26.3% on 71 people to 12.6% on 1,775, and the first
+--     thing the disagreers said was `teaching_academic`. That is the same shape
+--     as Lecturer, where 78.2% agreement turned out to be 99.2% correct reading
+--     once we asked whether the TITLE said what we claimed. So ask it here:
+--     of the people we put in faculty_head who called themselves something
+--     else, how many have no leadership word in any of their job titles?
+--
+--     A person who wrote `Professor and Head of Department` in ORCID and then
+--     ticked `Academic` on a survey form is not an error of ours. A person with
+--     no leadership word anywhere is.
+-- ----------------------------------------------------------------------------
+with survey as (
+    select lower(trim(email)) as email, survey_group
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
+    where map_status = 'mapped'
+),
+
+ours as (
+    select distinct snid, lower(trim(contact_email)) as email
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+    where role_key = 'faculty_head' and role_label = 'CONFIRMED'
+      and contact_email is not null
+),
+
+disagreed as (
+    select o.snid
+    from ours o
+    join survey s using (email)
+    group by o.snid
+    having logical_or(s.survey_group = 'leadership') = false
+),
+
+their_titles as (
+    select
+        d.snid,
+        logical_or(regexp_contains(r.role_title,
+            r'(?i)(head of|\bdean\b|decano|dekan|\bchair\b|\bdirector\b|'
+         || r'rector|provost|president|principal|\bchief\b|leiter|'
+         || r'coordinator|coordenador|科主任)')) as has_a_leadership_word,
+        array_agg(distinct r.role_title limit 4)   as titles
+    from disagreed d
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
+         using (snid)
+    group by d.snid
+)
+
+select
+    case when has_a_leadership_word
+         then 'their title DOES say they lead something - not our error'
+         else '*** no leadership word in any title - this is our error ***'
+    end                             as reading,
+    count(*)                        as people,
+    round(count(*) / sum(count(*)) over (), 3)  as share,
+    array_agg(titles[safe_offset(0)] order by titles[safe_offset(0)] limit 10) as examples
+from their_titles
+group by reading
+order by people desc;
