@@ -443,11 +443,61 @@ acted on - without it the test is circular, because once the pattern fires the
 title is no longer in the group the pattern was conditioned on. Librarian rows
 leave the column empty and go on working unconditionally.
 
-**Not built yet, and one measurement could still cancel it.** Query I lists the
-exclusions. Query J asks whether these people's employers resolve to an academic
-organisation at all - faculty_head scores Healthcare, Company, Funder, Other and
-UNKNOWN at 0.00, so if they sit in those the +19% is fiction and nothing should
-change.
+### BUILT 2026-10-30. The final trade
+
+J cleared the blocker: 1,690 of 2,364 holders are at an Education organisation
+(faculty_head 1.00) and 12 at a Facility (0.60), so 1,702 of 2,364 - 72% - clear
+the organisation. What strands 14,600 strong leadership records elsewhere does
+not strand these, because a professor who also heads a department is at a
+university and the ROR resolves. (J's own join was case-sensitive where the
+model uses `upper(trim())`, so its nulls were the query's fault, not a defect.)
+
+K then gave the exact trade on the scope that shipped - 1,706 titles, 48,995
+records, 2,354 holders:
+
+| | |
+| --- | --- |
+| Lecturer | 399,884 -> 398,858, **-0.26%** (1,026 leave, 1,328 stay) |
+| faculty_head | 17,528 -> **19,026**, **+8.5%** (1,498 new, 280 already in, 543 no ROR) |
+
+The earlier +19% was on the wider regex that allowed a bare `head`, and is
+superseded.
+
+**Why the trade is defensible, and it is not that faculty_head is small.** Under
+one-title-one-profession something has to be dropped from `professor and head of
+department`, and the two readings are not equal: heading a department at a
+university entails being an academic there, while being a professor entails
+nothing about leading anything. The leadership reading keeps both facts; the
+teaching reading throws one away.
+
+**Shipped:** ten patterns scoped to `teaching_academic`; ten HUMAN exclusions
+for the possessives; one HUMAN correction where query I's regex flagged a real
+deanship (`... vice dean/ acting dean/ dean s advisor`); three HUMAN decisions on
+the collision titles, all to librarian. `assert_title_patterns_do_not_collide`
+now skips titles a human decided, because `min()` never surfaces where a
+reviewer has named the group.
+
+**One flaw found and fixed before pushing.** The scope has to mean the model
+*assigned* that group, not merely that it was nearest: `m.title_group` is
+populated even for a title rejected below `sim_floor`, so conditioning on it
+would have promoted those titles with a score of 1.0 - rescuing exactly what the
+floor exists to hold back, and making the shipped behaviour differ from what K
+measured. `dim_title_group` now also exposes `model_is_assigned` so both pattern
+assertions ask the model's question rather than a different one. Query M sizes
+what the condition holds back.
+
+**Known residual: 26 titles, 604 records, 1.2% of scope.** They carry their own
+dates and a date is not a rule - `dean 2010-2018` ended, `dean 2014-` and `head
+of department 1997-pres` have not, and one carries both with the headship on the
+open side. Query L lists all 26 to be read rather than regexed.
+
+**Two things only the build can settle,** both small: a title that is teaching by
+human decision rather than by the model will not be claimed (there are 26 human
+decisions in that group and none is a head/dean compound, so this should be nil);
+and the four smallest patterns - `dekan` 2 titles, `head of dept` 4, `decano` 4,
+`head of faculty` 6 - would fail `assert_title_patterns_all_match_something` if
+even one of those few turns out to be a human decision. That failure is the
+guard working, and the fix is `[pre-emptive]` in the note.
 
 **Query H was a dud and the fault was in the query.** It returned "no
 faculty_head row at all" for all 1,667 people, which says nothing about

@@ -222,7 +222,7 @@ def build(d, figdir):
       "question 2: is *healthcare professional* about the work or about the subject. The "
       "argument used to be abstract; it now has a figure attached."])
 
-    short("HEAD OF FACULTY — 17,528 people", [
+    short("HEAD OF FACULTY — 17,528 people, 19,026 after the next build", [
       "**23.8% found, 26.3% agree. The weakest audience we have**, and poor in both "
       "directions.",
       "**But most of the recall gap is not a defect.** Of people who say they head a "
@@ -255,17 +255,18 @@ def build(d, figdir):
      "regular expressions have no way to say \"not\", so \"contains professor and chair "
      "but not research chair\" is not expressible in one row.",
      "",
-     "**The head and dean family, measured both ways.** 3,683 people hold one:",
+     "**The head and dean family, measured both ways and then shipped.** 1,706 titles "
+     "over 48,995 records, held by 2,354 people:",
      "",
-     "`Lecturer loses      at most 1,739 of 399,884 people   0.43%`",
-     "`                    the other 1,944 hold another teaching title and stay`",
-     "`Head of Faculty gains  up to 3,376 of 17,528 people    +19%`",
-     "`                    3,263 of them reachable; 307 are already in it`",
+     "`Lecturer           399,884  ->  398,858      -0.26%`",
+     "`                   1,026 leave; 1,328 hold another teaching title and stay`",
+     "`Head of Faculty     17,528  ->   19,026      +8.5%`",
+     "`                   1,498 new and confirmed; 280 already in; 543 no ROR match`",
      "",
-     "**That is the best trade this audience has been offered.** It is also an upper "
-     "bound on the gain, because faculty_head still needs the organisation to resolve, "
-     "and that is what already strands 14,600 strong leadership records. Query H in "
-     "`analyses/30_leadership_compounds.sql` is what decides it.",
+     "**The organisation does not block it**, which was the one thing that could have. "
+     "1,702 of the 2,354 are at an Education or Facility employer. What strands 14,600 "
+     "strong leadership records elsewhere does not strand these, because a professor who "
+     "also heads a department is at a university and the ROR resolves.",
     ], fill="FDF8EF", accent=AMBER)
 
     box(d, "AND `head` ON ITS OWN CANNOT BE TRUSTED EITHER", [
@@ -320,28 +321,51 @@ def build(d, figdir):
             "profession word the one that has to win. Being a head of department is an "
             "attribute of a job; it is not the job.")
 
-    box(d, "THE DESIGN THAT SURVIVES, AND WHAT IT STILL NEEDS", [
-     "A pattern that applies **within one group**: a row that says \"only when the model "
-     "already put this title in teaching\". Then —",
+    box(d, "WHAT SHIPPED — A PATTERN THAT APPLIES WITHIN ONE GROUP", [
+     "A pattern row can now say **only when the model already put this title in "
+     "teaching**. That removes the 14,500-record sweep by construction: practitioner, "
+     "pharmacist and the researcher groups are never consulted. The three librarian "
+     "collisions go the same way, the word-order split closes because a pattern matches "
+     "every separator, and the profession word still wins.",
      "",
-     "• the 14,500-record sweep disappears by construction, because practitioner, "
-     "pharmacist and the researcher groups are never consulted;",
-     "• so do the three librarian collisions the check turned up, for the same reason;",
-     "• the word-order split still closes, because a pattern matches every separator;",
-     "• and the profession word still wins, which is what was decided.",
+     "`10 patterns   head of department / school / faculty / institute / division,`",
+     "`              head of the department, head of dept, dean, decano, dekan`",
+     "`10 exclusions the possessives - dean s chair, college of science dean s`",
+     "`              distinguished professor, dean s assistant full-time lecturer`",
+     "` 1 correction ... vice dean/ acting dean/ dean s advisor IS a deanship.`",
+     "`              The exclusion regex had flagged it on the possessive alone`",
+     "` 3 decisions  the collision titles, all to librarian`",
      "",
-     "It is one nullable column on the pattern seed and one condition in one join, plus "
-     "making the model's own choice visible so the two existing pattern tests can still "
-     "see what a conditional pattern acted on. Librarian rows leave the column empty and "
-     "go on working unchanged.",
-     "",
-     "**Two things are measured before it is built, and one of them could still cancel "
-     "it.** `analyses/30` query I lists the exclusions — `dean s chair`, `dean s clinical "
-     "research fellow`, a post carrying its own end date. Query J asks whether these "
-     "people's employers resolve to an academic organisation at all: faculty_head scores "
-     "Healthcare, Company, Funder and UNKNOWN at zero, so if they sit there the +19% is "
-     "fiction and nothing should be changed.",
+     "**Why the trade is defensible, and it is not that Head of Faculty is small.** Under "
+     "the one-title-one-profession rule something has to be dropped from `professor and "
+     "head of department`, and the two readings are not equal: heading a department at a "
+     "university entails being an academic there, while being a professor entails nothing "
+     "about leading anything. The leadership reading keeps both facts; the teaching "
+     "reading throws one away. That is an argument about what the title says.",
     ], fill="F2F6F5", accent=TEAL)
+
+    box(d, "WHAT IS STILL NOT CERTAIN, AND IT IS SMALL", [
+     "**One flaw was found while writing it and fixed before it shipped.** The scope has "
+     "to mean the model *assigned* that group, not merely that teaching was its nearest "
+     "guess. The nearest group is recorded even for a title the model rejected as too "
+     "weak, so conditioning on it would have promoted those titles with a perfect score — "
+     "rescuing precisely what the confidence floor exists to hold back.",
+     "",
+     "**Two things the build will settle.** A title that is teaching by human decision "
+     "rather than by the model will not be claimed, which would show up as slightly fewer "
+     "than 1,706 titles moving; there are 26 human decisions in that group and none of "
+     "them is a head or dean compound, so this should be nil. And the four smallest "
+     "patterns — `dekan` with 2 titles, `head of dept` and `decano` with 4, `head of "
+     "faculty` with 6 — would fail the test that every pattern must match something, if "
+     "even one of those few turns out to be a human decision. That failure is the guard "
+     "working, and the fix is one word in a note.",
+     "",
+     "**And one known residual: 26 titles, 604 records, 1.2% of the scope.** They carry "
+     "their own dates, and a date is not a rule — `dean 2010-2018` has ended, `dean 2014-` "
+     "and `head of department 1997-pres` have not, and one title carries both ranges with "
+     "the headship on the open side. Query L lists all 26 to be read rather than "
+     "regexed.",
+    ], fill="FDF8EF", accent=AMBER)
 
     box(d, "A FOURTH SIGHTING OF THE SAME FAILURE, IN THE POSSESSIVE", [
      "`dean s chair`, `dean s clinical prize`, `dean s clinical research fellow`, `dean s "
