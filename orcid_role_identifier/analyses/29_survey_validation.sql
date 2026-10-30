@@ -221,3 +221,124 @@ join cdp c using (email)
 left join ours o on o.snid = c.snid
 group by we_said
 order by people desc;
+
+
+/* ===========================================================================
+   Q5.  THE SAME CHECK AT THE AUDIENCE LEVEL  -  this is the one that counts
+   ---------------------------------------------------------------------------
+   Merve, 2026-10-30: we do not have an early/established distinction. Both
+   feed the single `researcher` audience, so comparing at title-group level
+   invented a disagreement that does not exist - researcher_established
+   measured 27.3% against researcher_early at 70%, and every one of those
+   "misses" lands in the same audience anyway.
+
+   Support/technical is dropped for the same reason in reverse: it feeds no
+   audience, so its 8% measured nothing about anything we deliver.
+
+   What the survey answers mean in audience terms:
+
+       professor, lecturer, assistant/associate professor   ->  lecturer
+       research scientist, PI, postdoc, senior scientist    ->  researcher
+       physician, clinician, healthcare professional        ->  hcp_broad
+       head of academic dept, dean, institute director      ->  faculty_head
+       librarian                                            ->  librarian
+
+   TWO NUMBERS, and they answer different questions.
+
+       recall_all              of everyone who said it, how many did we find?
+                               Dominated by coverage - most of the misses are
+                               people we have no ORCID record for at all.
+
+       recall_among_classified of the ones we DID classify, how many did we
+                               put in the right audience? This is the fair
+                               measure of the classifier.
+
+   Read both against the 88.9% ceiling from the header.
+   =========================================================================== */
+with survey as (
+    select
+        lower(trim(email)) as email,
+        case survey_group
+            when 'teaching_academic'      then 'lecturer'
+            when 'researcher_early'       then 'researcher'
+            when 'researcher_established' then 'researcher'
+            when 'practitioner'           then 'hcp_broad'
+            when 'leadership'             then 'faculty_head'
+            when 'librarian'              then 'librarian'
+        end as expected_audience
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
+    where map_status = 'mapped'
+      and survey_group in ('teaching_academic','researcher_early',
+                           'researcher_established','practitioner',
+                           'leadership','librarian')
+),
+cdp as (
+    select snid, lower(trim(email)) as email
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_audience_builder_big`
+    where email is not null and email != ''
+),
+aud as (
+    select distinct snid, role_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+    where role_label = 'CONFIRMED'
+),
+hit as (
+    select
+        s.email,
+        s.expected_audience,
+        logical_or(a.role_key = s.expected_audience) as in_that_audience,
+        logical_or(a.role_key is not null)           as in_any_audience
+    from survey s
+    join cdp c using (email)
+    left join aud a on a.snid = c.snid
+    group by s.email, s.expected_audience
+)
+select
+    expected_audience                                           as they_said,
+    count(*)                                                    as people,
+    countif(in_any_audience)                                    as we_gave_a_role,
+    countif(in_that_audience)                                   as we_agree,
+    round(countif(in_that_audience) / count(*), 3)              as recall_all,
+    round(safe_divide(countif(in_that_audience),
+                      countif(in_any_audience)), 3)             as recall_among_classified
+from hit
+group by expected_audience
+union all
+select '** ALL **', count(*), countif(in_any_audience), countif(in_that_audience),
+       round(countif(in_that_audience) / count(*), 3),
+       round(safe_divide(countif(in_that_audience), countif(in_any_audience)), 3)
+from hit
+order by people desc;
+
+
+/* ===========================================================================
+   Q6.  THE OTHER DIRECTION - what do the people IN our audiences say?
+   ---------------------------------------------------------------------------
+   Q5 asks whether we found the people who say they are X. This asks whether
+   the people we call X say so themselves. A low number here means we are
+   putting the wrong people in; a low number in Q5 means we are missing people.
+   They fail in opposite directions and both are worth knowing.
+   =========================================================================== */
+with survey as (
+    select lower(trim(email)) as email, survey_group, survey_role_raw
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
+    where map_status = 'mapped'
+),
+ours as (
+    select distinct role_key, snid, lower(trim(contact_email)) as email
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+    where role_label = 'CONFIRMED' and contact_email is not null
+)
+select
+    o.role_key                                          as we_said,
+    s.survey_group                                      as they_said,
+    count(distinct o.snid)                              as people,
+    round(count(distinct o.snid) /
+          sum(count(distinct o.snid)) over (partition by o.role_key), 3) as share_of_audience
+from ours o
+join survey s using (email)
+where o.role_key in ('lecturer','researcher','hcp_broad','faculty_head',
+                     'pharmacist','librarian')
+group by we_said, they_said
+qualify row_number() over (partition by we_said order by people desc) <= 5
+order by we_said, people desc;
