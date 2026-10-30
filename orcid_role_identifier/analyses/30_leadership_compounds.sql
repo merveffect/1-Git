@@ -523,3 +523,118 @@ left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.org_type_s
    and fh.role_key = 'faculty_head'
 group by org_type, faculty_head_org_score, verdict
 order by people desc;
+
+/*
+    ============================================================================
+    I AND J CAME BACK 2026-10-30. THE ORGANISATION DOES NOT KILL IT.
+    ============================================================================
+    J's join was case-sensitive and the model's is not - int_employment_scored
+    carries `education` and org_type_scores carries `Education`, and the model
+    compares them with upper(trim()) on both sides. So the -1.0s are my query's
+    fault, not a defect. Priced off the seed by hand:
+
+        education     1.00   1,690 people   71.5%   WOULD CONFIRM
+        UNKNOWN       0.00     623          26.4%   cannot - no ROR match
+        funder        0.00      20                  cannot
+        facility      0.60      12                  would confirm
+        healthcare    0.00       9                  cannot - 29 Oct decision
+        other         0.00       4                  cannot
+        government    0.30       3                  marginal
+        nonprofit     0.40       2                  marginal
+        company       0.00       1                  cannot
+                                ----
+                               2,364
+
+    1,702 of 2,364 clear the organisation. **72%.** The thing that strands
+    14,600 strong leadership records does NOT strand these, because a professor
+    who also heads a department is at a university by definition and the ROR
+    resolves.
+
+    AND THE NUMBERS BEFORE THIS ONE WERE ON A WIDER SCOPE. C and D used the
+    broad regex, which allowed a bare `head` - 3,683 holders, +3,376, -1,739.
+    This population is the narrowed one and does not require a professor word
+    either, so 2,364 is the honest denominator and K below gives the honest
+    trade. The +19% should be read as superseded.
+
+    I: THE EXCLUSIONS ARE 37 TITLES, 927 RECORDS. Small enough to review one by
+    one, which is just as well, because the date rule does not work:
+
+        dean of the sport sciences faculty 2010-2020 professor   ENDED
+        associate professor assistant dean academic affairs 2020-2023   ENDED
+        professor of social work and co-head of department 2020-23      ENDED
+        professor molecular pharmacology dean 2014-              STILL CURRENT
+        professor assistant head of department 2017-             STILL CURRENT
+        head of department 1997-pres professor 1996-1997 ...     STILL CURRENT
+
+    A closed year range means the post ended; an open one means it continues;
+    and the last example carries both, with the headship on the open side. So
+    carrying a date is a prompt to read the title, not a rule. 11 possessive
+    titles (`dean s chair associate professor`, `college of science dean s
+    distinguished professor`) are unambiguous and all 11 are exclusions.
+    ============================================================================
+*/
+
+-- ----------------------------------------------------------------------------
+-- K. THE FINAL TRADE, ON THE EXACT SCOPE THAT WOULD SHIP. Narrowed leadership
+--    words, teaching_academic only, the 11 possessives excluded. This is the
+--    number that goes in the document, and it supersedes C and D.
+-- ----------------------------------------------------------------------------
+with scope as (
+    select title_key, title, frequency
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where title_group = 'teaching_academic'
+      and is_assigned
+      and regexp_contains(title, r'(?i)(head of (the )?(department|dept|school|faculty|'
+                               || r'institute|division)|\bdean\b|decano|dekan)')
+      and not regexp_contains(title, r"(?i)dean\s?('|\bs\b)")
+),
+
+other_teaching as (
+    select title_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where title_group = 'teaching_academic'
+      and is_assigned
+      and title_key not in (select title_key from scope)
+),
+
+people as (
+    select
+        r.snid,
+        countif(r.title_key in (select title_key from other_teaching)) as other_teaching_records
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
+    where r.snid in (
+        select snid
+        from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+        where title_key in (select title_key from scope)
+    )
+    group by r.snid
+),
+
+org as (
+    select snid, max(org_type) as org_type
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+    where role_key = 'lecturer' and title_group = 'teaching_academic'
+    group by snid
+),
+
+already as (
+    select distinct snid
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+    where role_key = 'faculty_head'
+)
+
+select
+    (select count(*)     from scope)                                as titles_in_scope,
+    (select sum(frequency) from scope)                              as records_in_scope,
+    count(*)                                                        as holders,
+    countif(p.other_teaching_records > 0)                           as stays_in_lecturer,
+    countif(p.other_teaching_records = 0)                           as leaves_lecturer,
+    countif(a.snid is not null)                                     as already_in_faculty_head,
+    countif(a.snid is null
+            and upper(coalesce(o.org_type, 'UNKNOWN'))
+                in ('EDUCATION', 'FACILITY'))                       as new_and_would_confirm,
+    countif(a.snid is null
+            and upper(coalesce(o.org_type, 'UNKNOWN')) = 'UNKNOWN')  as new_but_org_unresolved
+from people p
+left join org o     using (snid)
+left join already a using (snid);

@@ -26,6 +26,12 @@
     A non-Latin pattern going dead AFTER having matched would be the
     alarming case - more likely our normalisation lost the characters
     than that the librarians left.
+
+    A pattern scoped with applies_when_title_group counts only the titles it
+    was allowed to act on, which is why this joins on model_title_group: the
+    resolved title_group is what the pattern itself produced, so matching on
+    it would make every scoped pattern look alive whether or not it ever had
+    anything to act on.
 */
 
 with hits as (
@@ -38,6 +44,9 @@ with hits as (
     from {{ ref('title_group_patterns') }} p
     left join {{ ref('dim_title_group') }} m
         on regexp_contains(m.title, p.name_pattern)
+       and (p.applies_when_title_group is null
+            or p.applies_when_title_group = ''
+            or p.applies_when_title_group = m.model_title_group)
     group by 1, 2, 5
 )
 

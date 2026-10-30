@@ -59,6 +59,28 @@ pattern_hits as (
     from matched m
     join {{ ref('title_group_patterns') }} p
         on regexp_contains(m.title, p.name_pattern)
+       /*
+           A pattern may be scoped to the group the MODEL chose, which is
+           what m.title_group still is at this point - before this join and
+           before the override. Empty means unconditional, which is every
+           librarian row.
+
+           Measured 2026-10-30, analyses/30: an unconditional leadership
+           pattern for `head of department` and `dean` would have moved
+           ~14,500 records out of eight groups that have nothing to do with
+           faculty leadership, because `head of X` and `dean` are modifiers
+           rather than professions - they attach to any job and so override
+           the profession word standing next to them in the same string.
+           `head of department of cardiology` stopped being a clinician and
+           `cluster pharmacy manager & head of department` stopped being a
+           pharmacist, which was 2.7% of that whole group.
+
+           Scoping the pattern to one group removes that by construction:
+           the other groups are never consulted.
+       */
+       and (p.applies_when_title_group is null
+            or p.applies_when_title_group = ''
+            or p.applies_when_title_group = m.title_group)
     group by m.title_key
 )
 
@@ -67,6 +89,15 @@ select
     m.title,
     m.frequency,
     coalesce(o.title_group, pt.title_group, m.title_group) as title_group,
+
+    /*
+        The model's own choice, kept alongside the resolved one. Without it
+        a group-scoped pattern cannot be tested: the two pattern assertions
+        join back to this model, and once a pattern has fired the title is
+        no longer in the group the pattern was conditioned on, so the test
+        would be circular and would silently pass.
+    */
+    m.title_group                                         as model_title_group,
     m.similarity,
     m.margin,
     m.runner_up,

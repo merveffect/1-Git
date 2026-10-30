@@ -180,10 +180,37 @@ seeds:
       title, which is casefolded and punctuation-stripped but keeps
       accents, since clean_text uses NFKC rather than NFKD. So
       bibliothécaire needs the accented stem.
+
+      applies_when_title_group SCOPES A PATTERN TO ONE GROUP. Empty means
+      unconditional, which is every librarian row. Filled, the pattern only
+      claims a title the MODEL already put in that group.
+
+      It exists because of the leadership compounds, measured 2026-10-30 in
+      analyses/30. An unconditional pattern for `head of department` and
+      `dean` would have moved ~14,500 records out of eight groups with
+      nothing to do with faculty leadership - 5,217 from researcher_early,
+      2,353 from practitioner, 1,990 from pharmacist, which is 2.7% of that
+      whole group. The cause is that `head of X` and `dean` are modifiers
+      rather than professions: they attach to any job, so matching them
+      overrides the profession word standing next to them in the same
+      string. Scoping removes it by construction.
+
+      WHEN TO SCOPE: the pattern names an attribute of a job rather than the
+      job - leadership, seniority, a mode of employment. WHEN NOT TO: the
+      pattern names the profession itself, as librar does, in which case
+      whatever the model thought is beside the point.
     config:
-      column_types: {title_group: STRING, name_pattern: STRING, note: STRING}
+      column_types: {title_group: STRING, name_pattern: STRING,
+                     applies_when_title_group: STRING, note: STRING}
     columns:
       - name: title_group
         tests: [not_null]
       - name: name_pattern
         tests: [not_null, unique]
+      - name: applies_when_title_group
+        description: >
+          Empty for an unconditional pattern. Otherwise the title group the
+          model must already have chosen for the pattern to claim the title.
+          Not tested for accepted values here: it is read as a plain string
+          in dim_title_group, so a typo makes the pattern dead rather than
+          wrong, and assert_title_patterns_all_match_something catches that.

@@ -42,6 +42,13 @@ models:
           - accepted_values:
               arguments:
                 values: ['HUMAN', 'PATTERN', 'VECTOR', 'REJECTED']
+      - name: model_title_group
+        description: >
+          The group the embedding model chose, before any override or
+          pattern. Kept so the precedence chain is auditable, and so a
+          pattern scoped with applies_when_title_group can be tested - both
+          pattern assertions join back to this model, and matching on the
+          resolved title_group would be circular once a pattern has fired.
 
   - name: int_title_group_registry
     description: >
