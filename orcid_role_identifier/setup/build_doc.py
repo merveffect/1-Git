@@ -242,15 +242,69 @@ box(d, "PEOPLE DISAGREE WITH THEMSELVES 11% OF THE TIME", [
  "against an implied 100% and called a good result a failure.",
 ])
 
-h(d, "5.2  The result", 2)
-fig(d, f"{F}/validation.png", 6.4,
-    "Of the people we classified, how many did we put where they put themselves.")
-para(d, "**81.8% overall, against a ceiling of 88.9%** — 92% of the best obtainable. "
-        "Lecturer is above the ceiling, but that is the test being easier rather than us "
-        "being better: the ceiling compared one answer to one answer, while this asks "
-        "whether our answer is among the roles we gave the person.")
+h(d, "5.2  A cleaner yardstick: people who do not contradict themselves", 2)
+para(d, "Merve, 30 October: treat self-declaration as the truth, but only from people who "
+        "are consistent about it. Of the 34,372 who answered both surveys, **3,613 "
+        "contradicted themselves and were dropped**. The remaining **28,866** are the "
+        "ground truth used from here on.")
 
-h(d, "5.3  The real limit is coverage, not accuracy", 2)
+h(d, "5.3  Two questions, not one — and they give different answers", 2)
+para(d, "A single agreement figure hides which way the system is failing. There are two "
+        "separate questions and they fail independently:", space_after=4)
+bullet(d, "**Did we FIND the people who say they are this?** A low score means we are "
+          "missing people. (Recall)")
+bullet(d, "**Do the people we PUT here say they are this?** A low score means we are "
+          "letting the wrong people in. (Precision)")
+fig(d, f"{F}/two_directions.png", 6.4,
+    "The same audiences, measured in both directions against the consistent ground truth.")
+table(d, ["Audience","People in it","Did we find them?","Do they agree?","Read"],
+ [["Lecturer","6,206","**91.1%**","**78.2%**","Strong both ways"],
+  ["Researcher","2,967","74.3%","43.9%","Precision depressed by multi-role people"],
+  ["Healthcare (broad)","1,148","**90.9%**","22.7%","A wide net by design — see below"],
+  ["Practitioner","615","—","35.8%","Survey cannot split the healthcare sub-audiences"],
+  ["Clinical researcher","396","—","48.2%","Same"],
+  ["Head of faculty","232","**23.8%**","**26.3%**","**Weak both ways. Real.**"],
+  ["Clinical administrator","71","—","22.5%","71 people — too few to conclude"],
+  ["Pharmacist","20","—","—","**Cannot be measured** — no survey option"],
+  ["Librarian","4","—","—","**Cannot be measured**"]],
+ widths=[1.5,0.85,1.0,0.9,2.35], size=8.8)
+para(d, "Overall, 6,902 of 11,635 audience memberships were confirmed by the person "
+        "themselves — **59.3%**.")
+
+box(d, "WHY PRECISION IS LOWER THAN IT LOOKS", [
+ "The truth set records **one answer per person**. Our system gives each person **1.53 "
+ "audiences** on average.",
+ "",
+ "So a professor who is in both Lecturer and Researcher, and who wrote \"Professor\" on "
+ "the survey, is counted **right** for Lecturer and **wrong** for Researcher — even "
+ "though they may well do both.",
+ "",
+ "That caps precision at roughly **78%** before anybody makes a mistake. The measured "
+ "59.3% sits below it, so there is a real gap, but it is not the gap the raw numbers "
+ "suggest.",
+])
+
+h(d, "5.4  Which of these are problems and which are the design working", 2)
+para(d, "**Healthcare (broad) at 22.7% is mostly deliberate.** That audience admits "
+        "anybody in a clinical department even when their job title is academic — a "
+        "Professor of Cardiology belongs in it. They write \"Professor\" on the survey "
+        "and the measurement calls it a miss.")
+box(d, "AND THAT NUMBER IS USEFUL: IT PRICES AN OPEN QUESTION", [
+ "887 people in the Healthcare audience describe themselves as something other than a "
+ "clinician — mostly professors and researchers in clinical departments.",
+ "",
+ "Whether they belong there is open question 2 in the marketing document: **is "
+ "\"healthcare professional\" about the work or about the subject?**",
+ "",
+ "That has been an abstract argument about definitions. It now has a price: if marketing "
+ "answers \"the work\", those 887 are wrong and the audience shrinks. If \"the "
+ "subject\", they are right and nothing changes.",
+])
+para(d, "**Researcher at 43.9% and Practitioner at 35.8% are mostly the same effect** — a "
+        "professor who runs a research group, a consultant who is also a professor. Both "
+        "descriptions are true and the survey only takes one.")
+
+h(d, "5.5  The real limit is coverage, not accuracy", 2)
 fig(d, f"{F}/validation_funnel.png", 6.4,
     "Where the 290,045 survey respondents go.")
 para(d, "We matched 238,440 of them to somebody in the CDP, and then knew the job of only "
@@ -259,7 +313,7 @@ para(d, "This confirms from outside what the project has been saying from inside
         "ceiling on this work is **how many people we can say anything about at all**, "
         "not how often we are right about the ones we can.")
 
-h(d, "5.4  What it found: the one-title-one-group rule", 2)
+h(d, "5.6  What it found: the one-title-one-group rule", 2)
 para(d, "Head of Faculty scored 20%, and the Researcher audience 69.9%. The biggest "
         "single cause is the same in both, and it is a design choice rather than a bug.")
 box(d, "A PROFESSOR CAN ONLY BE ONE THING", [
@@ -280,7 +334,7 @@ para(d, "Head of Faculty has two further causes, both of them decisions taken "
         "deliberately in the last week: it counts current posts only, and it was narrowed "
         "to universities only on 29 October.")
 
-h(d, "5.5  What this is not", 2)
+h(d, "5.7  What this is not", 2)
 bullet(d, "**It is not an accuracy rate.** Self-declaration is a second opinion, not a "
           "fact. People pick one option from a list to describe a life that has several.")
 bullet(d, "**The population is selected.** These are people who publish and who answer "
@@ -288,6 +342,12 @@ bullet(d, "**The population is selected.** These are people who publish and who 
           "represented.")
 bullet(d, "**Two audiences cannot be checked this way at all** — the survey offers no "
           "pharmacist and no librarian option worth the name.")
+bullet(d, "**Head of Faculty is the one genuine weakness.** It is poor in both "
+          "directions — we miss three quarters of the people who say they lead a faculty, "
+          "and three quarters of the people we put there do not say it. The causes are "
+          "all known and two of them were chosen on purpose: one title can only belong to "
+          "one profession, the audience counts current posts only, and it was narrowed to "
+          "universities on 29 October.")
 bullet(d, "**It is repeatable.** The comparison is a query, so it can be re-run after "
           "every change as a regression check. That is new, and it is worth more than the "
           "single number.")
