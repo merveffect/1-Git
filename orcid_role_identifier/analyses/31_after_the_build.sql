@@ -695,7 +695,7 @@ checks as (
         (select count(distinct snid)
          from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
          where role_key = 'lecturer'), 0
-)
+),
 
 judged as (
     select
