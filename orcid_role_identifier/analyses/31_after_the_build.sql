@@ -451,3 +451,160 @@ select
 from their_titles
 group by reading
 order by people desc;
+
+/*
+    ============================================================================
+    QUERY 10 SETTLED IT, AND THE FORECAST WAS RIGHT. THE READING WAS NOT.
+    ============================================================================
+        titles the patterns claimed                              1,685
+        records behind them - DICTIONARY frequency               48,518
+        the same records, counted in stg_role_records              2,557   <--
+        PEOPLE holding at least one                                2,333
+        of those, in faculty_head today                            1,715
+        faculty_head total                                        33,241
+        faculty_head members NOT holding one of these titles      31,526   <--
+        total employment records in the pipeline               1,737,768   <--
+
+    TWO THINGS FALL OUT OF THIS AND THE SECOND IS THE IMPORTANT ONE.
+
+    1. `frequency` IS COUNTED OVER ALL OF ORCID, NOT OVER OUR UNIVERSE. The
+       whole pipeline holds 1,737,768 employment records, and the dictionary
+       says teaching_academic alone has 11,946,079. So every "records" figure in
+       this project - 48,518 here, 11.9M for teaching, the 78,565 of the
+       one-word failures - is ORCID-wide, while every "people" figure comes from
+       the 1.74M records that matched a Springer Nature id. The ratio is about
+       19:1.
+
+       48,518 ORCID records  ->  2,557 of our records  ->  2,333 people.
+
+       Query K's 2,354 was therefore CORRECT, and the 20.8-records-per-person
+       ratio I called implausible is simply what that 19:1 looks like. I read
+       two different universes as one, which is the error, not the count.
+
+    2. MY CHANGE DID WHAT IT WAS PREDICTED TO DO. 1,715 of the people holding a
+       pattern-claimed title are in faculty_head, against a prediction of 1,498
+       new plus 280 already there - 1,778. Within 4%.
+
+       **So the change accounts for 1,715 of faculty_head's 33,241, and
+       31,526 members do not hold one of these titles at all.** The audience was
+       17,528 before, so roughly 14,000 people arrived from something that is
+       not this change.
+
+    AND IT CAN ONLY BE THE ORGANISATION, BY ELIMINATION. Query 5 showed the
+    leadership group gained records from the patterns and from nothing else, so
+    all 31,526 already had leadership titles in the previous build. Their titles
+    did not change. The only other thing faculty_head needs is for the employer
+    to resolve to an academic organisation - and roughly 14,600 records with
+    strong leadership titles were stranded on exactly that. +14,000 people is
+    the same order. Query 13 confirms it.
+
+    WHICH MEANS THE HEADLINE IS NOT "+8.5% FROM THE COMPOUNDS". It is: the
+    compounds added 1,715 people as forecast, and separately the audience nearly
+    doubled because organisations resolved. Those are two findings and they must
+    be reported as two, or the compound work takes credit for the ROR data.
+    ============================================================================
+*/
+
+-- ----------------------------------------------------------------------------
+-- 12. THE REAL READING ACCURACY FOR faculty_head, with the word list fixed.
+--
+--     Query 11 said 86.1% of the disagreers do have a leadership word
+--     somewhere. That figure is contaminated in BOTH directions by the list I
+--     used:
+--       too loose - it counted `chair` and `director`, the two words this
+--                   project has already measured as unreliable. `academic
+--                   chair - organisational psychology` is a professorship.
+--       too tight - it had no `chancellor`, so `acting vice-chancellor` was
+--                   filed as our error when it is plainly leadership.
+--
+--     So this splits the words into the ones we trust and the ones we do not,
+--     and reports three buckets instead of two. The middle bucket is the honest
+--     uncertainty, and it should not be counted on either side.
+-- ----------------------------------------------------------------------------
+with survey as (
+    select lower(trim(email)) as email, survey_group
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
+    where map_status = 'mapped'
+),
+
+ours as (
+    select distinct snid, lower(trim(contact_email)) as email
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+    where role_key = 'faculty_head' and role_label = 'CONFIRMED'
+      and contact_email is not null
+),
+
+disagreed as (
+    select o.snid
+    from ours o
+    join survey s using (email)
+    group by o.snid
+    having logical_or(s.survey_group = 'leadership') = false
+),
+
+judged as (
+    select
+        d.snid,
+        /* words that name a post and a level, and nothing else */
+        logical_or(regexp_contains(r.role_title,
+            r'(?i)(head of|\bdean\b|decano|dekan|rector|provost|chancellor|'
+         || r'\bprovost\b|leiter|科主任|head of department|hod\b)')) as trusted,
+        /* words this project has measured as unreliable */
+        logical_or(regexp_contains(r.role_title,
+            r'(?i)(\bchair\b|\bdirector\b|\bchief\b|\bhead\b|coordinator|'
+         || r'coordenador|president|principal)'))                     as untrusted
+    from disagreed d
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
+         using (snid)
+    group by d.snid
+)
+
+select
+    case
+        when trusted             then 'CORRECT - a title names a faculty-level post'
+        when untrusted           then 'UNCERTAIN - only chair/director/head, which we do not trust'
+        else                          '*** OUR ERROR - no leadership word at all ***'
+    end                                                     as reading,
+    count(*)                                                as people,
+    round(count(*) / sum(count(*)) over (), 3)              as share
+from judged
+group by reading
+order by people desc;
+
+-- ----------------------------------------------------------------------------
+-- 13. WHERE THE OTHER ~14,000 CAME FROM. If it is the organisation, these
+--     people will be concentrated in one resolution method and one org type,
+--     and their TITLES will be ordinary leadership titles that existed before.
+--     If they are spread evenly, the hypothesis is wrong and something else
+--     changed - look at the CDP next.
+-- ----------------------------------------------------------------------------
+with claimed as (
+    select title_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where decision_source = 'PATTERN' and title_group = 'leadership'
+),
+
+holders as (
+    select distinct snid
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+    where title_key in (select title_key from claimed)
+)
+
+select
+    s.org_resolution_method,
+    s.org_type,
+    count(distinct s.snid)                      as people,
+    round(avg(s.org_score), 3)                  as avg_org_score,
+    round(avg(s.role_score), 3)                 as avg_title_score,
+    array_agg(distinct s.evidence_title limit 3) as example_titles
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` s
+join (
+    select distinct a.snid
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience` a
+    left join holders h using (snid)
+    where a.role_key = 'faculty_head' and h.snid is null
+) newcomers using (snid)
+where s.role_key = 'faculty_head'
+group by org_resolution_method, org_type
+order by people desc
+limit 30;
