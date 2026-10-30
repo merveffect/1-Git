@@ -247,9 +247,10 @@ def build(d, figdir):
      "`chair word only                   968 titles    44,611 records`",
      "`both                                49 titles     1,421 records`",
      "",
-     "**`chair` is ruled out. 290 of the 968 chair titles are endowed professorships**, "
-     "not leadership posts — Canada Research Chairs, a `Dean's Chair`, a European "
-     "Lehrstuhl. Thirty per cent of the family by title count. And the exclusion cannot "
+     "**`chair` is ruled out. 335 chair titles over 8,889 records are endowed "
+     "professorships**, not leadership posts — Canada Research Chairs, a `Dean's Chair`, "
+     "a European Lehrstuhl. Reading the visible rows had put that at ~1,600 records; "
+     "measured, it is five times larger. And the exclusion cannot "
      "be written as a pattern: the pattern layer is a plain text match, and BigQuery's "
      "regular expressions have no way to say \"not\", so \"contains professor and chair "
      "but not research chair\" is not expressible in one row.",
@@ -274,31 +275,83 @@ def build(d, figdir):
      "`professor - senior consultant - head of thrombosis unit   128   clinical unit`",
      "`assistant professor head of spine center                  151   clinical centre`",
      "`associate professor - head of scientific committee        156   a committee`",
-     "`assistant professor and head of quality assurance unit    130   an admin unit`",
      "`dean of the sport sciences faculty 2010-2020 professor    126   ENDED in 2020`",
-     "`dean 2010-2018 adjunct professor 2008-                    109   ENDED in 2018`",
      "",
-     "About 1,500 records in the top 120 titles alone, and **head and neck surgery** "
-     "settles it: a bare `head` match would put a surgeon in charge of a faculty on the "
-     "strength of an anatomical term.",
-     "",
-     "**So the rule has to name the level, not the word**: `head of department`, `head of "
-     "school`, `head of faculty`, `head of institute`, `head of division`, `dean`. Those "
-     "are positive and specific, so they need no \"not\".",
-     "",
-     "**Which argues for a pattern rather than overrides, for the first time since "
-     "librarian.** 1,982 titles cannot be written out by hand, and the top 120 are only "
-     "64% of the family — an override list would leave the same word-order "
-     "inconsistency at a different cut. A pattern matches `professor and head of "
-     "department` and `head of department professor` identically, which closes the open "
-     "item in 1.10a as a side effect.",
-     "",
-     "**It is an architectural change and it is not made yet.** The pattern layer has only "
-     "ever held librarian; it forces a score of 1.0 and cannot reject; and "
-     "`assert_title_patterns_do_not_collide` fails the build if two groups claim one "
-     "title. Queries F, G and H measure the sweep, the collisions and whether the gain "
-     "survives the organisation. Nothing changes before they are run.",
+     "**head and neck surgery** settles it: a bare `head` match would read an anatomical "
+     "term as a faculty post. So the rule has to name the level — `head of department`, "
+     "`head of school`, `head of faculty`, `head of institute`, `head of division`, "
+     "`dean`. Those are positive and specific, so they need no \"not\".",
     ], fill="FBF1EF", accent=RED)
+
+    h(d, "The pattern layer was the obvious answer, and the measurement killed it", 3)
+    para(d, "1,982 titles cannot be written out as individual overrides, so the plan was to "
+            "extend the pattern layer beyond librarian for the first time — a pattern "
+            "matches `professor and head of department` and `head of department professor` "
+            "identically, which would have closed the word-order question too. Three "
+            "queries were run first. The second one ended it.")
+    box(d, "WHAT THE PATTERN WOULD HAVE TAKEN WITH IT — 14,500 RECORDS, EIGHT GROUPS", [
+     "A pattern matches every title containing the phrase, not only professor compounds:",
+     "",
+     "`researcher, early        5,217 records   associate dean research`",
+     "`researcher, established  3,389           principal researcher - head of department`",
+     "`practitioner             2,353           head of department of cardiology`",
+     "`pharmacist               1,990           cluster pharmacy manager & head of department`",
+     "`support / technical      1,023`",
+     "`student                    396           sub-dean graduate studies`",
+     "`clinical trainee            91           dean s clinical research fellow`",
+     "`librarian                   14           associate dean of library services`",
+     "",
+     "Against a gain of about 49,100 records out of teaching. And the reason is "
+     "structural, not a regex that needs tightening:",
+     "",
+     "**`head of X` and `dean` are modifiers, not professions.** They attach to any job, "
+     "so a pattern matching them overrides the profession word standing next to it in the "
+     "same string. A head of a cardiology department stops being a clinician. A pharmacy "
+     "manager stops being a pharmacist — and 1,990 records is **2.7% of the entire "
+     "pharmacist group**, in the audience that has no external check at all.",
+     "",
+     "A pattern cannot reject and forces a score of 1.0, and it is undone one title at a "
+     "time, so repairing that would take hundreds of exclusions — worse than the override "
+     "list it was meant to replace.",
+    ], fill="FBF1EF", accent=RED)
+
+    para(d, "**This is the one-title-one-profession decision restated with numbers.** "
+            "Marketing's rule that a title names one profession is exactly what makes the "
+            "profession word the one that has to win. Being a head of department is an "
+            "attribute of a job; it is not the job.")
+
+    box(d, "THE DESIGN THAT SURVIVES, AND WHAT IT STILL NEEDS", [
+     "A pattern that applies **within one group**: a row that says \"only when the model "
+     "already put this title in teaching\". Then —",
+     "",
+     "• the 14,500-record sweep disappears by construction, because practitioner, "
+     "pharmacist and the researcher groups are never consulted;",
+     "• so do the three librarian collisions the check turned up, for the same reason;",
+     "• the word-order split still closes, because a pattern matches every separator;",
+     "• and the profession word still wins, which is what was decided.",
+     "",
+     "It is one nullable column on the pattern seed and one condition in one join, plus "
+     "making the model's own choice visible so the two existing pattern tests can still "
+     "see what a conditional pattern acted on. Librarian rows leave the column empty and "
+     "go on working unchanged.",
+     "",
+     "**Two things are measured before it is built, and one of them could still cancel "
+     "it.** `analyses/30` query I lists the exclusions — `dean s chair`, `dean s clinical "
+     "research fellow`, a post carrying its own end date. Query J asks whether these "
+     "people's employers resolve to an academic organisation at all: faculty_head scores "
+     "Healthcare, Company, Funder and UNKNOWN at zero, so if they sit there the +19% is "
+     "fiction and nothing should be changed.",
+    ], fill="F2F6F5", accent=TEAL)
+
+    box(d, "A FOURTH SIGHTING OF THE SAME FAILURE, IN THE POSSESSIVE", [
+     "`dean s chair`, `dean s clinical prize`, `dean s clinical research fellow`, `dean s "
+     "research assistant` — an award or a post **named after** the dean, which a `dean` "
+     "match reads as a deanship.",
+     "",
+     "It is the shape that gave us `member` (23,157), `fellow` (48,777) and `associate` "
+     "(6,631): a word that means something only in company. Found this time before it "
+     "shipped rather than after, which is the first time that has happened.",
+    ], fill="FDF8EF", accent=AMBER)
 
     short("PRACTITIONER and CLINICAL RESEARCHER — 60,937 and 50,600 people", [
       "**35.8% and 48.2% agree; neither has a recall figure**, because the survey offers "

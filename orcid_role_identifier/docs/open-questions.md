@@ -344,9 +344,10 @@ endowed chairs with it.
     chair word only                   968 titles    44,611 records
     both                               49 titles     1,421 records
 
-and 290 of the 968 chair titles are endowed professorships - 30% of that family
-by title count, not the ~1,600 records the visible rows suggested. Query E gets
-the record count.
+**The endowed chairs are 8,889 records over 335 titles** - measured by query E,
+against the ~1,600 that reading the visible rows had suggested. Five times
+larger. (E drops the professor-word requirement bucket A applied, so its 1,073
+titles are a wider set than A's 968; the two are not directly comparable.)
 
 **The head/dean trade, measured both ways.** 3,683 people hold one of these
 titles:
@@ -385,21 +386,85 @@ So the rule has to name the level rather than the word - `head of department`,
 `dean`. Those are positive and specific, so no negation is needed and the
 `chair` problem does not recur.
 
-### Which argues for the pattern layer, for the first time since librarian
+### The pattern layer was the answer, and the measurement killed it
 
 1,982 titles cannot be hand-written as overrides, and the top 120 are only 64%
-of the family - an override list would leave the same word-order inconsistency
-at a different cut. A pattern matches `professor and head of department` and
-`head of department professor` identically, so it closes the word-order item
-above as a side effect.
+of the family, so the plan was to extend the pattern layer beyond librarian for
+the first time. Query F priced it first. **A pattern matches every title
+containing the phrase, not only professor compounds:**
 
-**It is an architectural change and it has not been made.** The pattern layer
-has only ever held librarian; it forces `is_assigned` and a score of 1.0 and
-cannot reject; and `assert_title_patterns_do_not_collide` fails the build if two
-groups claim one title, which has never fired because only one group has
-patterns. Queries F, G and H measure the unintended sweep, the collisions and
-whether the gain survives the organisation. Nothing changes before they are
-run.
+| Would leave | Records | Example |
+| --- | --- | --- |
+| researcher_early | 5,217 | `associate dean research` |
+| researcher_established | 3,389 | `principal researcher - head of department` |
+| practitioner | 2,353 | `head of department of cardiology` |
+| pharmacist | 1,990 | `cluster pharmacy manager & head of department` |
+| support_technical | 1,023 | |
+| student | 396 | `sub-dean graduate studies` |
+| trainee_clinical | 91 | `dean s clinical research fellow` |
+| librarian | 14 | `associate dean of library services` |
+| **total** | **~14,500** | against a gain of ~49,100 out of teaching |
+
+1,990 records is **2.7% of the entire pharmacist group**, which has no external
+check at all, and practitioner is the least-covered audience we have.
+
+And the cause is structural rather than a regex that needs tightening:
+**`head of X` and `dean` are modifiers, not professions.** They attach to any
+job, so a pattern matching them overrides the profession word standing next to
+them in the same string. A pattern also cannot reject, forces a score of 1.0,
+and is undone one title at a time - repairing 14,500 records would take
+hundreds of exclusions, which is worse than the override list it was meant to
+replace.
+
+**Which is 1.10a restated with numbers.** The decision that one title names one
+profession is exactly what makes the profession word the one that has to win.
+Being a head of department is an attribute of a job, not the job.
+
+### The design that survives: a pattern that applies within one group
+
+A pattern row that can say *only when the model already put this title in
+teaching_academic*. Then:
+
+- the 14,500-record sweep disappears by construction - practitioner, pharmacist
+  and the researcher groups are never consulted;
+- the three collisions query G found (`associate dean of library services`,
+  `associate dean library services and archives`, `head of department of library
+  and information science` - 14 records, all librarian by pattern today)
+  disappear for the same reason;
+- the word-order split above still closes, because a pattern matches every
+  separator;
+- and the profession word still wins.
+
+Mechanically: one nullable column on `seeds/title_group_patterns`, one condition
+on the join in `dim_title_group`, and the model's own pre-pattern choice exposed
+as a column so `assert_title_patterns_all_match_something` and
+`assert_title_patterns_do_not_collide` can still see what a conditional pattern
+acted on - without it the test is circular, because once the pattern fires the
+title is no longer in the group the pattern was conditioned on. Librarian rows
+leave the column empty and go on working unconditionally.
+
+**Not built yet, and one measurement could still cancel it.** Query I lists the
+exclusions. Query J asks whether these people's employers resolve to an academic
+organisation at all - faculty_head scores Healthcare, Company, Funder, Other and
+UNKNOWN at 0.00, so if they sit in those the +19% is fiction and nothing should
+change.
+
+**Query H was a dud and the fault was in the query.** It returned "no
+faculty_head row at all" for all 1,667 people, which says nothing about
+organisations: `int_employment_scored` only emits a row for a role when the
+title group qualifies for it, so a teaching_academic person has no faculty_head
+row by construction. J asks it properly, through the org type on their existing
+teaching row.
+
+### A fourth sighting of the one-word failure, in the possessive
+
+`dean s chair`, `dean s clinical prize`, `dean s clinical research fellow`,
+`dean s research assistant` - an award or a post **named after** the dean, which
+a `dean` match reads as a deanship.
+
+Same shape as `member` (23,157 records, 9 Oct), `fellow` (48,777, 29 Oct) and
+`associate` (6,631, 30 Oct): a word that means something only in company. This
+is the first time it was caught before shipping rather than after.
 
 ### 1.11 Is "healthcare professional" about the work or the subject?
 

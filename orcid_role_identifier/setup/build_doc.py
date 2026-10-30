@@ -48,11 +48,13 @@ box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
  "people leave, including 294 heads of department and 17 deans, and that cost was "
  "measured before the decision. A small, certain audience was preferred.",
  "",
- "**And the route that could grow it has been measured.** The professor-plus-leadership "
- "compounds would cost Lecturer at most 1,739 people (0.43%) and gain Head of Faculty "
- "up to 3,376 (+19%) — the best trade that audience has been offered. `chair` is ruled "
- "out of it: 290 of 968 chair titles are endowed professorships. And `head` on its own "
- "is ruled out too, by `head and neck surgery`. See the two boxes under 6.4.",
+ "**And the route that could grow Head of Faculty has been measured, and the obvious "
+ "implementation was rejected on the measurement.** The compounds would cost Lecturer at "
+ "most 1,739 people (0.43%) and gain up to 3,376 (+19%). But a pattern for them would "
+ "also sweep 14,500 records out of eight other groups — including 2.7% of the whole "
+ "pharmacist group — because `head of X` and `dean` are modifiers, not professions. The "
+ "design that survives applies a pattern within one group, and two queries have to come "
+ "back before it is built. Section 6.4.",
 ], fill="F2F6F5", accent=TEAL)
 
 # ============================================================ 1

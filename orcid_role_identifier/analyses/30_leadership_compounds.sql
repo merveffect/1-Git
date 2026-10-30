@@ -369,3 +369,157 @@ from holders h
 left join org o using (snid)
 group by outcome
 order by people desc;
+
+/*
+    ============================================================================
+    E-H CAME BACK 2026-10-30, AND THEY CHANGED THE ANSWER.
+    ============================================================================
+    E   ENDOWED CHAIRS ARE 8,889 RECORDS, not the ~1,600 the visible rows
+        suggested - 335 titles against 738 whose chair might still mean a post.
+        (E drops the professor-word requirement that bucket A applied, so its
+        1,073 titles are a wider set than A's 968. Not a contradiction, but the
+        two are not directly comparable.)
+
+    F   THE PATTERN WOULD SWEEP ~14,500 RECORDS OUT OF EIGHT GROUPS IT HAS NO
+        BUSINESS TOUCHING. This is the finding that matters.
+
+            practitioner              2,353 records   head of department of cardiology
+            researcher_early          5,217           associate dean research
+            researcher_established    3,389           principal researcher - head of department
+            pharmacist                1,990           cluster pharmacy manager & head of department
+            support_technical         1,023
+            student                     396           sub-dean graduate studies
+            trainee_clinical             91           dean s clinical research fellow
+            librarian                    14
+
+        Against a gain of ~49,100 records out of teaching_academic. And the
+        reason is structural, not a matter of tuning the regex:
+
+        **`head of X` and `dean` are MODIFIERS, not professions.** They attach
+        to any job. A pattern matching them overrides the profession word in the
+        same string, so `head of department of cardiology` stops being a
+        clinician and `cluster pharmacy manager & head of department` stops
+        being a pharmacist. Pharmacist is 74,951 records in total, so that is
+        2.7% of the entire group, and practitioner is the least-covered audience
+        we have.
+
+        A pattern forces is_assigned and a score of 1.0 and can only be undone
+        one title at a time, so repairing 14,500 records would take hundreds of
+        HUMAN exclusions - worse than the override route it was meant to replace.
+
+        THIS IS 1.10a RESTATED WITH NUMBERS. The decision that one title names
+        one profession is what makes the profession word the one that has to
+        win. Leadership is an attribute of a job, not the job.
+
+    G   THE COLLISION RISK IS THREE TITLES, 14 RECORDS - all librarian, all
+        decided by the librarian pattern today:
+            associate dean of library services                      5
+            associate dean library services and archives            5
+            head of department of library and information science    4
+
+    H   WAS A DUD, AND THE FAULT IS IN THE QUERY. It returned "no faculty_head
+        row at all" for all 1,667 people, which is not a finding about
+        organisations. int_employment_scored only emits a row for a role when
+        the title group qualifies for it, so a teaching_academic person has no
+        faculty_head row by construction. J below asks it properly.
+
+    SO THE DESIGN THAT SURVIVES IS A PATTERN THAT APPLIES WITHIN ONE GROUP.
+    If a pattern row can say "only when the model already put this title in
+    teaching_academic", then:
+      - the 14,500-record sweep disappears by construction - practitioner,
+        pharmacist and the researcher groups are never consulted;
+      - the three librarian collisions disappear too, for the same reason;
+      - the word-order split in 1.10a still closes, because the pattern matches
+        every separator;
+      - and the profession word still wins, which is what 1.10a decided.
+
+    That is one nullable column on seeds/title_group_patterns and one condition
+    in the join in dim_title_group. Librarian rows leave it empty and keep
+    working unconditionally.
+    ============================================================================
+*/
+
+-- ----------------------------------------------------------------------------
+-- I. THE EXCLUSION LIST. Titles the conditional pattern would move, where the
+--    leadership reading is wrong anyway. Two shapes, both already sighted:
+--
+--    THE POSSESSIVE. `dean s chair`, `dean s clinical research fellow`,
+--    `dean s research assistant` - an award or a post NAMED AFTER the dean, not
+--    a deanship. Fourth sighting of the family that gave us `member`, `fellow`
+--    and `associate`: a word that only means something in company.
+--
+--    THE PAST POST. `dean of the sport sciences faculty 2010-2020`, `dean
+--    2010-2018 adjunct professor 2008-`. The audience counts current posts, and
+--    a title carrying its own end date is not one.
+-- ----------------------------------------------------------------------------
+select
+    case
+        when regexp_contains(title, r"(?i)dean\s?('|\bs\b)") then 'POSSESSIVE - named after a dean'
+        when regexp_contains(title, r'(19|20)\d{2}')           then 'PAST POST - carries its own dates'
+        else 'other'
+    end                     as why_excluded,
+    count(*)                as titles,
+    sum(frequency)          as records,
+    array_agg(title order by frequency desc limit 12) as examples
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+where title_group = 'teaching_academic'
+  and is_assigned
+  and regexp_contains(title, r'(?i)(head of (the )?(department|dept|school|faculty|'
+                           || r'institute|division)|\bdean\b|decano|dekan)')
+  and (regexp_contains(title, r"(?i)dean\s?('|\bs\b)")
+    or regexp_contains(title, r'(19|20)\d{2}'))
+group by why_excluded
+order by records desc;
+
+-- ----------------------------------------------------------------------------
+-- J. DOES THE GAIN SURVIVE THE ORGANISATION - asked properly this time.
+--
+--    faculty_head scores the employer by its ROR type, and on 29 October
+--    Healthcare, Company, Funder, Other and UNKNOWN were all set to 0.00, which
+--    means they can never confirm. So read the org type off the person's
+--    existing teaching row - which does exist - and price it against the
+--    faculty_head column of org_type_scores.
+-- ----------------------------------------------------------------------------
+with compound_titles as (
+    select title_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where title_group = 'teaching_academic'
+      and is_assigned
+      and regexp_contains(title, r'(?i)(head of (the )?(department|dept|school|faculty|'
+                               || r'institute|division)|\bdean\b|decano|dekan)')
+),
+
+holders as (
+    select distinct snid
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+    where title_key in (select title_key from compound_titles)
+),
+
+their_org as (
+    select
+        s.snid,
+        s.org_type,
+        s.org_resolution_method
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` s
+    join holders h using (snid)
+    where s.role_key = 'lecturer'
+      and s.title_group = 'teaching_academic'
+)
+
+select
+    coalesce(o.org_type, 'no teaching row found')   as org_type,
+    coalesce(fh.org_score, -1)                      as faculty_head_org_score,
+    count(*)                                        as people,
+    case
+        when fh.org_score is null   then 'unknown - needs looking at'
+        when fh.org_score = 0.0     then 'CANNOT confirm - this org type scores zero'
+        when fh.org_score >= 0.6    then 'would confirm'
+        else 'marginal'
+    end                                             as verdict
+from holders h
+left join their_org o using (snid)
+left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.org_type_scores` fh
+    on fh.org_type = o.org_type
+   and fh.role_key = 'faculty_head'
+group by org_type, faculty_head_org_score, verdict
+order by people desc;
