@@ -173,7 +173,7 @@ box(d, "WHAT THIS MEANS IN PLAIN TERMS", [
  "been.",
 ])
 
-h(d, "4.2  The survey answers (arriving now)", 2)
+h(d, "4.2  The survey answers — ARRIVED, and measured in section 5", 2)
 para(d, "Market Intelligence asks people their job title in most surveys. It is a closed "
         "question with 21 options, so the answers are clean. Crucially, some surveys also "
         "record the person's email address, which means we can match them to our own "
@@ -182,8 +182,11 @@ table(d, ["Export", "Rows", "What it gives us"],
  [["Journal Author Satisfaction","109,396","Email + the job title the person picked for themselves"],
   ["Researcher Panel members","232,648","Opt-in email + self-selected job title"]],
  widths=[1.9,0.9,3.9])
-para(d, "**This is the first time we can compare our answer to the person's own answer.** "
-        "An early match on a smaller slice already found 24,068 people in common.")
+para(d, "**Both exports arrived on 30 October and have been used.** 290,045 unique "
+        "people after deduplication, 93.2% of whom could be mapped onto one of our ten "
+        "professions. The full result is section 5. The headline: 81.8% of the people we "
+        "classified were put in the audience they put themselves in, against a ceiling "
+        "of 88.9%.")
 box(d, "WHAT IT WILL AND WILL NOT TELL US", [
  "**It will tell us** where our profession disagrees with what the person says they do. "
  "That is a real external check and we have never had one.",
@@ -206,7 +209,7 @@ para(d, "A call with Bernadeta is being arranged. Section 4.1 shows why this is 
         "countries, and whether web-scraped data she worked on could help.")
 
 # ============================================================ 5
-h(d, "5.  The first external check, and what it found")
+h(d, "5.  VALIDATION — our answer against what people said about themselves")
 para(d, "Until the end of October every number in this project came from our own "
         "pipeline. Market Intelligence then exported two surveys in which people had "
         "picked their own job title from a fixed list and given an email address. That "
