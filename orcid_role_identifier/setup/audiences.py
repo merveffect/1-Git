@@ -222,9 +222,13 @@ def build(d, figdir):
       "question 2: is *healthcare professional* about the work or about the subject. The "
       "argument used to be abstract; it now has a figure attached."])
 
-    short("HEAD OF FACULTY — 17,528 people, 19,026 after the next build", [
-      "**23.8% found, 26.3% agree. The weakest audience we have**, and poor in both "
-      "directions.",
+    short("HEAD OF FACULTY — 33,241 people, up from 17,528", [
+      "**23.8% found. Agreement now reads 12.6% on 1,775 people, against 26.3% on 71 "
+      "before** — and the fall is mostly the sample growing 25-fold, not the labels "
+      "getting worse. Asked the way Lecturer was asked — does the person's title say they "
+      "lead something — **about 86% are right**, with roughly 14% having no leadership "
+      "word in any title at all. That 14% is the real error rate and it is the one to "
+      "work on.",
       "**But most of the recall gap is not a defect.** Of people who say they head a "
       "department, around 62% wrote only `professor` in ORCID — nothing in their record "
       "says they lead anything. We cannot know, and the standing rule is not to guess.",
@@ -255,18 +259,26 @@ def build(d, figdir):
      "regular expressions have no way to say \"not\", so \"contains professor and chair "
      "but not research chair\" is not expressible in one row.",
      "",
-     "**The head and dean family, measured both ways and then shipped.** 1,706 titles "
-     "over 48,995 records, held by 2,354 people:",
+     "**The head and dean family: built, and it did what was forecast.** 1,685 titles "
+     "over 48,518 ORCID records, held by 2,333 people. After the build, **1,715 of them "
+     "are in Head of Faculty** against a forecast of 1,778 — within 4%.",
      "",
-     "`Lecturer           399,884  ->  398,858      -0.26%`",
-     "`                   1,026 leave; 1,328 hold another teaching title and stay`",
-     "`Head of Faculty     17,528  ->   19,026      +8.5%`",
-     "`                   1,498 new and confirmed; 280 already in; 543 no ROR match`",
+     "**And a warning about every record count in this document.** The build showed the "
+     "pipeline holds 1,737,768 employment records in total, while the dictionary says "
+     "teaching academics alone have 11,946,079. So a records figure is counted across all "
+     "of ORCID, and a people figure comes from the records that matched a Springer Nature "
+     "id — about 19 to 1. `48,518 ORCID records → 2,557 of ours → 2,333 people`. The two "
+     "are not comparable and reading them as one scale is how the forecast for this change "
+     "was nearly mis-stated.",
      "",
-     "**The organisation does not block it**, which was the one thing that could have. "
-     "1,702 of the 2,354 are at an Education or Facility employer. What strands 14,600 "
-     "strong leadership records elsewhere does not strand these, because a professor who "
-     "also heads a department is at a university and the ROR resolves.",
+     "**The audience also nearly doubled in the same build, and that is NOT this work.** "
+     "Head of Faculty went 17,528 → 33,241, and 31,526 of those people hold none of these "
+     "titles. The record counts show the leadership group gained records from these "
+     "patterns and from nothing else, so those people already had their titles — the only "
+     "other thing this audience needs is an employer that resolves to an academic "
+     "organisation, and about 14,600 strong leadership records were stranded on exactly "
+     "that. Two findings in one build, and they have to be reported as two or this work "
+     "takes credit for the organisation data.",
     ], fill="FDF8EF", accent=AMBER)
 
     box(d, "AND `head` ON ITS OWN CANNOT BE TRUSTED EITHER", [

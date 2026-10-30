@@ -48,12 +48,16 @@ box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
  "people leave, including 294 heads of department and 17 deans, and that cost was "
  "measured before the decision. A small, certain audience was preferred.",
  "",
- "**Head of Faculty grows for the first time, by 8.5%.** The professor-plus-leadership "
- "compounds now reach it: 1,498 new confirmed people against 1,026 leaving Lecturer, "
- "which is 0.26% of that audience. It took a new mechanism — a pattern scoped to one "
- "group — because an unscoped one would have swept 14,500 records out of eight other "
- "groups, including 2.7% of the whole pharmacist group. `head of X` and `dean` are "
- "modifiers, not professions. Section 6.4 has the measurement and what is still open.",
+ "**Head of Faculty is 33,241 people, up from 17,528 — and only 1,715 of that is our "
+ "work.** The professor-plus-leadership compounds now reach the audience and brought "
+ "exactly what was forecast, within 4%. The rest arrived in the same build because "
+ "employers resolved to academic organisations, which is the thing this audience has "
+ "always been starved by. Two findings, reported as two. Section 6.4.",
+ "",
+ "It took a new mechanism — a pattern scoped to one title group — because an unscoped "
+ "one would have swept 14,500 records out of eight other groups, including 2.7% of the "
+ "whole pharmacist group. `head of X` and `dean` are modifiers, not professions. The "
+ "scoping then held to the record: the eight other groups moved by zero.",
 ], fill="F2F6F5", accent=TEAL)
 
 # ============================================================ 1
