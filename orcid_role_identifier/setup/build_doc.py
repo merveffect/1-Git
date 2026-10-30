@@ -2,6 +2,7 @@
 import sys, os
 SP = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, SP)
 from docx_lib import *
+import audiences
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH as AL
 F = os.path.join(SP, "fig")
@@ -15,32 +16,41 @@ r.font.color.rgb=TEAL; r.font.name=SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
-para(d, "Working document  ·  updated 29 October 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "Working document  ·  updated 30 October 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
- "**The project has been checked against an outside source for the first time, and it "
- "passed.** 81.8% of the people we classified were put in the audience they put "
- "themselves in — against a ceiling of 88.9%, which is how often people agree with "
- "their own earlier answer. Section 5 is new and covers it.",
+ "**Section 6 is new: every target audience now has its own heading**, with Lecturer "
+ "written out in full — how it is labelled, how accurate it has been shown to be in "
+ "both directions, what was corrected and what is still open. The other eight are "
+ "summarised and will be expanded in the same shape.",
  "",
- "**Nine more corrections landed** from the synonym check, and all fourteen outstanding "
- "corrections are now live in the dictionary.",
+ "**The validation was re-measured in both directions.** The earlier 81.8% answered only "
+ "\"did we find them\". Measuring the other way as well — do the people we put in an "
+ "audience agree — gives **59.3% of 11,635 memberships confirmed**, against a mechanical "
+ "ceiling near 78%. Section 5 carries both numbers; neither alone is the answer.",
+ "",
+ "**Lecturer has been read end to end.** 91.1% found, 78.2% agree, and **99.2% of the "
+ "titles were read correctly** — of 1,354 people who call themselves something else, "
+ "only 50 have a title that is not a teaching title at all.",
+ "",
+ "**Fourteen corrections landed**, covering 16,507 records, and the Lecturer audience "
+ "moved by **one person**. The dictionary is cleaner and the audience is not, because the "
+ "people holding a bad title almost always hold a good one too. That is the third time "
+ "this project has measured it and it is section 6.1.3.",
+ "",
+ "**A third instance of the one-word failure was found and fixed.** `associate` reaching "
+ "teaching through `associate professor`, after `member` in October and `fellow` last "
+ "week — **78,565 records** between them. It needs a standing check, not a third "
+ "discovery.",
  "",
  "**Head of Faculty is now university heads only.** A medical director at a hospital was "
- "reaching it; rather than patch that one title we took the whole hospital path out. "
- "About 2,000 people leave, including 294 heads of department and 17 deans, and that cost "
- "was measured before the decision. A small, certain audience was preferred.",
+ "reaching it; rather than patch that one title the whole hospital path came out. 2,819 "
+ "people leave, including 294 heads of department and 17 deans, and that cost was "
+ "measured before the decision. A small, certain audience was preferred.",
  "",
- "**The synonym-split check is written** (`analyses/28`). It is step 1 of the taxonomy "
- "plan on page 5 and it needs no judgement — 124 groups, 254 pairs, one query.",
- "",
- "A build has run, and **four of the five corrections landed**. `pi`, `fellow`, "
- "`medical director` and `director of research` all now show as human decisions in the "
- "dictionary — 80,417 records. The fifth, `assistant research professor` (14,060 "
- "records), was pushed after that build and needs the next one.",
- "",
- "**One side effect was predicted and has now been measured: 145 people.** It is not "
- "settled. See the last page.",
+ "**And the route that could grow it has been sized and partly ruled out.** `chair` "
+ "cannot be used as a leadership signal: ~1,600 records of the compound family are "
+ "endowed professorships, Canada Research Chairs and Lehrstühle. See the box under 6.4.",
 ], fill="F2F6F5", accent=TEAL)
 
 # ============================================================ 1
@@ -114,16 +124,16 @@ para(d, "\"Read\" below means a person has looked at job titles covering that sh
         "checked it.")
 fig(d, f"{F}/coverage.png", 6.6, "How much of each profession a person has actually read.")
 table(d, ["Profession", "Records", "Read", "Condition", "What it needs next"],
- [["Practitioner","1,656,354","38%","**Weakest**","A clinical expert. 52 of its example words are not in any taxonomy we have."],
-  ["Clinical trainee","801,282","68%","Good","Nothing urgent."],
-  ["Teaching academic","12,024,436","69%","Exposed","No subject check at all, so a wrong title goes straight through."],
-  ["Researcher, early","8,343,585","75%","**Cleanest**","Nothing. Zero corrections were needed on the first read."],
-  ["Researcher, established","1,917,931","62%","Good","Two naming clashes to settle. See section 6."],
-  ["Leadership","953,819","62%","Good","Watch one side effect after the next build."],
-  ["Pharmacist","74,941","51%","Fixed","Was the dirtiest group. 21% of its records were wrong and it cost the audience 91 people."],
-  ["Librarian","21,832","n/a","Solid","Decided by the word itself, not by the machine. 0.4% known wrong."],
-  ["Student","1,968,320","**0%**","**Not read**","About to become an audience. Nobody has reviewed it."],
-  ["Support / technical","1,458,782","n/a","Parked","Feeds nothing. Deliberately holds titles that belong nowhere."]],
+ [["Practitioner","1,650,456","38%","**Weakest**","A clinical expert. 52 of its example words are not in any taxonomy we have."],
+  ["Clinical trainee","751,548","68%","Good","Nothing urgent."],
+  ["Teaching academic","11,994,600","69%","Exposed","No subject check at all, so a wrong title goes straight through."],
+  ["Researcher, early","8,408,047","75%","**Cleanest**","Nothing. Zero corrections were needed on the first read."],
+  ["Researcher, established","1,945,519","62%","Good","Two naming clashes to settle. See section 7."],
+  ["Leadership","962,236","62%","Good","Watch one side effect after the next build."],
+  ["Pharmacist","74,951","51%","Fixed","Was the dirtiest group. 21% of its records were wrong and it cost the audience 91 people."],
+  ["Librarian","21,855","n/a","Solid","Decided by the word itself, not by the machine. 0.4% known wrong."],
+  ["Student","1,970,615","**0%**","**Not read**","About to become an audience. Nobody has reviewed it."],
+  ["Support / technical","1,453,643","n/a","Parked","Feeds nothing. Deliberately holds titles that belong nowhere."]],
  widths=[1.25,0.85,0.5,0.75,3.25], size=9)
 
 box(d, "WHY \"PRACTITIONER\" KEEPS COMING UP", [
@@ -352,7 +362,11 @@ bullet(d, "**It is repeatable.** The comparison is a query, so it can be re-run 
           "every change as a regression check. That is new, and it is worth more than the "
           "single number.")
 
-h(d, "6.  How to use the taxonomy well — step by step")
+# ============================================================ 6
+audiences.build(d, F)
+
+# ============================================================ 7
+h(d, "7.  How to use the taxonomy well — step by step")
 para(d, "The taxonomy is built for a B2C research audience, so most of it is not about "
         "us. The aim is to take only the parts that improve our matching and leave the "
         "rest. Here is the order to do it in, cheapest and surest first.")
@@ -437,8 +451,8 @@ para(d, "Once the synonym check is done, turn it into a test that runs with ever
         "Then a future change to our example words cannot quietly split a synonym group "
         "again. The one in step 1 went unnoticed for months.")
 
-# ============================================================ 6
-h(d, "7.  Which matches need the most attention")
+# ============================================================ 8
+h(d, "8.  Which matches need the most attention")
 para(d, "Ranked by how many records are affected. The first two are the same problem seen "
         "twice: the same job written two ways, landing in two professions.")
 table(d, ["What is wrong", "Records", "Why it happened", "What to do"],
@@ -478,8 +492,8 @@ box(d, "A RULE WE LEARNED THE HARD WAY THIS WEEK", [
  "Using the first to answer the second nearly bought us a change we did not need.",
 ], fill="FAF2F5", accent=PLUM)
 
-# ============================================================ 7
-h(d, "8.  What happens next")
+# ============================================================ 9
+h(d, "9.  What happens next")
 table(d, ["#", "What", "Why now", "Who"],
  [["1","Run the synonym check","Written as `analyses/28`. Finds splits like the 85,845-record one automatically. No judgement needed.","Us"],
   ["2","Fold its findings into the next build","So Students, the consent basis and these corrections all land in one rebuild and one round of checking.","Us"],

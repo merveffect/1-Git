@@ -52,30 +52,57 @@ def para(d, text, size=10.5, color=INK2, bold=False, italic=False,
          space_after=6, mono=False, indent=0):
     p = d.add_paragraph(); p.paragraph_format.space_after=Pt(space_after)
     if indent: p.paragraph_format.left_indent=Inches(indent)
-    for chunk, is_bold in _split_bold(text):
+    for chunk, is_bold, is_mono in _spans(text):
         r = p.add_run(chunk); r.bold = bold or is_bold; r.italic = italic
-        r.font.name = MONO if mono else SANS
-        r.font.size = Pt(size); r.font.color.rgb = color
+        r.font.name = MONO if (mono or is_mono) else SANS
+        r.font.size = Pt(size - 0.5 if is_mono and not mono else size)
+        r.font.color.rgb = color
     return p
 
-def _split_bold(text):
-    """**bold** inside a string."""
-    out=[]; i=0
+def _spans(text):
+    """**bold** and `code` inside a string, as (chunk, bold, mono) triples.
+
+    Two passes: backtick spans first, so a code span is never split by a
+    bold marker inside it, then bold within each non-code run. This
+    document names job titles constantly - `associate professor` has to
+    read as a literal string and not as prose - so inline code is worth
+    the twenty lines.
+    """
+    out = []
+    for part, is_mono in _split_on(text, "`"):
+        if is_mono:
+            out.append((part, False, True))
+        else:
+            out.extend((c, b, False) for c, b in _split_on(part, "**"))
+    return [(t, b, m) for t, b, m in out if t]
+
+
+def _split_on(text, marker):
+    """(chunk, is_inside) pairs around balanced `marker` delimiters."""
+    out = []; i = 0; n = len(marker)
     while True:
-        a = text.find("**", i)
-        if a == -1: out.append((text[i:], False)); break
-        b = text.find("**", a+2)
-        if b == -1: out.append((text[i:], False)); break
+        a = text.find(marker, i)
+        if a == -1:
+            out.append((text[i:], False)); break
+        b = text.find(marker, a + n)
+        if b == -1:
+            out.append((text[i:], False)); break
         if a > i: out.append((text[i:a], False))
-        out.append((text[a+2:b], True)); i = b+2
-    return [(t,bd) for t,bd in out if t]
+        out.append((text[a + n:b], True)); i = b + n
+    return out
+
+
+def _split_bold(text):
+    """Kept for callers that only want (chunk, bold)."""
+    return [(t, b) for t, b, _ in _spans(text)]
+
 
 def bullet(d, text, size=10.5):
     p = d.add_paragraph(style="List Bullet")
     p.paragraph_format.space_after=Pt(3); p.paragraph_format.left_indent=Inches(0.28)
-    for chunk, bd in _split_bold(text):
-        r=p.add_run(chunk); r.bold=bd; r.font.name=SANS
-        r.font.size=Pt(size); r.font.color.rgb=INK2
+    for chunk, bd, mn in _spans(text):
+        r=p.add_run(chunk); r.bold=bd; r.font.name=MONO if mn else SANS
+        r.font.size=Pt(size - 0.5 if mn else size); r.font.color.rgb=INK2
     return p
 
 def box(d, label, lines, fill="F2F6F5", accent=TEAL):
@@ -88,14 +115,12 @@ def box(d, label, lines, fill="F2F6F5", accent=TEAL):
     r = first.add_run(label); r.bold=True; r.font.size=Pt(9.5)
     r.font.color.rgb = accent; r.font.name=SANS
     for ln in lines:
-        mono = ln.startswith("`")
-        txt = ln.strip("`")
         p = c.add_paragraph(); p.paragraph_format.space_after=Pt(2)
-        for chunk, bd in _split_bold(txt):
+        for chunk, bd, mn in _spans(ln):
             rr = p.add_run(chunk); rr.bold=bd
-            rr.font.name = MONO if mono else SANS
-            rr.font.size = Pt(9.5 if mono else 10)
-            rr.font.color.rgb = INK if mono else INK2
+            rr.font.name = MONO if mn else SANS
+            rr.font.size = Pt(9.5 if mn else 10)
+            rr.font.color.rgb = INK if mn else INK2
     d.add_paragraph().paragraph_format.space_after=Pt(2)
     return t
 
@@ -112,12 +137,11 @@ def table(d, headers, rows, widths=None, size=9.5, header_fill="1C1F23"):
         for i,val in enumerate(row):
             if ri % 2 == 1: shade(cells[i], "F7F7F6")
             p = cells[i].paragraphs[0]; p.paragraph_format.space_after=Pt(1)
-            mono = isinstance(val,str) and val.startswith("`")
-            txt = val.strip("`") if isinstance(val,str) else str(val)
-            for chunk, bd in _split_bold(txt):
+            txt = val if isinstance(val,str) else str(val)
+            for chunk, bd, mn in _spans(txt):
                 r = p.add_run(chunk); r.bold=bd
-                r.font.name = MONO if mono else SANS
-                r.font.size=Pt(size); r.font.color.rgb=INK2
+                r.font.name = MONO if mn else SANS
+                r.font.size=Pt(size - 0.5 if mn else size); r.font.color.rgb=INK2
     if widths:
         for i,w in enumerate(widths):
             for row in t.rows: row.cells[i].width = Inches(w)

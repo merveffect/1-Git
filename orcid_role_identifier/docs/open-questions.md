@@ -299,6 +299,58 @@ faculty_head, which is already the weakest audience we have; sending them all
 to leadership removes 44,000 from lecturer, which is 0.4% of a group of twelve
 million. Open.
 
+### 1.10b `chair` cannot be a leadership signal — MEASURED AND RULED OUT, 2026-10-30
+
+1.10a recorded the compound titles as staying in Lecturer. Later the same day
+the decision was revisited - head/dean/chair compounds to leadership, so that
+the people who run faculties are reachable in faculty_head - and reading the
+full list before implementing it killed one third of the scope outright.
+
+`chair` does not mean a leadership post in academic job titles often enough to
+be usable. From the 150 compound titles currently in teaching_academic:
+
+    full professor and chairholder chair of strategic entrepreneurship   227
+    dean s chair associate professor                                     204
+    professor canada research chair tier 1                               178
+    canada research chair and full professor                             174
+    professor & canada excellence research chair                         172
+    assistant professor & canada research chair                          158
+    professor and research chair                                         144
+    full professor and canada excellence research chair                  129
+    associate professor and huck chair                                   128
+    professor and canada research chair                                  ...
+
+Roughly **1,600 records** of this shape. A Canada Research Chair is a funded
+research professorship. A *Dean's Chair* is an endowed chair named after the
+office that endows it, not a deanship. A European *Chair of X* (Lehrstuhl) is
+the professorship itself. Every one of these belongs in teaching_academic,
+which is where it already is.
+
+**Should they go to researcher instead?** No. The professorship is the certain
+part of the string and it is a teaching post; moving the title to a researcher
+group would trade a claim we are sure of for one that is no more certain, and
+would drop a true Lecturer membership to gain a Researcher membership these
+people mostly hold anyway through other records. No change.
+
+**And the exclusion is not expressible in the pattern layer.**
+`seeds/title_group_patterns.csv` is matched with `regexp_contains`, and
+BigQuery's RE2 has no negative lookahead, so "contains professor and chair but
+NOT research chair" cannot be written as one row. A pattern would carry the
+endowed chairs with it.
+
+So the open scope narrows to **head** and **dean** compounds with `chair` set
+aside. `analyses/30_leadership_compounds.sql` sizes that family and measures
+both sides before anything changes:
+
+- how many people would actually leave Lecturer - only those holding no other
+  teaching title, and every earlier correction in this project has found that
+  they do hold one;
+- how many would newly reach faculty_head, subject to the organisation
+  resolving, which is what actually starves that audience.
+
+Still open: the word-order split in 1.10a applies to the head/dean family too,
+and whichever way it is settled has to settle all separators at once.
+
 ### 1.11 Is "healthcare professional" about the work or the subject?
 
 Several questions in 1.4 and 1.5 are really this one question asked about
