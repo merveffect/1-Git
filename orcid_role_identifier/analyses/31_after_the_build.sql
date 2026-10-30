@@ -608,3 +608,115 @@ where s.role_key = 'faculty_head'
 group by org_resolution_method, org_type
 order by people desc
 limit 30;
+
+-- ----------------------------------------------------------------------------
+-- 14. THE WHOLE CHECK IN ONE QUERY. Run this and query 12, and the work on the
+--     leadership compounds is finished.
+--
+--     Baselines are from the 30 October build, the one BEFORE the 37 rejections
+--     and the removal of the assigned-only guard. Expected changes:
+--
+--       the 37 ended-post titles leave leadership        -972 records
+--       the 34 verbose titles arrive, previously below
+--         the floor and therefore in no group at all      +578 records
+--       everything else                                  unchanged
+--
+--     So leadership should land near 1,010,363 and teaching_academic should not
+--     move at all - the rejected titles were all leadership, and the verbose
+--     ones were assigned to nothing. A `verdict` column saying anything other
+--     than 'as expected' is the thing to look at; nothing else needs reading.
+-- ----------------------------------------------------------------------------
+with expected as (
+    select * from unnest([
+        struct('teaching_academic'      as k, 11946079 as want, 'records' as unit),
+        struct('leadership'             as k,  1010363 as want, 'records' as unit),
+        struct('researcher_early'       as k,  8408047 as want, 'records' as unit),
+        struct('student'                as k,  1970615 as want, 'records' as unit),
+        struct('researcher_established' as k,  1945519 as want, 'records' as unit),
+        struct('practitioner'           as k,  1650456 as want, 'records' as unit),
+        struct('support_technical'      as k,  1453643 as want, 'records' as unit),
+        struct('trainee_clinical'       as k,   751548 as want, 'records' as unit),
+        struct('pharmacist'             as k,    74951 as want, 'records' as unit),
+        struct('librarian'              as k,    21855 as want, 'records' as unit)
+    ])
+),
+
+groups_now as (
+    select title_group as k, sum(frequency) as got
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned
+    group by title_group
+),
+
+checks as (
+    -- A. every group's record count against what it should be
+    select
+        'group  ' || e.k                            as check_name,
+        e.want                                      as expected,
+        coalesce(g.got, 0)                          as actual,
+        coalesce(g.got, 0) - e.want                 as diff
+    from expected e
+    left join groups_now g using (k)
+
+    union all
+
+    -- B. did the 37 rejections land
+    select 'the 37 ended-post titles, rejected', 37,
+        (select count(*)
+         from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+         where decision_source = 'HUMAN' and not is_assigned
+           and regexp_contains(title, r'(19|20)\d{2}')
+           and regexp_contains(title, r'(?i)(head of|\bdean\b)')),
+        0
+
+    union all
+
+    -- C. did the verbose ones arrive, now that the guard is gone
+    select 'verbose titles the patterns can now reach', 34,
+        (select count(*)
+         from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+         where decision_source = 'PATTERN' and title_group = 'leadership'
+           and similarity < 0.65),
+        0
+
+    union all
+
+    -- D. the two audiences. No prediction on these - the rejections and the
+    --    verbose titles pull in opposite directions by a few hundred people,
+    --    and which way it nets out is what this reports.
+    select 'PEOPLE in faculty_head  (was 33,241)', 33241,
+        (select count(distinct snid)
+         from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+         where role_key = 'faculty_head'), 0
+
+    union all
+
+    select 'PEOPLE in lecturer  (was 404,367)', 404367,
+        (select count(distinct snid)
+         from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+         where role_key = 'lecturer'), 0
+)
+
+judged as (
+    select
+        check_name,
+        expected,
+        actual,
+        actual - expected                               as diff,
+        case
+            when check_name like 'PEOPLE%'              then 'no prediction - just read it'
+            when actual = expected                      then 'as expected'
+            when check_name = 'group  leadership'
+                 and abs(actual - expected) < 200       then 'as expected, within rounding'
+            else '*** LOOK AT THIS ***'
+        end                                             as verdict
+    from checks
+)
+
+select check_name, expected, actual, diff, verdict
+from judged
+order by
+    case when verdict like '***%' then 0
+         when check_name like 'PEOPLE%' then 1
+         else 2 end,
+    abs(diff) desc;
