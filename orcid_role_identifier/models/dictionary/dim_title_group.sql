@@ -80,18 +80,27 @@ pattern_hits as (
        */
        and (p.applies_when_title_group is null
             or p.applies_when_title_group = ''
-            or (p.applies_when_title_group = m.title_group
-                /*
-                    "Already put it in that group" has to mean ASSIGNED, not
-                    merely nearest. m.title_group is populated even for a
-                    title the model rejected below sim_floor, and a scoped
-                    pattern conditioned on a group we did not believe would
-                    promote that title with a score of 1.0 - rescuing exactly
-                    the values the floor exists to hold back. An
-                    unconditional pattern still rescues them, which is what
-                    librarian needs it for.
-                */
-                and m.match_decision = 'ACCEPTED'))
+            or p.applies_when_title_group = m.title_group)
+       /*
+           WHY THERE IS NO `and m.match_decision = 'ACCEPTED'` HERE.
+
+           It was there for one build, on the argument that conditioning on
+           a group the model had rejected would rescue what sim_floor exists
+           to hold back. analyses/31 query 9 measured what it held back, and
+           the argument did not survive the evidence: 34 titles, about 578
+           records, and every one of them a plain faculty leadership post -
+
+             professor head of school director of japan pacific ict centre   0.649
+             endowed professor in nursing associate dean for research        0.642
+             professor and head of school of computing on medway campus      0.649
+
+           They all sit between 0.567 and 0.649, just under the 0.65 line,
+           and they sit there because they are VERBOSE rather than because
+           they are ambiguous - a long descriptive string dilutes every
+           anchor it contains. The floor exists to stop the embedding
+           guessing; a literal pattern match is not a guess, and the model
+           agreeing on the group is corroboration rather than the evidence.
+       */
     group by m.title_key
 )
 

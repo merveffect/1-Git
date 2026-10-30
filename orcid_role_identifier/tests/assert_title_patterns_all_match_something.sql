@@ -46,8 +46,7 @@ with hits as (
         on regexp_contains(m.title, p.name_pattern)
        and (p.applies_when_title_group is null
             or p.applies_when_title_group = ''
-            or (p.applies_when_title_group = m.model_title_group
-                and m.model_is_assigned))
+            or p.applies_when_title_group = m.model_title_group)
     group by 1, 2, 5
 )
 
