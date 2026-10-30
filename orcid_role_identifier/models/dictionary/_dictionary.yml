@@ -49,6 +49,14 @@ models:
           pattern scoped with applies_when_title_group can be tested - both
           pattern assertions join back to this model, and matching on the
           resolved title_group would be circular once a pattern has fired.
+      - name: model_is_assigned
+        description: >
+          Whether the model's own choice cleared sim_floor. A pattern scoped
+          with applies_when_title_group fires only where this is true, so
+          that conditioning on a group never rescues a title the floor had
+          rejected. Exposed for the same reason as model_title_group: the
+          two pattern assertions have to be able to ask the model's
+          question, not a different one.
 
   - name: int_title_group_registry
     description: >

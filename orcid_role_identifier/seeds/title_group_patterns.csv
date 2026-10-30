@@ -10,3 +10,13 @@ librarian,бібліотек,,uk
 librarian,kütüphane,,[pre-emptive] tr: kütüphaneci - no ORCID title carried this stem as at 2026-10-16; kept because it costs nothing and covers the title the day one appears
 librarian,図書館,,[pre-emptive] ja - no ORCID title carried this stem as at 2026-10-16; kept because it costs nothing and covers the title the day one appears
 librarian,图书馆,,[pre-emptive] zh - no ORCID title carried this stem as at 2026-10-16; kept because it costs nothing and covers the title the day one appears
+leadership,head of department,teaching_academic,"838 titles / 84,748 records are already leadership; this claims the 196 titles / 7,967 records the model put in teaching. Scoped, because unscoped it also took 1,484 records of `head of department of cardiology` out of practitioner and 813 out of pharmacist."
+leadership,head of the department,teaching_academic,"the same post with the article. 76 titles / 2,272 records in teaching. ORCID has both spellings and neither contains the other, so both are needed - `head of department` does not match `head of the department`."
+leadership,head of dept,teaching_academic,"the abbreviation. 4 titles / 86 records in teaching. Also covers `head of deptt`, an Indian spelling."
+leadership,head of school,teaching_academic,"70 titles / 3,008 records in teaching. A UK and Australian faculty-level post."
+leadership,head of faculty,teaching_academic,"6 titles / 48 records in teaching. The smallest, and the most literally on the nose."
+leadership,head of institute,teaching_academic,"26 titles / 1,159 records in teaching. A German and Nordic faculty-level post - Institutsleiter translates to this."
+leadership,head of division,teaching_academic,"9 titles / 132 records in teaching. The level below a faculty in several systems, and above a research group."
+leadership,\bdean\b,teaching_academic,"1,317 titles / 34,397 records in teaching, the largest by far. Bounded on both sides so it cannot reach `dean` inside another word. Unscoped it took 4,854 records of `associate dean research` out of researcher_early and 376 of `sub-dean graduate studies` out of student."
+leadership,decano,teaching_academic,"es/pt/it. Also covers vicedecano, vicedecana, subdecano. 4 titles / 29 records in teaching, and 43 titles / 1,474 records already leadership."
+leadership,dekan,teaching_academic,"de/id/pl/tr. Also covers prodekan, studiengangsdekan, gruendungsdekan, wakil dekan. 2 titles / 10 records in teaching."

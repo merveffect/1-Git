@@ -33,6 +33,14 @@ join {{ ref('title_group_patterns') }} p
     on regexp_contains(m.title, p.name_pattern)
        and (p.applies_when_title_group is null
             or p.applies_when_title_group = ''
-            or p.applies_when_title_group = m.model_title_group)
+            or (p.applies_when_title_group = m.model_title_group
+                and m.model_is_assigned))
+/*
+    A title a human has decided is not a collision. The test exists because
+    min(title_group) picks alphabetically and silently; where an override
+    has named the group, nothing arbitrary is left for min() to surface.
+    Three titles need this - see the note above.
+*/
+where m.decision_source != 'HUMAN'
 group by m.title, m.frequency
 having count(distinct p.title_group) > 1

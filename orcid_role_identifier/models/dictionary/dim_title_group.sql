@@ -80,7 +80,18 @@ pattern_hits as (
        */
        and (p.applies_when_title_group is null
             or p.applies_when_title_group = ''
-            or p.applies_when_title_group = m.title_group)
+            or (p.applies_when_title_group = m.title_group
+                /*
+                    "Already put it in that group" has to mean ASSIGNED, not
+                    merely nearest. m.title_group is populated even for a
+                    title the model rejected below sim_floor, and a scoped
+                    pattern conditioned on a group we did not believe would
+                    promote that title with a score of 1.0 - rescuing exactly
+                    the values the floor exists to hold back. An
+                    unconditional pattern still rescues them, which is what
+                    librarian needs it for.
+                */
+                and m.match_decision = 'ACCEPTED'))
     group by m.title_key
 )
 
@@ -98,6 +109,7 @@ select
         would be circular and would silently pass.
     */
     m.title_group                                         as model_title_group,
+    m.match_decision = 'ACCEPTED'                         as model_is_assigned,
     m.similarity,
     m.margin,
     m.runner_up,

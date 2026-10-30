@@ -638,3 +638,124 @@ select
 from people p
 left join org o     using (snid)
 left join already a using (snid);
+
+/*
+    ============================================================================
+    K CAME BACK 2026-10-30 AND THE CHANGE WENT IN. THE FINAL NUMBERS.
+    ============================================================================
+        titles in scope           1,706
+        records in scope         48,995
+        holders                   2,354
+          stays in Lecturer       1,328   holds another teaching title
+          LEAVES Lecturer         1,026   this was their only one
+          already in faculty_head   280
+          NEW and would confirm   1,498
+          new, org unresolved       543   no ROR match, so cannot confirm
+
+        faculty_head   17,528 -> 19,026    +8.5%
+        lecturer      399,884 -> 398,858   -0.26%
+
+    So the earlier +19% was on the wider regex and is superseded. The honest
+    figure is +8.5%, and the cost is 1,026 people who leave Lecturer.
+
+    WHY THE TRADE IS DEFENSIBLE, AND IT IS NOT THAT faculty_head IS SMALL.
+    Under the one-title-one-profession rule something has to be dropped from
+    `professor and head of department`, and the two readings are not equal:
+    heading a department at a university ENTAILS being an academic there, while
+    being a professor entails nothing about leading anything. The leadership
+    reading keeps both facts; the teaching reading throws one away. That is an
+    argument about what the title says, which is the only admissible kind.
+
+    WHAT SHIPPED
+        10 scoped patterns in title_group_patterns, all teaching_academic only
+        10 HUMAN exclusions for the possessives (`dean s chair ...`)
+         1 HUMAN correction where query I's regex flagged a REAL deanship -
+           `... vice dean/ acting dean/ dean s advisor` goes to leadership
+         3 HUMAN decisions on the collision titles, all to librarian
+           and assert_title_patterns_do_not_collide now skips HUMAN titles,
+           because min() never surfaces where a reviewer has decided
+
+    THE KNOWN RESIDUAL: 26 titles / 604 records carry their own dates, and a
+    date is not a rule - `dean 2010-2018` ended, `dean 2014-` and `head of
+    department 1997-pres` have not. 12 were visible in query I; L lists all 26
+    for a follow-up pass. At most 604 records of 48,995, so 1.2%, and the
+    employment record's own end_date already catches the ones who filled it in.
+    ============================================================================
+*/
+
+-- ----------------------------------------------------------------------------
+-- L. THE DATE-CARRYING TITLES, ALL OF THEM. The follow-up pass. A closed range
+--    means the post ended and the title belongs back in teaching; an open one
+--    means it continues and the pattern is right. Read them, do not regex them.
+-- ----------------------------------------------------------------------------
+select
+    title,
+    frequency,
+    title_group,
+    decision_source,
+    regexp_contains(title, r'(19|20)\d{2}\s*[-–]\s*(19|20)?\d{2}') as has_a_closed_range,
+    regexp_contains(title, r'(19|20)\d{2}\s*[-–]\s*($|[a-z])')      as has_an_open_range
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+where is_assigned
+  and regexp_contains(title, r'(?i)(head of (the )?(department|dept|school|faculty|'
+                           || r'institute|division)|\bdean\b|decano|dekan)')
+  and regexp_contains(title, r'(19|20)\d{2}')
+order by frequency desc;
+
+/*
+    ============================================================================
+    WILL IT WORK? WHAT IS CERTAIN AND WHAT IS NOT.
+    ============================================================================
+    CERTAIN, because it was measured on the current build:
+      - the 1,706 titles and 48,995 records the patterns claim. The patterns are
+        matched against the normalised title, which is the same string query K
+        counted, so the match set is identical.
+      - 1,498 new confirmable people and 1,026 leaving Lecturer.
+      - the collision risk is three titles and all three now carry a HUMAN
+        decision, and query G showed there are no others - it listed every title
+        matching both pattern sets, not a sample.
+
+    NOT CERTAIN until the build, and both are small:
+
+    1. A TITLE THAT IS teaching_academic BY HUMAN OVERRIDE will not be claimed,
+       because the scope reads the MODEL's group and an override outranks a
+       pattern anyway. teaching_academic has 26 human decisions in total and
+       none of them is a head or dean compound, so this should be zero - but it
+       would show up as slightly fewer than 1,706 titles moving.
+
+    2. THE FOUR SMALLEST PATTERNS COULD FAIL assert_title_patterns_all_match_
+       something. `dekan` has 2 teaching titles, `head of dept` 4, `decano` 4,
+       `head of faculty` 6 - counted on the RESOLVED group. If one of those few
+       is teaching by override rather than by the model, that pattern matches
+       nothing and the assertion fails the build by design. The fix is one word:
+       put [pre-emptive] in its note, which the test honours.
+
+    ALREADY FIXED RATHER THAN LEFT TO THE BUILD: the scope requires the model to
+    have ASSIGNED the group, not merely to have been nearest to it. Without that
+    a title sitting below sim_floor with teaching_academic as its nearest group
+    would have been promoted to leadership with a score of 1.0 - rescuing the
+    values the floor exists to hold back, and making the shipped behaviour
+    differ from what K measured. M below sizes what that would have been.
+    ============================================================================
+*/
+
+-- ----------------------------------------------------------------------------
+-- M. WHAT THE ASSIGNED-ONLY CONDITION HOLDS BACK. Should return nothing that
+--    looks like a faculty head. If it returns something that obviously IS one,
+--    the condition is costing us real people and is worth revisiting - but on
+--    evidence, not on the shape of the argument.
+-- ----------------------------------------------------------------------------
+select
+    title,
+    frequency,
+    round(similarity, 3)    as similarity,
+    title_group             as nearest_group,
+    decision_source,
+    matched_anchors
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+where not is_assigned
+  and title_group = 'teaching_academic'
+  and regexp_contains(title, r'(?i)(head of (the )?(department|dept|school|faculty|'
+                           || r'institute|division)|\bdean\b|decano|dekan)')
+order by frequency desc
+limit 60;
