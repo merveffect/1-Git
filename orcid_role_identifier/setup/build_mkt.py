@@ -39,7 +39,7 @@ table(d,["#","Question","Size","Our working answer","Need"],
   ["10","Is an uninformative title (dr, md) acceptable evidence?","146,865 records","Yes, if the department agrees","Medium"],
   ["11","Should a past role still count?","not measured","Yes, for seven of nine","Medium"],
   ["12","Does book-author consent cover a role campaign?","NEW","Assumed yes","**High**"],
-  ["13","Should a job title be allowed in two professions?","463,603 records","No (design change)","Low"],
+  ["13","Should a job title be allowed in two professions?","463,603 records","No (design change)","**High** — now externally evidenced"],
   ["14","Two deliberate exclusions from Librarian","small","Both excluded","Low"],
   ["15","Should Researcher split into early and senior?","—","Not now","Low"]],
  widths=[0.3,2.55,1.05,1.55,0.6], size=8.5)
@@ -333,7 +333,27 @@ para(d,"Nothing needs changing. We are flagging it so that nobody later reports 
 h(d,"7.  Three longer-term questions")
 h(d,"7.1  Should a job title be allowed in two professions?  (463,603 records)",2)
 para(d,"A title belongs to exactly one profession today. That is a design choice and it "
-       "has a measurable cost.")
+       "has a measurable cost. **This moved from low priority to high on 30 October, "
+       "when an outside source measured the cost for the first time.**")
+box(d,"WHAT THE SURVEY DATA SHOWED",[
+ "We compared our answer against 290,000 people who had picked their own job title in a "
+ "Market Intelligence survey. Overall we agreed 81.8% of the time, against a ceiling of "
+ "88.9% — which is how often the same person agrees with their OWN earlier answer.",
+ "",
+ "Two audiences scored far below that, and the cause is the same in both:",
+ "",
+ "`4,210  said \"research scientist\"   we said lecturer`",
+ "`  654  said \"head of department\"   we said lecturer`",
+ "`2,602  said \"PhD student\"          we said lecturer`",
+ "",
+ "Every one of them has **Professor** recorded as their job title in ORCID, and a title "
+ "can belong to only one profession in our system. So a professor who runs a research "
+ "group is in Lecturer and not in Researcher; a professor who heads a department is in "
+ "Lecturer and not in Head of Faculty.",
+ "",
+ "The Researcher audience scored 69.9% and Head of Faculty 20%, and this rule is the "
+ "largest single reason for both.",
+], fill="FBF1EF", accent=RED)
 box(d,"THE EXAMPLE THAT SHOWS IT",[
  "`research assistant professor   71,785 records  ->  Researcher`",
  "`research professor             48,609 records  ->  Researcher`",

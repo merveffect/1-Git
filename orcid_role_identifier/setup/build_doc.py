@@ -18,6 +18,14 @@ r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
 para(d, "Working document  ·  updated 29 October 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
+ "**The project has been checked against an outside source for the first time, and it "
+ "passed.** 81.8% of the people we classified were put in the audience they put "
+ "themselves in — against a ceiling of 88.9%, which is how often people agree with "
+ "their own earlier answer. Section 5 is new and covers it.",
+ "",
+ "**Nine more corrections landed** from the synonym check, and all fourteen outstanding "
+ "corrections are now live in the dictionary.",
+ "",
  "**Head of Faculty is now university heads only.** A medical director at a hospital was "
  "reaching it; rather than patch that one title we took the whole hospital path out. "
  "About 2,000 people leave, including 294 heads of department and 17 deans, and that cost "
@@ -198,12 +206,95 @@ para(d, "A call with Bernadeta is being arranged. Section 4.1 shows why this is 
         "countries, and whether web-scraped data she worked on could help.")
 
 # ============================================================ 5
-h(d, "5.  How to use the taxonomy well — step by step")
+h(d, "5.  The first external check, and what it found")
+para(d, "Until the end of October every number in this project came from our own "
+        "pipeline. Market Intelligence then exported two surveys in which people had "
+        "picked their own job title from a fixed list and given an email address. That "
+        "let us compare our answer to the person's own answer for the first time.")
+table(d, ["Source", "Rows", "Period"],
+ [["Researcher Panel","232,648","June 2022 – October 2026"],
+  ["Journal Author Satisfaction","109,396","April 2024 – October 2026"],
+  ["**Combined, one answer per person**","**290,045**","most recent answer kept"]],
+ widths=[2.6,1.2,2.8])
+
+h(d, "5.1  We measured the ceiling before measuring ourselves", 2)
+para(d, "34,372 people appear in both surveys, so they declared their own job twice. "
+        "That gives something rare: a way to find out how reliable the yardstick is "
+        "before using it.")
+box(d, "PEOPLE DISAGREE WITH THEMSELVES 11% OF THE TIME", [
+ "`same person, two surveys, same profession   88.9%`",
+ "`same person, two surveys, same words         60.6%`",
+ "",
+ "So **88.9% is the ceiling**. Nothing we do can score meaningfully above it, and 85% "
+ "would be close to perfect rather than poor.",
+ "",
+ "Their disagreements are real rather than careless:",
+ "",
+ "`627  professor in one, research scientist in the other`",
+ "`523  professor in one, editor in the other`",
+ "`288  head of department in one, professor in the other`",
+ "`180  student in one, academic in the other   (time: people move on)`",
+ "",
+ "Measuring this first is the point. Without it we would have compared our own number "
+ "against an implied 100% and called a good result a failure.",
+])
+
+h(d, "5.2  The result", 2)
+fig(d, f"{F}/validation.png", 6.4,
+    "Of the people we classified, how many did we put where they put themselves.")
+para(d, "**81.8% overall, against a ceiling of 88.9%** — 92% of the best obtainable. "
+        "Lecturer is above the ceiling, but that is the test being easier rather than us "
+        "being better: the ceiling compared one answer to one answer, while this asks "
+        "whether our answer is among the roles we gave the person.")
+
+h(d, "5.3  The real limit is coverage, not accuracy", 2)
+fig(d, f"{F}/validation_funnel.png", 6.4,
+    "Where the 290,045 survey respondents go.")
+para(d, "We matched 238,440 of them to somebody in the CDP, and then knew the job of only "
+        "**46,656** — a quarter. The rest have no ORCID employment record we can read.")
+para(d, "This confirms from outside what the project has been saying from inside: the "
+        "ceiling on this work is **how many people we can say anything about at all**, "
+        "not how often we are right about the ones we can.")
+
+h(d, "5.4  What it found: the one-title-one-group rule", 2)
+para(d, "Head of Faculty scored 20%, and the Researcher audience 69.9%. The biggest "
+        "single cause is the same in both, and it is a design choice rather than a bug.")
+box(d, "A PROFESSOR CAN ONLY BE ONE THING", [
+ "`4,210  said \"research scientist\"   we said teaching academic`",
+ "`  654  said \"head of department\"   we said teaching academic`",
+ "`2,602  said \"PhD student\"          we said teaching academic`",
+ "",
+ "All of them have **Professor** recorded as their ORCID job title, and a title belongs "
+ "to exactly one profession in our system. A professor who researches, runs a department "
+ "or supervises doctoral students is only a lecturer to us.",
+ "",
+ "This was already an open question — worth 463,603 records — and it was marked low "
+ "priority because it is a design change rather than a setting. **It now has outside "
+ "evidence**: more than ten thousand people describe themselves differently from us, and "
+ "this rule is why.",
+], fill="FBF1EF", accent=RED)
+para(d, "Head of Faculty has two further causes, both of them decisions taken "
+        "deliberately in the last week: it counts current posts only, and it was narrowed "
+        "to universities only on 29 October.")
+
+h(d, "5.5  What this is not", 2)
+bullet(d, "**It is not an accuracy rate.** Self-declaration is a second opinion, not a "
+          "fact. People pick one option from a list to describe a life that has several.")
+bullet(d, "**The population is selected.** These are people who publish and who answer "
+          "surveys. Librarians appear seven times. Students and support staff are barely "
+          "represented.")
+bullet(d, "**Two audiences cannot be checked this way at all** — the survey offers no "
+          "pharmacist and no librarian option worth the name.")
+bullet(d, "**It is repeatable.** The comparison is a query, so it can be re-run after "
+          "every change as a regression check. That is new, and it is worth more than the "
+          "single number.")
+
+h(d, "6.  How to use the taxonomy well — step by step")
 para(d, "The taxonomy is built for a B2C research audience, so most of it is not about "
         "us. The aim is to take only the parts that improve our matching and leave the "
         "rest. Here is the order to do it in, cheapest and surest first.")
 
-h(d, "Step 1 — Check the synonym groups.  (do this first)", 2)
+h(d, "Step 1 — Check the synonym groups.  (DONE 30 October)", 2)
 para(d, "The taxonomy groups titles that mean the same job. There are **124 such groups** "
         "and **254 pairs** to check. The rule is simple: if two titles are the same job, "
         "they must land in the same profession in our system. Where they do not, one of "
@@ -284,7 +375,7 @@ para(d, "Once the synonym check is done, turn it into a test that runs with ever
         "again. The one in step 1 went unnoticed for months.")
 
 # ============================================================ 6
-h(d, "6.  Which matches need the most attention")
+h(d, "7.  Which matches need the most attention")
 para(d, "Ranked by how many records are affected. The first two are the same problem seen "
         "twice: the same job written two ways, landing in two professions.")
 table(d, ["What is wrong", "Records", "Why it happened", "What to do"],
@@ -325,7 +416,7 @@ box(d, "A RULE WE LEARNED THE HARD WAY THIS WEEK", [
 ], fill="FAF2F5", accent=PLUM)
 
 # ============================================================ 7
-h(d, "7.  What happens next")
+h(d, "8.  What happens next")
 table(d, ["#", "What", "Why now", "Who"],
  [["1","Run the synonym check","Written as `analyses/28`. Finds splits like the 85,845-record one automatically. No judgement needed.","Us"],
   ["2","Fold its findings into the next build","So Students, the consent basis and these corrections all land in one rebuild and one round of checking.","Us"],
