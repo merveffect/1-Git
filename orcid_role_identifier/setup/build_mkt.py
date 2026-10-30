@@ -39,7 +39,7 @@ table(d,["#","Question","Size","Our working answer","Need"],
   ["10","Is an uninformative title (dr, md) acceptable evidence?","146,865 records","Yes, if the department agrees","Medium"],
   ["11","Should a past role still count?","not measured","Yes, for seven of nine","Medium"],
   ["12","Does book-author consent cover a role campaign?","NEW","Assumed yes","**High**"],
-  ["13","Should a job title be allowed in two professions?","463,603 records","No (design change)","**High** — now externally evidenced"],
+  ["13","Should a job title be allowed in two professions?","78,000 records","**DECIDED — no.** Please confirm","Confirm"],
   ["14","Two deliberate exclusions from Librarian","small","Both excluded","Low"],
   ["15","Should Researcher split into early and senior?","—","Not now","Low"]],
  widths=[0.3,2.55,1.05,1.55,0.6], size=8.5)
@@ -331,10 +331,23 @@ para(d,"Nothing needs changing. We are flagging it so that nobody later reports 
        "Students audience as undercounting — it is working as decided.")
 
 h(d,"7.  Three longer-term questions")
-h(d,"7.1  Should a job title be allowed in two professions?  (463,603 records)",2)
-para(d,"A title belongs to exactly one profession today. That is a design choice and it "
-       "has a measurable cost. **This moved from low priority to high on 30 October, "
-       "when an outside source measured the cost for the first time.**")
+h(d,"7.1  A title stays in ONE profession — DECIDED 30 October, please confirm",2)
+para(d,"A title belongs to exactly one profession today. Some people write both jobs "
+       "into one title, and we have to choose. **We decided on 30 October to leave them "
+       "where they are, and we would like you to confirm it.**")
+table(d,["What the person wrote","Records","Our decision"],
+ [["Teaching AND research — *lecturer and researcher*, *teaching and research*, *assistant professor research*",
+   "**~47,000**","**Stay in Lecturer**"],
+  ["Teaching AND leadership — *professor and chair*, *professor and head*, *professor and dean*",
+   "**~31,000**","**Stay in Lecturer**"]],
+ widths=[3.6,0.9,1.9])
+para(d,"**Why.** Letting one title carry two professions is a change to how the system is "
+       "built, not a setting. 78,000 records is not enough to justify it, and in both "
+       "cases Lecturer is a defensible home: these people do teach.")
+para(d,"**What it costs you.** A professor who also runs a research group is in the "
+       "Lecturer audience and not in Researcher. A professor who also heads a department "
+       "is in Lecturer and not in Head of Faculty. If either of those matters for a "
+       "campaign, tell us and we will reopen it.")
 box(d,"WHAT THE SURVEY DATA SHOWED",[
  "We compared our answer against 290,000 people who had picked their own job title in a "
  "Market Intelligence survey. Overall we agreed 81.8% of the time, against a ceiling of "
@@ -368,6 +381,30 @@ box(d,"THE EXAMPLE THAT SHOWS IT",[
  "Letting one title carry two professions would fix it. That is a design change rather "
  "than a setting, so it is here for awareness, not for a decision now.",
 ])
+h(d,"7.1a  NEW — and one part of it is NOT settled",2)
+para(d,"Measured the same day. Those compound titles are currently split between the "
+       "teaching group and the leadership group **by word order**, which cannot be "
+       "defended whichever way you answer.")
+box(d,"THE SAME TWO WORDS, FOUR DIFFERENT ANSWERS",[
+ "`professor and director   4,601  ->  Head of Faculty`",
+ "`professor & director     2,185  ->  Lecturer`",
+ "`professor director       2,140  ->  Lecturer`",
+ "`director professor       1,110  ->  Head of Faculty`",
+ "`director/professor       2,033  ->  Head of Faculty`",
+ "`professor/director       1,256  ->  Lecturer`",
+ "",
+ "The only thing separating them is the separator and the order. About **68,000 "
+ "records** in total: 44,000 currently in Lecturer, 24,000 in Head of Faculty.",
+])
+para(d,"One rule has to cover all of them, and it costs something either way. Sending "
+       "them all to **Lecturer** removes 24,000 records from Head of Faculty, which is "
+       "already our weakest audience. Sending them all to **Head of Faculty** removes "
+       "44,000 from Lecturer — 0.4% of a group of twelve million.")
+para(d,"**Our recommendation is Head of Faculty**, because Lecturer is large enough not "
+       "to notice and Head of Faculty is small, precise and currently missing people "
+       "whose title literally says they head something. But the question is which "
+       "audience you would rather reach them in.")
+
 h(d,"7.2  Two deliberate exclusions from Librarian",2)
 para(d,"**Archivists are not included** — the word pulled in archaeologists, glaciologists "
        "and clerks, and archivists are a separate call from the one you made. "
@@ -398,7 +435,9 @@ table(d,["Question","Decision","When"],
   ["Is reachability any one of the consent bases, or all of them?",
    "**Any one.** A third basis was added on your instruction.","16 Oct"],
   ["Should Head of faculty include hospital-based leaders? (~2,000 people)",
-   "**No.** University heads only. Small and certain beats large and arguable.","29 Oct"]],
+   "**No.** University heads only. Small and certain beats large and arguable.","29 Oct"],
+  ["Should a title that names two jobs count as both? (78,000 records)",
+   "**No.** They stay in Lecturer. See 7.1 — please confirm.","30 Oct"]],
  widths=[3.0,2.3,0.9], size=8.5)
 box(d,"ONE RESIDUE ON THE RETIREMENT DECISION",[
  "We removed 17,277 records of retired and emeritus people. About **1,065 people** remain "
