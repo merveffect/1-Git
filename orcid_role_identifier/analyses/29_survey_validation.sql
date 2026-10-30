@@ -39,10 +39,10 @@
     this project that we have ever been able to compare against.
 
     ------------------------------------------------------------------------
-    BEFORE RUNNING: upload ~/Downloads/survey_self_declared_roles.csv to
-    BigQuery (autodetect schema is fine) and put its full name in `survey`
-    below. Columns: email, survey_date, source, survey_role_raw, survey_group,
-    map_status.
+    THE UPLOADED TABLE is dev_orcid_role_identifier_raw.survey_self_declared_roles,
+    loaded 2026-10-30 from survey_self_declared_roles.csv. Columns: email,
+    survey_date, source, survey_role_raw, survey_group, map_status. The builder
+    is setup/survey_role_mapping.py.
     ------------------------------------------------------------------------
 
     WHY THE JOIN GOES THROUGH stg_role_records RATHER THAN THE AUDIENCE TABLES.
@@ -54,10 +54,10 @@
 */
 
 with survey as (
-    -- <<< CHANGE THIS ONE LINE to wherever you uploaded the file
+    -- uploaded 2026-10-30 from survey_self_declared_roles.csv
     select lower(trim(email)) as email, survey_group, survey_role_raw,
            survey_date, source, map_status
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.survey_self_declared_roles`
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
 ),
 
 cdp as (
@@ -107,7 +107,7 @@ order by people desc;
    =========================================================================== */
 with survey as (
     select lower(trim(email)) as email, survey_group, map_status
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.survey_self_declared_roles`
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
 ),
 cdp as (
     select snid, lower(trim(email)) as email
@@ -152,7 +152,7 @@ order by people desc;
    =========================================================================== */
 with survey as (
     select lower(trim(email)) as email, survey_group, map_status
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.survey_self_declared_roles`
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
 ),
 cdp as (
     select snid, lower(trim(email)) as email
@@ -198,7 +198,7 @@ limit 60;
    =========================================================================== */
 with survey as (
     select lower(trim(email)) as email, survey_role_raw
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.survey_self_declared_roles`
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
     where map_status = 'should_be_unassigned'
 ),
 cdp as (
