@@ -338,18 +338,68 @@ BigQuery's RE2 has no negative lookahead, so "contains professor and chair but
 NOT research chair" cannot be written as one row. A pattern would carry the
 endowed chairs with it.
 
-So the open scope narrows to **head** and **dean** compounds with `chair` set
-aside. `analyses/30_leadership_compounds.sql` sizes that family and measures
-both sides before anything changes:
+**Measured the same day.** `analyses/30_leadership_compounds.sql`:
 
-- how many people would actually leave Lecturer - only those holding no other
-  teaching title, and every earlier correction in this project has found that
-  they do hold one;
-- how many would newly reach faculty_head, subject to the organisation
-  resolving, which is what actually starves that audience.
+    head or dean, no chair word     1,982 titles    78,005 records
+    chair word only                   968 titles    44,611 records
+    both                               49 titles     1,421 records
 
-Still open: the word-order split in 1.10a applies to the head/dean family too,
-and whichever way it is settled has to settle all separators at once.
+and 290 of the 968 chair titles are endowed professorships - 30% of that family
+by title count, not the ~1,600 records the visible rows suggested. Query E gets
+the record count.
+
+**The head/dean trade, measured both ways.** 3,683 people hold one of these
+titles:
+
+| | |
+| --- | --- |
+| Lecturer loses | at most **1,739** of 399,884 people - 0.43% |
+| | the other 1,944 hold another teaching title and stay |
+| faculty_head gains | up to **3,376** of 17,528 - **+19%** |
+| | 3,263 reachable; 307 are already in it |
+
+That is the best trade faculty_head has been offered. The gain is an upper
+bound: it still needs the organisation to resolve, which is what already
+strands ~14,600 strong leadership records. Query H decides it.
+
+### `head` on its own cannot be trusted either
+
+Reading the 150-title list found that the word is not always a leadership post:
+
+    assistant professor director head and neck surgery        107   anatomy
+    professor - senior consultant - head of thrombosis unit   128   clinical unit
+    assistant professor head of spine center                  151   clinical centre
+    professor head of allergy clinic                          102   a clinic
+    associate professor - head of scientific committee        156   a committee
+    assistant professor and head of quality assurance unit    130   an admin unit
+    assistant professor head of echocardiography research     111   a laboratory
+    dean of the sport sciences faculty 2010-2020 professor     126   ENDED in 2020
+    dean 2010-2018 adjunct professor 2008-                     109   ENDED in 2018
+
+About 1,500 records in the top 120 titles alone. `head and neck surgery`
+settles it: a bare `head` match would read an anatomical term as a faculty
+post.
+
+So the rule has to name the level rather than the word - `head of department`,
+`head of school`, `head of faculty`, `head of institute`, `head of division`,
+`dean`. Those are positive and specific, so no negation is needed and the
+`chair` problem does not recur.
+
+### Which argues for the pattern layer, for the first time since librarian
+
+1,982 titles cannot be hand-written as overrides, and the top 120 are only 64%
+of the family - an override list would leave the same word-order inconsistency
+at a different cut. A pattern matches `professor and head of department` and
+`head of department professor` identically, so it closes the word-order item
+above as a side effect.
+
+**It is an architectural change and it has not been made.** The pattern layer
+has only ever held librarian; it forces `is_assigned` and a score of 1.0 and
+cannot reject; and `assert_title_patterns_do_not_collide` fails the build if two
+groups claim one title, which has never fired because only one group has
+patterns. Queries F, G and H measure the unintended sweep, the collisions and
+whether the gain survives the organisation. Nothing changes before they are
+run.
 
 ### 1.11 Is "healthcare professional" about the work or the subject?
 

@@ -48,9 +48,11 @@ box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
  "people leave, including 294 heads of department and 17 deans, and that cost was "
  "measured before the decision. A small, certain audience was preferred.",
  "",
- "**And the route that could grow it has been sized and partly ruled out.** `chair` "
- "cannot be used as a leadership signal: ~1,600 records of the compound family are "
- "endowed professorships, Canada Research Chairs and Lehrstühle. See the box under 6.4.",
+ "**And the route that could grow it has been measured.** The professor-plus-leadership "
+ "compounds would cost Lecturer at most 1,739 people (0.43%) and gain Head of Faculty "
+ "up to 3,376 (+19%) — the best trade that audience has been offered. `chair` is ruled "
+ "out of it: 290 of 968 chair titles are endowed professorships. And `head` on its own "
+ "is ruled out too, by `head and neck surgery`. See the two boxes under 6.4.",
 ], fill="F2F6F5", accent=TEAL)
 
 # ============================================================ 1

@@ -237,37 +237,68 @@ def build(d, figdir):
       "a strong leadership title — average score 0.856 — and can never be confirmed because "
       "the organisation did not resolve and therefore scores zero."])
 
-    box(d, "OPEN WORK: THE PROFESSOR-PLUS-LEADERSHIP COMPOUND TITLES", [
+    box(d, "MEASURED 30 OCTOBER: THE COMPOUND TITLES, AND WHAT THEY WOULD BUY", [
      "This is the one route that could materially grow the audience from data we already "
-     "hold. About **68,000 records** carry a title naming both posts — `professor and "
-     "head of department`, `professor & dean`, `professor and director`. They sit in "
-     "teaching today, so none of them reaches Head of Faculty.",
+     "hold: titles naming both posts — `professor and head of department`, `professor & "
+     "dean`. They sit in teaching today, so none of them reaches Head of Faculty. Sized "
+     "for the first time on 30 October:",
      "",
-     "**Reading the full list on 30 October found that `chair` cannot be used.** Roughly "
-     "1,600 records of the family are endowed professorships, not leadership posts:",
+     "`head or dean, no chair word     1,982 titles    78,005 records`",
+     "`chair word only                   968 titles    44,611 records`",
+     "`both                                49 titles     1,421 records`",
      "",
-     "`full professor and chairholder chair of strategic entrepreneurship      227`",
-     "`dean s chair associate professor                                        204`",
-     "`professor canada research chair tier 1                                  178`",
-     "`canada research chair and full professor                                174`",
-     "`professor & canada excellence research chair                            172`",
+     "**`chair` is ruled out. 290 of the 968 chair titles are endowed professorships**, "
+     "not leadership posts — Canada Research Chairs, a `Dean's Chair`, a European "
+     "Lehrstuhl. Thirty per cent of the family by title count. And the exclusion cannot "
+     "be written as a pattern: the pattern layer is a plain text match, and BigQuery's "
+     "regular expressions have no way to say \"not\", so \"contains professor and chair "
+     "but not research chair\" is not expressible in one row.",
      "",
-     "A Canada Research Chair is a funded research professorship. A **Dean's Chair** is an "
-     "endowed chair named after the office that pays for it, not a deanship. A European "
-     "**Chair of X** (Lehrstuhl) is the professorship itself. All of these belong exactly "
-     "where they are, in teaching.",
+     "**The head and dean family, measured both ways.** 3,683 people hold one:",
      "",
-     "**And the exclusion cannot be written as a pattern.** The pattern layer is a plain "
-     "text match and BigQuery's regular expressions have no way to say \"not\", so "
-     "\"contains professor and chair but not research chair\" is not expressible. A "
-     "pattern would take the endowed chairs with it.",
+     "`Lecturer loses      at most 1,739 of 399,884 people   0.43%`",
+     "`                    the other 1,944 hold another teaching title and stay`",
+     "`Head of Faculty gains  up to 3,376 of 17,528 people    +19%`",
+     "`                    3,263 of them reachable; 307 are already in it`",
      "",
-     "So the scope narrows to **head** and **dean** compounds, with `chair` set aside "
-     "entirely. `analyses/30_leadership_compounds.sql` sizes that family and measures "
-     "both sides of the trade before anything is changed: how many people would leave "
-     "Lecturer (only those holding no other teaching title) and how many would newly "
-     "reach Head of Faculty.",
+     "**That is the best trade this audience has been offered.** It is also an upper "
+     "bound on the gain, because faculty_head still needs the organisation to resolve, "
+     "and that is what already strands 14,600 strong leadership records. Query H in "
+     "`analyses/30_leadership_compounds.sql` is what decides it.",
     ], fill="FDF8EF", accent=AMBER)
+
+    box(d, "AND `head` ON ITS OWN CANNOT BE TRUSTED EITHER", [
+     "Reading the list found that the word does not always mean a leadership post:",
+     "",
+     "`assistant professor director head and neck surgery        107   anatomy`",
+     "`professor - senior consultant - head of thrombosis unit   128   clinical unit`",
+     "`assistant professor head of spine center                  151   clinical centre`",
+     "`associate professor - head of scientific committee        156   a committee`",
+     "`assistant professor and head of quality assurance unit    130   an admin unit`",
+     "`dean of the sport sciences faculty 2010-2020 professor    126   ENDED in 2020`",
+     "`dean 2010-2018 adjunct professor 2008-                    109   ENDED in 2018`",
+     "",
+     "About 1,500 records in the top 120 titles alone, and **head and neck surgery** "
+     "settles it: a bare `head` match would put a surgeon in charge of a faculty on the "
+     "strength of an anatomical term.",
+     "",
+     "**So the rule has to name the level, not the word**: `head of department`, `head of "
+     "school`, `head of faculty`, `head of institute`, `head of division`, `dean`. Those "
+     "are positive and specific, so they need no \"not\".",
+     "",
+     "**Which argues for a pattern rather than overrides, for the first time since "
+     "librarian.** 1,982 titles cannot be written out by hand, and the top 120 are only "
+     "64% of the family — an override list would leave the same word-order "
+     "inconsistency at a different cut. A pattern matches `professor and head of "
+     "department` and `head of department professor` identically, which closes the open "
+     "item in 1.10a as a side effect.",
+     "",
+     "**It is an architectural change and it is not made yet.** The pattern layer has only "
+     "ever held librarian; it forces a score of 1.0 and cannot reject; and "
+     "`assert_title_patterns_do_not_collide` fails the build if two groups claim one "
+     "title. Queries F, G and H measure the sweep, the collisions and whether the gain "
+     "survives the organisation. Nothing changes before they are run.",
+    ], fill="FBF1EF", accent=RED)
 
     short("PRACTITIONER and CLINICAL RESEARCHER — 60,937 and 50,600 people", [
       "**35.8% and 48.2% agree; neither has a recall figure**, because the survey offers "
