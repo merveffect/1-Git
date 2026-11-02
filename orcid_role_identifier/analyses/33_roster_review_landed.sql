@@ -171,3 +171,39 @@ select
 from judged
 group by reading
 order by people desc;
+
+/*
+    ============================================================================
+    MEASURED 2026-11-02. 106 OF 108 LANDED, AND THE MARKER IS OFF.
+    ============================================================================
+        landed  REJECT              47 rows   4,231 records
+                researcher_early    23         1,057
+                support_technical   21           817
+                teaching_academic   14         1,017
+                student              1             4
+                                   ---         -----
+                                   106         7,126
+
+        missed  vice chancellors fellow     deleted
+                department of marketing     deleted
+
+    THE TWO MISSES ARE THE EXACT RISK THE MARKER WAS FOR, and both are spelling
+    rather than judgement. `vice-chancellors fellow` and `vice chancellors
+    senior fellow` both exist; the plain unhyphenated `vice chancellors fellow`
+    does not. `department of marketing` is not a title anybody wrote, though
+    eight other bare department names are. Both rows are deleted rather than
+    re-guessed, and [pre-emptive] is off the other 106 - so
+    assert_overrides_take_effect is back at full strength and will fail the
+    build on the next dead row, which is what it is for.
+
+    98.1% of a list written by eye matched exactly. Worth recording, because it
+    prices the method: reading a roster and writing overrides from it is
+    reliable enough to be worth doing, and not reliable enough to do without a
+    guard.
+
+    WHAT 7,126 RECORDS DOES NOT TELL US. Four of the five families moved to a
+    group rather than being rejected, so most of those records did not leave the
+    dictionary - they left faculty_head and landed somewhere they belong. Query
+    2 is what reports that, and query 3 the 6.5% these rows were aimed at.
+    ============================================================================
+*/
