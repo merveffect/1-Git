@@ -4,7 +4,9 @@ SP = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, SP)
 from docx_lib import *
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH as AL
-F = os.path.join(SP, "fig")
+# The committed figure directory - see the same note in build_doc.py. "fig"
+# was a scratch path that existed on one machine only.
+F = os.path.join(SP, "doc_figures")
 d = doc_new()
 
 p=d.add_paragraph(); p.paragraph_format.space_after=Pt(2)

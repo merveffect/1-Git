@@ -207,3 +207,111 @@ order by people desc;
     2 is what reports that, and query 3 the 6.5% these rows were aimed at.
     ============================================================================
 */
+
+/*
+    ============================================================================
+    QUERIES 2 AND 3 CAME BACK 2026-11-03. THE DICTIONARY MOVED; THE ERROR RATE
+    DID NOT.
+    ============================================================================
+    QUERY 2 - the cost, both sides. 478 people held one of the 106 titles:
+
+        now reads as        held by  still in faculty_head  left
+        leadership/REJECT      289          161             128
+        researcher_early        66           37              29
+        support_technical       65           38              27
+        teaching_academic       57           40              17
+        student                  1            1               0
+                               ---          ---             ---
+                               478          277             201
+
+    So 201 people left faculty_head and 277 stayed - they hold a real leadership
+    title as well as the one we removed. The same pattern as every correction
+    this project has made.
+
+    A LIMIT ON READING THE LAST TWO COLUMNS. 47 of the people whose fellowship
+    moved to researcher_early are in the Researcher audience and 35 in Lecturer,
+    but those memberships may well come from their other employment records.
+    The query cannot attribute them to the move and neither can I.
+
+    QUERY 3 - AND THIS IS THE FINDING. The error rate did not improve:
+
+        CORRECT - a title names a faculty-level post   1,185   76.3%
+        UNCERTAIN - only chair/director/head             267   17.2%
+        OUR ERROR - no leadership word at all            102    6.6%   <-- was 101, 6.5%
+
+    106 corrections, 7,126 records, 201 people out of the audience, and the
+    measured error moved by ONE PERSON - in the wrong direction, which at this
+    sample size is noise either way.
+
+    WHY, AND IT IS THE FIFTH TIME. The 102 people with no leadership word are
+    not in faculty_head through the titles we removed. They are there through
+    SOME OTHER title, and the titles we removed were mostly held by people who
+    also hold a real leadership title - 277 of 478 of them. Cleaning the
+    dictionary and cleaning the audience are different jobs. Measured now on
+    `associate`, on pharmacist (91 people), on the Lecturer corrections (one
+    person), on the compound patterns (one person) and here.
+
+    WHICH MEANS THE ROSTER REVIEW WAS WORTH DOING FOR THE DICTIONARY AND NOT
+    FOR THIS NUMBER. 7,126 records are read correctly that were not before, and
+    that is permanent and feeds every audience built from here. But to move the
+    6.6% we have to look at what those 102 people are actually in faculty_head
+    FOR - which is their evidence_title, not the titles we happened to review.
+    Query 4 asks that, and it is the only query left that can move the figure.
+    ============================================================================
+*/
+
+-- ----------------------------------------------------------------------------
+-- 4. THE 102. What is each of them in faculty_head FOR.
+--
+--    Not their other titles - the one the pipeline used as evidence. Grouped,
+--    so a repeated cause shows up as a row rather than as 102 separate
+--    sentences. Anything with a count above about five is a fixable family;
+--    the long tail of ones and twos is the cost of free text and will not be
+--    fixed by reading more titles.
+-- ----------------------------------------------------------------------------
+with survey as (
+    select lower(trim(email)) as email, survey_group
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
+    where map_status = 'mapped'
+),
+
+ours as (
+    select distinct snid, lower(trim(contact_email)) as email,
+           evidence_title, evidence_org, evidence_dept, role_final_score
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+    where role_key = 'faculty_head' and role_label = 'CONFIRMED'
+      and contact_email is not null
+),
+
+the_102 as (
+    select o.snid, o.evidence_title, o.evidence_dept, o.role_final_score
+    from ours o
+    join survey s using (email)
+    group by o.snid, o.evidence_title, o.evidence_dept, o.role_final_score
+    having logical_or(s.survey_group = 'leadership') = false
+       and logical_or(regexp_contains(lower(o.evidence_title),
+               r'(head of|\bdean\b|decano|dekan|rector|provost|chancellor|leiter|hod\b)')) = false
+),
+
+their_titles as (
+    select
+        t.snid,
+        t.evidence_title,
+        t.evidence_dept,
+        round(t.role_final_score, 3)                            as score,
+        array_agg(distinct r.role_title ignore nulls limit 6)   as every_title_they_have
+    from the_102 t
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
+         using (snid)
+    group by t.snid, t.evidence_title, t.evidence_dept, t.score
+)
+
+select
+    evidence_title              as what_put_them_in_the_audience,
+    count(*)                    as people,
+    round(avg(score), 3)        as avg_score,
+    array_agg(distinct evidence_dept ignore nulls limit 3)       as departments,
+    any_value(every_title_they_have)                            as example_full_title_list
+from their_titles
+group by what_put_them_in_the_audience
+order by people desc, what_put_them_in_the_audience;

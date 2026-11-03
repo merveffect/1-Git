@@ -549,6 +549,55 @@ has been open since October with no cost attached. It now has one: 15.2% of this
 audience is there on nothing but `chair`, `director` or `head`. Whichever way
 marketing answers, that is the number that moves.
 
+### CLOSED 2026-11-03. The roster was read by hand, and the error rate did not move
+
+Merve read all 33,000 faculty_head matches and named two families that must not
+be in the audience: fellowships and assistant roles, and strings that are noise.
+106 corrections went in over 7,126 records - 47 rejections, 23 to
+researcher_early, 21 to support_technical, 14 to teaching_academic, 1 to
+student. **201 people left the audience and 277 stayed**, holding a real
+leadership title as well as the one removed.
+
+| | before | after |
+| --- | --- | --- |
+| a title names a faculty-level post | 1,186 | 1,185 |
+| UNCERTAIN - only `chair`/`director`/`head` | 270 | 267 |
+| **our error - no leadership word at all** | **101** | **102** |
+
+**The fifth measurement of the same thing, and the clearest.** The people
+wrongly in this audience are not there through the titles that were reviewed -
+they are there through some *other* title, and the reviewed ones were mostly
+held by people who also hold a genuine leadership post. Cleaning the dictionary
+and cleaning an audience are different jobs. Measured now on `associate`, on
+Pharmacist (91 people), on the Lecturer corrections (one person), on the
+compound patterns (one person) and here.
+
+The review was still worth doing **for the dictionary rather than for this
+number**: 7,126 records are read correctly that were not before, permanently,
+and every audience built from here inherits it. To move the 5.7% we have to ask
+what those 102 people are in the audience *for* - their evidence record, not the
+titles we happened to review. `analyses/33` query 4 asks that, and it is the
+only question left that can change the figure.
+
+### Two guards earned their keep
+
+**`assert_title_patterns_do_not_collide` failed a build, correctly.** `associate
+dean for library operations` - 1 record - was claimed by `librar` and by the
+scoped `\bdean\b` at once, and `min(title_group)` would have resolved it
+alphabetically and silently. Settled by human decision as `librarian`, the same
+reading as the three before it: the library is the job, the deanship is the
+grade. Query G had listed every title matching both pattern sets on 30 October
+and found three, not four; the likeliest reason this one is new is that the
+source grew between builds, which the same build showed independently when
+lecturer gained 4,483 people from no change of ours.
+
+**And `assert_overrides_take_effect` caught 2 of 108 rows that matched nothing.**
+Both spelling rather than judgement - `vice-chancellors fellow` exists but the
+unhyphenated `vice chancellors fellow` does not - and both deleted rather than
+re-guessed. **98.1% of a list written by eye was exact**, which prices the
+method: reading a roster and writing overrides from it is reliable enough to be
+worth doing, and not reliable enough to do without a check.
+
 ### A fourth sighting of the one-word failure, in the possessive
 
 `dean s chair`, `dean s clinical prize`, `dean s clinical research fellow`,

@@ -62,34 +62,40 @@ def para(d, text, size=10.5, color=INK2, bold=False, italic=False,
 def _spans(text):
     """**bold** and `code` inside a string, as (chunk, bold, mono) triples.
 
-    Two passes: backtick spans first, so a code span is never split by a
-    bold marker inside it, then bold within each non-code run. This
-    document names job titles constantly - `associate professor` has to
-    read as a literal string and not as prose - so inline code is worth
-    the twenty lines.
+    ONE PASS, TRACKING BOTH STATES. This was two passes until 2026-11-03 -
+    backticks first, then bold inside each non-code run - and that broke on
+    the case this document is full of: a bold span CONTAINING a code span.
+    `**`chair` is ruled out ... professorships**` split into three runs at
+    the backticks, after which the opening ** and the closing ** were in
+    different runs, neither pair balanced, and both leaked into the Word
+    file as literal asterisks. Nesting either way round now works.
+
+    An unbalanced marker is left as literal text rather than swallowing the
+    rest of the string, which is the failure a reader can actually see and
+    report.
     """
-    out = []
-    for part, is_mono in _split_on(text, "`"):
-        if is_mono:
-            out.append((part, False, True))
+    out = []; buf = []; bold = False; mono = False; i = 0; n = len(text)
+
+    def flush():
+        if buf:
+            out.append(("".join(buf), bold, mono)); buf.clear()
+
+    while i < n:
+        """
+            The lookahead applies to OPENING a span only. Requiring another
+            marker ahead when CLOSING one is the bug this comment exists to
+            stop coming back: the closing backtick of the last code span in a
+            string has nothing after it, so it was buffered as literal text
+            and everything from there on stayed monospaced.
+        """
+        if text[i] == "`" and (mono or "`" in text[i + 1:]):
+            flush(); mono = not mono; i += 1
+        elif text.startswith("**", i) and (bold or "**" in text[i + 2:]):
+            flush(); bold = not bold; i += 2
         else:
-            out.extend((c, b, False) for c, b in _split_on(part, "**"))
+            buf.append(text[i]); i += 1
+    flush()
     return [(t, b, m) for t, b, m in out if t]
-
-
-def _split_on(text, marker):
-    """(chunk, is_inside) pairs around balanced `marker` delimiters."""
-    out = []; i = 0; n = len(marker)
-    while True:
-        a = text.find(marker, i)
-        if a == -1:
-            out.append((text[i:], False)); break
-        b = text.find(marker, a + n)
-        if b == -1:
-            out.append((text[i:], False)); break
-        if a > i: out.append((text[i:a], False))
-        out.append((text[a + n:b], True)); i = b + n
-    return out
 
 
 def _split_bold(text):
@@ -112,8 +118,9 @@ def box(d, label, lines, fill="F2F6F5", accent=TEAL):
     c.width = Inches(6.7)
     first = c.paragraphs[0]
     first.paragraph_format.space_after = Pt(3)
-    r = first.add_run(label); r.bold=True; r.font.size=Pt(9.5)
-    r.font.color.rgb = accent; r.font.name=SANS
+    for chunk, _, mn in _spans(label):
+        r = first.add_run(chunk); r.bold=True; r.font.size=Pt(9.5)
+        r.font.color.rgb = accent; r.font.name = MONO if mn else SANS
     for ln in lines:
         p = c.add_paragraph(); p.paragraph_format.space_after=Pt(2)
         for chunk, bd, mn in _spans(ln):

@@ -228,17 +228,21 @@ def build(d, figdir):
       "before, but that number answers the wrong question. Asked the way Lecturer was "
       "asked — does this person's title actually say they lead something:",
       "`223 people   said they are leadership themselves`",
-      "`1,186        a title names a faculty-level post - head of department,`",
+      "`1,185        a title names a faculty-level post - head of department,`",
       "`             dean, rector, chancellor. They ticked one box on a form`",
-      "`270          UNCERTAIN - their only leadership word is chair, director`",
+      "`267          UNCERTAIN - their only leadership word is chair, director`",
       "`             or head, the three we have measured as unreliable`",
-      "`101          no leadership word in ANY of their titles`",
+      "`102          no leadership word in ANY of their titles`",
       "",
-      "**79.4% certainly right, 15.2% uncertain, 5.7% wrong.** So the audience is about "
+      "**79.2% certainly right, 15.0% uncertain, 5.7% wrong.** So the audience is about "
       "94% defensible. The first version of this check gave ~14% wrong, because its word "
       "list counted `chair` as leadership and had no `chancellor` — wrong in both "
       "directions at once, which is worth remembering before quoting any figure that "
       "rests on a hand-written word list.",
+      "",
+      "**Re-measured on 3 November after 106 dictionary corrections, and it did not move.** "
+      "The error was 101 people before them and 102 after. Section 6.4 below says why, and "
+      "it is the most useful thing in this document.",
       "",
       "**And those 270 put a price on a question that has been open since October.** What "
       "to do with the `director` family had no cost attached to it. It now has one: 15.2% "
@@ -258,12 +262,38 @@ def build(d, figdir):
       "employer that did not resolve, so they scored zero and could never be confirmed. "
       "Most of the audience nearly doubling is those people arriving — not the compound "
       "work, which brought 1,715 of it.",
-      "**A fourth instance of the project's most useful lesson, in the same build.** 37 "
-      "stale-deanship titles were rejected and 33 verbose ones were added, and the "
-      "audience moved by **one person** — 33,241 to 33,242. The people holding an expired "
-      "deanship almost always hold a current leadership title too. A correct dictionary "
-      "and a correct audience are different things, and this is now the fourth time it "
-      "has been measured."])
+      "**And then the whole roster was read by hand, which is the clearest demonstration "
+      "of the project's central lesson yet.** On 30 October Merve read all 33,000 matches "
+      "and named two families that must not be in the audience — fellowships and assistant "
+      "roles, and strings that are simply noise. 106 corrections went in, covering 7,126 "
+      "records:",
+      "",
+      "`47 rejected          pro, de, committee, governance, a bare department name`",
+      "`23 -> researcher      a fellowship NAMED AFTER an office is not that office:`",
+      "`                      vice chancellor's fellow, dean's prize fellow`",
+      "`21 -> support         assistants and secretaries - real jobs, not ones any`",
+      "`                      audience is built for`",
+      "`14 -> teaching        proessor, professot, profossor are MISSPELLINGS of a`",
+      "`                      rank, not noise; and chief assistant is a Bulgarian`",
+      "`                      academic grade`",
+      "` 1 -> student         ph d stdent`",
+      "",
+      "**201 people left the audience, 277 stayed** — they hold a real leadership title as "
+      "well as the one that was removed. **And the measured error rate did not move: 101 "
+      "people before, 102 after.**",
+      "",
+      "Because the people who are wrongly in this audience are not there through the titles "
+      "that were reviewed. They are there through some *other* title, and the reviewed ones "
+      "were mostly held by people who also hold a genuine leadership post. **Cleaning the "
+      "dictionary and cleaning an audience are different jobs** — measured now five times "
+      "over, on `associate`, on Pharmacist, on the Lecturer corrections, on the compound "
+      "patterns and here.",
+      "",
+      "**The review was still worth doing, for the dictionary rather than for this number.** "
+      "7,126 records are read correctly that were not before, permanently, and every "
+      "audience built from here inherits that. But to move the 5.7% we have to look at what "
+      "those 102 people are in the audience *for* — their evidence record, not the titles we "
+      "happened to review. That is the only question left that can change the figure."])
 
     box(d, "MEASURED 30 OCTOBER: THE COMPOUND TITLES, AND WHAT THEY WOULD BUY", [
      "This is the one route that could materially grow the audience from data we already "

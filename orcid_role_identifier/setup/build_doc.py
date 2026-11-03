@@ -5,7 +5,11 @@ from docx_lib import *
 import audiences
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH as AL
-F = os.path.join(SP, "fig")
+# The committed figure directory. This said "fig" until 2026-11-03, which was a
+# scratch path that existed only on one machine - the builder could not run from
+# a clean checkout, and the figures it needs have been committed in doc_figures
+# all along.
+F = os.path.join(SP, "doc_figures")
 
 d = doc_new()
 
@@ -16,7 +20,7 @@ r.font.color.rgb=TEAL; r.font.name=SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
-para(d, "Working document  ·  updated 30 October 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "Working document  ·  updated 3 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
  "**Section 6 is new: every target audience now has its own heading**, with Lecturer "
@@ -48,9 +52,9 @@ box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
  "people leave, including 294 heads of department and 17 deans, and that cost was "
  "measured before the decision. A small, certain audience was preferred.",
  "",
- "**Head of Faculty is 33,242 people, up from 17,528, and it is now measured "
- "properly: 79.4% certainly right, 15.2% uncertain, 5.7% wrong.** Only 1,715 of the "
- "growth is our work.** The professor-plus-leadership compounds now reach the audience and brought "
+ "**Head of Faculty is 33,242 people, up from 17,528, and it is now measured properly: "
+ "79.2% certainly right, 15.0% uncertain, 5.7% wrong.** Only 1,715 of the growth is this "
+ "work — the professor-plus-leadership compounds now reach the audience and brought "
  "exactly what was forecast, within 4%. The rest arrived in the same build because "
  "employers resolved to academic organisations, which is the thing this audience has "
  "always been starved by. Two findings, reported as two. Section 6.4.",
@@ -58,7 +62,23 @@ box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
  "It took a new mechanism — a pattern scoped to one title group — because an unscoped "
  "one would have swept 14,500 records out of eight other groups, including 2.7% of the "
  "whole pharmacist group. `head of X` and `dean` are modifiers, not professions. The "
- "scoping then held to the record: the eight other groups moved by zero.",
+ "scoping then held to the record, across two builds: the eight other groups moved by "
+ "zero both times.",
+ "",
+ "**Then the whole Head of Faculty roster was read by hand, and it is the clearest "
+ "demonstration of this project's central lesson so far.** 106 corrections over 7,126 "
+ "records; 201 people left the audience; and **the measured error rate did not move — 101 "
+ "people wrong before, 102 after.** The people who are wrongly in an audience are not "
+ "there through the titles you happen to review. Cleaning the dictionary and cleaning an "
+ "audience are different jobs, now measured five times over.",
+ "",
+ "**Two guards earned their keep rather than being a nuisance.** A build failed because "
+ "two pattern groups claimed one title — `associate dean for library operations`, which "
+ "is a library job with a deanship as its grade — and would otherwise have been resolved "
+ "alphabetically and silently. And 2 of 108 override rows written from a roster read by "
+ "eye matched nothing: both spelling, both deleted rather than re-guessed. 98.1% of a "
+ "hand-written list was exact, which is reliable enough to be worth doing and not "
+ "reliable enough to do without a check.",
 ], fill="F2F6F5", accent=TEAL)
 
 # ============================================================ 1
