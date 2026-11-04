@@ -1513,6 +1513,76 @@ about the title being mandatory, not about the department becoming mandatory.
 the wide-net argument may be wanted again, and because deleting it would make
 the two surviving modes look like the only choices ever considered.
 
+**BUILT 2026-11-04. THE FORECAST AGAINST THE RESULT.**
+
+| | Forecast | Actual | Off by |
+| --- | --- | --- | --- |
+| hcp_broad CONFIRMED | 123,258 | **124,223** | +965 |
+| hcp_broad marketable | 26,532 | **26,790** | +258 |
+| rows with no clinical title | 0 | **0** | — |
+| title but no department | ~1,624 | **1,808** | +184 |
+
+The CONFIRMED forecast held to within 0.8%, and the overshoot is not ours: the
+same build grew **every** audience — lecturer +2,799, researcher +2,176,
+hcp_practitioner +476, hcp_researcher +331 — which is the underlying data
+refreshing, not this change. Netted against ~7,080 of organic growth the
+change removed what it was predicted to remove. The 1,808 that had to survive
+survived, and grew with the data rather than moving.
+
+**AND ONE THING I DID NOT FORECAST, which is the larger number of the two.**
+hcp_broad's PROBABLE tier fell **107,896 to 37,031, a drop of 70,865**. The
+forecast only considered CONFIRMED and should not have. The arithmetic is
+obvious in hindsight: hcp_broad's probable threshold is 0.30 and a clinical
+department alone scores 1.00 × 0.40 = 0.40, so **every** person with a clinical
+department and no clinical title whatsoever was PROBABLE in a healthcare
+audience. It costs nothing commercially — only CONFIRMED ships — but it is
+two thirds of that tier and anyone reading total audience size will see it.
+
+**WHAT QUERY 3 FOUND, WHICH IS A DIFFERENT PROBLEM THE FIELD ARM WAS HIDING.**
+The people who left are not administrators. Read against the sub-audience
+counts, which all went UP, three groups behave differently:
+
+- `researcher_early` / `researcher_established` and `leadership` titles in a
+  clinical department **keep their healthcare coverage** through hcp_researcher
+  and hcp_administrator. `Research Fellow`, `Postdoctoral Fellow`, `Director`,
+  `Head of Department`, `Dean` are retained, not lost.
+- `teaching_academic` titles reach **no** healthcare audience, and this is where
+  the real cost sits.
+- `student` and unassigned titles reach nothing at all.
+
+And inside teaching_academic there is a family that is unmistakably clinical,
+counted from the visible top 200 alone so these are floors, not totals:
+
+| Title | People |
+| --- | --- |
+| `Clinical Assistant Professor` | 706 |
+| `Clinical Associate Professor` | 331 |
+| `Clinical Instructor` | 311 |
+| `Clinical Professor` | 245 |
+| `Professor of Medicine` | 238 |
+| `Assistant Professor of Medicine` | 234 |
+| `Clinical Lecturer` | 148 |
+| `Associate Professor of Medicine` | 122 |
+| `Assistant Clinical Professor` | 95 |
+| `Clinical assistant professor` | 86 |
+| **at least** | **2,516** |
+
+Plus `Medical Student` and `Medical student`, **1,979 people**, which is what
+`trainee_clinical` exists for; and bare `M.D.` / `M.D`, **511 people**,
+unassigned, in clinical departments at 0.88 — the `dr`/`md` problem of 1.9
+appearing in person.
+
+**THIS IS NOT AN ARGUMENT TO PUT THE FIELD ARM BACK**, which would readmit the
+6,115 administrators along with them. It is an argument for a narrow
+title-based fix, and it is the **strongest evidence yet for Merve's position on
+1.10**: a Clinical Assistant Professor in a School of Medicine is genuinely
+both a lecturer and a clinician, and one-title-one-group is what forces us to
+choose. The field arm was papering over that choice; removing it made the
+choice visible.
+
+Nothing is fixed from this list yet, because the counts above are floors read
+off a truncated query. Sizing it properly is the first thing to measure.
+
 **A SECOND, LARGER PROPOSAL IS NOT IMPLEMENTED.** Merve also suggested that
 hcp_broad hold nothing but its children:
 
