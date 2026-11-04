@@ -15,7 +15,7 @@ r.font.color.rgb=PLUM; r.font.name=SANS
 p=d.add_paragraph(); p.paragraph_format.space_after=Pt(4)
 r=p.add_run("Questions for Marketing"); r.bold=True; r.font.size=Pt(22)
 r.font.color.rgb=INK; r.font.name=SANS
-para(d,"Fifteen open decisions  ·  updated 29 October 2026  ·  Analytics Engineering",
+para(d,"Fourteen open decisions  ·  updated 4 November 2026  ·  Analytics Engineering",
      size=9.5,color=MUT,space_after=12)
 
 para(d,"Every question in here is a **definition**, not a technical problem. None of "
@@ -32,7 +32,7 @@ table(d,["#","Question","Size","Our working answer","Need"],
  [["1","Switch on the second confidence tier?","718,607 people","Only the top tier ships","**High**"],
   ["2","Are biomedical researchers healthcare professionals?","15,588 people","No","**High**"],
   ["3","Is \"healthcare professional\" about the work or the subject?","settles 5 others","Work (treats patients)","**High**"],
-  ["4","Which leadership titles are a head of faculty?","226,210 records","Keep ambiguous ones in. **Hospitals now excluded**","**High**"],
+  ["4","Which leadership titles are a head of faculty?","**267 people = 15.0% of the audience**","Keep ambiguous ones in. **Hospitals now excluded**","**High**"],
   ["5","Does the word \"research\" in a title decide the audience?","~55,000 records","No — **NEW**","**High**"],
   ["6","Are psychologists healthcare professionals?","~4,500 records","Yes, currently in","Medium"],
   ["7","Four smaller versions of the same question","2,743 records","Yes, currently in","Medium"],
@@ -43,7 +43,7 @@ table(d,["#","Question","Size","Our working answer","Need"],
   ["12","Does book-author consent cover a role campaign?","NEW","Assumed yes","**High**"],
   ["13","Should a job title be allowed in two professions?","78,000 records","**DECIDED — no.** Please confirm","Confirm"],
   ["14","Two deliberate exclusions from Librarian","small","Both excluded","Low"],
-  ["15","Should Researcher split into early and senior?","—","Not now","Low"]],
+  ["15","*Should Researcher split into early and senior?*","—","**WITHDRAWN 4 Nov — not splitting**","—"]],
  widths=[0.3,2.55,1.05,1.55,0.6], size=8.5)
 
 # ---------------------------------------------------------------- 1
@@ -144,6 +144,21 @@ box(d,"THE DECISION IS SMALLER THAN THE NUMBERS LOOK",[
 ])
 para(d,"**Our working answer:** exclude the never-academic list by name; keep the "
        "ambiguous list, because excluding `president` would lose real university presidents.")
+box(d,"NEW — WE HAVE NOW PRICED THIS QUESTION, AND IT IS THE LARGEST THING LEFT IN THE AUDIENCE",[
+ "Measured 3 November against 1,775 people in Head of faculty whose own words we can "
+ "check. The audience divides in three:",
+ "",
+ "`79.2%  certainly right   223 called themselves leadership; 1,185 hold a title that`",
+ "`                         names a faculty-level post`",
+ "`15.0%  UNCERTAIN         267 people holding ONLY chair, director or head, with no`",
+ "`                         faculty word anywhere beside it  <-- THIS QUESTION`",
+ "` 5.7%  wrong             102 people with no leadership word at all`",
+ "",
+ "So this is not a corner of the audience, it is **one person in seven**. And whichever "
+ "way you answer, the uncertainty disappears: in, and those 267 are right by definition; "
+ "out, and they leave. **After this answer the audience is as defensible as we can make "
+ "it** — the remaining 5.7% is our error rate and we report it rather than hide it.",
+], fill="FDF8EF", accent=AMBER)
 para(d,"One note for a publisher. `editor-in-chief`, **5,172 records**, was in this group "
        "until 21 October — an editorial role reading as institutional leadership. Now moved.")
 
@@ -412,14 +427,17 @@ para(d,"**Archivists are not included** — the word pulled in archaeologists, g
        "and clerks, and archivists are a separate call from the one you made. "
        "**\"Information specialist\" is not included** — it pulled in every IT job in the "
        "data. Either can be added as one line, as a decision rather than a guess.")
-h(d,"7.3  Should Researcher split into early-career and senior?",2)
-para(d,"Possible, and it would be a settings change with no new code. **Not proposed now.** "
-       "Recorded because the option exists.")
-para(d,"One warning if it is ever wanted. The split is made entirely from job-title words, "
-       "and that is fragile: bare `researcher` counts as early career while bare "
-       "`scientist` counts as senior, so a thirty-year veteran who typed \"researcher\" is "
-       "classified as early career. A better route is **dates** — career length is already "
-       "in the data and does not depend on what someone called their job.")
+h(d,"7.3  Should Researcher split into early-career and senior?  — WITHDRAWN",2)
+para(d,"**Merve closed this on 4 November: Researcher ships as one audience and we are not "
+       "asking.** Nothing is needed from you. It is left on the page only so that nobody "
+       "re-opens it on seeing that two research groups already exist in our dictionary.")
+para(d,"Why it was closed rather than deferred. The split would be made entirely from "
+       "job-title words, and that is fragile in a way that cannot be patched: bare "
+       "`researcher` counts as early career while bare `scientist` counts as senior, so a "
+       "thirty-year veteran who typed \"researcher\" is classified as early career and the "
+       "person beside them who typed \"scientist\" is senior. If seniority is ever wanted "
+       "the route is **dates** — career length is already in the data and does not depend "
+       "on what someone called their job.")
 
 # ---------------------------------------------------------------- DECIDED
 h(d,"8.  Already decided — recorded so nobody re-opens them")
@@ -439,7 +457,17 @@ table(d,["Question","Decision","When"],
   ["Should Head of faculty include hospital-based leaders? (~2,000 people)",
    "**No.** University heads only. Small and certain beats large and arguable.","29 Oct"],
   ["Should a title that names two jobs count as both? (78,000 records)",
-   "**No.** They stay in Lecturer. See 7.1 — please confirm.","30 Oct"]],
+   "**No.** They stay in Lecturer. See 7.1 — please confirm.","30 Oct"],
+  ["Should Researcher split into early-career and senior?",
+   "**No, and withdrawn.** One Researcher audience. See 7.3.","4 Nov"],
+  ["Is a doctoral student in Researcher because they are a doctoral student?",
+   "**No — the title has to say so.** Being a doctoral student is not the "
+   "qualification; a title naming research is. `phd fellow`, 19,424 records, "
+   "names neither and comes out.","4 Nov"],
+  ["Can someone be a healthcare professional with no clinical job title? (6,115 people)",
+   "**No.** They were in the broad HCP audience on their department alone — an "
+   "administrator in a cardiology department. The job title is now mandatory. "
+   "**1,445 marketable contacts leave.**","4 Nov"]],
  widths=[3.0,2.3,0.9], size=8.5)
 box(d,"ONE RESIDUE ON THE RETIREMENT DECISION",[
  "We removed 17,277 records of retired and emeritus people. About **1,065 people** remain "
@@ -475,5 +503,9 @@ para(d,"**One thing we cannot give you, and will not invent.** There is no accur
        "now matching against survey answers, where people told us their own job title — "
        "that will be the first outside check this project has had.")
 
-out=os.path.join(os.path.expanduser("~"),"Downloads","ORCID-Questions-for-Marketing.docx")
-d.save(out); print("saved:",out,os.path.getsize(out),"bytes")
+# The repo copy is the deliverable - Merve pulls from git, so a file that
+# exists only in one machine's Downloads folder reaches nobody. Downloads is
+# kept as well because that is where it gets attached to an email from.
+for out in (os.path.join(os.path.dirname(SP), "docs", "ORCID-Questions-for-Marketing.docx"),
+            os.path.join(os.path.expanduser("~"), "Downloads", "ORCID-Questions-for-Marketing.docx")):
+    d.save(out); print("saved:", out, os.path.getsize(out), "bytes")

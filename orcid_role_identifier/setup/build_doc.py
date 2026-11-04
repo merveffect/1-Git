@@ -3,6 +3,7 @@ import sys, os
 SP = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, SP)
 from docx_lib import *
 import audiences
+import summary
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH as AL
 # The committed figure directory. This said "fig" until 2026-11-03, which was a
@@ -580,6 +581,10 @@ para(d, "This is worth reading twice, because it is the shape of problem we will
         "meeting: **a correction that is right for one audience is wrong for another, "
         "because they share a group.** Nothing in the current design separates them.")
 
-out = os.path.join(os.path.expanduser("~"), "Downloads", "ORCID-Role-Enrichment-Status-and-Plan.docx")
-d.save(out)
-print("saved:", out, os.path.getsize(out), "bytes")
+summary.build(d)
+
+# See the note in build_mkt.py: the committed copy is the one Merve pulls.
+for out in (os.path.join(os.path.dirname(SP), "docs", "ORCID-Role-Enrichment-Status-and-Plan.docx"),
+            os.path.join(os.path.expanduser("~"), "Downloads", "ORCID-Role-Enrichment-Status-and-Plan.docx")):
+    d.save(out)
+    print("saved:", out, os.path.getsize(out), "bytes")

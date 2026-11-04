@@ -128,9 +128,16 @@
       and confirms with no clinical signal at all. That is the exact
       mistake the Phase-1 regex made, on 191 physics postdocs.
 
-      title_or_field is for one role only, hcp_broad, whose job is to be
-      the wide net so that nobody clinical is lost from the audience as a
-      whole. Its three precise children roll up into it.
+      title_or_field is NO LONGER USED BY ANY ROLE. It existed for
+      hcp_broad, whose job is to be the wide net so that nobody clinical
+      is lost from the audience as a whole, and whose three precise
+      children roll up into it. Merve retired it on 2026-11-04: the field
+      arm admitted 6,115 CONFIRMED people with no clinical title at all,
+      in the audience purely because their department read as clinical.
+      The mode is kept because the wide-net argument may be wanted again
+      for a future role, and because removing it would make the two
+      remaining modes look like the only choices that were ever made.
+      Measured in analyses/34 query 5.
 
     Every role sets this explicitly, so nobody has to know the default.
     Note that for a role with no fields listed the mode cannot change

@@ -82,7 +82,18 @@ vars:
       enabled: true
       label: 'Healthcare Professional - any clinical signal'
       axis: profession
-      match: title_or_field
+      # MERVE'S DECISION, 2026-11-04: THE JOB TITLE IS MANDATORY.
+      #   "klinik unvan yoksa asla alma iceri - job title bu projede en
+      #    onemli kolon"
+      # Was title_or_field, the only role that used it. Measured first, in
+      # analyses/34 query 5: of hcp_broad's 39,008 own CONFIRMED rows,
+      # 6,115 (15.7%) carried NO clinical title at all. They were in the
+      # audience because their department read as clinical - a hospital
+      # administrator in a cardiology department, a lab manager in
+      # oncology. Those 6,115 leave. 1,445 of them were marketable.
+      # The 1,624 rows with a clinical title but no department STAY: the
+      # title is the evidence and 11.6% of records have no department.
+      match: title_required
       title_groups: ['practitioner', 'trainee_clinical']
       disciplines: ['health_clinical']
       # Unchanged from the role formerly called 'hcp', so the audience

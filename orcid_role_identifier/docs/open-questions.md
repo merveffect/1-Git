@@ -132,6 +132,43 @@ is clearly not a faculty head and is recorded as an accepted residue in 2.8a.
 But `head of department` (294), `chief` (213) and `head` (225) on the hospital
 path are genuinely ambiguous, and the same decision covers all of them.
 
+**WHAT "FINISHED" MEANS FOR THIS AUDIENCE — asked by Merve 2026-11-04.**
+Two questions, and they have different answers.
+
+*Does the director decision complete Head of Faculty?* Substantially, yes.
+The audience was measured on 2026-11-03 against 1,775 checkable people:
+**79.2% certainly right** (223 said leadership themselves, 1,185 hold a title
+naming a faculty-level post), **15.0% uncertain**, **5.7% wrong**. The 15.0%
+is 267 people who hold ONLY `chair`, `director` or `head` with no faculty
+word beside it — which is this question and nothing else. Whichever way
+marketing answers, that 15.0% stops being uncertain: in, and they are right
+by definition; out, and they leave. So the decision converts the largest
+remaining unknown into a known, and after it the audience is as defensible as
+this project can make one.
+
+*Then why have we not fixed the errors we found?* Because the two populations
+are different and only one of them is fixable.
+
+The 15.0% is **not an error**, it is an undecided definition. We cannot fix
+it because we do not know which way it goes — that is what makes it a
+question for marketing rather than a bug for us.
+
+The 5.7% — 102 people — IS our error, and the reason it is still there is the
+most-measured lesson in this project: **the people wrongly in an audience do
+not arrive through the titles you happen to review.** The roster review of
+2026-10-30 is the cleanest demonstration. Merve read the full faculty_head
+roster by eye and named 106 corrections; they landed across 7,126 records and
+478 holders, 201 of whom left the audience. The measured error rate went from
+**101 people wrong to 102**. Five separate reviews have now produced that
+same shape (`associate`, Pharmacist's 91 people, the Lecturer corrections,
+the compound patterns, and this).
+
+But that is only two thirds of an honest answer. The other third is that
+**`analyses/33` query 4 has not been run** — the one that reads the evidence
+titles of those 102 people. It is the only remaining question that can move
+the 5.7%, it costs one query, and until it is run "we cannot fix it" is a
+claim rather than a finding.
+
 ### 1.4 Are psychologists healthcare professionals?
 
 **~4,500 records across six titles**, currently all matched to the
@@ -694,88 +731,80 @@ Recorded here rather than deleted, because the prediction was wrong in a
 useful direction: we sized it before adding it to this list, and a decision
 list that includes negligible items is worse than one that does not.
 
-### 1.16 Researcher could be split into early-career and senior — RECORDED AS POSSIBLE, NOT PROPOSED
+### 1.16 Splitting Researcher into early-career and senior — CLOSED, NOT ASKING
 
-Merve asked on 2026-10-21 whether this is feasible, and decided the same day
-not to pursue it now. It is written down so the option is known, not because
-anyone is asking for it. Nothing has changed in the pipeline. We already classify every research title into
-one of two groups, and both of them feed the same single `researcher`
-audience - so the distinction is carried and never used. Splitting it into
-two audiences is **a configuration change and nothing else**:
+**Merve, 2026-11-04: "1.16 ikiye bolunmesin asla. bu soruyu cikart
+bolmiycez. researcherlar beraber."**
 
-```yaml
-researcher_early:   { title_groups: ['researcher_early'] }
-researcher_senior:  { title_groups: ['researcher_established'] }
-```
+The question is withdrawn and is not going to marketing. It is recorded here
+rather than deleted outright for one reason only: the option is cheap enough
+to look obvious to the next person who reads the registry — two groups
+already exist and both feed one audience, so splitting them looks like a
+config change and nothing else. It is not, and this is why.
 
-No code. This would be the live demonstration of "adding an audience is a
-config change rather than a project".
+The split would be made **entirely from job-title words**, and bare
+`researcher` is an early-career anchor while bare `scientist` is a senior
+one. A thirty-year veteran who typed "researcher" lands in early career and
+someone who typed "scientist" lands in senior. From the person's side that is
+arbitrary. It shows in the sizes: researcher_early carries 8,341,542 records
+against researcher_established at 1,878,051.
 
-**Can we tell them apart today? Partly, and only from words.** The split is
-made entirely by job title. It works where the title states a rank -
-`principal investigator` to senior, `postdoctoral fellow` to early - and it
-fails where the title does not, which is a large share.
+And the track record is poor. `junior researcher`, 42,949 records, sat in the
+SENIOR group for the entire life of the project.
 
-The clearest failure is structural: bare **`researcher`** is an early-career
-anchor and bare **`scientist`** is a senior one. So a thirty-year veteran who
-typed only "researcher" is classified early career, and someone who typed
-only "scientist" is classified senior. From the person's side that is
-arbitrary.
+If seniority is ever wanted, the route is **dates, not words** — Merve's own
+suggestion. `employments[].full_start_date` is already read for `is_current`
+and `recency_rank`, so career length needs no new source field and does not
+depend on what someone called their job. It is also what the external role
+library's MORE4 R1–R4 career stages are built on.
 
-It shows in the sizes: `researcher_early` carries 8,341,542 records against
-`researcher_established` at 1,878,051, a 4.4x gap driven largely by bare
-`researcher` and the postdoc family sitting in early.
+Until then: **the two groups stay as internal dictionary detail and
+Researcher ships as one audience.**
 
-**And the track record is poor.** `junior researcher`, 42,949 records, sat in
-the SENIOR group for the entire life of the project and was found on
-2026-10-21. 125,112 records carry a senior modifier while sitting in early -
-mostly correctly, since a senior postdoc is still a postdoc, but we only
-established that the same day.
-
-**The better route is dates, and the data is already in the pipeline.**
-Merve's own suggestion. `employments[].full_start_date` and the end dates are
-already read, for `is_current` and `recency_rank` - no new source field is
-needed. Career length as "today minus earliest employment start" is a
-seniority measure INDEPENDENT of what someone called their job, and it is
-what the external role library's MORE4 R1-R4 career stages are built on,
-anchored to PhD completion year.
-
-So if it is ever wanted, the order would be measure first and split second:
-find out whether dates can carry seniority before shipping an audience that
-rests on job-title words. Shipping the word-based split as it stands would
-repeat the mistake we found on 2026-10-21 rather than fix it.
-
-### 1.17 Are doctoral students doing research in the Researcher audience?
+### 1.17 Doctoral students in the Researcher audience — DECIDED, THE TITLE DECIDES
 
 **197,895 records**, found 2026-10-21 on the first read of researcher_early.
 
-| Title | Records | Model's runner-up |
-| --- | --- | --- |
-| `graduate research assistant` | 106,438 | **student** |
-| `phd researcher` | 49,317 | **student** |
-| `phd fellow` | 19,424 | **student** |
-| `predoctoral researcher` | 15,368 | researcher_established |
-| `undergraduate research assistant` | 7,348 | support_technical |
+| Title | Records | Model's runner-up | Under the rule below |
+| --- | --- | --- | --- |
+| `graduate research assistant` | 106,438 | **student** | IN — says research |
+| `phd researcher` | 49,317 | **student** | IN — says researcher |
+| `phd fellow` | 19,424 | **student** | **OUT — says neither** |
+| `predoctoral researcher` | 15,368 | researcher_established | IN — says researcher |
+| `undergraduate research assistant` | 7,348 | support_technical | IN — says research |
 
-All sit in researcher_early today, and the model itself offered `student` as
-the runner-up for the three largest.
+**Merve's decision, 2026-11-04:**
 
-**Merve's own precedent answers it.** On 1.12 the decision was: if a teaching
-assistant teaches, they go in the Lecturer audience, doctoral student or not.
-The parallel reads straight across - if they research, they go in the
-Researcher audience, doctoral student or not - and that is what currently
-happens, so no change is needed.
+> "doktora ogrencileri kendini researcher olarak tanitmadiysa icinde olmasin,
+>  job title da researcher varsa katabiliriz"
 
-Recorded as a question only to confirm the precedent extends, and because the
-alternative is not unreasonable: an undergraduate research assistant on a
-summer placement is a weaker target than a postdoc.
+A doctoral student is in the Researcher audience **only if their own job
+title presents them as doing research.** Being a doctoral student is not
+itself the qualification, and we do not infer it. This is the same principle
+as 1.12 for teaching assistants, but stated the harder way round: there, if
+you teach you are a lecturer; here, the title has to SAY so.
+
+**The consequence is specific and it is not what we are doing today.**
+`phd fellow`, **19,424 records**, carries no research word at all. It sits in
+researcher_early because `fellow` reached a research anchor, and the model
+itself offered `student` as the runner-up. Under this rule it does not belong
+in the Researcher audience. The same applies to any
+`doctoral candidate` / `phd student` / `doktorand` family that reached a
+research anchor on a word that is not about research.
+
+**NOT YET IMPLEMENTED, AND DELIBERATELY SO.** The rule is clear but its
+extent is not measured: we know about `phd fellow` because it was already on
+the 1.17 list, and we do not know how many other student titles reached
+researcher_early without a research word. `analyses/35` query 1 sweeps for
+exactly that — titles in the two researcher groups carrying a
+student/doctoral/candidate word and NO research word. The overrides get
+written from that list, not from this one.
 
 A mechanism note worth keeping, separate from the decision.
 `predoctoral researcher` reached the **POST**doctoral anchor at 0.908. Pre
-and post are two ends of one axis, so the embedding places them close - the
+and post are two ends of one axis, so the embedding places them close — the
 same blind spot as `junior` against `senior` in 2.4e. Here it happens to
 produce the right answer, which is why it is evidence rather than a defect.
-
 
 ---
 
@@ -1451,6 +1480,55 @@ And `sim_floor` = 0.65 was not costed and must not move, for the reasons in
 2.4b and 1.10: raising it deletes correct VERBOSE titles and keeps wrong short
 ones. `junior researcher` was wrong at 0.870 while 34 titles of genuine
 faculty leadership sat at 0.567–0.649.
+
+### 2.11 The job title is now mandatory for HCP broad — 2026-11-04
+
+**Merve, on reading analyses/34 query 5:**
+
+> "klinik unvan yoksa asla alma iceri - job title bu projede en onemli kolon"
+
+`hcp_broad` was the only role using `match: title_or_field`, where the title
+OR the department was enough. Measured before changing anything, on its own
+CONFIRMED rows excluding roll-ups:
+
+| Route | People | Share | Marketable |
+| --- | --- | --- | --- |
+| all three axes present | 31,269 | 80.2% | 6,949 |
+| **discipline only — no clinical title at all** | **6,115** | 15.7% | 1,445 |
+| title + org — no department | 1,624 | 4.2% | 313 |
+
+Those 6,115 were in a healthcare audience **purely because their department
+read as clinical** — an administrator in a cardiology department, a lab
+manager in oncology. The mode is now `title_required`, so they leave.
+1,445 marketable contacts go with them.
+
+**The 1,624 STAY, and that is deliberate.** They hold a clinical title with
+no department recorded, and they all sit at exactly 0.60 because
+1.00*0.35 + 1.00*0.25 is exactly the threshold. The title is the evidence and
+11.6% of records carry no department at all, so requiring one would discard
+people we are sure about to remove people we are not. Merve's instruction was
+about the title being mandatory, not about the department becoming mandatory.
+
+`title_or_field` is now used by no role. It is kept in the registry because
+the wide-net argument may be wanted again, and because deleting it would make
+the two surviving modes look like the only choices ever considered.
+
+**A SECOND, LARGER PROPOSAL IS NOT IMPLEMENTED.** Merve also suggested that
+hcp_broad hold nothing but its children:
+
+> "bu kolon sadece hcp nin alt gruplari olan 3 grubu icersin bence"
+
+That is coherent — it would make hcp_broad a pure union and remove the
+one-legged question permanently — but it is bigger than it looks and has not
+been sized. Two things to establish first. hcp_broad has **four** children,
+not three: hcp_practitioner, hcp_researcher, hcp_administrator **and
+pharmacist**, which rolls up as PRACTITIONER. And with the title now
+mandatory, hcp_broad's remaining own rows overlap hcp_practitioner almost
+exactly — same title groups, same discipline, different weights and
+threshold — so the real question is whether hcp_broad still earns its own
+matching at all, or has become a roll-up with a redundant extra arm.
+`analyses/35` query 4 sizes it: how many CONFIRMED people hcp_broad would
+keep on roll-ups alone, and how many exist ONLY through its own rows.
 
 ---
 
