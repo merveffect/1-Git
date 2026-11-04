@@ -50,6 +50,7 @@ with titles as (
         frequency,
         matched_anchors[safe_offset(0)]     as nearest_anchor,
 
+        regexp_contains(title, r'(post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate)') as is_a_postdoc,
         regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|etudiant|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|docteur|doutorando|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|graduand\w*)\b')   as names_a_student,
         regexp_contains(title, r'\b(researcher|researchers|investigador\w*|investigadora|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*)\b')   as says_researcher,
 
@@ -63,6 +64,20 @@ judged as (
     select
         *,
         case
+            /*
+                A POSTDOC IS NOT A DOCTORAL STUDENT, and the first version of
+                this query said they were. `post-doctoral fellow` (78,093
+                records), `post doctoral fellow` (55,567) and the whole postdoc
+                family contain the string `doctoral`, so the student pattern
+                swept all of them and put 292,253 records in the SAYS NEITHER
+                bucket that have no business in this question at all.
+
+                Exactly the pre/post blind spot recorded in 2.4e, except here it
+                was my regex rather than the embedding. The family is bucketed
+                separately rather than filtered out silently, so the exclusion
+                can be audited instead of trusted.
+            */
+            when is_a_postdoc                 then 'POSTDOC - NOT A STUDENT, excluded'
             when says_researcher              then 'SAYS RESEARCHER  - in under either reading'
             when says_research                then 'SAYS RESEARCH ONLY - in only under the loose reading'
             else                                   'SAYS NEITHER      - out under either reading'
@@ -99,7 +114,8 @@ select
     frequency               as orcid_records,
     matched_anchors[safe_offset(0)] as nearest_anchor,
     regexp_contains(title, r'\b(researcher|investigador\w*|chercheur\w*|forscher\w*|ricercator\w*)\b') as says_researcher,
-    regexp_contains(title, r'\bresearch\b')                                                            as says_research
+    regexp_contains(title, r'\bresearch\b')                                                            as says_research,
+    regexp_contains(title, r'(post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate)') as is_a_postdoc
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
 where is_assigned
   and title_group in ('researcher_early', 'researcher_established')
