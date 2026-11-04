@@ -375,6 +375,260 @@ for slide, texts in (
     for top, txt in zip(ROWS, texts):
         if txt: put(_at(slide, 0.76, top), txt)
 
+NOTES = {
+1: """Hi everyone. Before anything else - if you have been wondering what I actually do on role
+enrichment, here it is in one sentence.
+
+We are trying to work out what job a researcher does, from what they typed about themselves in
+ORCID. Nine roles: Lecturer, Researcher, Healthcare professional, Practitioner, Clinical
+researcher, Clinical administrator, Head of faculty, Pharmacist and Librarian. We look at the
+roles they list - past and present - plus their organisation and their department, and we put a
+label on it. That is the whole project. Everything after this slide is detail.""",
+
+2: """I want to get four words straight first, because almost every confusion I have had on this
+project came from mixing two of them up.
+
+A TITLE is what the person typed. We do not choose these - there are 317,302 different ones and
+some of them are a mess.
+
+An ANCHOR is an example word I wrote by hand to define a job. There are 151, and I put the list
+together with AI's help.
+
+A TITLE GROUP is one of ten buckets. One group owns many anchors.
+
+A DISCIPLINE is the subject - and that comes from the DEPARTMENT, not from the title. That one
+matters: we measured it, and trying to get the subject out of job titles leaves three quarters of
+them unusable.
+
+So the chain is: the title is matched to its nearest anchor, the anchor belongs to a group, and
+the group feeds the audiences. Read that once and the rest of the deck follows.""",
+
+3: """Let me follow one title all the way through. Say somebody typed "Consultant Paediatrician".
+
+First we normalise it - lowercase, strip the punctuation, keep the accents. Then that text goes to
+a Vertex AI model, which turns it into 768 numbers standing for its meaning. Then we compare those
+numbers against all 151 anchors at once and the nearest one wins. Here it is `consultant`, at a
+similarity of 0.699. And `consultant` only belongs to one group, practitioner - so that is the
+group this title gets.
+
+The important bit: this runs ONCE PER DISTINCT TITLE, not once per person. 317,302 titles, one
+pass. Everybody who typed the same string gets the same answer, and labelling a person afterwards
+is just a join.
+
+Now, group_score - this is the line at the bottom and it confused me for a while, so let me say it
+plainly.
+
+The raw similarity numbers live in a narrow band. Anything below 0.65 we throw away; that is the
+floor. And in practice nothing ever comes back above about 0.95. So a raw 0.699 LOOKS like a weak
+score when it is actually a perfectly good match that just sits near the bottom of the range.
+
+group_score re-spreads that surviving band so the number means what it looks like: the weakest
+match we would accept becomes 0.70, a perfect match stays 1.00, and everything in between is
+stretched evenly across the gap. 0.699 comes out at 0.742.
+
+That is all the formula does. It adds no information - it just puts the score on a scale the rest
+of the pipeline can use.""",
+
+4: """Now the same title, but for an actual person. Three signals.
+
+The TITLE gives us practitioner, carrying that 0.742.
+
+The ORGANISATION we look up by its ROR id. Great Ormond Street Hospital, ROR type Healthcare -
+full marks, 1.00.
+
+The DEPARTMENT is Paediatrics, which maps to health_clinical - full marks again.
+
+Then each audience weights those three differently, because they do not matter equally. For
+Practitioner it is 0.45 title, 0.15 organisation, 0.40 department. The organisation is worth least
+because a hospital only weakly tells you somebody is clinical - plenty of non-clinical people work
+in hospitals. The department is worth a lot, because that is where the specific words live.
+
+Multiply and add: 0.334 plus 0.150 plus 0.400 is 0.884. That is above the confirm line, so this
+person is CONFIRMED and gets delivered. If it had landed between 0.50 and the line, they would be
+PROBABLE instead.
+
+And here is the part I like. Change one field and the answer changes. Same title, but the
+department says Mechanical Engineering - this audience needs both axes and now it only has one, so
+no row is produced at all. The person is not scored low; they are simply not in the list. That is
+the second axis doing its job.""",
+
+5: """The model is not always right, so there are two ways to overrule it.
+
+The first is a HUMAN DECISION. 533 of them now. My favourite example is `chemist`. In British
+English a chemist is a pharmacy, so the model confidently filed it under Pharmacist. But in ORCID,
+as a job title, a chemist is almost always a chemistry researcher. The model was not wrong about
+the word - it was wrong about the world. 6,923 records, moved by hand. There is a French one too:
+`pharmacien` and `praticien` are three letters apart, and the model put a pile of French hospital
+doctors in with the pharmacists.
+
+The second is a PATTERN - a literal text match, no similarity computed at all. We did that for
+Librarian because anchors failed there twice, at 69% and 73% wrong. Librarian now has ZERO anchors
+and eleven patterns: if the title contains "librar", it IS a librarian. Exact, every time. And
+because it has no anchors, the model can never return it, so it cannot steal a title from another
+group. Fixed by construction rather than by tuning.
+
+The lesson I would keep from all of this: a correct dictionary and a correct audience are two
+different things. I have measured that five times now. Most recently, 106 corrections covering
+7,126 records moved the Head of faculty error rate from 101 people wrong to 102. The dictionary
+got better and the audience did not move - because the people who are wrongly in an audience are
+not there through the titles you just fixed.""",
+
+6: """This is the whole thing on one page. Ten title groups on the left with their record counts and
+what each one feeds; nine audiences on the right with how many people are in them and how many we
+can actually reach.
+
+Neither direction is one-to-one - a group can feed two audiences, and an audience can draw on two
+groups.
+
+Two things to flag. Do not add the audience column up: people hold more than one role, so the same
+person appears on several lines. And two groups feed nothing at all - student and support/technical.
+That is deliberate. They are where titles that belong nowhere get parked, so their quality numbers
+do not matter today.""",
+
+7: """For most of this project there was nothing to check ourselves against. ORCID has no profession
+field. There is now: 28,866 people who answered two separate surveys the same way.
+
+There are three different questions you can ask, and I want to keep them apart, because two of
+them get quoted as error rates and neither one is.
+
+DID WE FIND THEM - of the people who say they are X, how many did we put in X. A low score means
+we are MISSING people.
+
+DO THEY AGREE - of the people we put in X, how many say so themselves. A low score here is not our
+error rate either, because a survey takes one answer per person and a career has several.
+
+DID WE READ THE TITLE RIGHT - of the people who disagree, how many hold no title of that kind at
+all. That one IS our error rate.
+
+Lecturer is the clearest case. 78.2% agree, which sounds mediocre. But ask the third question: of
+1,354 people who called themselves something else, only 50 hold a title that is not a teaching
+title. The rest wrote Professor in ORCID and ticked PhD student on a form. Both are true. So the
+real figure is 99.2%.
+
+One more thing - the ceiling is 88.9%, not 100%. That is how often the same person gives the same
+answer twice. Nothing measured against a human answer can beat it, and a number near it is not
+suspicious.
+
+And what validation did NOT settle: coverage. 290,045 people in the survey, 238,440 we could match
+to the CDP, and only 46,656 we know anything at all about. Accuracy is not what limits this
+project. Reach is.""",
+
+8: """Practitioners. 58 anchors, the most of any group, and still the hardest one.
+
+Clinical vocabulary is the most scattered in the data. Academic titles are nearly the same
+everywhere - Professor, Associate Professor, Lecturer. Clinical ones are not: Resident, Registrar,
+Facharzt and Interno all mean a doctor in training and share no common word.
+
+What went wrong is mostly that whole professions had no anchor, so the model used the nearest thing
+it had. 2,684 veterinarians matched dentist. 2,765 anaesthetists matched neurosurgeon. We added 25
+specialty anchors and that largely fixed it.
+
+The one we chose NOT to fix is `consultant`: 253,841 records. In Britain it is a hospital
+specialist; everywhere else it is a business adviser - and the wrong ones score HIGHER than the
+right ones, so no threshold separates them. That is an honest open problem, not a bug.""",
+
+9: """Clinical trainee. Eight anchors, the fewest anywhere, and two of them are ordinary English
+words.
+
+The problem here was training positions with no clinical content at all. `internship` on its own is
+19,557 records and names no profession. And seven fully qualified clinicians were sitting in the
+TRAINEE group, because `internist` reaches `intern` on its first six letters.
+
+What I took from this group: it is not how ambiguous a word LOOKS that decides whether an anchor
+leaks. `resident` is just as ordinary an English word as `intern`, and it is almost perfectly
+clean. It depends on what else lives near it in the model's space, and you cannot tell that by
+reading the word.""",
+
+10: """Teaching academic. Twelve million records, the biggest group, and the one with the least
+protection against a wrong title.
+
+Lecturer has a department weight of ZERO. So there is no second axis here - anything that lands in
+this group reaches the audience as soon as the organisation resolves. That is why we read it by
+hand more often than its numbers suggest it needs: nothing else is checking.
+
+Fourteen corrections landed in October over 16,507 records - and the audience moved by one person.
+Same lesson again.""",
+
+11: """Researcher - and I have merged the two slides this used to be, because the two groups feed
+exactly the same two audiences. We compute a seniority split and then never use it.
+
+The early-career half needed ZERO corrections on its first read. The only group where that
+happened. Being generic did not make `researcher` dirty, because the space around it is densely
+packed with real research vocabulary.
+
+The established half held the biggest single error in the project, which the slide covers.
+
+And then we made the model's mistake in reverse, which I want to own. We moved `junior group
+leader` out of the group, then put it back - because a German Nachwuchsgruppenleiter runs their own
+group on their own funding and IS an independent researcher. We read the word "junior" and did
+exactly what we had just corrected the model for doing.""",
+
+12: """Leadership. The only group where the title alone is deliberately not enough - and that is the
+design, not a weakness. A leadership title tells you nothing about whether the person is academic,
+so the organisation decides: Head of faculty scores a company at zero, and an unresolved
+organisation at zero.
+
+In November this audience nearly doubled, 17,528 to 33,242. I want to be careful about that number,
+because only 1,715 of it is our work - the professor-and-dean compound titles finally reaching the
+audience, which is within 4% of what we forecast. The rest is employers finally resolving to
+academic organisations, which is the thing that had been starving it all along.
+
+Two findings in one build, and they have to be reported as two, or our work takes credit for the
+ROR data.""",
+
+13: """Pharmacist. Proportionally the dirtiest group in the project - 21% of its records were wrong -
+and foreign-language anchors caused nearly all of it.
+
+But the interesting part is what fixing it cost. The audience moved by 91 people. The weights
+effectively require a pharmacy department, so a chemist without one was never confirmed in the
+first place.
+
+It is also the group we cannot check from outside at all: the survey has no pharmacist option.
+Everything we know about it comes from reading it.""",
+
+14: """Librarian. The one group decided by the word rather than by the model. Zero anchors, eleven
+patterns, every score exactly 1.000.
+
+This is the only group whose error rate we know exactly, because we read ALL of it rather than a
+sample: 89 wrong records out of 21,855, and both are genetic and chemical libraries rather than
+library staff.
+
+The real lesson from this one was somewhere else though. I was tuning anchor wording for weeks and
+the second attempt came back WORSE - because the embedding table was incremental, so a deleted
+anchor kept its vector and stayed a live search target for ever. Removing an anchor did nothing,
+silently.""",
+
+15: """And finally, what this cannot do. These are properties of the method, not defects waiting to be
+fixed.
+
+COVERAGE IS THE REAL LIMIT, not accuracy. Of 290,045 people in the survey we could say anything at
+all about 46,656. No amount of dictionary work changes that ratio.
+
+ONE TITLE NAMES ONE PROFESSION. A professor who heads a department has to be filed as one or the
+other - marketing decided they stay where they are. The consequence is that an audience can never
+be a complete list of the people doing that job.
+
+A CLEAN DICTIONARY IS NOT A CLEAN AUDIENCE. Five times measured, never once otherwise.
+
+TWO OF THE NINE AUDIENCES CANNOT BE CHECKED AT ALL - no survey option for Pharmacist, and four
+people in the ground truth for Librarian.
+
+And 15% of Head of faculty rests on nothing but the words chair, director or head - which are
+modifiers, not professions. That one is a question for marketing rather than a bug, and it now has
+a price attached to it for the first time.
+
+That is everything. Happy to go back to any slide.""",
+}
+
+# Written into the notes pane so the script travels with the deck and appears in
+# presenter view, rather than living in a separate file that gets lost - which
+# is exactly what happened to the script that built this deck in October.
+for n, text in NOTES.items():
+    tf = S[n - 1].notes_slide.notes_text_frame
+    tf.text = " ".join(text.split("\n\n")[0].split())
+    for para in text.split("\n\n")[1:]:
+        tf.add_paragraph().text = " ".join(para.split())
+
 PR.save(os.path.join(HERE, "..", "docs", "Role-Pipeline-Walkthrough.pptx"))
 print("MISSES:", MISSES if MISSES else "none")
 print("saved docs/Role-Pipeline-Walkthrough.pptx")
