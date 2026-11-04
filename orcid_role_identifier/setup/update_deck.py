@@ -623,8 +623,15 @@ That is everything. Happy to go back to any slide.""",
 # Written into the notes pane so the script travels with the deck and appears in
 # presenter view, rather than living in a separate file that gets lost - which
 # is exactly what happened to the script that built this deck in October.
+# S is the ORIGINAL order. Slide 12 was moved to the end, so S[11] is now the
+# last slide and S[12..14] each shifted one forward - and keying the notes off S
+# directly put the Leadership script on the Pharmacist slide. NOTES is keyed by
+# the position the audience sees, so the mapping has to be spelled out.
+FINAL = S[:11] + [S[12], S[13], S[14], S[11]]
+assert len(FINAL) == 15
+
 for n, text in NOTES.items():
-    tf = S[n - 1].notes_slide.notes_text_frame
+    tf = FINAL[n - 1].notes_slide.notes_text_frame
     tf.text = " ".join(text.split("\n\n")[0].split())
     for para in text.split("\n\n")[1:]:
         tf.add_paragraph().text = " ".join(para.split())
