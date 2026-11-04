@@ -1355,6 +1355,103 @@ mentoring among their typical outputs. Blanket rejection would take these too.
 *Source: analyses/27 and the retirement sweep of 2026-10-29. See also 1.14,
 which asks the same question about honorary professors and is still open.*
 
+### 2.10 Raising a threshold was measured and rejected — 2026-11-04
+
+Merve asked the sharpest version of the question this project has had:
+
+> "coverage ve cok audience olmasi onemli degil sadece emin oldugumuz
+>  kisileri alalim. belki thresholdu arttirmak bunu cozer educationsa
+>  bakmadan?"
+
+Coverage is not the objective, certainty is. Measured in full by
+`analyses/34_threshold_cost.sql`, and the answer is **no threshold moved**.
+Three findings, in the order they overturn the idea.
+
+**1. THE SINGLE-AXIS POPULATION IS NOT IN HEALTHCARE. IT IS IN ACADEMIA.**
+For every CONFIRMED person, remove one axis at a time and ask whether they
+still clear the threshold:
+
+| Audience | One axis is enough | Two or more axes required |
+| --- | --- | --- |
+| lecturer | **372,841 (92.3%)** | 31,220 |
+| researcher | **295,719 (89.7%)** | 34,131 |
+| librarian | **687 (100%)** | 0 |
+| hcp_broad | 0 | 129,373 (100%) |
+| hcp_practitioner | 0 | 60,945 (100%) |
+| hcp_researcher | 0 | 53,290 (100%) |
+| hcp_administrator | 0 | 7,580 (100%) |
+| faculty_head | 0 | 18,918 (100%) |
+| pharmacist | 0 | 2,287 (100%) |
+
+Every clinical audience is fully corroborated: not one CONFIRMED person in
+hcp_broad, hcp_practitioner, hcp_researcher or hcp_administrator is carried
+by a single axis. **faculty_head is structurally incapable of it** — its title
+weight is 0.60 against a threshold of 0.65, so the title alone can never
+confirm, and all 18,918 need the organisation as well.
+
+Read "one axis is enough" correctly: it means the second axis is not
+LOAD-BEARING, not that it is absent. A lecturer scoring 1.000 has a perfect
+title AND a perfect organisation; either alone would have sufficed.
+
+**2. AND A THRESHOLD CANNOT REACH THEM ANYWAY, because the mass sits at the
+maximum.** A weighted sum of three bounded axes is discrete, not smooth:
+
+| Audience | People at exactly 1.000 | Share |
+| --- | --- | --- |
+| lecturer | 250,601 | 62.0% |
+| researcher | 122,895 | 37.3% |
+| librarian | 687 | 100% |
+| faculty_head | 6,843 | 36.2% |
+
+There is no number between 0.60 and 1.00 that removes a person scoring 1.000.
+Pushing lecturer to 0.85 drops 11.3% and to 0.95 drops 35.9%, and what it
+drops is the unconfident long tail — the opposite of the target.
+
+**librarian's threshold is completely inert.** All 687 score exactly 1.000, at
+every candidate from 0.60 to 0.95, because the group is 99.9% PATTERN-decided
+and the role is weighted 1.00 title / 0.00 org. Librarian quality cannot be
+managed by a threshold at all; the only lever is the pattern list. This is the
+mechanical explanation for 2.6.
+
+**3. THE ONE PLACE IT WOULD HAVE WORKED, AND WHY WE STILL DID NOT.**
+hcp_broad is the only `title_or_field` role, and 1.00*0.35 + 1.00*0.25 = 0.60
+is exactly its confirmed threshold. On its own rows, excluding roll-ups:
+
+| Route | People | Share | Marketable | Score range |
+| --- | --- | --- | --- | --- |
+| all three axes present | 31,269 | 80.2% | 6,949 | 0.680–1.00 |
+| **discipline only — no clinical title at all** | **6,115** | 15.7% | 1,445 | **0.60–0.65** |
+| **title + org — no department** | **1,624** | 4.2% | 313 | **exactly 0.60** |
+
+7,739 one-legged people, all of them inside a 0.05-wide band, of whom only
+1,758 are marketable — 6.3% of hcp_broad's reachable total. A threshold of
+0.66 would have cut almost exactly this band. Merve's call was to leave it:
+the gain is 1,758 contacts of 27,977 and the audience is `hcp_broad`, whose
+entire purpose is to be the wide net. **Recorded so the next person does not
+re-derive it.**
+
+**A CORRECTION TO SOMETHING I ASSERTED BEFORE MEASURING IT.** I warned that
+533 human overrides and 21 patterns force `group_score` to 1.00 and so clear
+any threshold, implying the forced population was the obstacle. Measured, it
+is small nearly everywhere: HUMAN and PATTERN together are **0.3%** of
+teaching_academic records, 1.0% of practitioner, 3.2% of researcher_early,
+7.7% of researcher_established and 7.9% of leadership. The exception is
+librarian at **99.9% PATTERN**, which is the same fact as finding 2. And the
+`role_score = 1.00` populations in the other audiences — 65.8% of lecturer —
+are overwhelmingly VECTOR titles that match an anchor EXACTLY: `professor` is
+itself an anchor, so its similarity is 1.0 by definition, not by decision.
+
+**WHAT IS LEFT OF THE IDEA.** For lecturer and researcher the lever is not a
+higher number, it is a FLOOR ON THE SECOND AXIS — declining to confirm a title
+whose organisation is UNKNOWN-typed, which scores 0.25. That is a rule change,
+not a threshold change, and it has not been costed. It is the only live
+descendant of this question.
+
+And `sim_floor` = 0.65 was not costed and must not move, for the reasons in
+2.4b and 1.10: raising it deletes correct VERBOSE titles and keeps wrong short
+ones. `junior researcher` was wrong at 0.870 while 34 titles of genuine
+faculty leadership sat at 0.567–0.649.
+
 ---
 
 ## Part 2b — How we find the next problem, and what is left
