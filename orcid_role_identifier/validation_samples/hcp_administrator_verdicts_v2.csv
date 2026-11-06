@@ -1,0 +1,401 @@
+sample_id,verdict,reason_code,evidence_title,evidence_org,evidence_dept
+1,CORRECT,,Professor and Chairman,Osaka Medical and Pharmaceutical University,Department of Thoracic and Cardiovascular Surgery
+2,CORRECT,,Director,Fondazione IRCCS Istituto Neurologico Carlo Besta,Neurosurgery
+3,CORRECT,,Director,Fudan University Shanghai Cancer Center,Medical Oncology
+4,INCORRECT,non_clinical_role,Director of Design,Vanderbilt University,"School of Medicine, Basic Sciences"
+5,CORRECT,,Director,China-Japan Friendship Hospital,Department of Infectious Diseases
+6,CORRECT,,Professor and Director,University of Alberta,Department of Medicine and the Institute for Smart Augmentative and Restorative Technologies and Health Innovations (iSMART)
+7,CORRECT,,Associate Dean for Medical Education,Albert Einstein College of Medicine,Internal Medicine
+8,CORRECT,,vice President,Shanghai Jiao Tong University School of Medicine Affiliated Renji Hospital,Anesthesiology
+9,CORRECT,,Associate Director,Shanghai Jingan District Centers for Disease Control and Prevention,Public Health
+10,CORRECT,,Head of Department,Knappschaftskrankenhaus Bottrop,"Internal Medicine, Gastroenterology, Hematology and Oncology"
+11,CORRECT,,Chief & Professor,St. Marianna University School of Medicine Hospital,Thoracic Surgery
+12,CORRECT,,"Associate Dean/Head of Graduate Research , Assistant Professor (Senior Lecturer) in Behavioural Sciences",Bond University,Faculty of Health Sciences and Medicine
+13,CORRECT,,head of department,Universidade de Lisboa,Endodontics
+14,CORRECT,,Head of department,Beijing Anzhen Hospital,NICU
+15,CORRECT,,Chief,Azienda Socio Sanitaria Territoriale degli Spedali Civili di Brescia,Anesthesia and Critical Care Service (Anesthesia-focused)
+16,CORRECT,,chief,Chi Mei Hospital Liou Ying,Ophthalmology
+17,CORRECT,,Director,Sonja Kill Memorial Hospital,Obstetrics and Gynecology
+18,NOT_SURE,unclear,Deputy CIO,Chungnam National University Hospital,Medical Information Center
+19,CORRECT,,Deputy Head,University Hospital of Bern,Rheumatology and Immunology
+20,CORRECT,,Head of Department,Sutherland Hospital,Respiratory and Sleep Medicine
+21,CORRECT,,Chief,Kaohsiung Municipal Ta-Tung Hospital,Surgery
+22,CORRECT,,DEAN,Assam down town University,NURSING
+23,CORRECT,,Head of Shoulder & Elbow Section,Luzerner Kantonsspital,Orthopedic Surgery and Traumatology
+24,CORRECT,,Chief,University of Nebraska Medical Center,Cardiothoracic Surgery
+25,NOT_SURE,research_unit,Deputy Director & Senior Research Leader,RAND Europe,Health and Wellbeing
+26,CORRECT,,Clerkship Director,The University of Queensland,Neurology
+27,CORRECT,,Director,Hôpital Sainte-Justine,Clinical Ethics
+28,CORRECT,,Office director/Professor,Second Affiliated Hospital of Chongqing Medical University,"Department of Respiratory Medicine,"
+29,CORRECT,,Director,Shanghai Jiaotong University School of Medicine Xinhua Hospital,Ophthalmology
+30,CORRECT,,Gerente,Hospital de Base,Unidade de Terapia Intensiva Adulto
+31,CORRECT,,head,Národný Onkologický Ústav,Department of Oncohematology
+32,NOT_SURE,ngo_or_policy,Director,Institute for Social Innovation,Health Policy and Management
+33,INCORRECT,non_clinical_field,Dean of Faculty of Human Sciences and Design,King Abdulaziz University,Early Childhood
+34,CORRECT,,Director,Taipei Municipal YangMing Hospital,Medical Quality
+35,CORRECT,,Deputy Director,Henry Dunant Hospital,B Orthopaedic Depertment
+36,CORRECT,,Professor and Director,Cathay General Hospital,Department of Anesthesiology
+37,CORRECT,,Head,The Royal Melbourne Hospital,Addiction Medicine
+38,CORRECT,,Head of the Department,Centro Hospitalar e Universitário do Porto,Department of Medical Oncology
+39,CORRECT,,Professor and Chairman,Stanford University School of Medicine,Neurology and Neurological Sciences
+40,CORRECT,,"PICU,  Director",Azienda Ospedaliera Universitaria Integrata Verona,Paediatrics
+41,CORRECT,,Vice Chair Strategy and Enterprise Development,Cleveland Clinic,Hematology and Medical Oncology
+42,CORRECT,,Jefe de Sección,Hospital General Universitario Gregorio Marañón,Medicina Interna
+43,CORRECT,,Chief,Evangelic International Hospital  ,Reproductive Medicine
+44,NOT_SURE,ngo_or_policy,Technical Director,World Vision International,Health
+45,CORRECT,,Head of Headache Unit,Hospital Universitario de La Princesa,Neurology
+46,CORRECT,,Vice-Dean of Science,Arab International University,Dental Faculty
+47,CORRECT,,Executive Head,Stellenbosch University,Paediatrics and Child Health
+48,CORRECT,,Professor and Vice Chair for Research,University of South Florida,Obstetrics & Gynecology
+49,CORRECT,,dean,the First Affiliated Hospital of Guangxi Medical University,Department of Critical care Medicine
+50,CORRECT,,Head of Nursing Department-Tutor,Masaka School of Nursing and Health Sciences,Nursing
+51,CORRECT,,Chairman,Poznan University of Medical Sciences,Department of Ophthalmology. Chair of Ophthalmology and Optometry.
+52,CORRECT,,Director,Mazabuka Municipal Council ,Public Health
+53,CORRECT,,Head,National Traffic injury Rehabilitation Hospital,Psychiatry
+54,CORRECT,,Dean of College of Health and Sport Sciences,University of Bahrain,Nursing
+55,NOT_SURE,research_unit,Center Director,Haukeland University Hospital,Neuro-SysMed Center of Excellence for Clinical Research in Neurological Diseases
+56,CORRECT,,Vice chief,Fourth Affiliated Hospital of China Medical University,Department of Surgical Oncology/Department of 8th General Surgery
+57,INCORRECT,non_clinical_field,Head Department of Natural Products and Alternative Medicine,University of Tabuk,Natural Products and Alternative Medicine
+58,CORRECT,,President,WARMI Mental Health,Mental Health
+59,CORRECT,,Professor and Vice Chair,Emory University,Hematology and Medical Oncology
+60,CORRECT,,Head of the Plastic Surgery Department,Huadong Hospital,Plastic Surgery Department
+61,CORRECT,,Director and Professor,Madras Medical College,Respiratory medicine
+62,CORRECT,,Head of Department,Central Military Hospital,Radiology
+63,CORRECT,,"Director, Injury Prevention Center",Brown University Health,Emergency Medicine
+64,INCORRECT,non_clinical_field,Acting Dean,Marondera University of Agricultural Sciences and Technology,Faculty of Development and Behavioural Sciences
+65,CORRECT,,"Professor, Department Head",King Abdulaziz University,Endodontics
+66,CORRECT,,Director,Shandong University,Center for Reproductive Medicine
+67,CORRECT,,Deputy Dean,Mbarara University of Science and Technology,Faculty of Health Sciences
+68,NOT_SURE,unclear,"Associate Dean of Research, Professor, Discipline Lead",The Chicago School,Pathology
+69,NOT_SURE,research_unit,"Head of Health Unit on Biodemography, Interdisciplinary Center on Population Dynamics",University of Southern Denmark,"Epidemiology, Biostatistics and Biodemography"
+70,CORRECT,,Vice Dean of Research,Wayne State University,School of Medicine
+71,CORRECT,,Acting Head of Department,Wroclaw Medical University,"Division of Health Care Organization, Department of Nursing, Faculty of Nursing and Midwifery"
+72,CORRECT,,DIRECTOR AND PROFESSOR,Siksha O Anusandhan University,ORAL PATHOLOGY AND DEPT OF MEDICAL RESEARCH
+73,CORRECT,,Head of the epidemiology departement,UNIVERSITY HOSPITAL GROUP PARIS PSYCHIATRY & NEUROSCIENCES,Epidemiology
+74,CORRECT,,"Director, Transplant Center",Sheba Medical Center,Department of Surgery
+75,CORRECT,,Head,Azienda USL della Valle d’Aosta,Radiation Oncology
+76,CORRECT,,Head of Department,Städtisches Klinikum Dresden,"Anesthesiology & Intensive Care Medicine, Emergency Medicine & Pain Management"
+77,CORRECT,,Chair,Hunan Cancer Hospital,Nuclear Medicine
+78,CORRECT,,Professor - Head of School,University of Tasmania,School of Health Sciences
+79,CORRECT,,Chief,Toyonaka Municipal Hospital,Gastroenterology＆Endoscopy
+80,CORRECT,,Deputy Director,Hashimoto Municipal Hospital,General Internal Medicine
+81,CORRECT,,Head,Klinik Hietzing,1st Department of Psychiatry and Psychotherapeutic Medicine
+82,CORRECT,,Deputy chef,University Hospital in Motol,Pediatric Neurology Department
+83,CORRECT,,Managing Director,Principal Family Medicine Center,Family Medicine
+84,CORRECT,,Director,Kido Hospital,Department of Dermatology
+85,CORRECT,,Head of Spine Unit,Hospital Universitario Reina Sofía,Trauma and Orthopedic Surgery Department
+86,CORRECT,,Head of Department,Shiraz University of Medical Sciences,Gerontology
+87,CORRECT,,Deputy Director of Nursing and Research,Camden and Islington NHS Foundation Trust,Nursing directorate
+88,CORRECT,,"Professor, Vice dean for research & postgraduate studies",Princess Nourah Bint Abdulrahman University,Clinical Dental Science
+89,CORRECT,,Derector,Osaka General Medical Hospital,Gastroenterological Surgery
+90,CORRECT,,Head,Northern State Medical University,International School of Public Health
+91,CORRECT,,Professor and Chairman,Central Michigan University College of Medicine,Surgery
+92,CORRECT,,DIRECTOR,Hospital Quirón Barcelona,ANATOMIC PATHOLOGY
+93,CORRECT,,Dean,Universidad Norbert Wiener,School of Nursing
+94,CORRECT,,Head of department,Skåne University Hospital,Department of Pediatrics
+95,CORRECT,,"Professor, Head of Discipline",The University of Notre Dame Australia - Sydney Campus Darlinghurst,Psychiatry
+96,NOT_SURE,unclear,Rector,Recep Tayyip Erdoğan University,"Department of Gastroenterology, School of Medicine"
+97,CORRECT,,Vice Chair for Research and Education,Icahn School of Medicine at Mount Sinai,Public Health
+98,NOT_SURE,unclear,Head of Examination Department,Jordanian Nursing Council,Nursing
+99,CORRECT,,Head of Department,South Kazakhstan Medical Academy,Infectious Diseases
+100,CORRECT,,Head,University Hospital Ruppin-Brandenburg,Neurology
+101,CORRECT,,Executive Associate Dean,UC Davis Health System,School of Medicine
+102,CORRECT,,Chairman and Head of Department,"University Hospital Carl Gustav Carus, TU Dresden",Pediatrics
+103,NOT_SURE,research_unit,Director,University of Texas,Imaging Research Center
+104,CORRECT,,CEO,Moonee Ponds Specialist Centre,Cardiology
+105,CORRECT,,"Doctor of Medical Sciences, Professor, Head of the Department",Bukovinian State Medical University,Department of Prosthetic Dentistry
+106,CORRECT,,Vicedean of nursing,Universitat Jaume I,Health Faculty
+107,CORRECT,,Deputy director,Zaozhuang Municipal Hospital,Department of pediatrics
+108,CORRECT,,Medical Director,DeParis Medical Center,Sports Medicine
+109,NOT_SURE,research_unit,Chief,National Center for Advancing Translational Sciences,Clinical Research Resources Section
+110,INCORRECT,named_chair,Professor and Carver Chair,University of Iowa,"Psychiatry, Neurology, Psychology"
+111,CORRECT,,President,Ningbo No.6 Hospital,Orthopedics
+112,CORRECT,,Deputy Director,Western Health,"Anaesthesia, Pain and Perioperative Medicine"
+113,CORRECT,,Director,Nazareth Hospital,Radiation Oncology
+114,CORRECT,,Vice dean/ Lecturer,Hanoi Medical University,Faculty of Nursing & Midwifery
+115,CORRECT,,Associate Dean for Simulation & Immersive Learning; Associate Professor,Johns Hopkins University,School of Nursing
+116,CORRECT,,Clinical Director,Helix Medical Excellence Center,Dermatology
+117,CORRECT,,Director,Shinshu University Hospital,Mental Health Clinic for Children
+118,CORRECT,,Director,Queen Margaret University,Institute for Global Health & Development
+119,CORRECT,,Associate Academic Dean,Barry University,College of Health Professions and Medical Sciences
+120,CORRECT,,"Assistant Dean of Research, Professor",University of South Florida,College of Nursing
+121,CORRECT,,Head of Division,University Hospital Leipzig,Division of Infectious Diseases and Tropical Medicine
+122,CORRECT,,"Associate Associate Professor, Head of the department",Istanbul Medeniyet University,Department of Medical Genetics
+123,CORRECT,,Vice Chair for Education,Stanford Medicine,Surgery
+124,CORRECT,,Professor and Associate Dean for Research,University of Central Florida,College of Nursing
+125,CORRECT,,Director,Nanoori Hospital Gangnam,Neurosurgery
+126,CORRECT,,Head,Philippine Heart Center,Division of Pulmonary and Critical Care Medicine
+127,CORRECT,,Director,Zhejiang University School of Medicine Sir Run Run Shaw Hospital,Urology
+128,CORRECT,,Head of Department,Pham Ngoc Thach University of Medicine,Community Health Nursing
+129,CORRECT,,Director,Tel Aviv Sourasky Medical Center,Pathology
+130,CORRECT,,"Division Chief;  Professor of Medicine, HMS",Mass General Brigham,"Division of Women's Health, Medicine"
+131,CORRECT,,Deputy Chairman,University Hospital of Zurich,Klinik für Neurochirurgie
+132,CORRECT,,Associate Professor in Nursing and Associate Dean Research (and Research Training),Charles Darwin University,Faculty of Health
+133,CORRECT,,Head,Istituto di Ricovero e Cura a Carattere Scientifico San Raffaele,Paediatric Neurorehabilitation
+134,CORRECT,,Head of Department/ AssociateProfessor,Shafa Yahyaian Hospital,Orthopedic Oncology
+135,CORRECT,,head of department,Zhejiang Taizhou Hospital,Obstetrics and Gynecology
+136,CORRECT,,Chairman,Rush University Medical Center,Neurological Sciences
+137,CORRECT,,director,Nakamura Memorial Hospital,neurosurgery
+138,CORRECT,,"Head of Family Medicine Department / Professor, MD, PhD, DS",Bukovinian State Medical University,Family Medicine Department
+139,CORRECT,,Head of Department,American Hospital Association,gynecology and obstetrics
+140,CORRECT,,Medical director,Nakatsu Municipal Hospital,Obstetrics and Gynecology
+141,CORRECT,,Head of the Department,Nepal Mediciti Hospital,Anesthesia and Pain Management
+142,CORRECT,,Head of department,Gujranwala Institute of Nuclear Medicine & Radiotherapy,Nuclear Medicine
+143,CORRECT,,Director,Wuhan Mental Health Centre,Psychiatry
+144,CORRECT,,Head of,Jagiellonian University Medical College,Disaster and Emergency Medicine
+145,INCORRECT,non_clinical_field,Dean,BGMEA University of Fashion and Technology,Faculty of Science
+146,CORRECT,,Associate Director Education,McGill University,Emergency Medicine
+147,CORRECT,,Vicedean,Universidad de Navarra,Facultad de Medicina
+148,CORRECT,,chief，prof.,Tianjin Medical University General Hospital,Department of Hepato-Gastroenterology
+149,CORRECT,,Head of Divison,National Health Laboratory Service,Pathology
+150,INCORRECT,industry,President,Cytelligen,Oncology
+151,INCORRECT,not_a_leadership_title,Prof. Asist.,İstanbul Üniversitesi,Hemşirelik Fakültesi
+152,CORRECT,,Director,Second Affiliated Hospital of Soochow University,Dept. of Pathology
+153,CORRECT,,Head of department,Universidade Positivo,Dentistry
+154,CORRECT,,Professor and Chairman,University of Bern,Obstetrics and Gynecology
+155,CORRECT,,head,Luzerner Kantonsspital,Division of Reproductive Medicine and gyn. Endocrinology
+156,CORRECT,,Director/Prof,University of Verona,"Medicine, Rheumatology Section"
+157,CORRECT,,Vice Dean of Education and Academic Affairs,West Virginia University,School of Medicine
+158,CORRECT,,"Consultant, Chair",Indus Hospital,Paediatrics
+159,NOT_SURE,research_unit,Director,University of Georgia,Center for Tropical and Emerging Global Diseases
+160,CORRECT,,Department Head,Bahir Dar University,Department of Clinical Hematology and Immunohematology
+161,CORRECT,,Head of Department,UZ Brussel,Physical Medicine and Rehabilitation
+162,CORRECT,,ER Director,Hospital Clínico Universitario de Valladolid,EMERGENCY ROOM
+163,CORRECT,,Vise Dean/ Professor,University of South-Eastern Norway,Faculty of Health and Social Sciences
+164,CORRECT,,Head of Department,Hue University,"Medical Genetics, University of Medicine and Pharmacy"
+165,CORRECT,,Professor and Chairman,Fujita Health University,Department of Rehabilitation Medicine I
+166,CORRECT,,"Lecturer, Researcher, Head of Department, Training and Consultancy Service Coordinator",Samara University,"College of Medicine and Health Sciences, Department of Nursing"
+167,CORRECT,,Department Head,Hospital San Juan de Dios,Department of Dentistry and Oral and Maxillofacial Surgery
+168,CORRECT,,Head of Department,Universitas Padjadjaran,Surgery
+169,CORRECT,,Head of Department/Lecturer 1,Delta State University,Radiology
+170,CORRECT,,Deputy Director of nursing Department,Hebei General Hospital,Nursing
+171,CORRECT,,Chair,European University Cyprus,Dentistry
+172,NOT_SURE,research_unit,Section Chief,National Institute of Allergy and Infectious Diseases,Laboratory of Clinical Infectious Diseases
+173,CORRECT,,Chief of Training,Health Sciences University Bagcilar Training and Research Hospital,Neurosurgery
+174,INCORRECT,former,Previous Head of Dept,Diakonhjemmet Hospital,Dept of Rheumatology
+175,CORRECT,,associate directior,Peking University People's Hospital,Pediatrics
+176,CORRECT,,Head,Ortopedika,Rheumatology
+177,CORRECT,,Head of Department,University of Botswana,Department of Psychiatry
+178,CORRECT,,Director,Universidade Federal do Rio de Janeiro,Public Health Institute
+179,CORRECT,,Head,Red Cross Hospital,Plastic and Reconstructive Surgery
+180,CORRECT,,Director: Poison Information Centre,Stellenbosch University,Medicine
+181,CORRECT,,Head of the Department,Lebanese University,Orthodontics and Dentofacial Orthopedics
+182,CORRECT,,Chief of Department,Hospital de Basurto,Dermatology
+183,CORRECT,,Head- Infectious Disease Unit,Ministry of Health,Internal Medicine
+184,CORRECT,,Director of department,"Guangdong Provincial People’s Hospital, Southern Medical University",Ophthalmology
+185,INCORRECT,non_clinical_role,Director of Wellness,Baylor University,Wellness
+186,CORRECT,,Head of Department/ Public Health Coordinator,Nkhoma Hospital,Public Health
+187,CORRECT,,Head of the Centre,Vilnius University Hospital Santariskiu Klinikos,"Centre of Children's Surgery, Orthopaedics and Traumatology"
+188,CORRECT,,Chairman of the Department,Centro Hospitalar Universitário de São João,Neurosurgery
+189,CORRECT,,Head of Department,Tabriz University of Medical Sciences,Physical Therapy Department
+190,NOT_SURE,research_unit,Associate Director,Aga Khan University,Center of Excellence in Women & Child Health
+191,CORRECT,,Chief of the Rehabilitation Unit,Ente Ospedaliero Ospedali Galliera,Geriatrics and Rehabilitation
+192,CORRECT,,Head of the Department of Oncology,Shupyk National Healthcare University of Ukraine,"Oncology, Surgical oncology"
+193,CORRECT,,college of medicine and health science Dean,Kebri Dehar University,Public Health
+194,CORRECT,,Head of Department,University of Malta,Radiography
+195,CORRECT,,Head of the Deptt,Fortis Memorial Research Institute,Neurosurgery and Gamma Knife
+196,NOT_SURE,research_unit,Director,Centro Nacional de Investigaciones Oncológicas,Clinical Research Programme
+197,CORRECT,,Cheif,Shanghai Tenth People's Hospital,Center for Nephrology and Clinical Metabolomics and Division of Nephrology
+198,NOT_SURE,unclear,"Chairman, Prof",Université Grenoble Alpes Grenoble IAE,Nephrology Hemodialysis Apheresis Kidney Transplantation
+199,CORRECT,,Head of Section,Hospital Universitario Virgen de las Nieves,Respiratory Department
+200,CORRECT,,Chair,University of Liverpool,"Public Health, Policy & Systems"
+201,CORRECT,,head of department,Research Centre for Medical Genetics,Clinical and clinical department of cystic fibrosis
+202,CORRECT,,Head of Department,Herz und Diabetes Zentrum NRW,Fetal Cardiology
+203,CORRECT,,Deputy Head of Cardiology Department,Semmelweis University,Cardiology
+204,CORRECT,,Director,Hospital Clínic de Barcelona,Institute of Nephrology and Urology
+205,CORRECT,,Director,Hospital Universitari Sant Joan de Reus,Oncología
+206,CORRECT,,Head of Department,Jawaharlal Institute of Post Graduate Medical Education and Research,Nephrology
+207,CORRECT,,Director,Azienda ULSS 8 Berica,Department of Cardiovascular Medicine
+208,CORRECT,,Head of Department,Region Gävleborg,Respiratory Medicine
+209,CORRECT,,Head of Department,Klinikum Nürnberg Süd,Diagnostic and Interventional Neuroradiology
+210,CORRECT,,"Division Head, Associate Professor Northwestern University",Lurie Children's Hospital,Pediatric Interventional Radiology
+211,CORRECT,,Department head,Al-Imam Muhammad Ibn Saud Islamic University,Surgery
+212,NOT_SURE,research_unit,Director,West China Hospital of Sichuan University,Center for Pathogen Research
+213,CORRECT,,Head of the Department,Medical University of Lodz,Department of Neurological Rehabilitation
+214,NOT_SURE,research_unit,Director,Institut Hospital del Mar d'Investigacions Mèdiques,Program of Research in Epidemiology and Public Health
+215,CORRECT,,Associate Professor & Head of Department,Azra Naheed Dental College,Dental Materials
+216,CORRECT,,"Deputy manager, section chief of Pancreatic Cancer Surveillance",Osaka International Cancer Institute,Hepatobiliary and Pancreatic Oncology
+217,CORRECT,,Director Stroke Recovery Program,Houston Methodist,Neurology
+218,CORRECT,,部長,Kokura Memorial Hospital,外科
+219,CORRECT,,Deputy Dean,Bethel Medical College,Medicine
+220,CORRECT,,Head of Department,UniCancer Group,Radiology
+221,CORRECT,,"Assistant Professor, Head of Department",Gerash University of Medical Sciences,Radiology and Radiotherapy
+222,CORRECT,,Head of the department,Vrinnevisjukhuset i Norrköping,OB/Gyn
+223,CORRECT,,Head of Department,Ivano-Frankivsk National Medical University,Department of Dentistry
+224,CORRECT,,Chairman,Carmel Hospital,Community Medicine and Epidemiology
+225,CORRECT,,Director,Rabindranath Tagore International Institute of Cardiac Sciences,Interventional and Endovascular Radiology
+226,CORRECT,,Dean,University of Valencia,Nursing
+227,CORRECT,,Division Head of Applied Research & Development in Nursing,Bern University of Applied Sciences,Health
+228,CORRECT,,head of department,Bhayangkara Makassar Police Hospital,Orthopaedic and Traumatology
+229,CORRECT,,Head of Department,King Saud University,Radiological Sciences Department
+230,CORRECT,,Associate Head of Department,University of Oxford,Psychiatry
+231,NOT_SURE,ngo_or_policy,Deputy Program Lead,Carter Center,Global Mental Health
+232,CORRECT,,Chair and Professor,Temple University,Epidemiology and Biostatistics
+233,NOT_SURE,unclear,Medical Director,Guangdong Peizheng College,Department of General Affairs
+234,CORRECT,,Chief of service,Kantonsspital Graubünden,Neurosurgery
+235,CORRECT,,科主任,First Affiliated Hospital of Anhui Medical University,Department of Critical Care Medicine
+236,CORRECT,,Head of division,Stellenbosch University,Physiotherapy
+237,CORRECT,,Head of Department,Hospital Universitari MútuaTerrassa,Infectious Diseases
+238,CORRECT,,Chief of Service,Hospital Universitario Insular de Gran Canaria,Obstetrics and Gynecology
+239,CORRECT,,Interim Head of Department,Royal College of Surgeons in Ireland,"Dept Public Health & Epidemiology, School of Population Health"
+240,CORRECT,,Director of Orthopedics Department,Heilongjiang University of Chinese Medicine,"The Fourth Affiliated Hospital, Department of Orthopedics"
+241,CORRECT,,Chair & Professor,Montefiore Medical Center/Albert Einstein College of Medicine,Obstetrics & Gynecology and Women's Health
+242,CORRECT,,Director and Professor,Qilu Hospital of Shandong University,Department of Critical Care Medicine
+243,CORRECT,,Head of Department,Hospital Sant Joan de Déu,Pediatric Allergy and Clinical Immunology Department.
+244,INCORRECT,non_clinical_role,Chief Innovation Officer,Université de Geneve,Chirurgie
+245,CORRECT,,Head,Instituto Nacional de Saúde,Non Communicable Diseases
+246,CORRECT,,deputy director,Southern Medical University Nanfang Hospital,"Hepatology Unit, Infectious Diseases"
+247,CORRECT,,"Professor, Vice Chair for Research",Indiana University School of Medicine,Orthopaedic Surgery
+248,CORRECT,,Medical director,Makkah Security Forces Hospital,Orthopedic surgery
+249,INCORRECT,veterinary,Director,Clinica Veterinaria Milano Sud,Orthopaedic and Traumatology
+250,CORRECT,,Associate Professor and Associate Dean,University of Alabama at Birmingham,Epidemiology
+251,CORRECT,,Director,Yaroslav-the-Wise Novgorod State University,Medical Institute
+252,CORRECT,,Director,Affiliated Hospital of Qingdao University,Department of Organ Transplantation Center and Department of Liver Disease Center
+253,CORRECT,,Vice director,Central South University,Dept. Social Medicine and Health Management
+254,CORRECT,,Chair of Nursing,Metro North Hospital and Health Service,Office of Nursing and Midwifery Services
+255,CORRECT,,Chief,University of Pittsburgh,"Pediatrics, Division of Palliative Medicine and Supportive Care"
+256,CORRECT,,Chief,Universidad Católica de las Misiones ,Cátedra de Enfermedades Infecciosas
+257,CORRECT,,Chairman of the department,The Hashemite University,Internal and family medicine
+258,CORRECT,,Director,Kyoto City Hospital,Dept of Surgery
+259,CORRECT,,Director,UC Davis Health,Center for Musculoskeletal Health
+260,CORRECT,,Department Head,Düzce Üniversitesi,"Faculty of Medicine, Medical Education and İnformatics"
+261,NOT_SURE,research_unit,Director,German Cancer Research Center,Division of Solid Tumor Translational Oncology
+262,CORRECT,,Chief,Azienda Socio Sanitaria Territoriale di Cremona,Unit of Pediatrics
+263,CORRECT,,Professor of Medical Education (Dean of Medicine),University of Tasmania College of Health and Medicine,School of Medicine
+264,CORRECT,,"Head of the Department, Professor",University of Zielona Góra,Department of Neurology
+265,CORRECT,,Deputy Dean Faculty of medicine and health sciences,Zamzam University of Science and Technology,Faculty of medicine and health sciences
+266,NOT_SURE,research_unit,Deputy Director,University of KwaZulu-Natal,Centre for Research in Health Systems
+267,CORRECT,,Chief of Department,Hospital Carlos Van Buren,Nephrology and Dialysis Unit
+268,NOT_SURE,ngo_or_policy,Technical Director,Centro Pela Saúde Global,Public Health
+269,CORRECT,,Deputy Director,Kameda Medical Center,Infectious Diseases
+270,NOT_SURE,research_unit,Head of Department,Statens Serum Institut,Congenital Disorders
+271,CORRECT,,Dean,Villa College,Faculty of Health Sciences
+272,CORRECT,,Director,Hospital de la Santa Creu i Sant Pau,Rheumatology & Autoimmune disesases Department
+273,INCORRECT,non_clinical_field,Vice Dean,Yunnan University,School of Life Sciences
+274,CORRECT,,Head of Department,UniversitätsSpital Zürich,"Endocrinology, Diabetology and Clinical Nutrition"
+275,CORRECT,,Deputy Director,Deutsches Herzzentrum der Charité,"Department of Cardiology, Angiology and Intensive Care Medicine"
+276,CORRECT,,Head of the department,University of Pavol Jozef Šafárik,Pediatrics - Neonatology
+277,CORRECT,,"MD, PhD, Head of center",Rigshospitalet,"Center for Hemoglobinopathies, Department of Hematology"
+278,CORRECT,,Section Chief and Medical Director of Stroke,Carson Tahoe Health,Neurology
+279,CORRECT,,Assistant Dean (Student Enrichment & Partnership),University of Hong Kong,Li Ka Shing Faculty of Medicine
+280,CORRECT,,Director,Fourth Hospital of Hebei Medical University ,Department of Radiation Oncology
+281,CORRECT,,Head of the Department,NITTE AB Shetty Memorial Institute of Dental Sciences,Conservative Dentistry & Endodontics
+282,CORRECT,,Chair,MaineHealth,Pediatrics
+283,CORRECT,,Head of department,National Hospital Organization Kyoto Medical Center,Department of Endocrinology and Metabolism
+284,CORRECT,,Director,Ospedale A. Perrino,Cardiologia-UTIC
+285,CORRECT,,Chair,ASST Fatebenefratelli Sacco,Hematology and BMT Centre
+286,CORRECT,,Deputy Director,Second People’s Hospital of Huai’an,Department of Radiation Oncology
+287,CORRECT,,Chief,Shriners Hospitals for Children Northern California,Pediatric Surgery
+288,INCORRECT,non_clinical_field,Dean / Professor,Capital University of Physical Education and Sports,College of Sports Sciences
+289,CORRECT,,Assistant Director of Nursing,Children's Health Ireland at Crumlin,Nursing
+290,CORRECT,,director,Jilin University First Hospital,Clinical laboratoty
+291,INCORRECT,former,Senior Specialist and former Head of Department,Komfo Anokye Teaching Hospital,Department of Psychiatry
+292,CORRECT,,Head,KU Leuven,Nuclear Medicine and Molecular Imaging
+293,CORRECT,,Head of department,Region Gotland,Orthopeadics
+294,NOT_SURE,research_unit,Director,Army Medical Center of PLA,Department of Stem Cell & Regenerative Medicine
+295,CORRECT,,Deputy Director,People's Primary Healthcare Initiative Sindh,Maternal and Child Health
+296,CORRECT,,"Director, Division of Transplantation",Allegheny General Hospital - Western Pennsylvania Hospital Medical Education Consortium,Surgery
+297,CORRECT,,Unit Head,Kasturba Medical College,Division of Pediatric Hematology and Oncology
+298,CORRECT,,Chief,Shizuoka Cancer Center,Division of Neurosurgery
+299,CORRECT,,Head of Department,Medical University of Lodz,"Department of Pediatric otolaryngology, Audiology and Phoniatrics"
+300,CORRECT,,Head of Department,Hospital Universitario Son Espases,Neurosurgery
+301,CORRECT,,Chief,Fudan University Cancer Center,Lymphoma
+302,CORRECT,,Professor and Vice Chair,University of Colorado,Orthopedics
+303,CORRECT,,Medical Director,University of Tübingen,"Child Neurology, General Pediatrics, Diabetology, Endocrinology, Social Pediatrics"
+304,CORRECT,,Director,ANIMA Health Network,Clinical Psychology
+305,CORRECT,,Director,Sichuan Academy of Medical Sciences & Sichuan Provincial People's Hospital,Geriatric Intensive Care Unit
+306,CORRECT,,Head of Department,Hanseatic Hospital Stralsund,Department of Orthopaedics and Traumatology
+307,CORRECT,,Full Professor & Head of Department,"University of Sao Paulo, Ribeirao Preto Medical School",Pediatrics
+308,CORRECT,,Chief,National Cancer Center Hospital East,Head and Neck Medical Oncology
+309,CORRECT,,Senior Associate Dean Educatiom,Cornell University,Weill Cornell Medical College
+310,CORRECT,,Chief,The Second Hospital of Dalian Medical University,Department of Hematology
+311,CORRECT,,Head of Office,Somogy Megyei Kaposi Mór Oktató Kórház,Prevention and Health Promotion Office
+312,CORRECT,,chairman,Antwerp University Hospital,Neurology
+313,CORRECT,,Vice Dean,Taif University,College of Applied Medical Sciences
+314,CORRECT,,deputy manager of minia university dental hospital,Minia University Hospital,oral & maxiloofacial surgery
+315,CORRECT,,"Professor, Associate Dean on Teaching Affair",China Medical University,School of Nursing
+316,CORRECT,,Director,Saiseikai Matsusaka Municipal Hospital,"Respiratory Center, Department of Respiratory Medicine"
+317,CORRECT,,Principal,Institute of Liver and Biliary Sciences,College of Nursing
+318,CORRECT,,Department Head,Yamanashi Prefectural Central Hospital,Pediatrics
+319,CORRECT,,Direttore,Casa di Cura Villa Margherita,Neurologia
+320,CORRECT,,director,Henan Provincial People's Hospital,neurology
+321,CORRECT,,"Chair, Nursing Program",Holy Angel University,School of Nursing and Allied Medical Sciences
+322,CORRECT,,Head,Shaare Zedek Medical Center,Pediatric Dermatology Service
+323,CORRECT,,Chief,Raymond G. Murphy VA Medical Center,Pulmonary and Critical Care Medicine
+324,CORRECT,,deputy director,Southeast University,Cardiology department
+325,CORRECT,,Chairman,Taiyuan Central Hospital of Shanxi Medical University,Department of MRI
+326,CORRECT,,Head of Department,Klinikum Fulda gAG,Diagnostic and Interventional Neuroradiology
+327,CORRECT,,chief,Shanghai Guanghua Hospital of Integrated Traditional Chinese and Western Medicine,arthroplasty
+328,CORRECT,,Chief attending,Technical University Munich,"Klinikum Rechts der Isar, Department of Nephrology"
+329,CORRECT,,Jefe de Servicio,Hospital Universitario Virgen de la Arrixaca,Servicio de Urologia
+330,CORRECT,,Director,Fukuoka Sanno Hospital,Department of Neurosurgery
+331,CORRECT,,Dean and Head of School,Murdoch University,Nursing
+332,CORRECT,,Dean,University of Medicine and Pharmacy at Ho Chi Minh City,Faculty of Traditional medicine
+333,CORRECT,,"Professor, Vice Director, PI",Beijing Hospital,Department of Radiology
+334,CORRECT,,Vice Chair for Research,Donald & Barbara Zucker School of Medicine at Hofstra/Northwell,Surgery
+335,CORRECT,,Chief of Deparment,Hospital Universitario de Bellvitge-Idibell,Department of Rheumatology
+336,CORRECT,,Director,Eighth Affiliated Hospital of Sun Yat-sen University,Department of Nephrology
+337,CORRECT,,Medical Director,Trinity Health Grand Rapids Hospital,Specialty Medicine
+338,CORRECT,,Assistant director,Japanese Red Cross Wakayama Medical Center,Hematology
+339,NOT_SURE,research_unit,Founder and Interim Chair,University of Alabama,Department of Translational Science and Medicine
+340,CORRECT,,Head,Sumy State University,Pathology
+341,CORRECT,,"Professor, Chair",Westchester MC/ NY Medical College,Medicine
+342,CORRECT,,Director,Hoengseong-gun Seowon Health Center,Internal Medicine
+343,CORRECT,,chief,Lanzhou Army General Hospital,spinal surgery department
+344,CORRECT,,Professor and Chairman,Tokyo Women's Medical University,Orthopaedic Surgery
+345,CORRECT,,Chief,ASL Roma,Nephrology and Dialysis
+346,CORRECT,,Deputy General Manager (Department Head),Ashikaga Red Cross Hospital,Ophthalmology
+347,CORRECT,,"senior lecturer, head of department",University of Pecs,Laboratory Medicine Department of Transfusion Medicine
+348,CORRECT,,Head of Department (Acting),Cape Peninsula University of Technology,Emergency Medical Sciences
+349,CORRECT,,Head of Department,Government Office of Somogy County,Department of Public Health
+350,CORRECT,,Head of the Department,I.Horbachevsky Ternopil National Medical University,Children Diseases and Pediatric Surgery
+351,CORRECT,,director,Ninbo medical center，Lihuili hospital,cardiothoracic department
+352,CORRECT,,Vice Dean for Education and Faculty Affairs,University of Arizona,Mel and Enid Zuckerman College of Public Health
+353,CORRECT,,Clinical Director,Klinikum Lippe GmbH,Emergency Department
+354,CORRECT,,Department Director,First Hospital of Jilin University,Emergency Department
+355,CORRECT,,Chief ad interim,University Hospital of Geneva,"Division of Clinical Epidemiology, Medical Directorate"
+356,CORRECT,,Director,Kanagawa Cancer Center,head and neck surgery
+357,INCORRECT,non_clinical_field,Chair of Physical Activity and Health,Friedrich-Alexander-Universität Erlangen-Nürnberg,Department of Sport Science and Sport
+358,CORRECT,,Vice Dean,Chongqing Nanping Aier Eye Hospital,retinal & vitreous deseases
+359,CORRECT,,Vice Dean of Graduate Medical Education & Clinical Affairs,The University of Texas Medical Branch,"Graduate Medical Education, Internal Medicine"
+360,CORRECT,,Director,"Department of Endocrinology, Shanghai Pudong Hospital",Endocrinology
+361,CORRECT,,"Assistant Dean, Simulation & Academic Technology",Oregon Health & Science University,School of Nursing
+362,CORRECT,,Director,Tel Aviv Sourasky Medical Center,Institute of Endocrinology and Metabolism
+363,CORRECT,,Director,Tongren Hospital Shanghai Jiaotong University School of Medicine,Department of Rheumatology and Immunology
+364,CORRECT,,Director Inpatient Palliative Care Unit,VA Greater Los Angeles Healthcare System,Palliative Care
+365,CORRECT,,Chair,SUNY Upstate Medical University,Medicine
+366,CORRECT,,Chair,Chang Gung University of Science and Technology,Department of Gerontological Care and Management
+367,CORRECT,,head of department,Carsamba State Hospital,Cardiology
+368,CORRECT,,Jefe de Servicio,Hospital Universitario de Guadalajara,Medicina Nuclear
+369,CORRECT,,Director,Shanghai General Hospital Jiading Branch,Department of Laboratory Medicine
+370,CORRECT,,"Director, Partial Hospital Programs",Ottawa Hospital,Psychiatry
+371,CORRECT,,Chair,University of Nebraska Medical Center,OB GYN
+372,NOT_SURE,unclear,Vice President,University of Minho,School of Medicine
+373,CORRECT,,Founding Dean,National Central University,College of Health Sciences & Technology
+374,CORRECT,,Principal,Dow University of Health Sciences,School of Dental Care Professionals
+375,CORRECT,,Head of the department,Centre Hospitalier de Versailles,Department of Hepatology and Gastroenterology
+376,CORRECT,,Head of Department,Uniwersyteckie Centrum Kliniczne,Medical Oncology
+377,CORRECT,,Head of Department,Green International University,Radiography and Medical Imaging Technology
+378,CORRECT,,Medical Director,Barrow Neurological Institute,Neuroendocrinology
+379,CORRECT,,Vice-dean of university education,Leiden University,Faculty of Medicine
+380,NOT_SURE,research_unit,Associate Director,Western University,Bone and Joint Institute
+381,CORRECT,,Chief of Service,Roswell Park Comprehensive Cancer Center,Maxillofacial Prosthetics
+382,INCORRECT,non_clinical_role,Deputy Director/Head,Freelance,Department of Medical Research
+383,INCORRECT,non_clinical_role,Program Director,National Institutes of Health,National Institute of General Medical Sciences
+384,CORRECT,,vice director,Beijing Tiantan Hospital,pediatric neurosurgery
+385,CORRECT,,"Head, Department of Surgical Nursing",Phenikaa University,Faculty of Nursing
+386,CORRECT,,Medical Director,Naluko Women's Hospital and Outpatient Clinic,Medical
+387,CORRECT,,"Associate Professor of Vascular Biomedicine, Assistant Dean (PhD Studies and Professional Development)",Nanyang Technological University,Lee Kong Chian School of Medicine
+388,CORRECT,,Head of Department,Oslo University Hospital,Clinical Cancer Research
+389,CORRECT,,Chief,National Taiwan University Hospital Hsin-Chu Branch,Department of Oncology
+390,CORRECT,,Head of Department,Yashoda Superspeciality Hospital and Cancer institute,Medical Gastroenterology
+391,CORRECT,,Professor (Surgery) and Associate Dean,"Atal Bihari Vajpayee Institute of Medical Sciences (ABVIMS) Dr Ram Manohar Lohia Hospital (RML), New Delhi",Surgery
+392,CORRECT,,科主任,河北医科大学第四医院,心脏血管外科
+393,CORRECT,,Associate Dean,National Yang Ming Chiao Tung University - Yangming Campus,College of Medicine
+394,CORRECT,,Professor and Chairman,Hokkaido University,"Faculty of Medicine, Dept. of Gastroenterological Surgery II"
+395,CORRECT,,Head of Department,University of Faisalabad,Breast Surgery
+396,NOT_SURE,unclear,Director,Recoup Health,Mental Health
+397,CORRECT,,Chair,Ochsner Medical Center - New Orleans,Rheumatology
+398,CORRECT,,head,University Hospital Münster,Department of Regenerative Musculoskeletal Medicine
+399,INCORRECT,industry,Associate Director,Pfizer Inc,Epidemiology
+400,CORRECT,,Chair,Universitätsklinikum Gießen und Marburg,Radiooncology
