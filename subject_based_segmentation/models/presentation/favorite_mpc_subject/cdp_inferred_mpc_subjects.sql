@@ -12,10 +12,12 @@ base AS (
     snid,
     -- ARRAY of INT64: inferred MPC (marketing preference center) subject IDs,
     -- derived from journal SNTs via the SNT->MKTP mapping table
+    -- ORDER BY pos keeps the rank order set in snid_to_mktps_step2
     ARRAY(
       SELECT SAFE_CAST(TRIM(s) AS INT64)
-      FROM UNNEST(SPLIT(top_3_marketing_pref_ids, ';')) AS s
+      FROM UNNEST(SPLIT(top_3_marketing_pref_ids, ';')) AS s WITH OFFSET AS pos
       WHERE SAFE_CAST(TRIM(s) AS INT64) IS NOT NULL
+      ORDER BY pos
     ) AS inferred_mpc_subjects
 
   FROM {{ ref('snid_to_mktps_step2') }}

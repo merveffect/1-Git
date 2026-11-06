@@ -12,6 +12,10 @@ version: 2
 #   - favorite_snt_predictions_rolled_up_mpc: direct + hierarchy-fallback
 #     mapping, including the NULL-vs-empty-array ARRAY_AGG gotcha we hit
 #     while debugging (see comment below)
+#
+# favorite_mpc_subject (bottom of the file): the SNT -> MPC mapping paths,
+# the top-3 ranking with its numeric tie-break, and the deletion filter on
+# the CDI output.
 
 unit_tests:
 
@@ -246,3 +250,99 @@ unit_tests:
           top_10_snt_names: 'Gamma > Delta'
           first_seen_at: '2026-01-01 00:00:00'
           updated_at: '2026-02-01 00:00:00'
+
+  # ---- favorite_mpc_subject ------------------------------------------------
+
+  - name: mpc_step1_direct_then_hierarchy_fallback_then_no_match
+    description: >
+      One journal tagged with three SNT codes covers the three mapping paths
+      from SNT to MPC subject: (1) code 500 is itself an MPC id -> direct
+      match; (2) code 999 only appears in MPC 700's hierarchy levels ->
+      fallback match; (3) code 111 matches nothing -> row kept with a NULL
+      MPC subject (filtered out later by step 2's ranking).
+      Also guards the two duplicate sources found on 2026-11-06: code 500
+      matches directly AND sits in the hierarchy of MPC 700 and 800, and
+      journal 100 is listed twice in journal_metadata. Each code must still
+      produce exactly one row.
+    model: snid_to_mktps_step1
+    given:
+      - input: ref('all_users_and_journals')
+        rows:
+          - snid: 'user_1'
+            journal_id: '100'
+      - input: source('ae_metadata', 'journal_metadata')
+        rows:
+          - journal_id: 100
+            snt_discipline_code: '500;999;111'
+            snt_discipline: 'Code 500;Code 999;Code 111'
+          - journal_id: 100
+            snt_discipline_code: '500;999;111'
+            snt_discipline: 'Code 500;Code 999;Code 111'
+      - input: source('subject_based_segmentation', 'snts_mktps_mapped_final')
+        # unused level_x_id columns left out (see the rolled_up_mpc test above)
+        rows:
+          - marketing_preference_id: '500'
+            marketing_preference: 'Subject 500'
+          - marketing_preference_id: '700'
+            marketing_preference: 'Subject 700'
+            level_2_id: ['999', '500']
+          - marketing_preference_id: '800'
+            marketing_preference: 'Subject 800'
+            level_1_id: ['500']
+    expect:
+      rows:
+        - snid: 'user_1'
+          journal_id: '100'
+          snt_code: '500'
+          marketing_preference_id: '500'
+          marketing_preference: 'Subject 500'
+        - snid: 'user_1'
+          journal_id: '100'
+          snt_code: '999'
+          marketing_preference_id: '700'
+          marketing_preference: 'Subject 700'
+        - snid: 'user_1'
+          journal_id: '100'
+          snt_code: '111'
+          marketing_preference_id: null
+          marketing_preference: null
+
+  - name: mpc_step2_top_3_by_frequency_with_numeric_tie_break
+    description: >
+      user_1: subject 10 appears twice and ranks first. Subjects 2, 9 and 30
+      tie on one each, and the lower id must win by NUMBER, so ranks 2-3 are
+      2 and 9. A string sort would wrongly pick 2 and 30 ('30' < '9'). The
+      output list must be in rank order. user_2 has journal activity but no
+      MPC match, so their top 3 is NULL.
+    model: snid_to_mktps_step2
+    given:
+      - input: ref('snid_to_mktps_step1')
+        rows:
+          - {snid: 'user_1', journal_id: '1', snt_code: 'a', snt_label: 'A', marketing_preference_id: '10', marketing_preference: 'Ten'}
+          - {snid: 'user_1', journal_id: '2', snt_code: 'b', snt_label: 'B', marketing_preference_id: '10', marketing_preference: 'Ten'}
+          - {snid: 'user_1', journal_id: '3', snt_code: 'c', snt_label: 'C', marketing_preference_id: '30', marketing_preference: 'Thirty'}
+          - {snid: 'user_1', journal_id: '4', snt_code: 'd', snt_label: 'D', marketing_preference_id: '9', marketing_preference: 'Nine'}
+          - {snid: 'user_1', journal_id: '5', snt_code: 'e', snt_label: 'E', marketing_preference_id: '2', marketing_preference: 'Two'}
+          - {snid: 'user_2', journal_id: '6', snt_code: 'f', snt_label: 'F', marketing_preference_id: null, marketing_preference: null}
+    expect:
+      rows:
+        - {snid: 'user_1', top_3_marketing_pref_ids: '10;2;9', top_3_marketing_prefs: 'Ten;Two;Nine'}
+        - {snid: 'user_2', top_3_marketing_pref_ids: null, top_3_marketing_prefs: null}
+
+  - name: cdp_inferred_mpc_subjects_drops_deleted_users_and_keeps_rank_order
+    description: >
+      user_1's ';'-separated top 3 becomes an INT64 array in the same rank
+      order, and isubjects is an identical copy. user_2 is in snid_deletions
+      and must not appear at all.
+    model: cdp_inferred_mpc_subjects
+    given:
+      - input: ref('snid_to_mktps_step2')
+        rows:
+          - {snid: 'user_1', top_3_marketing_pref_ids: '10;2;9'}
+          - {snid: 'user_2', top_3_marketing_pref_ids: '5;6;7'}
+      - input: source('prod_mpc_dbt_presentation', 'snid_deletions')
+        rows:
+          - {snid: 'user_2'}
+    expect:
+      rows:
+        - {snid: 'user_1', inferred_mpc_subjects: [10, 2, 9], isubjects: [10, 2, 9]}

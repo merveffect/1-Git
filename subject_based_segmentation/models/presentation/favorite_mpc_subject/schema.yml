@@ -8,6 +8,9 @@ models:
       with the top 3 MPC subjects ranked by frequency.
     columns:
       - name: snid
+        tests:
+          - unique
+          - not_null
       - name: all_journal_ids
         description: All distinct journal IDs the user has a reading signal for.
       - name: all_snt_codes
@@ -32,13 +35,22 @@ models:
       backwards compatibility with existing CDP consumers.
     columns:
       - name: snid
+        tests:
+          - unique
+          - not_null
       - name: inferred_mpc_subjects
-        description: Array of up to 3 inferred MPC subject IDs (INT64) for this user.
+        description: >
+          Array of up to 3 inferred MPC subject IDs (INT64) for this user, in rank
+          order (most frequent first).
+        tests:
+          - not_null
       - name: isubjects
         description: >
           Identical copy of inferred_mpc_subjects under a second name, exposed so
           CDI can consume whichever column name it prefers. Always equal to
           inferred_mpc_subjects — kept in sync by assert_cdp_isubjects_matches_inferred_mpc_subjects.
+        tests:
+          - not_null
 
   - name: permutive_inferred_mpc_subjects
     description: >
@@ -49,9 +61,18 @@ models:
     columns:
       - name: snid_and_mpc_subjects
         description: "'<snid> isnt<id1>,isnt<id2>,...' — one row per opted-in SNID."
+        tests:
+          - unique
+          - not_null
 
   - name: evaluation_metrics
     description: >
       Precision/recall/F1 of the inferred MPC subject predictions (snid_to_mktps_step2)
       against real ground truth: the MPC subjects users actually opted into via
       advertising_opt_in (audience_builder_big.subjects). Appends one row per dbt run.
+    columns:
+      - name: run_id
+        description: dbt invocation_id of the run that wrote this row.
+        tests:
+          - unique
+          - not_null
