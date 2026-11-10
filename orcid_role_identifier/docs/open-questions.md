@@ -1250,6 +1250,86 @@ department landing there does not merely leave healthcare — **it joins
 Pharmacist.** If pharmacy is large among the 1,844, removal is not safe on
 its own and the fix needs an anchor on the receiving side too.
 
+**MEASURED 2026-11-10, `analyses/43`. THE LIST SETTLES IT: THOSE TWO
+ANCHORS ARE HOLDING UP A FACULTY DIRECTORY, NOT A CLINICAL ONE.**
+
+The 15 largest departments whose **only** support is `faculty of medicine`
+or `school of medicine`:
+
+| Records | Department | Would become |
+| --- | --- | --- |
+| 21,738 | `school of life sciences` | physical_chemistry |
+| 9,883 | `faculty of science` | engineering |
+| 3,947 | `faculty of veterinary medicine` | life_biomedical |
+| 3,378 | `faculty of sciences` | engineering |
+| 3,318 | `department of biomedicine` | life_biomedical |
+| 2,749 | `facultad de ciencias` | physical_chemistry |
+| 2,633 | `faculty of biology` | life_biomedical |
+| 2,284 | `faculty of sport and health sciences` | engineering |
+| 2,218 | `faculty of sport sciences` | engineering |
+| 1,895 | `faculty of life sciences` | life_biomedical |
+
+Further down: `faculty of natural sciences`, `faculty of humanities and
+arts`, `faculty of arts and humanities`, `faculty of music`, `department of
+musicology`, `faculté des sciences`, `doctoral school`, `facultad de
+postgrado`, `academic committee of the university`, `rector's office`,
+**`rektörlük`**, and `assistant professor doctor` — a job title typed into
+the department field.
+
+**Not one of the top rows is a clinical department.** The two anchors are
+matching the phrase *faculty of*, exactly as predicted, and what they hold
+up on their own is a directory of faculties and administrative units.
+
+**BUT REMOVAL IS NOT THE FIX, AND THE DESTINATION COLUMN IS WHY.**
+
+| Would become | Departments | Records | |
+| --- | --- | --- | --- |
+| engineering | 341 | 37,375 | feeds nothing |
+| life_biomedical | 443 | 33,451 | feeds nothing |
+| physical_chemistry | 125 | 32,225 | feeds nothing |
+| **pharmacy** | **270** | **12,525** | **feeds Pharmacist** |
+| humanities_law_edu | 96 | 5,870 | feeds nothing |
+| everything else | 113 | 5,522 | feeds nothing |
+| | **1,388** | **126,968** | |
+
+90% of it lands in a discipline that feeds no audience, so the move is free.
+**The other 10% does not leave healthcare — it JOINS Pharmacist.** And the
+departments going there are not pharmacy by any reading: `department of
+experimental medicine` (1,856), `faculty of agriculture and life sciences`
+(448), `biochemistry faculty of medicine` (252), `faculty of ayurveda`
+(108), `faculty of naturopathy and yogic sciences` (182). Removing the two
+anchors would trade 114,443 records of correct removal for **12,525 records
+of brand-new error in a live audience.**
+
+**THE RULE THIS ESTABLISHES, which is worth more than the fix: ADDING AN
+ANCHOR IS SAFER THAN REMOVING ONE.** Adding puts a department where we
+chose. Removing sends it wherever happens to be second, and second is
+`pharmacy` for 270 departments because the pharmacy anchors sit close to
+the clinical ones. The same logic applies to every future anchor removal in
+this project.
+
+**So the proposal is to add, not remove**, and the two faculty anchors stay
+until the families that collide with them are anchored on their own merit:
+
+| Add to | Anchors |
+| --- | --- |
+| `life_biomedical` | `school of life sciences`, `faculty of life sciences`, `faculty of biology`, `department of biomedicine`, `biomedical sciences` |
+| `earth_agriculture` | `plant pathology`, `fisheries`, `aquaculture`, `crop science` |
+| `physical_chemistry` | `physikalisches institut`, `institut für theoretische physik` |
+| `humanities_law_edu` | `institut für philosophie`, `faculty of arts and humanities` |
+
+Sport and veterinary are deliberately absent — they are 1.18 and 1.19 and
+belong to marketing.
+
+**One question this exposes and cannot answer: there is no discipline for a
+generic container.** `faculty of science`, `faculty of sciences`,
+`facultad de ciencias`, `doctoral school`, `rektörlük` name no field at
+all, and every one of the twelve disciplines is a field. Whatever we anchor
+them to is arbitrary. It does not matter commercially today, because every
+candidate except `pharmacy` feeds nothing — but it is the same shape as
+1.9, *is an uninformative title acceptable evidence*, asked of the
+department axis instead.
+
 **Also unresolved and now visible:** `zoonoses` departments split almost
 exactly in half between `health_clinical` (40 departments, 910 records) and
 `life_biomedical` (40, 862). The same kind of department landing in two
