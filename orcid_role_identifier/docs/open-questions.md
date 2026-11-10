@@ -808,6 +808,72 @@ produce the right answer, which is why it is evidence rather than a defect.
 
 ---
 
+### 1.17c THE FORECAST RAN AND THE RULE WAS WRONG TWICE — 2026-11-10
+
+`analyses/40`, before any build. Both errors are mine and both are the
+reason a forecast is written down before the thing it forecasts.
+
+**FIRST: the forecast was 28.7% over.**
+
+| | Forecast | Actual | Off by |
+| --- | --- | --- | --- |
+| titles moved | 993 | **1,258** | +265 |
+| records moved | 55,646 | **71,598** | **+15,952** |
+
+Too far out to call a near miss. The cause is that the pattern I wrote
+carries `postgraduate|post graduate` and the regex that produced the 55,646
+in `analyses/35` did not. **The forecast was measured against a narrower
+rule than the one written.** The gap is that one word.
+
+**SECOND, and worse: query 3 found the veto leaking, 15 times out of 15.**
+
+Query 3 lists what moves sorted by title LENGTH rather than frequency,
+because a job title hiding behind other words is the shape a word list
+misses. Every one of the 15 longest wrong moves got through, and they are
+all the same two blind spots — **the veto was English only, and it matched
+whole words only**:
+
+| Title | Records | What it actually is |
+| --- | --- | --- |
+| `professora auxiliar e coordenadora adjunta do phd…` | **136** | an assistant professor; `\bprofessor\b` refuses it over one trailing letter |
+| `assessed the laboratory reports of … students` | 80 | someone marking students, not a student |
+| `ed-d337e - evaluation of student achievement … teacher assistant` | 75 | a teaching assistant |
+| `stage tutor … phd quantification of antiretroviral…` | 36 | a tutor |
+| `coordinador de la comisión doctoral…` | 19 | a coordinator, in Spanish |
+| `teacher of experimental science and microbiology phd` | 13 | a teacher |
+| `tutora del internship … phd candidata` | 11 | a tutor, in Spanish |
+| `postgraduate medical education **leadership** … fellow` | 7 | `\bleader\b` refuses `leadership` |
+| `miembro del comité **científico**…` | 6 | a scientific committee member |
+| `vice-chair of the phd program in geosciences` | 3 | a vice-chair |
+
+438 records visible, and query 3 is sorted by length so that is a **floor**.
+
+**The fix, and it is a rule rather than a list.** The seniority half of the
+veto now matches by **prefix** instead of whole word, so `professor` catches
+`professora` and `leader` catches `leadership`, and it carries Spanish,
+Portuguese, French, German and transliterated Russian forms plus `tutor`,
+`teacher`, `teaching`, `editor`, `chair` and `secretar` — jobs a student
+does not hold. Re-tested in both directions: **0 of the 15 wrong moves
+survive, and all 14 intended targets still move**, `phd fellow` and
+`senior doctoral scholar` among them.
+
+**What it costs in people, which is the number that matters.** Even at the
+leaky 71,598 records, `analyses/40` query 2 put the ceiling at:
+
+| Audience | Confirmed | At most leaving |
+| --- | --- | --- |
+| Researcher | 334,689 | **1,568** (0.47%) |
+| HCP researcher | 54,041 | 431 (0.80%) |
+| HCP broad | 124,944 | 414 |
+| Lecturer | 410,504 | **0** |
+
+Records are ORCID employment rows across 10.4 million; people are what
+ships. Lecturer at zero is the useful check — this rule is scoped to
+`researcher` and nothing leaked sideways.
+
+**Not built yet.** Query 1 and query 3 are to be run once more against the
+widened veto before anything is built.
+
 ### 1.16a THE SPLIT IS GONE FROM THE PIPELINE TOO — 2026-11-10
 
 On 4 November Merve closed 1.16: Researcher ships as **one audience**. On

@@ -17,6 +17,26 @@
         records moved          about 55,646 plus a little
         titles moved           about 993 plus a little
 
+    RAN 2026-11-10. THE FORECAST AGAINST THE RESULT, BEFORE ANY BUILD.
+
+        titles moved      993 forecast    1,258 actual    +265
+        records moved  55,646 forecast   71,598 actual    +15,952, 28.7% over
+
+    28.7% is too far out to call a near miss and the cause is mine: the
+    pattern I wrote carries `postgraduate|post graduate` and the regex that
+    produced the 55,646 did not. So the forecast was measured against a
+    narrower rule than the one written, and the gap is that word.
+
+    Query 3 then earned its place. 15 of 15 wrong moves sampled from it got
+    through the veto, all of them the same two blind spots - the veto was
+    ENGLISH ONLY and matched WHOLE WORDS ONLY. `professora auxiliar`, 136
+    records, is an assistant professor that \bprofessor\b refuses over one
+    trailing letter. `leadership` is refused by \bleader\b. `coordinador`,
+    `tutora`, `cientifico` and `docent` were never listed. The veto now
+    matches the seniority half by PREFIX and in six languages, and a
+    re-test moves all 14 of the intended targets while sparing all 15 of
+    the wrong ones. THESE NUMBERS ARE THE BEFORE. Run query 1 again.
+
     "plus a little" because the two research groups were MERGED into one on
     the same day, so this row's scope widened from the early half to the
     whole of researcher. The 3,202 records in the old established half are
@@ -122,7 +142,7 @@ with t as (
         model_is_assigned,
         frequency,
         regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b') as names_a_student,
-        regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b') as veto_fires
+        regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|lecturer|reader|director|directora|directeur|head|leader|consultant|adviser|advisor|principal|chief|dean|supervis|coordinat|coordinad|coordenad|specialist|staff|tutor|teacher|teaching|docent|editor|chair|secretar|assess|cient[ií]fic|scientifique|wissenschaftlich)') as veto_fires
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
     where coalesce(model_title_group, title_group)
           in ('researcher', 'researcher_early', 'researcher_established')
@@ -161,7 +181,7 @@ with moving_titles as (
     where coalesce(model_title_group, title_group)
           in ('researcher', 'researcher_early', 'researcher_established')
       and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
-      and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
+      and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|lecturer|reader|director|directora|directeur|head|leader|consultant|adviser|advisor|principal|chief|dean|supervis|coordinat|coordinad|coordenad|specialist|staff|tutor|teacher|teaching|docent|editor|chair|secretar|assess|cient[ií]fic|scientifique|wissenschaftlich)')
 )
 select
     r.role_key,
@@ -192,7 +212,7 @@ from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_
 where coalesce(model_title_group, title_group)
           in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
-  and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
+  and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|lecturer|reader|director|directora|directeur|head|leader|consultant|adviser|advisor|principal|chief|dean|supervis|coordinat|coordinad|coordenad|specialist|staff|tutor|teacher|teaching|docent|editor|chair|secretar|assess|cient[ií]fic|scientifique|wissenschaftlich)')
 order by len desc, frequency desc
 limit 120
 ;
@@ -220,7 +240,7 @@ from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_
 where coalesce(model_title_group, title_group)
           in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
-  and regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
+  and regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|lecturer|reader|director|directora|directeur|head|leader|consultant|adviser|advisor|principal|chief|dean|supervis|coordinat|coordinad|coordenad|specialist|staff|tutor|teacher|teaching|docent|editor|chair|secretar|assess|cient[ií]fic|scientifique|wissenschaftlich)')
 order by
     case when regexp_contains(title, r'(post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate)') then 2
          when regexp_contains(title, r'research|investigador|investigator|chercheur|forscher|arastirmaci|ricercator|scientist|scientific') then 1
