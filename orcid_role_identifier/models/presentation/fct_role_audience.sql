@@ -25,9 +25,6 @@ cdp as (
         advertising_opt_in,
         is_legitimate_interest,
         is_book_author,
-        is_editor_referral,
-        is_editorial_board,
-        is_webshop_buyer,
         true as in_cdp
     from {{ ref('raw_audience_builder_big') }}
 
@@ -56,12 +53,7 @@ select
     coalesce(c.mkt_pref_opt_in, false)      as is_marketable,
     coalesce(c.advertising_opt_in, false)   as is_advertisable,
     coalesce(c.is_legitimate_interest, false) as is_legitimate_interest,
-    /*  a fourth basis, and three consents that are NOT a basis - see
-        raw_audience_builder_big for which is which and why  */
     coalesce(c.is_book_author, false)        as is_book_author,
-    coalesce(c.is_editor_referral, false)    as is_editor_referral,
-    coalesce(c.is_editorial_board, false)    as is_editorial_board,
-    coalesce(c.is_webshop_buyer, false)      as is_webshop_buyer,
 
     r.scored_date
 from roles r

@@ -30,21 +30,9 @@ select
         added, and book-author consent makes four - a decision Merve had
         already taken, against a column that was in the source and simply
         not selected.
-
-        The three purpose-specific consents below are counted and are NOT
-        in here. Each is permission for a different communication, not for
-        a role campaign.
     */
     countif(is_marketable or is_advertisable
             or is_legitimate_interest or is_book_author) as reachable,
-    countif(is_editor_referral)                         as editor_referral_not_a_basis,
-    countif(is_editorial_board)                         as editorial_board_not_a_basis,
-    countif(is_webshop_buyer)                           as webshop_buyer_not_a_basis,
-    /*  what the three would add if marketing ever rules them in  */
-    countif(not (is_marketable or is_advertisable or is_legitimate_interest
-                 or is_book_author)
-            and (is_editor_referral or is_editorial_board
-                 or is_webshop_buyer))                  as reachable_only_on_those_three,
     safe_divide(countif(in_cdp), count(*))              as cdp_coverage,
     safe_divide(countif(is_marketable or is_advertisable or is_legitimate_interest
                         or is_book_author),

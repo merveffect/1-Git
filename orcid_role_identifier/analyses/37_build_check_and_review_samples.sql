@@ -136,14 +136,7 @@ select
     reachable,
     round(reachable_rate, 4)                    as reachable_rate,
     reachable - marketable                      as reachable_beyond_mkt_opt_in,
-    round(safe_divide(reachable, nullif(marketable, 0)), 2) as reachable_vs_mkt_multiple,
-    /*  carried, counted, and NOT a legal basis - each is permission for a
-        different communication. reachable_only_on_those_three is what
-        marketing would be ruling in if it ever rules them in.  */
-    editor_referral_not_a_basis,
-    editorial_board_not_a_basis,
-    webshop_buyer_not_a_basis,
-    reachable_only_on_those_three
+    round(safe_divide(reachable, nullif(marketable, 0)), 2) as reachable_vs_mkt_multiple
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience_summary`
 where role_label = 'CONFIRMED'
 order by identified desc
@@ -210,12 +203,9 @@ qualify row_number() over (
 --    carries the flags per person.
 --
 --    Why it matters. Query 2 showed book-author consent at 26,654 people
---    across the audiences, and the three purpose-specific consents adding
---    only 251 people that nothing else reaches - 0.03% of the 756,093
---    reachable. That is small enough to settle marketing question 5's
---    sibling: asking whether editor-referral, editorial-board and
---    webshop-buyer consent should count is not worth marketing's time.
---    This query gives the same treatment to the four that ARE a basis.
+--    across the audiences, but a count of a basis does not say what that
+--    basis UNIQUELY reaches. only_book_author below does, and it decides
+--    whether marketing question 5 was ever material.
 -- ----------------------------------------------------------------------------
 with a as (
     select

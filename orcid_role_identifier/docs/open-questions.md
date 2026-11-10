@@ -1177,29 +1177,23 @@ falling"*. It is **71% to 79%**, and 54.9% for Librarian. The observation
 that confirmed people grew while contactable people did not was measured on
 the narrow column and is withdrawn rather than restated.
 
-**ASKING THE SOURCE WHAT IT HAS, instead of guessing one column name, found
-five consents we were not using.** Book-author consent is now the fourth
-legal basis — Merve's own decision, *"book author consent kesinlikle
-sayiliyor, they dont need to confirm"* — and 26,654 people hold it.
+**Book-author consent is now the fourth legal basis** — Merve's own
+decision, *"book author consent kesinlikle sayiliyor, they dont need to
+confirm"* — and **26,654 people hold it**. It was in the CDP source all
+along and simply not selected.
 
-The other three are **carried and counted but deliberately not a basis**,
-because each is permission for a different communication: an editor's
-referral, a mailing to editorial board members, a webshop buyer's receipts.
-None is permission for a role campaign, and widening a legal basis is not
-an engineering call.
+**One thing I did and should not have.** While adding it I also selected
+three other consents from the same source — editor referral, editorial
+board, webshop buyer — carried them through the models and put them in the
+summary as counted columns. Nobody asked for them. Merve: *"bunlari hesaba
+katma ben bunlari senden istemedim niye kolon olarak ekleyip kafa
+karistiriyorsun?"* Removed from `raw_audience_builder_big`,
+`fct_role_audience`, `fct_role_audience_summary` and `analyses/37`; the
+pipeline reads five columns from that source, not eight.
 
-**That question is now settled by measurement rather than by asking.** The
-people those three reach and nothing else does:
-
-| | People |
-| --- | --- |
-| reachable in total | 756,093 |
-| **reachable ONLY on those three** | **251** |
-| | **0.033%** |
-
-Ruling all three in would grow the reachable audience by three hundredths
-of a percent. **It is not worth marketing's time to answer**, and that is
-one question off the list rather than one more on it.
+The one figure worth keeping from the detour, so nobody has to go and get
+it again: those three reach **251 people** that nothing else reaches, 0.033%
+of the 756,093 reachable. Nothing turns on them.
 
 `analyses/37` query 2a does the same for the four that ARE a basis, and its
 `only_book_author` column decides whether marketing question 5 was ever
