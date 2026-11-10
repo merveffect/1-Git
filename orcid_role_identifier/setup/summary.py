@@ -78,18 +78,18 @@ def build(d):
             "that single count — earlier versions of it mixed three dates.",
             space_after=4)
     table(d, ["Audience", "Confirmed", "Probable", "Can be emailed", "State"],
-     [["**Lecturer**", "410,504", "315", "109,324", "Most worked, best validated"],
-      ["**Researcher**", "333,289", "769", "64,620",
+     [["**Lecturer**", "410,499", "315", "109,323", "Most worked, best validated"],
+      ["**Researcher**", "333,280", "769", "64,618",
        "ONE audience; students removed 10 Nov"],
-      ["**HCP broad**", "124,560", "37,260", "26,363",
-       "Wide, but the job title is mandatory"],
-      ["**HCP practitioner**", "61,935", "2,937", "13,922", "Long tail — least read"],
-      ["**HCP researcher**", "53,597", "2,082", "9,574", "Lowest measured accuracy, 90.0%"],
-      ["**Head of Faculty**", "15,160", "17,796", "4,582",
+      ["**HCP broad**", "124,982", "37,294", "26,436",
+       "Job title mandatory; departments fixed 10 Nov"],
+      ["**HCP practitioner**", "61,945", "2,895", "13,930", "Long tail — least read"],
+      ["**HCP researcher**", "54,016", "2,116", "9,668", "Lowest measured accuracy, 90.0%"],
+      ["**Head of Faculty**", "15,159", "17,796", "4,582",
        "Narrowed 5 Nov, −19.7%; 83.3% correct"],
-      ["**HCP administrator**", "7,566", "2,017", "2,062",
+      ["**HCP administrator**", "7,563", "2,070", "2,050",
        "Org veto fixed 5 Nov; 94.9% correct"],
-      ["**Pharmacist**", "2,065", "1,494", "529",
+      ["**Pharmacist**", "2,060", "1,498", "526",
        "Pharmacologists removed 5 Nov, −10.4%"],
       ["**Librarian**", "699", "0", "177", "Small, entirely rule-driven"]],
      widths=[1.5, 0.95, 0.85, 1.25, 2.1], size=9)
@@ -198,6 +198,23 @@ def build(d):
             "vocabulary in the data. Resident, Registrar, Facharzt, Interno and Senior "
             "House Officer describe overlapping things and share no common stem, so only a "
             "meaning-based match can connect them. More reading is the current task.")
+
+    para(d, "**All four healthcare audiences — the department dictionary was corrected on "
+            "10 November.** A department reaching a healthcare audience has to read as "
+            "clinical, and 108,587 records of department names were reading as clinical "
+            "when they are not: `School of Life Sciences`, `Faculty of Science`, `Plant "
+            "Pathology`, `Physikalisches Institut`, `Faculty of Arts and Humanities`. The "
+            "cause was two anchors, `faculty of medicine` and `school of medicine`, which "
+            "are four words of which two carry no field at all, so anything named "
+            "*Faculty of something* sat close to them. **85% of it is gone**, 108,587 "
+            "records down to 16,536, and 4,620 records also left `pharmacy`.")
+
+    para(d, "**It was fixed by ADDING anchors rather than removing those two, and the "
+            "reason is worth keeping.** Removing them would have sent 270 departments to "
+            "`pharmacy` — the one receiving discipline that feeds a live audience — so "
+            "114,443 records of correct removal would have bought 12,525 records of new "
+            "error. Adding puts a department where we chose; removing sends it wherever "
+            "happens to be second.")
 
     para(d, "**HCP researcher and HCP administrator** — neither has a dictionary group of "
             "its own; they intersect the research and leadership groups with a clinical "

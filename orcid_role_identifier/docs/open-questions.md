@@ -1360,6 +1360,77 @@ each new anchor won anything at all**: an anchor holding zero departments
 would mean an exact phrase does not beat `faculty of medicine`, and that
 the add-not-remove approach does not work on this axis.
 
+**BUILT 2026-11-10. IT WORKED, AND IT DID NOT DO WHAT I EXPECTED TO THE
+AUDIENCE COUNTS.**
+
+**The defensive anchors held perfectly.** Every clinical pathology
+department stayed in `health_clinical`, and three of them now match at
+exactly 1.000 where they sat at 0.775–0.848 before:
+
+| Department | Records | Similarity |
+| --- | --- | --- |
+| `pathology` | 52,784 | 1.000 |
+| `department of pathology` | 11,640 | 0.848 → **1.000** |
+| `department of pathology and laboratory medicine` | 1,539 | 0.775 → **1.000** |
+| `institute of pathology` | 1,411 | 0.801 → **1.000** |
+| `clinical pathology` | 1,989 | 0.887 |
+| `department of clinical pathology` | 142 | 0.806 → 0.952 |
+
+Nothing clinical was lost. **And the intended departments moved:**
+`school of life sciences` 21,738 records from health_clinical 0.809 to
+life_biomedical **1.000**, `department of biomedicine` 3,318 to 1.000,
+`faculty of biology` 2,633 to 1.000, `school of biomedical sciences`
+5,102 to life_biomedical.
+
+**85% of the wrong population is gone:**
+
+| Family | health_clinical before | after | |
+| --- | --- | --- | --- |
+| life sciences and biomedicine | 79,878 | 5,920 | **−93%** |
+| plants | 14,047 | 5,029 | −64% |
+| fisheries | 1,803 | 242 | −87% |
+| humanities and arts | 6,792 | 1,956 | −71% |
+| physics | 6,067 | 3,389 | −44% |
+| **total** | **108,587** | **16,536** | **−85%** |
+
+`pharmacy` lost 4,620 records of the same families as well, which is a
+gain nobody asked for — it is the one receiving discipline that feeds an
+audience.
+
+**AND NOW THE PART I DID NOT PREDICT.** The four healthcare audiences
+**grew**:
+
+| Audience | Confirmed | Change |
+| --- | --- | --- |
+| HCP broad | 124,982 | **+422** |
+| HCP researcher | 54,016 | **+419** |
+| HCP practitioner | 61,945 | +10 |
+| HCP administrator | 7,563 | −3 |
+| Lecturer | 410,499 | −5 |
+| Researcher | 333,280 | −9 |
+
+Removing wrong departments should shrink them. The arithmetic explains
+it and it is the defensive anchors doing it:
+
+```
+discipline_score = 0.70 + (similarity − 0.65) / 0.35 × 0.30
+
+department of pathology    sim 0.848 → dept_score 0.870
+                           sim 1.000 → dept_score 1.000
+```
+
+By anchoring `department of pathology` exactly, its 11,640 records went
+from 0.870 to **1.000** on the discipline axis, and that lift carried
+people over thresholds who were previously below. **Two effects netted
+inside one number**: wrong-field people left, and genuinely clinical
+people gained confidence. The net is +419, so the second is larger than
+the first.
+
+That is a better outcome than the one forecast, but the net figure hides
+both halves, and **the removal is therefore unverified at the person
+level.** `analyses/38` query 1 run again would show it — the department
+list inside hcp_researcher should no longer open with `Plant Pathology`.
+
 **One question this exposes and cannot answer: there is no discipline for a
 generic container.** `faculty of science`, `faculty of sciences`,
 `facultad de ciencias`, `doctoral school`, `rektörlük` name no field at
