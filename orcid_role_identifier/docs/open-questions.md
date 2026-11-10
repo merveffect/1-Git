@@ -912,8 +912,42 @@ These are not job titles at all, they are free text in a job-title field,
 and no rule conditioned on words will tell them from a job. About 77 visible
 records.
 
-**Not built yet.** Query 1 and query 3 run once more against the rebuilt
-veto first.
+**BUILT 2026-11-10, AND THE BUILD FAILED. The test caught it.**
+
+```
+PASS=70  WARN=0  ERROR=1  SKIP=29
+[ERROR] assert_title_patterns_do_not_collide — got 2 results, fail if != 0
+```
+
+Nothing landed. 29 downstream nodes were skipped, so every audience count
+is still the pre-build figure and `analyses/40` query 3 returns the same
+list — which is correct and not a second symptom: query 3 filters on
+`model_title_group`, the model's choice *before* any pattern, and that does
+not change when a pattern is added.
+
+**What collided.** The eleven `librarian` rows are the only **unscoped**
+patterns in the seed — one per script, `librar`, `bibliotec`, `bibliothek`,
+`библиотек`, `kütüphane`, `図書館`, `图书馆` — and they claim any title
+carrying a library stem anywhere in it. The 1.17 student row is scoped to
+`researcher`. A title the model put in `researcher` naming **both** a
+student and a library was claimed by two groups at once, and
+`dim_title_group` resolves that with `min(title_group)` — it would have
+picked `librarian` alphabetically and said nothing. The test exists for
+exactly that.
+
+**The fix is the shape the seed already uses.** The pharmacist-scoped rows
+veto on the competing group's own word (`pharmacist|farmac`), so the
+library stems are now in the student veto. A title naming a library keeps
+the model's group and the librarian pattern claims it alone. **Librarian
+wins, which is right**: a librarian doing a doctorate is still reachable as
+a librarian, and `student` feeds no audience at all.
+
+`analyses/41` is the test's own query without the HAVING, so a collision is
+**named** rather than counted. Query 2 prints every pattern's actual reach,
+which is how the next one gets read rather than hunted.
+
+Re-tested both ways after the fix: 0 of 5 that must stay escape, 0 of 9
+that must move are spared.
 
 ### 1.16a THE SPLIT IS GONE FROM THE PIPELINE TOO — 2026-11-10
 
