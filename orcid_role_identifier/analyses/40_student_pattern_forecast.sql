@@ -57,6 +57,41 @@
 
 
 -- ----------------------------------------------------------------------------
+-- 0. WHAT ARE THE GROUP NAMES, ACTUALLY. Run this first.
+--
+--    Query 1 returned a confident row of zeros twice. The second time it
+--    was matching all three spellings of the group name, so the name is
+--    not the problem and guessing a third time is not a method.
+--
+--    This prints both columns side by side. title_group is the resolved
+--    answer, after overrides and patterns. model_title_group is the
+--    model's own choice before either, and it is the one the forecast
+--    filters on, because a pattern is conditioned on what the model
+--    thought.
+--
+--    Three things it can show, and each means something different:
+--      - model_title_group is NULL or empty on most rows
+--            the column exists but is not populated in the built table,
+--            so the forecast must filter on title_group instead
+--      - the names are spelled differently from the seed
+--            read them off this output and stop guessing
+--      - researcher_early is simply absent
+--            the merge is already built, and the forecast is a check
+--            rather than a forecast
+-- ----------------------------------------------------------------------------
+select
+    coalesce(title_group, '(null)')         as title_group,
+    coalesce(model_title_group, '(null)')   as model_title_group,
+    count(*)                                as titles,
+    sum(frequency)                          as records
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+group by title_group, model_title_group
+order by records desc
+limit 60
+;
+
+
+-- ----------------------------------------------------------------------------
 -- 1. THE FORECAST. One row.
 --
 --    titles_moved and records_moved are the change. researcher_early keeps
