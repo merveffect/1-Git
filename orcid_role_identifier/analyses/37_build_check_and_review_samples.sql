@@ -129,10 +129,21 @@ select
     marketable                                  as mkt_opt_in_only,
     advertisable,
     legitimate_interest,
+    /*  book_author exists only after the build of 2026-11-10 that added
+        the fourth basis. If this column errors, that build has not run and
+        `reachable` below is the union of THREE bases, not four.  */
+    book_author,
     reachable,
     round(reachable_rate, 4)                    as reachable_rate,
     reachable - marketable                      as reachable_beyond_mkt_opt_in,
-    round(safe_divide(reachable, nullif(marketable, 0)), 2) as reachable_vs_mkt_multiple
+    round(safe_divide(reachable, nullif(marketable, 0)), 2) as reachable_vs_mkt_multiple,
+    /*  carried, counted, and NOT a legal basis - each is permission for a
+        different communication. reachable_only_on_those_three is what
+        marketing would be ruling in if it ever rules them in.  */
+    editor_referral_not_a_basis,
+    editorial_board_not_a_basis,
+    webshop_buyer_not_a_basis,
+    reachable_only_on_those_three
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience_summary`
 where role_label = 'CONFIRMED'
 order by identified desc

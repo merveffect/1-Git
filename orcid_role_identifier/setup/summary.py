@@ -77,22 +77,47 @@ def build(d):
             "landed the doctoral-student rule. Every figure in this table comes from "
             "that single count — earlier versions of it mixed three dates.",
             space_after=4)
-    table(d, ["Audience", "Confirmed", "Probable", "Mkt opt-in only", "State"],
-     [["**Lecturer**", "410,499", "315", "109,323", "Most worked, best validated"],
-      ["**Researcher**", "333,280", "769", "64,618",
+    table(d, ["Audience", "Confirmed", "Reachable", "Of those", "State"],
+     [["**Lecturer**", "410,499", "**319,291**", "77.8%", "Most worked, best validated"],
+      ["**Researcher**", "333,280", "**237,391**", "71.2%",
        "ONE audience; students removed 10 Nov"],
-      ["**HCP broad**", "124,982", "37,294", "26,436",
+      ["**HCP broad**", "124,982", "**93,377**", "74.7%",
        "Job title mandatory; departments fixed 10 Nov"],
-      ["**HCP practitioner**", "61,945", "2,895", "13,930", "Long tail — least read"],
-      ["**HCP researcher**", "54,016", "2,116", "9,668", "Lowest measured accuracy, 90.0%"],
-      ["**Head of Faculty**", "15,159", "17,796", "4,582",
-       "Narrowed 5 Nov, −19.7%; 83.3% correct"],
-      ["**HCP administrator**", "7,563", "2,070", "2,050",
+      ["**HCP practitioner**", "61,945", "**46,450**", "75.0%", "Long tail — least read"],
+      ["**HCP researcher**", "54,016", "**39,758**", "73.6%",
+       "Lowest measured accuracy, 90.0%"],
+      ["**Head of Faculty**", "15,159", "**11,962**", "78.9%",
+       "Narrowed 5 Nov; 83.3% correct"],
+      ["**HCP administrator**", "7,563", "**5,949**", "78.7%",
        "Org veto fixed 5 Nov; 94.9% correct"],
-      ["**Pharmacist**", "2,060", "1,498", "526",
+      ["**Pharmacist**", "2,060", "**1,531**", "74.3%",
        "Pharmacologists removed 5 Nov, −10.4%"],
-      ["**Librarian**", "699", "0", "177", "Small, entirely rule-driven"]],
-     widths=[1.5, 0.95, 0.85, 1.25, 2.1], size=9)
+      ["**Librarian**", "699", "**384**", "54.9%", "Small, entirely rule-driven"]],
+     widths=[1.5, 0.95, 1.0, 0.7, 2.4], size=9)
+    para(d, "**Measured accuracy for every audience, read by hand, is in section 6.0**: "
+            "Researcher 99.0%, Lecturer 98.7%, Librarian 98.5%, Pharmacist 95.7%, HCP "
+            "administrator 94.9%, the other healthcare audiences 90–93%, Head of Faculty "
+            "83.3% — each the share correct of the cases that could be decided.",
+            size=9, space_after=4)
+    para(d, "**Two warnings about that table.** The rows **overlap** — one person can be "
+            "both a Lecturer and an HCP researcher — so the columns must not be added up.",
+            space_after=4)
+    box(d, "REACHABLE IS THREE TIMES WHAT THIS DOCUMENT USED TO SAY", [
+     "**Reachable means any of four legal bases**: marketing opt-in, advertising opt-in, "
+     "legitimate interest, and book-author consent. Set in `dbt_project.yml` as "
+     "`consent_basis: 'any_basis'`, applied by `consent_predicate()`, counted as "
+     "`reachable` in `fct_role_audience_summary`.",
+     "",
+     "Every reachable figure quoted from this document before 10 November was "
+     "`mkt_pref_opt_in` ALONE, which is **one basis out of four**. Lecturer read 109,323 "
+     "and is 319,291. Researcher read 64,618 and is 237,391. HCP researcher was out by "
+     "4.1x. The pipeline has been right since 16 October and the reporting was taking a "
+     "narrower column from the raw layer instead of reading the model built to answer "
+     "this.",
+     "",
+     "Legitimate interest is the reason: it is far larger than either opt-in — 295,314 of "
+     "Lecturer against 109,323 — and it was the column being left out.",
+    ], fill="FDF8EF", accent=AMBER)
     para(d, "**Measured accuracy for every audience, read by hand, is in section 6.0**: "
             "Researcher 99.0%, Lecturer 98.7%, Librarian 98.5%, Pharmacist 95.7%, HCP "
             "administrator 94.9%, the other healthcare audiences 90–93%, Head of Faculty "
@@ -123,10 +148,9 @@ def build(d):
      "Faculty −19.7%, Pharmacist −10.4%, HCP administrator −0.7% where it would otherwise "
      "have gained 0.8%.",
      "",
-     "**But the consent column did not follow.** Lecturer gained 3,644 confirmed people "
-     "and 207 contactable ones. Researcher, HCP broad and HCP researcher each gained "
-     "people and *lost* contactable ones. Between 18% and 30% of any audience can be "
-     "emailed, and that share is falling slightly as the audiences grow.",
+     "**Three quarters of every audience is reachable**, 71% to 79%, except Librarian at "
+     "54.9%. An earlier version of this section said 18% to 30%, which was one legal "
+     "basis out of four being mistaken for all of them.",
      "",
      "This is 10.5 restated with fresh numbers: effort spent on precision is no longer "
      "what limits this project.",
