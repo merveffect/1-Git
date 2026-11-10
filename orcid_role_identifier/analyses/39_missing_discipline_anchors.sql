@@ -109,7 +109,9 @@ select
         when regexp_contains(lower(department), r'(\bphilosoph|\bhumanit|\btheolog)') then 'humanities'
         else 'other'
     end                                     as family,
-    cast(matched_anchors as string)         as matched,
+    /*  matched_anchors is ARRAY<STRING>, so cast() is not the way out of it.
+        BigQuery has no implicit array-to-string.  */
+    array_to_string(matched_anchors, ' | ')  as matched,
     count(*)                                as departments,
     sum(frequency)                          as records
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline`

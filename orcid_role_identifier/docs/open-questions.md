@@ -839,6 +839,49 @@ reason that bucket is printed rather than filtered is that the first version
 of the student regex swept every one of them in, because `post-doctoral`
 contains `doctoral`.
 
+### 1.17b CLOSED 2026-11-10 — the loose reading, and one row written
+
+Merve, on being shown the two prices:
+
+> "gevsek okuma olsun research gecenleri elemeyelim illa researcher kelimesi
+> harfi harfiyen olmasi gerekmiyor"
+
+| Reading | What counts as "the title says research" | Records removed |
+| --- | --- | --- |
+| strict | only the noun `researcher` | 132,207 |
+| **loose — CHOSEN** | **any research word** | **58,848** |
+| | *the decision was worth* | *73,359* |
+
+So `phd research fellow`, `student research assistant` and `doctoral research
+fellow` stay. `phd fellow` (19,424 records), `predoctoral fellow` (5,358),
+`ph d fellow` (2,113) and `pre-doctoral fellow` (1,522) leave.
+
+**Written as one pattern row, not 1,191 overrides**, using the
+`unless_pattern` veto column added on 5 November. The pattern names a
+student, the veto keeps anyone whose title also says research.
+
+**SCOPED TO `researcher_early` DELIBERATELY, and this is the part worth
+reading.** The same bucket exists in `researcher_established`, 198 titles and
+3,202 records, and the rule must NOT be applied there. Of its 25 largest
+titles, **24 carry `phd` as a credential rather than as a status**:
+
+> `phd scientist` · `group leader phd` · `senior consultant/md phd` ·
+> `phd director` · `full professor phd hdr i2m laboratory` ·
+> `director of phd program in medical sciences` · `deputy group leader pi/phd`
+
+Applying 1.17 there would demote senior researchers on the strength of their
+doctorate. Those 3,202 records are left alone on purpose.
+
+The veto also carries the **entire postdoc family**, because every
+`post-doctoral` title contains the word `doctoral`. That is 498,069 records —
+64% of both research groups — and the first version of this regex swept all
+of them in.
+
+`analyses/40` is the forecast, written before the build so it can be wrong in
+public, and it checks the two ways the row can fail: too wide, by taking a
+credential hiding in a long title, and too narrow, by the veto firing on a
+real student.
+
 ### 1.18 Are veterinarians healthcare professionals? — ASKED 2026-11-10
 
 Found while reading 100 CONFIRMED `hcp_researcher` people by hand. Veterinary
