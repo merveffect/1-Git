@@ -1,0 +1,214 @@
+/*
+    ============================================================================
+    19. ACCURACY WITHOUT A GROUND TRUTH
+    ============================================================================
+    There is no external truth set for "profession". ORCID has no such field,
+    and Phase-1 is not one either - we showed it calls roughly 53,000 people
+    in engineering, earth science and mathematics healthcare professionals.
+
+    So accuracy here is not measured by comparison. It is improved by finding
+    the assignments that are wrong BY DEFINITION, which needs only knowing
+    what a word means. Every error found on this project so far was of that
+    kind: \buniversit\b can never match "university"; a doctoral researcher
+    is not a student; a company marker should beat an academic stem.
+
+    The useful filter is SIMILARITY, not margin. A value that cleared the 0.65
+    floor by a hair and carries tens of thousands of records is where the
+    embedding was guessing, and matched_anchors says what it guessed from.
+
+    Targets lecturer and researcher - 169,018 of the 224,815 reachable
+    role-memberships, and the two roles with the least scrutiny so far.
+    ============================================================================
+*/
+
+
+-- ###########################################################################
+-- 1. WEAKEST ASSIGNMENTS IN teaching_academic  (feeds lecturer)
+--
+--    Read matched_anchors beside the value: it says WHY the embedding chose
+--    this group, and a mismatch there is the tell. 'member' landing on
+--    'faculty member' is the embedding matching one word out of two.
+-- ###########################################################################
+SELECT
+    title,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    ROUND(margin, 3)            AS margin,
+    runner_up,
+    matched_anchors,
+    needs_human_review
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE is_assigned
+  AND title_group = 'teaching_academic'
+  AND frequency >= 2000
+ORDER BY similarity ASC
+LIMIT 60;
+
+
+-- ###########################################################################
+-- 2. WEAKEST ASSIGNMENTS IN THE TWO RESEARCHER GROUPS  (feeds researcher)
+--
+--    LOW SIMILARITY IS LOW CONFIDENCE, NOT ERROR. Check each candidate
+--    against the decisions already made before changing it.
+--
+--    'dottorandi' is the worked example of that trap. Italian for doctoral
+--    candidates, 47,810 records, similarity 0.684, matched on
+--    'collaboratori', 'borsisti' and 'assegnisti' - Italian terms for
+--    research FELLOWS rather than students. It looks like an error, and I
+--    was about to move it to student. But 'doctoral researcher' had just
+--    been moved the other way, from student to researcher_early, on the
+--    grounds that a doctoral researcher is a researcher - and a dottorando
+--    is the same person in Italian. Moving it would have broken that
+--    consistency, not fixed anything. Left alone: the answer is right and
+--    the embedding was simply unsure because the word is not English.
+-- ###########################################################################
+SELECT
+    title,
+    title_group,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    ROUND(margin, 3)            AS margin,
+    runner_up,
+    matched_anchors
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE is_assigned
+  AND title_group IN ('researcher_early', 'researcher_established')
+  AND frequency >= 2000
+ORDER BY similarity ASC
+LIMIT 60;
+
+
+-- ###########################################################################
+-- 3. WHAT DID EACH GROUP ACCEPT AT THE VERY EDGE?
+--
+--    One row per group, so the shape of the problem is visible at a glance.
+--    A group whose weakest accepted value sits at 0.66 and carries 50,000
+--    records is taking on more guesswork than one whose weakest is 0.85.
+--
+--    READ share_below_075 ONLY FOR VECTOR-DECIDED VALUES. Since 2026-10-19
+--    a group can be defined by seeds/title_group_patterns.csv instead of
+--    anchors, and for those the similarity column measures something that
+--    did not decide anything: librarian has no anchors, so the vector's
+--    nearest neighbour for 'librarian' is whatever the OTHER 21 groups
+--    offer - pharmacist, at 0.65. The decision was made by the word in the
+--    title.
+--
+--    So librarian reads 0.81 below 0.75 here while being the most exact
+--    group in the project. pattern_decided below is the guard: where it
+--    equals values_assigned, ignore every similarity column on that row.
+--    Judge a pattern group by reading its titles instead - analyses/21
+--    query 2.
+-- ###########################################################################
+SELECT
+    title_group,
+    COUNT(*)                                        AS values_assigned,
+    COUNTIF(decision_source = 'PATTERN')            AS pattern_decided,
+    SUM(frequency)                                  AS records,
+    ROUND(MIN(similarity), 3)                       AS weakest_accepted,
+    ROUND(APPROX_QUANTILES(similarity, 100)[OFFSET(10)], 3) AS p10_similarity,
+    ROUND(AVG(similarity), 3)                       AS avg_similarity,
+    SUM(IF(similarity < 0.75, frequency, 0))        AS records_below_075,
+    ROUND(SUM(IF(similarity < 0.75, frequency, 0)) / SUM(frequency), 4) AS share_below_075
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE is_assigned
+GROUP BY title_group
+ORDER BY records DESC;
+
+
+-- ###########################################################################
+-- 4. NON-ENGLISH VALUES, WHICH IS WHERE THE EMBEDDING IS WEAKEST
+--
+--    The multilingual reach is this pipeline's main advantage over Phase-1,
+--    so it is also where a wrong answer is most likely and least likely to
+--    be noticed. A Portuguese medical residency - "Interno de formacao
+--    especifica" - turned up in lecturer twice in the 1b sample.
+--
+--    Crude test for "not English": a non-ASCII letter, or none of a short
+--    list of English function words. Imperfect, and good enough to surface
+--    the cases worth reading.
+-- ###########################################################################
+SELECT
+    title,
+    title_group,
+    frequency,
+    ROUND(similarity, 3)        AS similarity,
+    runner_up,
+    matched_anchors
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+WHERE is_assigned
+  AND frequency >= 1000
+  AND title_group IN ('teaching_academic', 'researcher_early',
+                      'researcher_established', 'student')
+  AND (
+        REGEXP_CONTAINS(title, r'[^\x00-\x7F]')
+     OR NOT REGEXP_CONTAINS(title, r'\b(professor|lecturer|research|teaching|senior|assistant|associate|student|fellow|scientist|postdoc|doctoral|visiting|adjunct|instructor|faculty|head|chair|staff|member|officer|manager|technician|engineer|analyst|coordinator|director|of|the|and|in|at)\b')
+      )
+ORDER BY frequency DESC
+LIMIT 80;
+
+
+-- ###########################################################################
+-- 5. CONSENT: ARE WE READING THE RIGHT FLAGS, AND IS "REACHABLE" HONEST?
+--
+--     ANSWERED 2026-10-16: it took four columns and missed a third consent
+--     flag. is_legitimate_interest_author_opted_in is now read as well, and
+--     reachable is any of the three. 5a is still worth running - there may
+--     be suppression or bounce columns we are also not reading.
+--
+--     Two things were never checked, and both can move the headline number.
+--
+--     5a. WHAT ELSE IS IN THAT TABLE? _sources.yml still carries a
+--         "!! VERIFY" note saying the dataset came from the Phase-2
+--         document rather than a schema read. If there is a suppression
+--         flag, a hard-bounce flag, an unsubscribe date, a channel-level
+--         consent or a region flag, then someone we count as reachable
+--         may not be.
+--
+--     5b. REACHABLE DOES NOT REQUIRE AN EMAIL. The definition is
+--         countif(is_marketable or is_advertisable) with no check that a
+--         contact address exists. A person who consented but whose email
+--         is null is being counted as reachable.
+-- ###########################################################################
+
+-- 5a. Every column in the CDP source
+SELECT column_name, data_type
+FROM `dat-analytics-eng-ec869189.prod_audience_explorer_analytics_dbt_presentation.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = 'audience_builder_big'
+ORDER BY ordinal_position;
+
+
+-- 5b. How much of "reachable" has no address to reach?
+WITH per_person AS (
+  SELECT
+      snid,
+      LOGICAL_OR(role_label = 'CONFIRMED')                    AS has_confirmed,
+      LOGICAL_OR(is_marketable OR is_advertisable
+                 OR is_legitimate_interest)                   AS consented,
+      LOGICAL_OR(contact_email IS NOT NULL
+                 AND TRIM(contact_email) != '')               AS has_email
+  FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+  GROUP BY snid
+)
+SELECT
+    COUNTIF(consented)                                  AS reachable_as_reported,
+    COUNTIF(consented AND has_email)                    AS reachable_with_an_email,
+    COUNTIF(consented AND NOT has_email)                AS consented_but_no_email,
+    ROUND(COUNTIF(consented AND NOT has_email) / COUNTIF(consented), 4) AS share_unusable
+FROM per_person
+WHERE has_confirmed;
+
+
+-- 5c. The same, per role, so a correction can be applied to the table
+SELECT
+    a.role_key,
+    COUNT(DISTINCT a.snid)                                              AS confirmed_people,
+    COUNT(DISTINCT IF(a.is_marketable OR a.is_advertisable
+                      OR a.is_legitimate_interest, a.snid, NULL)) AS reachable_as_reported,
+    COUNT(DISTINCT IF((a.is_marketable OR a.is_advertisable
+                       OR a.is_legitimate_interest)
+                      AND a.contact_email IS NOT NULL
+                      AND TRIM(a.contact_email) != '', a.snid, NULL))   AS reachable_with_an_email
+FROM `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience` a
+WHERE a.role_label = 'CONFIRMED'
+GROUP BY a.role_key
+ORDER BY reachable_as_reported DESC;
