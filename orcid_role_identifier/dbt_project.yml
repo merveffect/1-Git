@@ -132,7 +132,7 @@ vars:
       match: title_and_field
       parent: 'hcp_broad'
       parent_bucket: 'RESEARCHER'
-      title_groups: ['researcher_early', 'researcher_established']
+      title_groups: ['researcher']
       disciplines: ['health_clinical']
       # The title makes it research and the department makes it clinical,
       # so the two carry equal weight.
@@ -146,8 +146,8 @@ vars:
       # HCP and we do not actually land. 15,588 of them are researchers
       # whose department reads as life_biomedical:
       #
-      #   researcher_early       + life_biomedical   11,979 people
-      #   researcher_established + life_biomedical    3,609 people
+      #   researcher (then split early/established, now one group)
+      #                          + life_biomedical   15,588 people
       #
       # Adding 'life_biomedical' here would recover all of them in one
       # line. It is not a scoring question, it is what HCP means. A
@@ -287,7 +287,7 @@ vars:
       label: 'Researcher (all fields)'
       axis: position
       match: title_required   # no fields listed, so the title is the only axis
-      title_groups: ['researcher_early', 'researcher_established']
+      title_groups: ['researcher']
       disciplines: []
       weights: {role: 0.75, org: 0.25, dept: 0.00}
       thresholds: {confirmed: 0.60, probable: 0.30}

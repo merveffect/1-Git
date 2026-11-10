@@ -808,6 +808,72 @@ produce the right answer, which is why it is evidence rather than a defect.
 
 ---
 
+### 1.16a THE SPLIT IS GONE FROM THE PIPELINE TOO — 2026-11-10
+
+On 4 November Merve closed 1.16: Researcher ships as **one audience**. On
+10 November they went further:
+
+> "researcher early ve researcher established diye ayirmiyoruz biz. bu
+> pipeline da bu ayrim hic olmasin. bu mantigi lutfen cikart. sadece
+> researchers olsun."
+
+**And the answer to "does removing it make our work easier" is yes, with one
+exception that had to be handled.**
+
+**It was already dead weight.** Only two roles in `dbt_project.yml` ever
+named the two groups, and **both listed them together**:
+
+```
+researcher        title_groups: ['researcher_early', 'researcher_established']
+hcp_researcher    title_groups: ['researcher_early', 'researcher_established']
+```
+
+No audience has ever read them apart. The distinction existed only in the
+dictionary, where it could be got wrong — and it was: **`junior researcher`,
+42,949 records, the largest single error in this project's history, was a
+title landing in the wrong one of two groups that mean the same thing to
+every consumer.** Merging removes that failure mode by construction, and
+with it the `needs_human_review` flags raised by titles that are genuinely
+ambiguous between early and senior.
+
+What changed, all of it mechanical:
+
+| | early | established | now |
+| --- | --- | --- | --- |
+| `title_group_anchors.csv` | 13 | 9 | 22 under `researcher` |
+| `role_title_overrides.csv` | 114 | 81 | 195 under `researcher` |
+| `title_group_patterns.csv` | 3 | 3 | 6 under `researcher` |
+| `dbt_project.yml` roles | 2 | 2 | `title_groups: ['researcher']` |
+
+There is no hardcoded list of groups anywhere: `int_title_group_registry` is
+derived from the anchors seed, so the registry merged itself.
+`setup/validate_registry.py` passes.
+
+**THE ONE EXCEPTION, and it is the 1.17 pattern written an hour earlier.**
+That row was scoped to `researcher_early` *on purpose*, because the
+established half is full of titles carrying `phd` as a credential rather
+than as a status. Merging removes the group boundary that was protecting
+them, so the protection now rests on the veto alone. Re-checked against the
+25 largest such titles:
+
+- **23 were already vetoed** — `phd scientist`, `group leader phd`, `senior
+  consultant/md phd`, `director of phd program in medical sciences`
+- `senior specialist / ph d eng` was not, so **`specialist` and `staff` were
+  added to the veto**
+- `senior doctoral scholar` was not, and **should not be** — it is a
+  doctoral student and moving it is correct
+
+`analyses/40` query 3 exists to catch any that this reasoning missed, and it
+sorts by title LENGTH rather than frequency because a credential hiding
+behind other words is exactly the shape that survives a word list.
+
+**Two figures in the status document could not be merged honestly.** The
+anchor counts in `charts.py` add — 6 + 2 = 8 — so that bar was merged. The
+human-decision shares in `charts5.py` are percentages of different
+denominators and do **not** add, so the two bars are now labelled as halves
+and the figure is marked as predating the merge, pending a re-measure on the
+next build.
+
 ### 1.17a What the doctoral-student rule costs — measured 2026-11-10
 
 `analyses/38` query 3, inside `hcp_researcher` CONFIRMED. The four buckets

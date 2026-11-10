@@ -15,9 +15,11 @@ def save(fig,name):
 import os; SP=os.path.dirname(os.path.abspath(__file__))
 
 # --- 1. what the taxonomy knows about our anchors -------------------------
-groups=["practitioner","support_technical","pharmacist","leadership","student",
-        "researcher_early","teaching_academic","trainee_clinical","researcher_established"]
-unknown=[52,9,9,7,7,6,6,5,2]
+# researcher was two groups until 2026-11-10. These are anchor COUNTS, so the
+# two merge by addition and the figure stays true: 6 + 2 = 8.
+groups=["practitioner","support_technical","pharmacist","leadership","researcher",
+        "student","teaching_academic","trainee_clinical"]
+unknown=[52,9,9,7,8,7,6,5]
 fig,ax=plt.subplots(figsize=(6.6,3.1))
 y=range(len(groups))
 ax.barh(list(y),unknown,color=[RED if v>=20 else AMBER if v>=6 else GREY for v in unknown],height=.62)

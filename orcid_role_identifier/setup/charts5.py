@@ -9,7 +9,11 @@ plt.rcParams.update({"font.family":"DejaVu Sans","font.size":9,"axes.edgecolor":
  "axes.spines.top":False,"axes.spines.right":False,"figure.dpi":200})
 
 # --- A. machine vs human, per group --------------------------------------
-g=["teaching_academic","researcher_early","student","researcher_established",
+# researcher was two groups until 2026-11-10 and these are SHARES of different
+# denominators, so unlike the anchor counts in charts.py they cannot be added.
+# The two halves are labelled as halves and the figure is honest about predating
+# the merge. It wants re-measuring on the next build, as one `researcher` bar.
+g=["teaching_academic","researcher (early half)","student","researcher (senior half)",
    "practitioner","support_technical","leadership","trainee_clinical","pharmacist"]
 hs=[0.295,3.17,3.89,7.71,1.03,4.63,3.26,0.27,0.0]
 y=np.arange(len(g))

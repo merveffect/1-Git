@@ -254,13 +254,18 @@ def build(d, figdir):
         for b in body: para(d, b, space_after=5)
 
     short("RESEARCHER — 321,824 people", [
-      "**74.3% found, 43.9% agree.** Built from two title groups, `researcher_early` "
-      "(8.4M records) and `researcher_established` (1.9M), which both feed this one "
+      "**74.3% found, 43.9% agree.** Built from one title group, `researcher` "
+      "(10.3M records). It was two, `researcher_early` and `researcher_established`, "
+      "until 2026-11-10, when Merve removed the split: no audience ever read the two "
+      "apart, and the project's largest single error - `junior researcher`, 42,949 "
+      "records - was a title landing in the wrong one of two groups that meant the "
+      "same thing. They feed this one "
       "audience — the seniority split is computed and then never used.",
       "**The low precision is largely an artefact.** A professor who runs a research group "
       "is in both Lecturer and Researcher; the survey records one answer, so one of the "
       "two memberships is counted wrong whatever we do.",
-      "**Its cleanest half.** `researcher_early` needed **zero corrections** on its first "
+      "**Its cleanest half, when it still had halves.** What is now the early end of "
+      "`researcher` needed **zero corrections** on its first "
       "read — the only group in the project that did. Being generic did not make "
       "`researcher` dirty, because the space around it is densely packed with real "
       "research vocabulary.",

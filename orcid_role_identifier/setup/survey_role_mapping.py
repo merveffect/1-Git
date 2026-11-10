@@ -7,22 +7,23 @@ MAP = {
  "medical student":"student", "ph.d. candidate / doctoral student":"student",
  "undergraduate / master student":"student", "phd or masters student":"student",
  "graduate student":"student", "master's student":"student",
- # ---- researcher_early --------------------------------------------------
- "postdoc":"researcher_early", "post-doctoral fellow":"researcher_early",
- "postdoctoral researcher":"researcher_early", "research associate":"researcher_early",
- "researcher":"researcher_early",
- # ---- researcher_established -------------------------------------------
- "research scientist":"researcher_established",
- "principal investigator":"researcher_established",
- "senior scientist":"researcher_established",
- "senior researcher":"researcher_established",
- "mid-career researcher":"researcher_established",
- "research scientist or other researcher":"researcher_established",
- "research professor":"researcher_established",
- # our `head of laboratory` anchor sits in researcher_established, not leadership
- "laboratory director / head":"researcher_established",
- "laboratory director/head":"researcher_established",
- "head of lab":"researcher_established",
+ # ---- researcher --------------------------------------------------------
+ # One group since 2026-11-10. The early/established split fed no audience
+ # and both halves map here.
+ "postdoc":"researcher", "post-doctoral fellow":"researcher",
+ "postdoctoral researcher":"researcher", "research associate":"researcher",
+ "researcher":"researcher",
+ "research scientist":"researcher",
+ "principal investigator":"researcher",
+ "senior scientist":"researcher",
+ "senior researcher":"researcher",
+ "mid-career researcher":"researcher",
+ "research scientist or other researcher":"researcher",
+ "research professor":"researcher",
+ # our `head of laboratory` anchor sits in researcher, not leadership
+ "laboratory director / head":"researcher",
+ "laboratory director/head":"researcher",
+ "head of lab":"researcher",
  # ---- teaching_academic -------------------------------------------------
  "professor":"teaching_academic", "assistant professor":"teaching_academic",
  "associate professor":"teaching_academic", "lecturer":"teaching_academic",
