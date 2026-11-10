@@ -21,7 +21,7 @@ r.font.color.rgb=TEAL; r.font.name=SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
-para(d, "Working document  ·  updated 3 November 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "Working document  ·  updated 10 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHAT CHANGED SINCE THE LAST VERSION", [
  "**Section 6 is new: every target audience now has its own heading**, with Lecturer "
