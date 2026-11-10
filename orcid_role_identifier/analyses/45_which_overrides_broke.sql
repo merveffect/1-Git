@@ -61,7 +61,7 @@
         pi | ACCEPT | researcher | actual researcher | VECTOR | 1.0
 
     Right group, right score, wrong provenance. The override says a human
-    decided `pi` is a researcher; the dictionary says the vector did.
+    decided `pi` is a researcher. The dictionary says the vector did.
     `pi` expands to `principal investigator` through the abbreviation
     list, which is almost certainly an exact anchor match at 1.0, so the
     two agree and nothing is mislabelled - but the test is right to fail,
@@ -133,4 +133,55 @@ select
 from expected e
 left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` a
     on a.title = e.title_key_text
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 3. DO THOSE TWO TITLES EXIST ANYWHERE, which decides which case they are.
+--
+--    dbt --store-failures named them, computed by the macro:
+--
+--        department of biology     REJECT   no such title, not [pre-emptive]
+--        department of chemistry   REJECT   no such title, not [pre-emptive]
+--
+--    Merve wrote both on 2026-10-30 while reading the faculty_head roster:
+--    "names no profession at all, so there is nothing to assign it to."
+--    They are DEPARTMENT names, and the roster shows a job title and a
+--    department side by side.
+--
+--    Two readings and this query separates them:
+--
+--      no rows anywhere     the override was written against the roster's
+--                           DEPARTMENT column rather than its title column,
+--                           so it was inert from the day it was written -
+--                           which is the exact risk the [pre-emptive]
+--                           convention exists to make visible
+--      rows in staging      somebody really did type a department name into
+--                           the job-title field, and the title has since
+--                           left the data
+-- ----------------------------------------------------------------------------
+select
+    'in the title dictionary'        as where_found,
+    count(*)                        as titles,
+    sum(frequency)                  as records
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+where title in ('department of biology', 'department of chemistry')
+
+union all
+
+select
+    'raw job titles in staging',
+    count(distinct role_title_raw),
+    count(*)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+where lower(trim(role_title_raw)) in ('department of biology', 'department of chemistry')
+
+union all
+
+select
+    'as a DEPARTMENT in staging',
+    count(distinct department),
+    count(*)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+where lower(trim(department)) in ('department of biology', 'department of chemistry')
 ;
