@@ -31,8 +31,20 @@
     them BEFORE the build. If query 1 is far from 55,646 the regex does not
     say what it was measured to say, and the seed is wrong.
 
-    EVERY QUERY HERE MATCHES ALL THREE GROUP NAMES - `researcher` and the
-    two halves it was made from. The merge is in the seeds and not yet in
+    EVERY QUERY HERE FILTERS ON coalesce(model_title_group, title_group)
+    AND MATCHES ALL THREE GROUP NAMES - `researcher` and the two halves it
+    was made from.
+
+    The coalesce is there because query 1 returned a confident row of zeros
+    twice, and the second time it was already matching all three spellings,
+    so the name was not the cause - model_title_group itself is empty in the
+    built table. It is the right column in principle: a group-scoped pattern
+    is conditioned on what the MODEL chose, before any override or pattern.
+    Where it is missing, the resolved title_group is the closest thing
+    available. That is an approximation, and it is wrong in exactly one
+    direction: a title an override or an earlier pattern already moved OUT of
+    researcher will not be counted, so this forecast can run slightly low.
+    Query 0 says how often that happens. The merge is in the seeds and not yet in
     the data, so a forecast written against the post-merge name alone
     matches nothing and returns a confident row of zeros, which is what the
     first version of this file did. Matching all three makes the file run
@@ -112,7 +124,8 @@ with t as (
         regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b') as names_a_student,
         regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b') as veto_fires
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
-    where model_title_group in ('researcher', 'researcher_early', 'researcher_established')
+    where coalesce(model_title_group, title_group)
+          in ('researcher', 'researcher_early', 'researcher_established')
 ),
 moved as (
     select * from t where names_a_student and not veto_fires
@@ -145,7 +158,8 @@ select
 with moving_titles as (
     select title
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
-    where model_title_group in ('researcher', 'researcher_early', 'researcher_established')
+    where coalesce(model_title_group, title_group)
+          in ('researcher', 'researcher_early', 'researcher_established')
       and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
       and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
 )
@@ -175,7 +189,8 @@ select
     frequency,
     length(title) as len
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
-where model_title_group in ('researcher', 'researcher_early', 'researcher_established')
+where coalesce(model_title_group, title_group)
+          in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
   and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
 order by len desc, frequency desc
@@ -202,7 +217,8 @@ select
         else 'spared by a SENIORITY word only - check these'
     end as why_spared
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
-where model_title_group in ('researcher', 'researcher_early', 'researcher_established')
+where coalesce(model_title_group, title_group)
+          in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
   and regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
 order by
