@@ -40,7 +40,8 @@ table(d,["#","Question","Size","Our working answer","Need"],
   ["9","Is an honorary professor active?","6,651 records","Yes, currently in","Medium"],
   ["10","Is an uninformative title (dr, md) acceptable evidence?","146,865 records","Yes, if the department agrees","Medium"],
   ["11","Should a past role still count?","not measured","Yes, for seven of nine","Medium"],
-  ["12","Does book-author consent cover a role campaign?","NEW","Assumed yes","**High**"],
+  ["12","Does book-author consent cover a role campaign?","26,654 people",
+   "**BUILT 10 Nov** — want it in writing","Confirm"],
   ["13","Should a job title be allowed in two professions?","78,000 records","**DECIDED — no.** Please confirm","Confirm"],
   ["14","Two deliberate exclusions from Librarian","small","Both excluded","Low"],
   ["15","*Should Researcher split into early and senior?*","—","**WITHDRAWN 4 Nov — not splitting**","—"],
@@ -234,23 +235,34 @@ para(d,"This one is larger than the whole statistician family put together, and 
        "in whichever direction you choose for question 4.")
 
 # ---------------------------------------------------------------- 12 NEW
-h(d,"5.  NEW — Does book-author consent cover a role-based campaign?")
-para(d,"We are about to add a fourth consent basis, `is_book_author_communications_opted_in`, "
-       "to the definition of \"reachable\". Anyone holding any one of the four bases counts.")
-box(d,"THE QUESTION",[
+h(d,"5.  Does book-author consent cover a role-based campaign?  — BUILT, STILL WANTED IN WRITING")
+para(d,"**This is now in the pipeline**, on Merve's instruction that it counts. "
+       "`is_book_author_communications_opted_in` is the fourth consent basis and **26,654 "
+       "people across the nine audiences hold it**. Reachable means any one of the four: "
+       "marketing opt-in, advertising opt-in, legitimate interest, book-author consent.")
+box(d,"WHAT WE STILL WANT FROM YOU",[
  "Somebody opted in to hear about **books**.",
  "",
  "Does that cover a **healthcare practitioner campaign**?",
  "",
- "This is a legal scope question, not a technical one. \"Reachable\" is the number that "
- "goes to Braze, and the basis has to match the message being sent. We added the third "
- "basis on 16 October on your instruction; we would like the fourth recorded the same way, "
- "in writing.",
+ "The number is already built and already going out. This is a legal scope question, not "
+ "a technical one, and we would like the answer recorded in writing the way the third "
+ "basis was on 16 October — so that whoever audits a send can see the permission was "
+ "considered rather than assumed.",
 ], fill="FDF8EF", accent=AMBER)
-para(d,"**A measurement worth doing first.** The existing legitimate-interest basis is "
-       "author-based, and so is this one. They may be largely the same people. Librarians "
-       "are reachable at 54% against 70–78% everywhere else for exactly this reason — they "
-       "publish less. We would measure the overlap before promising a number.")
+para(d,"**And a correction we owe you.** Every \"reachable\" figure we have given you "
+       "before 10 November counted marketing opt-in ALONE — one basis out of four. It "
+       "understated the audience by between 2.2 and 4.1 times. Lecturer was reported as "
+       "109,323 and is **319,291**. Legitimate interest is the whole gap: 295,314 of "
+       "Lecturer hold it against 109,323 with marketing consent. The pipeline has been "
+       "right since 16 October; the reporting was reading a narrower column. Every number "
+       "in this document is now the four-basis figure.")
+para(d,"**One question we were going to ask you and are not, because we measured it "
+       "instead.** The CDP carries three more consents — editor referral, editorial board "
+       "members, webshop buyer. Each is permission for a different communication, so none "
+       "of them is a basis for a role campaign without your word. They reach **251 people** "
+       "that nothing else reaches, 0.03% of the reachable total. Ruling them in would not "
+       "move anything, so we are not asking.")
 
 # ---------------------------------------------------------------- MEDIUM BLOCK
 h(d,"6.  Nine medium questions, each one line to change")
@@ -502,17 +514,23 @@ para(d,"**There is now an accuracy figure, and here is exactly what it is.** ORC
        "Instead, on 5 November 400 Confirmed people were drawn at random from each "
        "audience and read one at a time — job title, employer, department — and marked "
        "correct, wrong or not sure.")
-table(d,["Audience","Correct, of the cases that could be decided"],
- [["Researcher","99.0%"],
-  ["Lecturer","98.7%"],
-  ["Librarian (all 692 read)","98.5%"],
-  ["Pharmacist","95.7%"],
-  ["HCP administrator","94.9%"],
-  ["HCP practitioner","93.4%"],
-  ["HCP broad","90.6%"],
-  ["Clinical researcher","90.0%"],
-  ["Head of Faculty","83.3%"]],
- widths=[2.4,3.0], size=9)
+table(d,["Audience","Correct, of the decided","Reachable"],
+ [["Researcher","99.0%","237,391"],
+  ["Lecturer","98.7%","319,291"],
+  ["Librarian (all 692 read)","98.5%","384"],
+  ["Pharmacist","95.7%","1,531"],
+  ["HCP administrator","94.9%","5,949"],
+  ["**Clinical researcher**","**94.3%** — read 3 times","39,758"],
+  ["HCP practitioner","93.4%","46,450"],
+  ["HCP broad","90.6%","93,377"],
+  ["**Head of Faculty**","**83.3%**","11,962"]],
+ widths=[2.0,2.1,1.3], size=9)
+para(d,"Clinical researcher is the one that moved. It was 90.0% on 5 November and 89.0% on "
+       "a second sample, then **94.3%** after the department dictionary was corrected on "
+       "10 November. The change is within sampling noise at 100 people, so we are not "
+       "claiming it as proven — but the ERRORS changed in the way the fix predicts. "
+       "Departments that are not human health fell from 4 in 10 to 2 in 5, and both "
+       "survivors are fields we have not addressed yet.")
 para(d,"**On 10 November the lowest of those was read again, by a different reader, on "
        "100 different people: 89.0%.** One point apart from 90.0%. That is the first "
        "quality figure in this project that has been reproduced rather than asserted.")

@@ -23,7 +23,39 @@ r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
 para(d, "Working document  ·  updated 10 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
-box(d, "WHAT CHANGED ON 5 NOVEMBER", [
+box(d, "WHAT CHANGED ON 10 NOVEMBER", [
+ "**Researcher is one title group, not two.** `researcher_early` and "
+ "`researcher_established` were merged. No audience had ever read them apart, and the "
+ "project's largest single error — `junior researcher`, 42,949 records — was a title "
+ "landing in the wrong one of two groups that meant the same thing. 22 anchors and 195 "
+ "overrides now sit under one name.",
+ "",
+ "**Doctoral students leave Researcher unless the job title says research.** Merve\'s "
+ "decision, on the loose reading: any research word keeps them, in any language, not "
+ "only the noun *researcher*. `phd research fellow` stays, `phd fellow` — 19,424 "
+ "records — goes. 1,400 people of 333,280, and no other audience moved by more than 10.",
+ "",
+ "**The department dictionary was reading 108,587 records of non-clinical departments as "
+ "clinical, and 85% of that is gone.** `School of Life Sciences`, `Faculty of Science`, "
+ "`Plant Pathology`, `Physikalisches Institut`, `Faculty of Arts and Humanities`. The "
+ "cause was two anchors — `faculty of medicine` and `school of medicine` — which are "
+ "four words of which two carry no field at all, so anything named *Faculty of "
+ "something* sat close to them. 16 new anchors fixed it; the two magnets were left in "
+ "place deliberately, because removing them would have sent 270 departments into "
+ "`pharmacy`, the one receiving discipline that feeds a live audience.",
+ "",
+ "**HCP researcher was read a third time: 94.3%, up from 89.0%.** On a fresh 100, after "
+ "the department fix. The move is within sampling noise at that size and the error "
+ "composition is the better evidence — field errors fell from 4 to 2, and both "
+ "survivors are fields no anchor addressed. Section 10.4.",
+ "",
+ "**Reachable is three times what this document used to say.** Every reachable figure "
+ "quoted here before today was `mkt_pref_opt_in` alone — one legal basis out of four. "
+ "Lecturer read 109,323 and is **319,291**. Book-author consent was added as the fourth "
+ "basis, which Merve had already decided counts. Section 10.3.",
+ "",
+ "**AND ON 5 NOVEMBER:**",
+ "",
  "**Every audience now has a measured accuracy, read by hand.** A random sample of 400 "
  "CONFIRMED people per audience (all 692 librarians) was read one by one and marked "
  "correct, wrong or not sure. Lecturer, Researcher and Librarian are **98.5–99.0% "

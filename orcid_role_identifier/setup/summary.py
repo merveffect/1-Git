@@ -286,23 +286,39 @@ def build(d):
       ["Hospital veto in the organisation-name fallback", "Ours",
        "6% of Head of Faculty: *...University ... Affiliated Hospital* reads as a "
        "university. A 0.00 *hospital* pattern, the same mechanism as the company veto"],
-      ["Department override (*Faculty of Science* read as clinical)", "Ours",
-       "HCP administrator 89% → 95% was done 5 Nov through the organisation. What is left "
-       "there is ~1%: general-science faculties the department dictionary reads as "
-       "`health_clinical`. Titles have an override file; departments do not"],
+      ["~~Department override (*Faculty of Science* read as clinical)~~", "**DONE 10 Nov**",
+       "108,587 records of non-clinical departments were reading as clinical and **85% is "
+       "gone**. Fixed by ADDING 16 anchors rather than removing the two that caused it — "
+       "removal would have sent 270 departments into `pharmacy`, the one receiving "
+       "discipline that feeds an audience. Departments still have no override file and "
+       "did not need one"],
       ["Is an industry medical director in HCP broad?", "**Marketing**",
        "They left HCP administrator (threshold 0.70) but keep HCP broad (0.60) through the "
        "roll-up. Left as it is until marketing says whether broad means the work or the field"],
       ["A second reader on the 5 Nov samples", "Merve",
        "The accuracy table in 6.0 is one reader's judgement; ~30 rows per audience "
        "read again turns it into a reportable figure"],
-      ["Read more of practitioner", "Ours",
-       "At ~38% coverage it is the least-read group. analyses/35 is the reading list, and "
-       "it points at the band ABOVE 0.75 similarity that no review has ever examined"],
-      ["The doctoral-student rule, as overrides", "Ours",
-       "Decided 4 Nov: a doctoral student is in Researcher only if the **title** says "
-       "research. `phd fellow`, 19,424 records, says neither. One question back to Merve "
-       "first — whether `research assistant` counts as saying it"],
+      ["**Read practitioner — the agreed next task**", "Ours",
+       "At ~38% coverage it is the least-read group, 36,266 titles. `analyses/35` query 3 "
+       "is the reading list and points at the band **ABOVE** 0.75 similarity that no "
+       "review has ever examined — every practitioner review ever written filtered "
+       "*below* 0.75, and `junior researcher` sat at 0.870"],
+      ["Two field errors no anchor reaches", "Ours",
+       "Found in the third HCP researcher reading: `Institute of Vertebrate Paleontology "
+       "and Paleoanthropology` and `Photometry and radiometry group`. Neither is "
+       "agriculture, physics, humanities or life sciences, so the 16 new anchors do not "
+       "see them. Small, and the method for fixing them is known"],
+      ["A job title that is the single word `Fellow`", "**Marketing**",
+       "Four of thirteen not-sure rows in the third reading, now the largest single "
+       "uncertainty in HCP researcher. In an American teaching hospital it means a "
+       "physician in subspecialty training; in a British university it means a "
+       "researcher. The record carries nothing that separates them. Question 1.9"],
+      ["~~The doctoral-student rule~~", "**DONE 10 Nov**",
+       "Written as ONE pattern row with a veto, not 1,191 overrides. Merve chose the "
+       "loose reading, so any research word in any language keeps them. 1,400 people left "
+       "Researcher. Scoped to the early end on purpose: 24 of the 25 largest titles in "
+       "the senior half carry `phd` as a CREDENTIAL, and the same rule there would demote "
+       "senior researchers for holding a doctorate"],
       ["The education signal", "Ours",
        "`educations` is pulled into the raw layer and consumed by nothing. A degree (MD, "
        "MBBS, PharmD, MLIS) is a far more standardised vocabulary than a job title, and "
