@@ -121,3 +121,60 @@ qualify row_number() over (
     order by farm_fingerprint(concat(cast(r.snid as string), '|reading3'))
 ) <= 100
 ;
+
+
+-- ----------------------------------------------------------------------------
+-- 1a. WHAT IS STILL THERE, BY DEPARTMENT. Run this before reading query 2.
+--
+--     Query 1 did not come back as forecast and the forecast was built on
+--     a number that could not carry it:
+--
+--         family              my "before"   now    forecast
+--         agriculture, plants      350      273     ~0
+--         physics                   55       49     ~0
+--         humanities                50       27     ~0
+--         veterinary               129      178     129, must not fall
+--         sport                    166      315     166, must not fall
+--         student, 1.17            273       36     ~0
+--
+--     THE 1.17 RULE WORKED - 273 to 36, 87% gone. The department fix moved
+--     108,587 records to 16,536, 85%, and moved the PEOPLE in this audience
+--     by 22%, 11% and 46%. Those are different sizes of the same thing and
+--     only one of them was forecast.
+--
+--     THE "BEFORE" NUMBERS WERE FLOORS, NOT BASELINES. 350, 55, 50, 129 and
+--     166 were hand-summed off analyses/38 query 1, which is `limit 300` on
+--     a department list, and that file says so in its own header: "these are
+--     floors, not totals". I used them as a baseline anyway. Veterinary and
+--     sport rising by 49 and 149 while nothing touched them proves it - the
+--     same build lifted clinical similarity and carried more people over
+--     every threshold, and a floor cannot measure against that.
+--
+--     So what is left is unknown rather than unchanged, and this query asks
+--     it properly: one row per department, with its current discipline. A
+--     department reading health_clinical here is either a gap in the new
+--     anchors or a department that belongs.
+-- ----------------------------------------------------------------------------
+with people as (
+    select distinct r.snid, r.evidence_dept
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
+    where r.role_key   = 'hcp_researcher'
+      and r.role_label = 'CONFIRMED'
+      and r.evidence_dept is not null
+      and regexp_contains(lower(r.evidence_dept),
+          r'(\bplant|\bagri|\bcrop|\bsoil|\bforest|\bfisher|\bbotan|\bentomolog|\bhorticult|\bagronom|\bphysik|\bphysics|\bastronom|\bphilosoph|\bhumanit|\btheolog|\blinguist|\bliterat|\barts\b|\blife science|\bbiomedicin|\bbiomedical science|faculty of biology)')
+)
+select
+    p.evidence_dept,
+    d.discipline,
+    round(d.similarity, 3)                     as similarity,
+    round(d.margin, 3)                         as margin,
+    array_to_string(d.matched_anchors, ' | ')  as matched,
+    count(distinct p.snid)                     as people
+from people p
+left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline` d
+    on to_hex(md5(p.evidence_dept)) = d.department_key
+group by p.evidence_dept, d.discipline, similarity, margin, matched
+order by people desc
+limit 120
+;
