@@ -1321,6 +1321,45 @@ until the families that collide with them are anchored on their own merit:
 Sport and veterinary are deliberately absent — they are 1.18 and 1.19 and
 belong to marketing.
 
+**APPROVED AND WRITTEN 2026-11-10.** Merve: *"onayliyorum evet"*. 13
+anchors added, 162 → 175. `faculty of medicine` and `school of medicine`
+stay.
+
+| Discipline | Added |
+| --- | --- |
+| `life_biomedical` | `school of life sciences`, `faculty of life sciences`, `faculty of biology`, `department of biomedicine`, `biomedical sciences` |
+| `earth_agriculture` | `plant pathology`, `fisheries`, `aquaculture`, `crop science` |
+| `physical_chemistry` | `physikalisches institut` [de], `institut fur theoretische physik` [de] |
+| `humanities_law_edu` | `institut fur philosophie` [de], `faculty of arts and humanities` |
+
+**The single most useful fact in this whole thread is one line of that
+table.** `life sciences` has been an anchor in `life_biomedical` since the
+seed was written, and `school of life sciences` — 21,738 records, the
+largest single department in the problem — **still lost to the faculty
+magnet at 0.809 similarity**. A correct field anchor was already present
+and was beaten by the phrase `school of`. That is the proof that the magnet
+is structural and not a gap in the vocabulary.
+
+Two choices inside the batch worth stating:
+
+- **`department of biomedicine` and `biomedical sciences` go to
+  `life_biomedical`, not `health_clinical`.** 1.2 is open and marketing's
+  working answer is that a biomedical researcher is not a healthcare
+  professional. This follows that answer rather than pre-empting it, and
+  reverses in one row if marketing says otherwise.
+- **The German anchors are written without umlauts** — `institut fur
+  theoretische physik`, `institut fur philosophie` — because `clean_text`
+  casefolds under NFKC and strips them before matching.
+
+`analyses/44` is the forecast, before the build, and it checks the two ways
+this goes wrong. **Query 2 lists the clinical departments the new anchors
+must NOT steal** — `department of pathology` at 11,640 records is the sharp
+one, and `plant pathology` must separate from it on the 0.694 / 0.747 gap
+measured in `analyses/39`. **Query 3 runs after the build and asks whether
+each new anchor won anything at all**: an anchor holding zero departments
+would mean an exact phrase does not beat `faculty of medicine`, and that
+the add-not-remove approach does not work on this axis.
+
 **One question this exposes and cannot answer: there is no discipline for a
 generic container.** `faculty of science`, `faculty of sciences`,
 `facultad de ciencias`, `doctoral school`, `rektörlük` name no field at
