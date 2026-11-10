@@ -85,7 +85,7 @@ def build(d):
        "Job title mandatory; departments fixed 10 Nov"],
       ["**HCP practitioner**", "61,945", "**46,450**", "75.0%", "Long tail — least read"],
       ["**HCP researcher**", "54,016", "**39,758**", "73.6%",
-       "Lowest measured accuracy, 90.0%"],
+       "Read 3x; 94.3% after the department fix"],
       ["**Head of Faculty**", "15,159", "**11,962**", "78.9%",
        "Narrowed 5 Nov; 83.3% correct"],
       ["**HCP administrator**", "7,563", "**5,949**", "78.7%",
@@ -96,9 +96,13 @@ def build(d):
      widths=[1.5, 0.95, 1.0, 0.7, 2.4], size=9)
     para(d, "**Measured accuracy for every audience, read by hand, is in section 6.0**: "
             "Researcher 99.0%, Lecturer 98.7%, Librarian 98.5%, Pharmacist 95.7%, HCP "
-            "administrator 94.9%, the other healthcare audiences 90–93%, Head of Faculty "
-            "83.3% — each the share correct of the cases that could be decided.",
-            size=9, space_after=4)
+            "administrator 94.9%, HCP practitioner 93.4%, HCP broad 90.6%, Head of "
+            "Faculty 83.3% — each the share correct of the cases that could be decided. "
+            "**HCP researcher has been read three times**: 90.0%, then 89.0%, then "
+            "**94.3%** after the department fix of 10 November. That last move is within "
+            "sampling noise at n=100, and the error composition is the better evidence — "
+            "field errors fell from 4 to 2 and both survivors are fields no anchor "
+            "addressed.", size=9, space_after=4)
     para(d, "**Two warnings about that table.** The rows **overlap** — one person can be "
             "both a Lecturer and an HCP researcher — so the columns must not be added up.",
             space_after=4)
@@ -117,29 +121,6 @@ def build(d):
      "",
      "Legitimate interest is the reason: it is far larger than either opt-in — 295,314 of "
      "Lecturer against 109,323 — and it was the column being left out.",
-    ], fill="FDF8EF", accent=AMBER)
-    para(d, "**Measured accuracy for every audience, read by hand, is in section 6.0**: "
-            "Researcher 99.0%, Lecturer 98.7%, Librarian 98.5%, Pharmacist 95.7%, HCP "
-            "administrator 94.9%, the other healthcare audiences 90–93%, Head of Faculty "
-            "83.3% — each the share correct of the cases that could be decided.",
-            size=9, space_after=4)
-    para(d, "**Two warnings about that table.** The rows **overlap** — one person can be "
-            "both a Lecturer and an HCP researcher — so the columns must not be added up.",
-            space_after=4)
-    box(d, "THAT THIRD COLUMN IS NOT THE REACHABLE AUDIENCE, AND IT UNDERSTATES IT", [
-     "It counts `mkt_pref_opt_in` alone. **The pipeline has used three legal bases since "
-     "16 October** — marketing opt-in, advertising opt-in and legitimate interest — set in "
-     "`dbt_project.yml` as `consent_basis: 'any_basis'`, applied by `consent_predicate()`, "
-     "and already counted as `reachable` in `fct_role_audience_summary`.",
-     "",
-     "So the data has been right and this column has been the wrong one. It is left in "
-     "place and relabelled rather than quietly swapped, because every reachable figure "
-     "quoted from this document before 10 November was this narrower number. The correct "
-     "one comes from `analyses/37` query 2 and will replace this column at the next count.",
-     "",
-     "A fourth basis is still missing from the source: "
-     "`is_book_author_communications_opted_in`. Merve has said it counts, so reachable "
-     "grows again when the column arrives. That is marketing question 5.",
     ], fill="FDF8EF", accent=AMBER)
     box(d, "THE AUDIENCES GREW AND THE REACHABLE PART DID NOT", [
      "Against the 4 November build, the six audiences that no rule touched all grew by "

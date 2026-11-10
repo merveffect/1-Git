@@ -1140,6 +1140,62 @@ public, and it checks the two ways the row can fail: too wide, by taking a
 credential hiding in a long title, and too narrow, by the veto firing on a
 real student.
 
+### 2.14 hcp_researcher read a third time — 94.3%, and the composition is the real evidence
+
+A fresh 100 CONFIRMED people, drawn on a different hash so the sample is
+not the one my own verdicts are anchored to, `analyses/46` query 2.
+
+| Reading | n | Correct | Wrong | Not sure | **Correct of the decided** |
+| --- | --- | --- | --- | --- | --- |
+| 5 November | 400 | 81.2% | 9.0% | 9.8% | **90.0%** |
+| 10 November | 100 | 81 | 10 | 9 | **89.0%** |
+| **10 November, third** | 100 | **82** | **5** | **13** | **94.3%** |
+
+**The move is +5.3 points and it is NOT statistically separable at n=100.**
+Standard error of the difference is 4.1 points, z = 1.27, p ≈ 0.20. Anyone
+quoting 94.3% against 89.0% as a proven improvement is over-reading two
+samples of a hundred.
+
+**The composition is the evidence, and it moved the way the fix predicts:**
+
+| Error class | 10 Nov | Third reading |
+| --- | --- | --- |
+| the department is not human health | **4** | **2** |
+| the title is not a research role | 4 | 3 |
+| other | 2 | 0 |
+| **total wrong** | **10** | **5** |
+
+And the two field errors that survived are **fields we never anchored**:
+`Institute of Vertebrate Paleontology and Paleoanthropology` at the Chinese
+Academy of Sciences, and `Photometry and radiometry group` at the Korea
+Research Institute of Standards and Science. Neither is agriculture,
+physics, humanities or life sciences — the four families the 13 anchors
+addressed. The anchored families produced **no** errors in this sample.
+
+The three title errors are the unfixed class, unchanged: `Partnerships Team
+Lead` at the CDC, `Director of Postgraduate Studies in Hip and Knee
+Reconstructive Surgery`, and `Nurse Coordinator for Nursing Research
+Support`. A team lead, a teaching post and a support role, none of them a
+researcher, and nothing we have built touches any of them.
+
+**NOT-SURE WENT UP, 9 to 13, and that is a finding rather than noise.**
+Four of the thirteen are a job title that is the single word `Fellow` — at
+Pulmonary and Critical Care, Pediatrics, Otolaryngology and Neurology, all
+American teaching hospitals, where it means a physician in subspecialty
+training. That is 1.9, and it is now the largest single uncertainty in this
+audience.
+
+**And two are a department that is a non-word**: one person's department is
+literally `Institute` and another's is `IBGA Lab`. That is the generic
+container problem from 2.12 arriving on the person level — 1.9 asked of the
+department axis instead of the title.
+
+The rest: two industry researchers (Novo Nordisk, 1.2), one veterinary
+institute (1.18), one sport science department (1.19), one `Collaborator`,
+one `Borsisti`, one clinical subspecialty fellow. **Every one of them is an
+open definition question rather than a defect**, which is the state this
+audience should be in.
+
 ### 2.13 Reachable was reported at a third of its size for a month — 2026-11-10
 
 Merve: *"ben coktan book legitimate interest ve legitimate interestlerin
