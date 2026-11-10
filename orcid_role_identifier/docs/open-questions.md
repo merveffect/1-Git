@@ -1140,6 +1140,66 @@ public, and it checks the two ways the row can fail: too wide, by taking a
 credential hiding in a long title, and too narrow, by the veto firing on a
 real student.
 
+### 2.12 Two anchors describe a building, not a field — 2026-11-10
+
+`analyses/39` was written to confirm that the wrong healthcare departments
+are a **missing-anchor** problem. It confirmed that for one family and found
+something else for the other four.
+
+Query 2 named the anchor holding each family inside `health_clinical`:
+
+| Family | Visible records | From `faculty of medicine` / `school of medicine` | |
+| --- | --- | --- | --- |
+| sport | 46,838 | 39,149 | 84% |
+| plants | 13,878 | 1,013 | 7% |
+| veterinary | 8,350 | 5,497 | 66% |
+| physics | 3,958 | 2,621 | 66% |
+| humanities | 3,539 | 3,539 | **100%** |
+| **total** | **76,563** | **51,819** | **68%** |
+
+**Two defects wearing one symptom, and they want opposite fixes.**
+
+**PLANTS is a field collision** and the missing-anchor diagnostic holds. 93%
+of it is held by the `pathology` anchor — a real clinical field word that
+`Plant Pathology` happens to contain. Query 3 says the separation is clean:
+inside `health_clinical`, the **21** plant-ish pathology departments sit at
+0.694 mean similarity and the **1,477** genuinely clinical ones at 0.747.
+One `earth_agriculture` anchor should take the 21 and leave the 1,477.
+
+**THE OTHER FOUR are a structural magnet.** `faculty of medicine` and
+`school of medicine` are four words of which two — `faculty of` — carry no
+field at all. Any department written as *Faculty of anything* sits close to
+them: `Faculty of Veterinary Medicine`, `Faculty of Sport and Health
+Sciences`, `Faculty of Arts and Humanities`. **Adding a plant or a physics
+anchor does nothing for these**, because the magnet is not about the field,
+it is about the shape of the name. Humanities is 100% this.
+
+This is the project's own documented failure mode, one dictionary over.
+2.4f: a short anchor attracts its spelling rather than its meaning. The
+`pathologist` finding: how crowded the neighbouring region is predicts a
+magnet, not the suffix. **Here the crowded region is every faculty in every
+university.**
+
+One more sighting worth recording: German physics institutes are held by
+`klinik fur innere medizin` — 1,968 records across
+`Physikalisches Institut` and its variants. Same mechanism in a second
+language, and the German anchor was added for a clinical reason.
+
+**REMOVING THE TWO ANCHORS IS NOT FREE, which is why this is a measurement
+and not a commit.** Departments literally named `Faculty of Medicine` are
+genuinely clinical and there are many. `analyses/42` asks the question that
+decides it: of the departments held ONLY by those two anchors, how many
+name medicine and would be lost, how many name something else and are the
+error, and what the runner-up discipline would be — because if the
+runner-up is already correct, removal alone fixes them and no new anchor is
+needed.
+
+**Also unresolved and now visible:** `zoonoses` departments split almost
+exactly in half between `health_clinical` (40 departments, 910 records) and
+`life_biomedical` (40, 862). The same kind of department landing in two
+disciplines is arbitrary either way, and only one of those two feeds an
+audience.
+
 ### 1.18 Are veterinarians healthcare professionals? — ASKED 2026-11-10
 
 Found while reading 100 CONFIRMED `hcp_researcher` people by hand. Veterinary
