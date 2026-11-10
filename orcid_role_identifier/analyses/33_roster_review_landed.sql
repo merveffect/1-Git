@@ -303,7 +303,9 @@ their_titles as (
     from the_102 t
     join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` r
          using (snid)
-    group by t.snid, t.evidence_title, t.evidence_dept, t.score
+    /* NOT t.score - that is this SELECT's own alias, and BigQuery will not
+       accept it qualified. Group by the underlying column. */
+    group by t.snid, t.evidence_title, t.evidence_dept, t.role_final_score
 )
 
 select

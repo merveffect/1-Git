@@ -73,28 +73,39 @@ def build(d):
 
     # ------------------------------------------------------------ THE TABLE
     h(d, "10.3  Where each audience stands", 2)
-    para(d, "Measured 4 November 2026.", space_after=4)
+    para(d, "Counted after the build of 4 November, except the three rows marked "
+            "*5 Nov*, which were re-counted after that day's rule changes.",
+            space_after=4)
     table(d, ["Audience", "Confirmed", "Probable", "Marketing consent", "State"],
-     [["**Lecturer**", "404,061", "306", "109,117", "Most worked, best validated"],
-      ["**Researcher**", "329,850", "762", "64,981", "Solid; ships as ONE audience"],
-      ["**HCP broad**", "129,373", "107,896", "27,977", "The wide net, by design"],
-      ["**HCP practitioner**", "60,945", "2,911", "13,887", "Long tail — least read"],
-      ["**HCP researcher**", "53,290", "2,089", "9,750", "Follows Researcher"],
-      ["**Head of Faculty**", "15,048 (5 Nov)", "—", "—", "**Narrowed 5 Nov; 83% read correct**"],
-      ["**HCP administrator**", "7,528 (5 Nov)", "—", "—", "**Fixed 5 Nov: 89% → 95% read correct**"],
-      ["**Pharmacist**", "2,051 (5 Nov)", "—", "—", "**Fixed 5 Nov: 82% → 96% read correct**"],
-      ["**Librarian**", "687", "0", "177", "Small, entirely rule-driven"]],
+     [["**Lecturer**", "406,860", "308", "109,117", "Most worked, best validated"],
+      ["**Researcher**", "332,026", "763", "64,981", "Solid; ships as ONE audience"],
+      ["**HCP broad**", "124,223", "37,031", "26,790",
+       "Wide, but the job title is now mandatory"],
+      ["**HCP practitioner**", "61,421", "2,910", "13,887", "Long tail — least read"],
+      ["**HCP researcher**", "53,621", "2,077", "9,750", "Follows Researcher"],
+      ["**Head of Faculty**", "15,048", "—", "—",
+       "**Narrowed 5 Nov; 83.3% read correct**"],
+      ["**HCP administrator**", "7,528", "—", "—",
+       "**Fixed 5 Nov: 89% → 94.9% read correct**"],
+      ["**Pharmacist**", "2,051", "—", "—",
+       "**Fixed 5 Nov: 82% → 95.7% read correct**"],
+      ["**Librarian**", "692", "0", "177", "Small, entirely rule-driven"]],
      widths=[1.5, 0.95, 0.85, 1.25, 2.1], size=9)
-    para(d, "Rows marked *5 Nov* were re-counted after the Head of Faculty changes; probable and "
-            "consent were not re-counted for those two rows. **Measured accuracy for every "
-            "audience, read by hand, is in section 6.0**: Researcher 99.0%, Lecturer "
-            "98.7%, Librarian 98.5%, Pharmacist 95.7%, HCP administrator 94.9%, the other healthcare audiences 90–93%, "
-            "Head of Faculty 83.3% — each the share correct of the cases that could be "
-            "decided.", size=9, space_after=4)
-    para(d, "**Two warnings about that table.** The rows **overlap** — one person can be "
+    para(d, "**Measured accuracy for every audience, read by hand, is in section 6.0**: "
+            "Researcher 99.0%, Lecturer 98.7%, Librarian 98.5%, Pharmacist 95.7%, HCP "
+            "administrator 94.9%, the other healthcare audiences 90–93%, Head of Faculty "
+            "83.3% — each the share correct of the cases that could be decided.",
+            size=9, space_after=4)
+    para(d, "**Three warnings about that table.** The rows **overlap** — one person can be "
             "both a Lecturer and an HCP researcher — so the columns must not be added up. "
-            "And \"marketing consent\" here is `mkt_pref_opt_in` only; *legitimate "
-            "interest* is a wider basis and is not counted in it.", space_after=8)
+            "\"Marketing consent\" here is `mkt_pref_opt_in` only; *legitimate "
+            "interest* is a wider basis and is not counted in it. And the consent column "
+            "was measured on 4 November **before** that day's build, so it trails the "
+            "Confirmed column by roughly +0.7% everywhere except HCP broad, whose figure "
+            "is post-build. The first five rows also predate the 5 November rule "
+            "changes, which moved named chairs into Lecturer and pharmacologists out "
+            "of Pharmacist, so they will move a little at the next full count.",
+            space_after=8)
 
     # ------------------------------------------------------------ ONE BY ONE
     h(d, "10.4  One by one", 2)
@@ -134,6 +145,31 @@ def build(d):
             "but no department stay, because the title is the evidence and 11.6% of "
             "records carry no department.")
 
+    para(d, "**It built the same day and the forecast held.** CONFIRMED came in at "
+            "124,223 against 123,258 predicted — 0.8% out, and the overshoot is the "
+            "underlying data refreshing rather than the change, because every other "
+            "audience grew in the same build. Nobody without a clinical title is left. "
+            "But **PROBABLE fell from 107,896 to 37,031**, a drop of 70,865, which was "
+            "not forecast and should have been: a clinical department alone scores "
+            "0.40 against a probable threshold of 0.30, so everyone with a clinical "
+            "department and no clinical title whatsoever had been sitting in that tier. "
+            "It costs nothing commercially — only CONFIRMED ships — but anyone reading "
+            "total audience size will see two thirds of that tier disappear.")
+
+    para(d, "**And it exposed a different problem the department arm had been hiding.** "
+            "The people who left are not administrators. Research and leadership titles "
+            "in a clinical department keep their healthcare coverage through HCP "
+            "researcher and HCP administrator; the cost falls almost entirely on "
+            "`teaching_academic`, and inside it on a family that is unmistakably "
+            "clinical — at least 2,516 people across `Clinical Assistant Professor`, "
+            "`Professor of Medicine`, `Clinical Instructor` and their variants, plus "
+            "1,979 medical students and 511 people whose entire title is `M.D.` These "
+            "are floors read off a truncated list, not totals. This is **not** an "
+            "argument to restore the department arm, which would readmit the 6,115. It "
+            "is the strongest evidence yet on the one-title-one-profession question in "
+            "1.10: a Clinical Assistant Professor really is both a lecturer and a "
+            "clinician.")
+
     para(d, "**HCP practitioner** — one cleanup pass has landed: the share of records "
             "below 0.75 similarity went **40.64% to 33.80%**, through 31 specialty anchors "
             "and 40 human overrides, each one moving exactly the number of records "
@@ -156,7 +192,7 @@ def build(d):
             "out, each vetoed by any pharmacist word. **2,304 → 2,051 people; 95.7% "
             "correct** on a fresh sample.")
 
-    para(d, "**Librarian** — 687 people, and every single one scores exactly 1.000. The "
+    para(d, "**Librarian** — 692 people, and every single one scores exactly 1.000. The "
             "reason is worth knowing: the group is **99.9% decided by pattern** and the "
             "role is weighted 1.00 on the title and 0.00 on the organisation, so the "
             "threshold is inert at every value from 0.60 to 0.95. Librarian quality cannot "
@@ -216,6 +252,10 @@ def build(d):
        "MBBS, PharmD, MLIS) is a far more standardised vocabulary than a job title, and "
        "it is the only signal that can speak to the 146,865 records whose title is just "
        "`dr` or `md`"],
+      ["The clinical academics", "Ours + Marketing",
+       "At least 2,516 people whose title says both `Clinical` and `Professor`, plus "
+       "1,979 medical students, now reach no healthcare audience. Cannot be fixed "
+       "without 1.10 — a title would have to sit in two groups"],
       ["The Students audience and its consent basis", "Both",
        "Agreed, not started"]],
      widths=[2.1, 0.95, 3.6], size=9)
