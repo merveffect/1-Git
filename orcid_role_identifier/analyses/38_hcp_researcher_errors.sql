@@ -316,3 +316,41 @@ select
 from flagged f
 left join others o using (snid)
 ;
+
+
+-- ----------------------------------------------------------------------------
+-- 7. WHICH TITLES ARE THE 273, so an override can be written against a title
+--    rather than against a rule nobody can inspect.
+--
+--    Query 3 measured, and the four buckets reconcile to 54,041 exactly,
+--    which is hcp_researcher CONFIRMED:
+--
+--        names no student                        35,846   66.33%
+--        POSTDOC - not a student, stays          16,816   31.12%
+--        student AND says research, stays         1,106    2.05%
+--        student, title says NO research            273    0.51%
+--
+--    READ THIS BEFORE WRITING ANY OVERRIDE. 273 is what the rule costs
+--    INSIDE this audience. An override moves a title out of
+--    researcher_early everywhere, and researcher_early also feeds
+--    `researcher`, which is 334,689 people and has no discipline filter at
+--    all. So the number that decides whether 1.17 is cheap is the one in
+--    analyses/35 query 1, not this one. This query only says which titles.
+-- ----------------------------------------------------------------------------
+with people as (
+    select distinct r.snid, r.evidence_title, lower(r.evidence_title) as title
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
+    where r.role_key   = 'hcp_researcher'
+      and r.role_label = 'CONFIRMED'
+)
+select
+    evidence_title,
+    count(*) as people
+from people
+where not regexp_contains(title, r'(post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate)')
+  and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|etudiant|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|graduand\w*)\b')
+  and not regexp_contains(title, r'\b(research|researcher|investigador\w*|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific)\b')
+group by evidence_title
+order by people desc
+limit 100
+;

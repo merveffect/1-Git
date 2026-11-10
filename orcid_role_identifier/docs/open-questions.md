@@ -808,6 +808,37 @@ produce the right answer, which is why it is evidence rather than a defect.
 
 ---
 
+### 1.17a What the doctoral-student rule costs — measured 2026-11-10
+
+`analyses/38` query 3, inside `hcp_researcher` CONFIRMED. The four buckets
+reconcile to **54,041 exactly**, which is the audience total, so nothing
+escaped the classification:
+
+| Bucket | People | Share |
+| --- | --- | --- |
+| names no student at all | 35,846 | 66.33% |
+| **POSTDOC — not a student, stays** | 16,816 | 31.12% |
+| student AND the title says research — stays under 1.17 | 1,106 | 2.05% |
+| **student, title says NO research — 1.17 removes** | **273** | **0.51%** |
+
+The hand reading of 100 people found one such person, `Pre-Doctoral Fellow`
+at a school of public health, which is 1% against a measured 0.51% — the
+same answer at n=1.
+
+**273 IS NOT THE PRICE OF THE RULE, AND MUST NOT BE QUOTED AS IT.** It is
+what the rule costs inside one audience. An override moves a title out of
+`researcher_early` *everywhere*, and `researcher_early` also feeds
+`researcher`, which is 334,689 people and has `disciplines: []` — no field
+test at all. The number that decides whether 1.17 is cheap is the
+project-wide one in `analyses/35` query 1, which has not been run since the
+postdoc bucket was separated out of it. Writing an override before that is
+exactly the mistake [[measure-before-tuning]] exists to prevent.
+
+Worth keeping in view: **31% of this audience are postdocs**, and the whole
+reason that bucket is printed rather than filtered is that the first version
+of the student regex swept every one of them in, because `post-doctoral`
+contains `doctoral`.
+
 ### 1.18 Are veterinarians healthcare professionals? — ASKED 2026-11-10
 
 Found while reading 100 CONFIRMED `hcp_researcher` people by hand. Veterinary
