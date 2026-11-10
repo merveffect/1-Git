@@ -142,7 +142,7 @@ with t as (
         model_is_assigned,
         frequency,
         regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b') as names_a_student,
-        regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|lecturer|reader|director|directora|directeur|head|leader|consultant|adviser|advisor|principal|chief|dean|supervis|coordinat|coordinad|coordenad|specialist|staff|tutor|teacher|teaching|docent|editor|chair|secretar|assess|cient[ií]fic|scientifique|wissenschaftlich)') as veto_fires
+        regexp_contains(title, r'research|reasearch|resarch|investigaci|investigac|investigad|investigador|investigaç|pesquisa|pesquisad|ricerc|recherche|chercheur|forsch|arastirma|araştırma|scientist|scientific|scientifique|wissenschaftlich|cient[ií]fic|scienziat|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|professeur|professore|lecturer|reader|docent|dozent|доцент|director|directora|directeur|direttore|direcci|head|leader|chief|dean|principal|consultant|adviser|advisor|specialist|staff|manager|supervis|coordinat|coordinad|coordenad|koordinat|tutor|teacher|teaching|enseign|demonstrator|faculty member|editor|chair|secretar|assess|responsabl)') as veto_fires
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
     where coalesce(model_title_group, title_group)
           in ('researcher', 'researcher_early', 'researcher_established')
@@ -181,7 +181,7 @@ with moving_titles as (
     where coalesce(model_title_group, title_group)
           in ('researcher', 'researcher_early', 'researcher_established')
       and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
-      and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|lecturer|reader|director|directora|directeur|head|leader|consultant|adviser|advisor|principal|chief|dean|supervis|coordinat|coordinad|coordenad|specialist|staff|tutor|teacher|teaching|docent|editor|chair|secretar|assess|cient[ií]fic|scientifique|wissenschaftlich)')
+      and not regexp_contains(title, r'research|reasearch|resarch|investigaci|investigac|investigad|investigador|investigaç|pesquisa|pesquisad|ricerc|recherche|chercheur|forsch|arastirma|araştırma|scientist|scientific|scientifique|wissenschaftlich|cient[ií]fic|scienziat|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|professeur|professore|lecturer|reader|docent|dozent|доцент|director|directora|directeur|direttore|direcci|head|leader|chief|dean|principal|consultant|adviser|advisor|specialist|staff|manager|supervis|coordinat|coordinad|coordenad|koordinat|tutor|teacher|teaching|enseign|demonstrator|faculty member|editor|chair|secretar|assess|responsabl)')
 )
 select
     r.role_key,
@@ -212,7 +212,7 @@ from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_
 where coalesce(model_title_group, title_group)
           in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
-  and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|lecturer|reader|director|directora|directeur|head|leader|consultant|adviser|advisor|principal|chief|dean|supervis|coordinat|coordinad|coordenad|specialist|staff|tutor|teacher|teaching|docent|editor|chair|secretar|assess|cient[ií]fic|scientifique|wissenschaftlich)')
+  and not regexp_contains(title, r'research|reasearch|resarch|investigaci|investigac|investigad|investigador|investigaç|pesquisa|pesquisad|ricerc|recherche|chercheur|forsch|arastirma|araştırma|scientist|scientific|scientifique|wissenschaftlich|cient[ií]fic|scienziat|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|professeur|professore|lecturer|reader|docent|dozent|доцент|director|directora|directeur|direttore|direcci|head|leader|chief|dean|principal|consultant|adviser|advisor|specialist|staff|manager|supervis|coordinat|coordinad|coordenad|koordinat|tutor|teacher|teaching|enseign|demonstrator|faculty member|editor|chair|secretar|assess|responsabl)')
 order by len desc, frequency desc
 limit 120
 ;
@@ -232,7 +232,7 @@ select
     case
         when regexp_contains(title, r'(post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate)')
             then 'postdoc'
-        when regexp_contains(title, r'research|investigador|investigator|chercheur|forscher|arastirmaci|ricercator|scientist|scientific')
+        when regexp_contains(title, r'research|investigaci|investigad|pesquisa|ricerc|recherche|chercheur|forsch|arastirma|scientist|scientific|cient[ií]fic')
             then 'says research'
         else 'spared by a SENIORITY word only - check these'
     end as why_spared
@@ -240,10 +240,10 @@ from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_
 where coalesce(model_title_group, title_group)
           in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
-  and regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|lecturer|reader|director|directora|directeur|head|leader|consultant|adviser|advisor|principal|chief|dean|supervis|coordinat|coordinad|coordenad|specialist|staff|tutor|teacher|teaching|docent|editor|chair|secretar|assess|cient[ií]fic|scientifique|wissenschaftlich)')
+  and regexp_contains(title, r'research|reasearch|resarch|investigaci|investigac|investigad|investigador|investigaç|pesquisa|pesquisad|ricerc|recherche|chercheur|forsch|arastirma|araştırma|scientist|scientific|scientifique|wissenschaftlich|cient[ií]fic|scienziat|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|profesor|professeur|professore|lecturer|reader|docent|dozent|доцент|director|directora|directeur|direttore|direcci|head|leader|chief|dean|principal|consultant|adviser|advisor|specialist|staff|manager|supervis|coordinat|coordinad|coordenad|koordinat|tutor|teacher|teaching|enseign|demonstrator|faculty member|editor|chair|secretar|assess|responsabl)')
 order by
     case when regexp_contains(title, r'(post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate)') then 2
-         when regexp_contains(title, r'research|investigador|investigator|chercheur|forscher|arastirmaci|ricercator|scientist|scientific') then 1
+         when regexp_contains(title, r'research|investigaci|investigad|pesquisa|ricerc|recherche|chercheur|forsch|arastirma|scientist|scientific|cient[ií]fic') then 1
          else 0 end,
     frequency desc
 limit 80

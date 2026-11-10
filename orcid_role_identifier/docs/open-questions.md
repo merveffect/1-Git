@@ -871,8 +871,49 @@ Records are ORCID employment rows across 10.4 million; people are what
 ships. Lecturer at zero is the useful check — this rule is scoped to
 `researcher` and nothing leaked sideways.
 
-**Not built yet.** Query 1 and query 3 are to be run once more against the
-widened veto before anything is built.
+**THIRD RUN, and the same bug a third time — one level deeper.**
+
+The widened veto worked and reconciled exactly: 71,598 → **69,406** records
+moved, 1,258 → **1,150** titles, and the 2,192 records removed turn up
+exactly in `records_the_veto_spared`, 700,045 → 702,237.
+
+Then query 3 found it again, and this time the lesson is not a word:
+
+> **The NAME pattern has been multilingual since its first line — `studente`,
+> `estudiante`, `etudiant`, `ogrenci`, `doutorando`. The VETO was English
+> only. So the rule could RECOGNISE a student in six languages and could
+> only EXCUSE one in English.**
+
+That asymmetry, not any individual missing word, is the bug — and it had
+produced a different symptom on each of the three runs.
+
+| Missed | Records | Why |
+| --- | --- | --- |
+| `investigación`, `ricerca`, `recherche`, `Forschung`, `pesquisa` | **289** | all mean *research*; the veto carried only `research` and `investigador` (the person, not the activity) |
+| `Koordinatorin`, `доцент`, `faculty member`, `responsable` | **110** | seniority words outside English |
+
+The first row is the serious one: it **breaks Merve's own loose reading** in
+whatever language the title happens to be written in. `miembro del grupo 25
+de ciberesp investigación predoctoral`, 55 records, says research as plainly
+as `phd researcher` does.
+
+**The veto is now built in three named parts — RESEARCH, POSTDOC, SENIOR —
+each carrying the languages the name pattern carries.** Tested both ways:
+**0 of 11 that must stay escape, 0 of 17 that must move are spared.**
+`assistant` is deliberately still absent — it would spare `phd assistant`
+and `student assistant`, which are targets.
+
+**One class of error cannot be fixed with a word list and is left in
+knowingly.** The name pattern fires on titles that merely *mention* students
+or use `candidate` scientifically: `guided tour for students of european
+exchange` (22), `estudio de la competencia … en estudiantes de primaria y
+secundaria` (34), `exploring a novel functional marker candidate` (21).
+These are not job titles at all, they are free text in a job-title field,
+and no rule conditioned on words will tell them from a job. About 77 visible
+records.
+
+**Not built yet.** Query 1 and query 3 run once more against the rebuilt
+veto first.
 
 ### 1.16a THE SPLIT IS GONE FROM THE PIPELINE TOO — 2026-11-10
 
