@@ -1,1 +1,0 @@
-Select * from {{ref('step2_country_grouping')}}

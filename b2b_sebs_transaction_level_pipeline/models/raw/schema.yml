@@ -1,7 +1,0 @@
-version: 2
-
-models:
-  - name: base
-    description: "A base table from B2C ecom GA4 export to get campaign, source, medium, and related acquisition details."
-  - name: b2b_sebs_final_static
-    description: "A base table from the B2B SEBS export containing transaction, item, date, and organization details."
