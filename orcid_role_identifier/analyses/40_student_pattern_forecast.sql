@@ -186,8 +186,25 @@ with moving_titles as (
 select
     r.role_key,
     count(distinct r.snid)                                   as confirmed_now,
-    count(distinct if(lower(r.evidence_title) in
-          (select title from moving_titles), r.snid, null))  as most_that_can_leave
+    /*  lower() IS NOT THE PROJECT'S NORMALISATION AND THIS IS WHY THE
+        CEILING WAS WRONG. normalize_title() casefolds under NFKC, then
+        replaces every character that is not a letter, number, space, &, /,
+        + or - with a space, then expands the abbreviation list. So
+        `Ph.D. Fellow` normalises to `ph d fellow` and lower() leaves
+        `ph.d. fellow`, which matches no row in dim_title_group. Every
+        title carrying punctuation fell out of the ceiling, so the ceiling
+        ran LOW - hcp_researcher came in at 444 against a stated 431.
+
+        The two regexp_replace calls below are the first two steps of
+        normalize_title. The abbreviation expansion is NOT reproduced,
+        because its list lives in dbt_project.yml as a var and an analysis
+        file cannot read it, so this is still slightly low - but by
+        abbreviations rather than by all punctuation.  */
+    count(distinct if(
+        trim(regexp_replace(regexp_replace(
+            lower(normalize_and_casefold(r.evidence_title, nfkc)),
+            r'[^\p{L}\p{N}\s&/+-]', ' '), r'\s+', ' '))
+        in (select title from moving_titles), r.snid, null))  as most_that_can_leave
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
 where r.role_label = 'CONFIRMED'
 group by r.role_key

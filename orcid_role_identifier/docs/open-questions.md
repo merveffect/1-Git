@@ -949,6 +949,57 @@ which is how the next one gets read rather than hunted.
 Re-tested both ways after the fix: 0 of 5 that must stay escape, 0 of 9
 that must move are spared.
 
+**BUILT 2026-11-10, SECOND ATTEMPT. IT LANDED.**
+
+The three iterations of the veto, each reconciling exactly against
+`records_the_veto_spared`:
+
+| Veto | Titles | Records moved | Veto spared |
+| --- | --- | --- | --- |
+| as first written | 1,258 | 71,598 | 700,045 |
+| prefix matching + six languages | 1,150 | 69,406 | 702,237 |
+| **+ library stems (built)** | **1,078** | **68,317** | **703,326** |
+
+69,406 − 68,317 = 1,089, and 703,326 − 702,237 = 1,089. Nothing fell
+between the two.
+
+**The forecast against the result, in people, which is what ships.**
+
+| Audience | Confirmed | Change | My stated ceiling | |
+| --- | --- | --- | --- | --- |
+| **Researcher** | 333,289 | **−1,400** | 1,568 | under |
+| **HCP researcher** | 53,597 | **−444** | 431 | **13 OVER** |
+| **HCP broad** | 124,560 | −384 | 414 | under |
+| Lecturer | 410,504 | **0** | 0 | — |
+| HCP practitioner | 61,935 | 0 | 0 | — |
+| Head of Faculty | 15,160 | 0 | 0 | — |
+| HCP administrator | 7,566 | 0 | 0 | — |
+| Pharmacist | 2,065 | 0 | 0 | — |
+| Librarian | 699 | 0 | 1 | — |
+
+Six audiences unchanged to the person is the check that matters: the rule
+is scoped to `researcher` and nothing leaked sideways.
+
+**THE CEILING WAS BREACHED AND THE CAUSE IS MY QUERY, NOT THE DATA.** I
+wrote that query 2 was an upper bound and that coming in above it would
+mean something other than the pattern had moved. It came in 13 over, and
+the reason is that I compared `lower(evidence_title)` against
+`dim_title_group.title`, which is **not** the same string.
+`normalize_title()` casefolds under NFKC, then replaces every character
+that is not a letter, number, space, `&`, `/`, `+` or `-` with a space,
+then expands an abbreviation list. So `Ph.D. Fellow` normalises to `ph d
+fellow` while `lower()` leaves `ph.d. fellow`, which matches no row at all.
+**Every title carrying punctuation fell out of the ceiling**, so the ceiling
+ran low by construction. `analyses/40` query 2 now reproduces the first two
+steps of the normalisation and says plainly that the abbreviation expansion
+is still missing, because its list lives in `dbt_project.yml` as a var and
+an analysis file cannot read it.
+
+**Records were 22.8% over forecast, and that cause was already known**:
+68,317 against 55,646, because the pattern carries
+`postgraduate|post graduate` and the regex that produced 55,646 did not.
+The people figure is the one that was predicted correctly.
+
 ### 1.16a THE SPLIT IS GONE FROM THE PIPELINE TOO — 2026-11-10
 
 On 4 November Merve closed 1.16: Researcher ships as **one audience**. On

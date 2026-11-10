@@ -73,16 +73,18 @@ def build(d):
 
     # ------------------------------------------------------------ THE TABLE
     h(d, "10.3  Where each audience stands", 2)
-    para(d, "One measurement, taken from the build of 10 November 2026. Every figure "
-            "in this table comes from that single count — earlier versions of it "
-            "mixed three dates.", space_after=4)
+    para(d, "One measurement, taken from the second build of 10 November 2026, which "
+            "landed the doctoral-student rule. Every figure in this table comes from "
+            "that single count — earlier versions of it mixed three dates.",
+            space_after=4)
     table(d, ["Audience", "Confirmed", "Probable", "Can be emailed", "State"],
      [["**Lecturer**", "410,504", "315", "109,324", "Most worked, best validated"],
-      ["**Researcher**", "334,689", "769", "64,919", "Solid; ships as ONE audience"],
-      ["**HCP broad**", "124,944", "37,243", "26,468",
+      ["**Researcher**", "333,289", "769", "64,620",
+       "ONE audience; students removed 10 Nov"],
+      ["**HCP broad**", "124,560", "37,260", "26,363",
        "Wide, but the job title is mandatory"],
       ["**HCP practitioner**", "61,935", "2,937", "13,922", "Long tail — least read"],
-      ["**HCP researcher**", "54,041", "2,098", "9,690", "Lowest measured accuracy, 90.0%"],
+      ["**HCP researcher**", "53,597", "2,082", "9,574", "Lowest measured accuracy, 90.0%"],
       ["**Head of Faculty**", "15,160", "17,796", "4,582",
        "Narrowed 5 Nov, −19.7%; 83.3% correct"],
       ["**HCP administrator**", "7,566", "2,017", "2,062",
@@ -126,6 +128,15 @@ def build(d):
             "was not a teaching title at all. So the rate at which we read the title "
             "correctly is **99.2%**. teaching_academic is the cleanest group in the "
             "dictionary.")
+
+    para(d, "**Researcher — the doctoral-student rule landed on 10 November.** A "
+            "doctoral student is in this audience only if the job title says research, "
+            "in any language. `phd researcher` and `phd research fellow` stay; `phd "
+            "fellow` — 19,424 records — leaves. **1,400 people of 333,289, 0.42%.** The "
+            "two title groups behind it, early-career and senior, were also merged into "
+            "one on the same day: no audience had ever read them apart, and the "
+            "project's largest single error was a title landing in the wrong one of "
+            "two groups that meant the same thing.")
 
     para(d, "**Researcher** — the project's largest single error lived here and has been "
             "fixed: `junior researcher`, **42,949 records**, sat in the *established* "
