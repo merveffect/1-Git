@@ -77,7 +77,7 @@ def build(d):
             "landed the doctoral-student rule. Every figure in this table comes from "
             "that single count — earlier versions of it mixed three dates.",
             space_after=4)
-    table(d, ["Audience", "Confirmed", "Probable", "Can be emailed", "State"],
+    table(d, ["Audience", "Confirmed", "Probable", "Mkt opt-in only", "State"],
      [["**Lecturer**", "410,499", "315", "109,323", "Most worked, best validated"],
       ["**Researcher**", "333,280", "769", "64,618",
        "ONE audience; students removed 10 Nov"],
@@ -99,9 +99,23 @@ def build(d):
             "83.3% — each the share correct of the cases that could be decided.",
             size=9, space_after=4)
     para(d, "**Two warnings about that table.** The rows **overlap** — one person can be "
-            "both a Lecturer and an HCP researcher — so the columns must not be added up. "
-            "And \"can be emailed\" is `mkt_pref_opt_in` only; *legitimate interest* is a "
-            "wider basis and is not counted in it.", space_after=6)
+            "both a Lecturer and an HCP researcher — so the columns must not be added up.",
+            space_after=4)
+    box(d, "THAT THIRD COLUMN IS NOT THE REACHABLE AUDIENCE, AND IT UNDERSTATES IT", [
+     "It counts `mkt_pref_opt_in` alone. **The pipeline has used three legal bases since "
+     "16 October** — marketing opt-in, advertising opt-in and legitimate interest — set in "
+     "`dbt_project.yml` as `consent_basis: 'any_basis'`, applied by `consent_predicate()`, "
+     "and already counted as `reachable` in `fct_role_audience_summary`.",
+     "",
+     "So the data has been right and this column has been the wrong one. It is left in "
+     "place and relabelled rather than quietly swapped, because every reachable figure "
+     "quoted from this document before 10 November was this narrower number. The correct "
+     "one comes from `analyses/37` query 2 and will replace this column at the next count.",
+     "",
+     "A fourth basis is still missing from the source: "
+     "`is_book_author_communications_opted_in`. Merve has said it counts, so reachable "
+     "grows again when the column arrives. That is marketing question 5.",
+    ], fill="FDF8EF", accent=AMBER)
     box(d, "THE AUDIENCES GREW AND THE REACHABLE PART DID NOT", [
      "Against the 4 November build, the six audiences that no rule touched all grew by "
      "the same **+0.6% to +1.0%** — the underlying data refreshing, not anything we did. "

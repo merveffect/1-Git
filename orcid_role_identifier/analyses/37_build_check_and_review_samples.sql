@@ -35,7 +35,7 @@
 --    not counts, and are the point of the named-chair work:
 --
 --      named_chairs_in_teaching  MUST be > 0  (endowed chair etc. moved)
---      vice_chairs_in_leadership MUST be > 0  (the unless_pattern veto held;
+--      vice_chairs_in_leadership MUST be > 0  (the unless_pattern veto held -
 --                                              if this is 0 the veto failed
 --                                              and the pattern ate them)
 -- ----------------------------------------------------------------------------
@@ -88,32 +88,54 @@ select
 
 
 -- ----------------------------------------------------------------------------
--- 2. EVERY AUDIENCE, so the status document's table can be rebuilt from one
---    measurement instead of three different dates. This is the query whose
---    output I need to make section 10.3 current.
+-- 2. EVERY AUDIENCE, WITH ALL THREE CONSENT BASES.
 --
---    marketable = CONFIRMED and mkt_pref_opt_in. Do NOT add the column up:
---    one person can hold several roles.
+--    THE FIRST VERSION OF THIS QUERY WAS WRONG IN A WAY THAT MATTERED
+--    MORE THAN ANY SQL ERROR IN THIS PROJECT.
+--
+--    It counted `marketable` as mkt_pref_opt_in alone, straight off
+--    raw_audience_builder_big, and every number reported from it -
+--    section 10.3 of the status document, the campaign risk analysis of
+--    10 November - understated the reachable audience by whatever
+--    legitimate interest and advertising consent add.
+--
+--    Merve: "ben coktan book legitimate interest ve legitimate
+--    interestlerin alinmasi gerektigini soylemistim reachable audience a".
+--    Correct, and the pipeline has done it since 2026-10-16:
+--
+--        dbt_project.yml   consent_basis: 'any_basis'
+--        consent_predicate()  (is_marketable or is_advertisable
+--                              or is_legitimate_interest)
+--        fct_role_audience_summary.reachable  countif of the same three
+--
+--    So the data was right and my reporting was wrong. This query now
+--    reads fct_role_audience_summary, which is the model that exists to
+--    answer exactly this and which I should have been reading all along
+--    instead of re-deriving a narrower number from the raw layer.
+--
+--    Still missing and NOT in the source yet: book-author consent,
+--    is_book_author_communications_opted_in. That is a fourth legal basis
+--    and marketing question 5 - Merve has said it counts, so reachable
+--    will grow again when the column arrives.
+--
+--    Do NOT add the columns up across rows: one person can hold several
+--    roles.
 -- ----------------------------------------------------------------------------
-with roles as (
-    select snid, role_key, role_label
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
-),
-consent as (
-    select snid, logical_or(coalesce(mkt_pref_opt_in, false)) as opted_in
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_audience_builder_big`
-    group by snid
-)
 select
-    r.role_key,
-    count(distinct if(r.role_label = 'CONFIRMED', r.snid, null))        as confirmed,
-    count(distinct if(r.role_label = 'PROBABLE',  r.snid, null))        as probable,
-    count(distinct if(r.role_label = 'CONFIRMED' and c.opted_in,
-                      r.snid, null))                                    as marketable
-from roles r
-left join consent c using (snid)
-group by r.role_key
-order by confirmed desc
+    role_key,
+    role_label,
+    identified,
+    in_cdp,
+    marketable                                  as mkt_opt_in_only,
+    advertisable,
+    legitimate_interest,
+    reachable,
+    round(reachable_rate, 4)                    as reachable_rate,
+    reachable - marketable                      as reachable_beyond_mkt_opt_in,
+    round(safe_divide(reachable, nullif(marketable, 0)), 2) as reachable_vs_mkt_multiple
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience_summary`
+where role_label = 'CONFIRMED'
+order by identified desc
 ;
 
 
