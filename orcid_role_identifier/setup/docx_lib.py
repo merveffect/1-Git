@@ -1,0 +1,165 @@
+# -*- coding: utf-8 -*-
+"""Word building blocks: headings, body text, shaded example boxes, tables."""
+from docx import Document
+from docx.shared import Pt, Inches, RGBColor as C
+from docx.enum.text import WD_ALIGN_PARAGRAPH as AL
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+INK=C(0x1c,0x1f,0x23); INK2=C(0x46,0x4b,0x52); MUT=C(0x6f,0x75,0x7e)
+TEAL=C(0x1f,0x6f,0x6a); PLUM=C(0x8a,0x3d,0x5e); AMBER=C(0x8a,0x64,0x10); RED=C(0x9b,0x3b,0x2f)
+SANS="Calibri"; MONO="Consolas"
+
+def shade(cell, hexfill):
+    el = OxmlElement("w:shd"); el.set(qn("w:val"),"clear"); el.set(qn("w:fill"),hexfill)
+    cell._tc.get_or_add_tcPr().append(el)
+
+def no_borders(tbl):
+    tblPr = tbl._tbl.tblPr
+    b = OxmlElement("w:tblBorders")
+    for e in ("top","left","bottom","right","insideH","insideV"):
+        x = OxmlElement(f"w:{e}"); x.set(qn("w:val"),"none"); x.set(qn("w:sz"),"0")
+        b.append(x)
+    tblPr.append(b)
+
+def doc_new():
+    d = Document()
+    for name,size,color,bold,space_before,space_after in [
+        ("Normal",10.5,INK2,False,0,6),
+    ]:
+        st = d.styles[name]; st.font.name=SANS; st.font.size=Pt(size)
+        st.font.color.rgb=color
+        st.paragraph_format.space_after=Pt(space_after)
+        st.paragraph_format.line_spacing=1.15
+    for s in d.sections:
+        s.top_margin=Inches(0.85); s.bottom_margin=Inches(0.85)
+        s.left_margin=Inches(0.9); s.right_margin=Inches(0.9)
+    return d
+
+def h(d, text, level=1):
+    p = d.add_paragraph()
+    pf = p.paragraph_format
+    pf.space_before = Pt(20 if level==1 else 14)
+    pf.space_after  = Pt(6 if level==1 else 4)
+    pf.keep_with_next = True
+    r = p.add_run(text); r.bold=True; r.font.name=SANS
+    r.font.size = Pt(16 if level==1 else 12.5)
+    r.font.color.rgb = INK if level==1 else TEAL
+    return p
+
+def para(d, text, size=10.5, color=INK2, bold=False, italic=False,
+         space_after=6, mono=False, indent=0):
+    p = d.add_paragraph(); p.paragraph_format.space_after=Pt(space_after)
+    if indent: p.paragraph_format.left_indent=Inches(indent)
+    for chunk, is_bold, is_mono in _spans(text):
+        r = p.add_run(chunk); r.bold = bold or is_bold; r.italic = italic
+        r.font.name = MONO if (mono or is_mono) else SANS
+        r.font.size = Pt(size - 0.5 if is_mono and not mono else size)
+        r.font.color.rgb = color
+    return p
+
+def _spans(text):
+    """**bold** and `code` inside a string, as (chunk, bold, mono) triples.
+
+    ONE PASS, TRACKING BOTH STATES. This was two passes until 2026-11-03 -
+    backticks first, then bold inside each non-code run - and that broke on
+    the case this document is full of: a bold span CONTAINING a code span.
+    `**`chair` is ruled out ... professorships**` split into three runs at
+    the backticks, after which the opening ** and the closing ** were in
+    different runs, neither pair balanced, and both leaked into the Word
+    file as literal asterisks. Nesting either way round now works.
+
+    An unbalanced marker is left as literal text rather than swallowing the
+    rest of the string, which is the failure a reader can actually see and
+    report.
+    """
+    out = []; buf = []; bold = False; mono = False; i = 0; n = len(text)
+
+    def flush():
+        if buf:
+            out.append(("".join(buf), bold, mono)); buf.clear()
+
+    while i < n:
+        """
+            The lookahead applies to OPENING a span only. Requiring another
+            marker ahead when CLOSING one is the bug this comment exists to
+            stop coming back: the closing backtick of the last code span in a
+            string has nothing after it, so it was buffered as literal text
+            and everything from there on stayed monospaced.
+        """
+        if text[i] == "`" and (mono or "`" in text[i + 1:]):
+            flush(); mono = not mono; i += 1
+        elif text.startswith("**", i) and (bold or "**" in text[i + 2:]):
+            flush(); bold = not bold; i += 2
+        else:
+            buf.append(text[i]); i += 1
+    flush()
+    return [(t, b, m) for t, b, m in out if t]
+
+
+def _split_bold(text):
+    """Kept for callers that only want (chunk, bold)."""
+    return [(t, b) for t, b, _ in _spans(text)]
+
+
+def bullet(d, text, size=10.5):
+    p = d.add_paragraph(style="List Bullet")
+    p.paragraph_format.space_after=Pt(3); p.paragraph_format.left_indent=Inches(0.28)
+    for chunk, bd, mn in _spans(text):
+        r=p.add_run(chunk); r.bold=bd; r.font.name=MONO if mn else SANS
+        r.font.size=Pt(size - 0.5 if mn else size); r.font.color.rgb=INK2
+    return p
+
+def box(d, label, lines, fill="F2F6F5", accent=TEAL):
+    """A shaded single-cell panel for a worked example."""
+    t = d.add_table(rows=1, cols=1); t.alignment=WD_TABLE_ALIGNMENT.LEFT
+    no_borders(t); c = t.rows[0].cells[0]; shade(c, fill)
+    c.width = Inches(6.7)
+    first = c.paragraphs[0]
+    first.paragraph_format.space_after = Pt(3)
+    for chunk, _, mn in _spans(label):
+        r = first.add_run(chunk); r.bold=True; r.font.size=Pt(9.5)
+        r.font.color.rgb = accent; r.font.name = MONO if mn else SANS
+    for ln in lines:
+        p = c.add_paragraph(); p.paragraph_format.space_after=Pt(2)
+        for chunk, bd, mn in _spans(ln):
+            rr = p.add_run(chunk); rr.bold=bd
+            rr.font.name = MONO if mn else SANS
+            rr.font.size = Pt(9.5 if mn else 10)
+            rr.font.color.rgb = INK if mn else INK2
+    d.add_paragraph().paragraph_format.space_after=Pt(2)
+    return t
+
+def table(d, headers, rows, widths=None, size=9.5, header_fill="1C1F23"):
+    t = d.add_table(rows=1, cols=len(headers)); t.style="Table Grid"
+    t.alignment = WD_TABLE_ALIGNMENT.LEFT
+    for i,htxt in enumerate(headers):
+        c = t.rows[0].cells[i]; shade(c, header_fill)
+        p = c.paragraphs[0]; p.paragraph_format.space_after=Pt(1)
+        r = p.add_run(htxt); r.bold=True; r.font.size=Pt(8.5)
+        r.font.color.rgb=C(0xff,0xff,0xff); r.font.name=SANS
+    for ri,row in enumerate(rows):
+        cells = t.add_row().cells
+        for i,val in enumerate(row):
+            if ri % 2 == 1: shade(cells[i], "F7F7F6")
+            p = cells[i].paragraphs[0]; p.paragraph_format.space_after=Pt(1)
+            txt = val if isinstance(val,str) else str(val)
+            for chunk, bd, mn in _spans(txt):
+                r = p.add_run(chunk); r.bold=bd
+                r.font.name = MONO if mn else SANS
+                r.font.size=Pt(size - 0.5 if mn else size); r.font.color.rgb=INK2
+    if widths:
+        for i,w in enumerate(widths):
+            for row in t.rows: row.cells[i].width = Inches(w)
+    d.add_paragraph().paragraph_format.space_after=Pt(2)
+    return t
+
+def fig(d, path, width=6.6, caption=None):
+    d.add_picture(path, width=Inches(width))
+    d.paragraphs[-1].alignment = AL.CENTER
+    if caption:
+        p = d.add_paragraph(); p.alignment=AL.CENTER
+        p.paragraph_format.space_after=Pt(10)
+        r=p.add_run(caption); r.italic=True; r.font.size=Pt(8.5)
+        r.font.color.rgb=MUT; r.font.name=SANS

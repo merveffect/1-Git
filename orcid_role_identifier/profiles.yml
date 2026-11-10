@@ -1,0 +1,27 @@
+orcid_role_identifier:
+  target: dev
+  outputs:
+    dev:  # gcp environment
+      type: bigquery
+      method: oauth # can use a SA as authentication too
+      project: dat-analytics-eng-ec869189
+      dataset: dev_orcid_role_identifier # You can also use "schema" here
+      threads: 8
+      job_execution_timeout_seconds: 6000
+      #timeout_seconds: 6000
+      location: EU # Optional, one of US or EU
+      priority: interactive
+      retries: 1
+    prod:  # gcp environment
+      type: bigquery
+      method: oauth # can use a SA as authentication too
+      project: dat-analytics-eng-ec869189
+      dataset: prod_orcid_role_identifier # You can also use "schema" here
+      threads: 8
+      job_execution_timeout_seconds: 6000
+      #timeout_seconds: 6000
+      location: EU # Optional, one of US or EU
+      priority: interactive
+      retries: 1
+      
+    

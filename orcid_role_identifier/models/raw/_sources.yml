@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: researcher_profiles
+    database: researcher-360-prod-e7fd74be
+    schema: researcher_profiles
+    tables:
+      - name: orcid_researchers
+        description: >
+          ORCID profiles, VERSIONED - about 14 rows per person, one per
+          load, NOT one row per person as this description claimed until
+          2026-10-08. Measured: 25,132,641 rows for 1,781,624 distinct
+          orcid_id and the same 1,781,624 distinct snid, so snid to ORCID
+          is strictly one to one and only the versioning is duplicated.
+          raw_orcid_researchers keeps the newest row per snid.
+          employments / educations / publications / keywords / peer_reviews
+          are REPEATED STRUCTs. Each record carries its own visibility.
+      - name: audience_builder_big
+        description: >
+          CDP population and consent flags.
+          !! VERIFY the dataset - taken from the Phase-2 document, not
+          from a schema read.
+
+  - name: ror
+    database: ri-data-engineering-dd4c0eca
+    schema: ror
+    description: SEPARATE PROJECT - cross-project read access required.
+    tables:
+      - name: ror_data_refresh
+        description: ROR organisation registry.
+
+   
+  - name: prod_audience_explorer_analytics_dbt_presentation
+    database: dat-analytics-eng-ec869189
+    schema: prod_audience_explorer_analytics_dbt_presentation
+    tables: 
+      - name: audience_builder_big

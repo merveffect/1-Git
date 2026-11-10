@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: stg_role_records
+    description: >
+      The single place role records enter the pipeline. One source
+      today (ORCID); a second one becomes a UNION ALL here.
+    columns:
+      - name: snid
+        tests: [not_null]
+      - name: source_key
+        tests: [not_null]
+      - name: role_title
+        tests: [not_null]
+
+  - name: stg_orcid__employment
+    description: ORCID employments[] mapped onto the common role record schema.
+
+  - name: stg_ror__organisations
+    description: >
+      ROR organisation registry. The organisation TYPE (Education /
+      Healthcare / Company ...) comes from here and drives org scoring.
+
+  - name: stg_ror__external_ids
+    description: >
+      Flattened ROR external_ids. Bridges RINGGOLD / GRID / FUNDREF
+      identifiers to a ROR id, covering the ~44% of ORCID records that
+      carry a non-ROR identifier.
