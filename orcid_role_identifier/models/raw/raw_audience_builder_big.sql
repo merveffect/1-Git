@@ -56,7 +56,38 @@ select
     logical_and(coalesce(mkt_pref_opt_in, false))    as mkt_pref_opt_in,
     logical_and(coalesce(advertising_opt_in, false)) as advertising_opt_in,
     logical_and(coalesce(is_legitimate_interest_author_opted_in, false))
-                                                     as is_legitimate_interest
+                                                     as is_legitimate_interest,
+    /*
+        BOOK-AUTHOR CONSENT, added 2026-11-10. Merve had already decided it
+        counts - "book author consent kesinlikle sayiliyor, they dont need
+        to confirm" - and marketing question 5 records it. It was in this
+        source all along and simply not selected, so reachable has been
+        understated for as long as the column has existed.
+    */
+    logical_and(coalesce(is_book_author_communications_opted_in, false))
+                                                     as is_book_author,
+    /*
+        THREE MORE CONSENTS, CARRIED BUT NOT A BASIS. Each is permission
+        for a DIFFERENT purpose - a referral from an editor, a mailing to
+        editorial board members, a webshop buyer's receipts - and none of
+        them is permission for a role-based campaign. They are selected so
+        the size is visible in fct_role_audience_summary and a decision can
+        be made from a number, and they are deliberately absent from
+        consent_predicate() until marketing says otherwise. Widening a
+        legal basis is not an engineering call.
+
+        Also present in the source and deliberately NOT taken:
+        books_nurture_api and competitor_book_author_not_sn_yet are
+        segments rather than consents, and the book count and date columns
+        are behaviour, which _raw.yml already says is out of scope until
+        behaviour is scored.
+    */
+    logical_and(coalesce(is_editor_referral_opted_in, false))
+                                                     as is_editor_referral,
+    logical_and(coalesce(is_editorial_board_members_communications_opted_in, false))
+                                                     as is_editorial_board,
+    logical_and(coalesce(is_webshop_buyer_communications_opted_in, false))
+                                                     as is_webshop_buyer
 from {{ source('prod_audience_explorer_analytics_dbt_presentation', 'audience_builder_big') }}
 where snid is not null
 group by snid

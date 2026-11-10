@@ -62,13 +62,16 @@
 {% macro consent_predicate() %}
     {%- set basis = var('contract').consent_basis -%}
     {%- if basis == 'any_basis' -%}
-        (is_marketable or is_advertisable or is_legitimate_interest)
+        (is_marketable or is_advertisable or is_legitimate_interest
+         or is_book_author)
     {%- elif basis == 'marketing_opt_in' -%}
         is_marketable
     {%- elif basis == 'any_opt_in' -%}
         (is_marketable or is_advertisable)
     {%- elif basis == 'legitimate_interest' -%}
         is_legitimate_interest
+    {%- elif basis == 'book_author' -%}
+        is_book_author
     {%- else -%}
         {{ exceptions.raise_compiler_error("Unknown consent_basis: " ~ basis) }}
     {%- endif -%}

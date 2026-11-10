@@ -58,9 +58,18 @@ models:
       - name: consent_basis
         description: >
           Read from the flag that grants it. Both opt-ins map to
-          marketing_opt_in; is_legitimate_interest_author_opted_in maps to
-          legitimate_interest. Never inferred from CDP membership.
+          marketing_opt_in, is_legitimate_interest_author_opted_in maps to
+          legitimate_interest, and is_book_author_communications_opted_in
+          maps to book_author_opt_in from 2026-11-10. Never inferred from
+          CDP membership.
+
+          book_author_opt_in is evaluated LAST, so it appears only for
+          people who hold no other basis. It is its own value rather than
+          folded into marketing_opt_in because the two are different
+          permissions and whoever audits a send needs to see which was
+          used.
         tests:
           - accepted_values:
               arguments:
-                values: ['marketing_opt_in', 'legitimate_interest']
+                values: ['marketing_opt_in', 'legitimate_interest',
+                         'book_author_opt_in']

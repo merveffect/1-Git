@@ -60,6 +60,7 @@ per_role as (
         any_value(a.is_marketable)                  as is_marketable,
         any_value(a.is_advertisable)                as is_advertisable,
         any_value(a.is_legitimate_interest)         as is_legitimate_interest,
+        any_value(a.is_book_author)                 as is_book_author,
         any_value(a.in_cdp)                         as in_cdp
     from audience a
     group by a.snid, a.role_key, a.role_detail
@@ -111,6 +112,7 @@ contact as (
         max(is_marketable)                          as is_marketable,
         max(is_advertisable)                        as is_advertisable,
         max(is_legitimate_interest)                 as is_legitimate_interest,
+        max(is_book_author)                         as is_book_author,
         max(in_cdp)                                 as in_cdp
     from ordered
     group by snid
@@ -145,9 +147,19 @@ select
         when c.is_marketable          then 'marketing_opt_in'
         when c.is_advertisable        then 'marketing_opt_in'
         when c.is_legitimate_interest then 'legitimate_interest'
+        /*
+            Fourth branch, 2026-11-10. It goes LAST on purpose: a person
+            who holds a marketing opt-in should be sent under that, and
+            book-author consent is the basis only for the people who have
+            nothing else. Its own value rather than folded into
+            marketing_opt_in, because the two are different permissions
+            and whoever audits a send needs to see which one was used.
+        */
+        when c.is_book_author         then 'book_author_opt_in'
     end                                             as consent_basis,
     c.is_marketable,
     c.is_advertisable,
     c.is_legitimate_interest,
+    c.is_book_author,
     current_date()                                  as contract_date
 from contact c
