@@ -32,6 +32,41 @@
     title_key is rebuilt here in literal SQL because an analysis file
     cannot call the normalize_title macro. All 22 abbreviations from
     dbt_project.yml are reproduced in the same order.
+
+    AND THAT RECONSTRUCTION IS NOT RELIABLE - RUN 2026-11-10, READ THIS
+    BEFORE TRUSTING QUERY 1.
+
+        query 2   584 override rows, 573 matched, 11 unmatched, 3 of
+                  those marked [pre-emptive]
+        query 1   9 failing rows
+        the test  2
+
+    Query 2 exists to catch exactly this and it did. The test is
+    authoritative and my normalisation is wrong somewhere, so SIX OR
+    SEVEN of query 1's nine rows are my reconstruction failing to match a
+    title the macro matches. Which two are real cannot be read off this
+    file.
+
+    DO NOT PATCH THE EXPRESSION. dbt already has the feature:
+
+        dbt test --select assert_overrides_take_effect --store-failures
+
+    writes the failing rows to a table in the
+    <schema>_dbt_test__audit dataset, computed by the macro itself. That
+    is the answer, and this file is how not to get it.
+
+    ONE ROW IS WORTH KEEPING FROM QUERY 1 because it does not depend on
+    the normalisation - it matched a dictionary row, so the join worked:
+
+        pi | ACCEPT | researcher | actual researcher | VECTOR | 1.0
+
+    Right group, right score, wrong provenance. The override says a human
+    decided `pi` is a researcher; the dictionary says the vector did.
+    `pi` expands to `principal investigator` through the abbreviation
+    list, which is almost certainly an exact anchor match at 1.0, so the
+    two agree and nothing is mislabelled - but the test is right to fail,
+    because an override that silently stops being the reason is the one
+    failure mode this test was written for.
     ============================================================================
 */
 
