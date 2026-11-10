@@ -57,7 +57,7 @@ with titles as (
         regexp_contains(title, r'\bresearch\b')              as says_research
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
     where is_assigned
-      and title_group in ('researcher_early', 'researcher_established')
+      and title_group in ('researcher', 'researcher_early', 'researcher_established')
 ),
 
 judged as (
@@ -118,7 +118,7 @@ select
     regexp_contains(title, r'(post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate)') as is_a_postdoc
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
 where is_assigned
-  and title_group in ('researcher_early', 'researcher_established')
+  and title_group in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|etudiant|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|docteur|doutorando|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|graduand\w*)\b')
 order by frequency desc
 limit 300;

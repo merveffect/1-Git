@@ -1,4 +1,18 @@
 /*
+    ⚠ THE TWO RESEARCH GROUPS MERGED ON 2026-11-10.
+
+    `researcher_early` and `researcher_established` are one group called
+    `researcher`. Any filter below that names only the old halves matched
+    the data when this file was written and matches NOTHING after the
+    build that lands the merge. It will not error - it will return an
+    empty result or a confident zero, which is worse.
+
+    This file is kept as the record of a measurement that was taken when
+    the two groups existed. Before re-running any statement in it, widen
+    the filter to in ('researcher', 'researcher_early',
+    'researcher_established'), which is correct on both sides.
+*/
+/*
     ============================================================================
     19. ACCURACY WITHOUT A GROUND TRUTH
     ============================================================================

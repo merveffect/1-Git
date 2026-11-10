@@ -31,6 +31,14 @@
     them BEFORE the build. If query 1 is far from 55,646 the regex does not
     say what it was measured to say, and the seed is wrong.
 
+    EVERY QUERY HERE MATCHES ALL THREE GROUP NAMES - `researcher` and the
+    two halves it was made from. The merge is in the seeds and not yet in
+    the data, so a forecast written against the post-merge name alone
+    matches nothing and returns a confident row of zeros, which is what the
+    first version of this file did. Matching all three makes the file run
+    correctly on either side of the build, which is what a forecast has to
+    do: it is written before and checked after.
+
     THE TWO WAYS THIS CAN BE WRONG, both checked here:
 
       too wide   it takes a senior person whose title carries phd as a
@@ -69,7 +77,7 @@ with t as (
         regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b') as names_a_student,
         regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b') as veto_fires
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
-    where model_title_group = 'researcher'
+    where model_title_group in ('researcher', 'researcher_early', 'researcher_established')
 ),
 moved as (
     select * from t where names_a_student and not veto_fires
@@ -81,7 +89,7 @@ select
     (select sum(frequency)  from moved) - 55646                     as records_vs_forecast,
     (select count(*)        from moved where not model_is_assigned) as titles_not_accepted_moved,
     (select sum(frequency)  from t where names_a_student and veto_fires) as records_the_veto_spared,
-    (select sum(frequency)  from t)                                 as researcher_early_records_total
+    (select sum(frequency)  from t)                                 as researcher_records_total
 ;
 
 
@@ -102,7 +110,7 @@ select
 with moving_titles as (
     select title
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
-    where model_title_group = 'researcher'
+    where model_title_group in ('researcher', 'researcher_early', 'researcher_established')
       and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
       and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
 )
@@ -132,7 +140,7 @@ select
     frequency,
     length(title) as len
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
-where model_title_group = 'researcher'
+where model_title_group in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
   and not regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
 order by len desc, frequency desc
@@ -159,7 +167,7 @@ select
         else 'spared by a SENIORITY word only - check these'
     end as why_spared
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
-where model_title_group = 'researcher'
+where model_title_group in ('researcher', 'researcher_early', 'researcher_established')
   and regexp_contains(title, r'\b(student|students|studente|studenti|estudiante|estudiantes|etudiant|etudiante|ogrenci|doctoral|doctorate|doctorand\w*|doktorand\w*|doutorando|doutoranda|candidate|candidato|candidata|phd|ph d|dphil|predoc\w*|pre doctoral|pre-doctoral|graduand\w*|postgraduate|post graduate)\b')
   and regexp_contains(title, r'research|investigador\w*|investigadora|investigator|chercheur\w*|forscher\w*|arastirmaci|ricercator\w*|scientist|scientific|post[\s-]*doc|postdoc|pos[\s-]*doc|p[oó]s[\s-]*dout|post[\s-]*ph[\s.]*d|post[\s-]*doctorate|\b(professor|lecturer|reader|director|head|leader|consultant|adviser|advisor|principal|chief|dean|supervisor|coordinator)\b')
 order by

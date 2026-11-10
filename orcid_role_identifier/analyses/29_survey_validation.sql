@@ -268,8 +268,8 @@ with survey as (
         end as expected_audience
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.survey_self_declared_roles`
     where map_status = 'mapped'
-      and survey_group in ('teaching_academic','researcher_early',
-                           'researcher_established','practitioner',
+      and survey_group in ('teaching_academic','researcher',
+                           'researcher_early','researcher_established','practitioner',
                            'leadership','librarian')
 ),
 cdp as (
