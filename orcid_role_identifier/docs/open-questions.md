@@ -1194,6 +1194,62 @@ error, and what the runner-up discipline would be — because if the
 runner-up is already correct, removal alone fixes them and no new anchor is
 needed.
 
+**MEASURED 2026-11-10, AND MY CLASSIFICATION WAS WRONG — FOURTH TIME TODAY.**
+
+`analyses/42` query 1 split the population with a regex for
+`medicine|medical|clinic|klinik|surg|hospital`. The output opened its
+"names something else — this is the ERROR" bucket with:
+
+| Department | Records |
+| --- | --- |
+| `school of nursing` | 29,373 |
+| `school of public health` | 26,227 |
+| `department of neurology` | 19,903 |
+| `department of psychiatry` | 18,890 |
+| `department of pediatrics` | 13,519 |
+| `department of radiology` | 12,016 |
+| `department of cardiology` | 11,519 |
+
+All unambiguously clinical, all in the error bucket, because none of them
+contains the word *medicine*. **243,927 records in the first 28 rows alone,
+every one correctly placed.** The list left out neurology, cardiology,
+nursing, psychiatry, pediatrics, radiology, pathology, dentistry, oncology,
+urology, epidemiology, dermatology, anesthesiology, nephrology,
+rheumatology, endocrinology, geriatrics, ophthalmology, gastroenterology,
+hematology and public health.
+
+**Fourth time in one day for the same mistake**: a word list narrower than
+the data it is asked about. `analyses/38` matched `ecolog` inside
+*gynecology*; the 1.17 veto recognised a student in six languages and
+excused one in English, twice. **The lesson is to stop classifying.**
+
+**The number the query did get right, and it is small.** `also_held_by_others`
+answers the real question without any vocabulary:
+
+| | Departments | Also held by another anchor | **Sole support** |
+| --- | --- | --- | --- |
+| names medicine | 19,510 | 18,999 | **511** |
+| names something else | 16,574 | 15,268 | **1,306** |
+| veterinary | 100 | 73 | **27** |
+| | | | **1,844** |
+
+So those two anchors are the **sole support of 1,844 departments out of the
+36,184 that match them at all**. Everything else is anchored by its own
+field and cannot move whatever happens to `faculty of medicine`.
+
+`analyses/43` uses a structural criterion that needs no vocabulary — *a
+department whose only matched anchors are the two faculty/school ones has
+nothing field-specific holding it, by construction* — and then **lists**
+them, because 1,844 rows can be read and a regex over all clinical
+vocabulary evidently cannot be written.
+
+**One risk its query 2 exists for.** `pharmacy` was the runner-up for 7,884
+departments and 629,116 records across the whole matching population.
+Pharmacist is the only audience keyed on the pharmacy discipline, so a
+department landing there does not merely leave healthcare — **it joins
+Pharmacist.** If pharmacy is large among the 1,844, removal is not safe on
+its own and the fix needs an anchor on the receiving side too.
+
 **Also unresolved and now visible:** `zoonoses` departments split almost
 exactly in half between `health_clinical` (40 departments, 910 records) and
 `life_biomedical` (40, 862). The same kind of department landing in two
