@@ -34,8 +34,22 @@
     THE TWO WAYS THIS GOES WRONG, and both are checked:
 
       a new anchor steals a CLINICAL department
-          `plant pathology` must not reach `department of pathology`
-          (11,640 records) or `institute of pathology` (1,411).
+          MEASURED BEFORE BUILDING AND ALREADY CLOSED. Query 2 was run
+          first and found three clinical pathology departments exposed:
+
+              department of pathology            11,640 rec  0.848 / 0.138
+              department of pathology and
+                laboratory medicine               1,539      0.775 / 0.053
+              institute of pathology              1,411      0.801 / 0.133
+
+          14,590 records at a similarity `plant pathology` could plausibly
+          beat. `pathology` itself is safe - 52,784 records at similarity
+          1.000, an exact anchor match that nothing can outscore.
+
+          So the three were added to health_clinical as exact anchors,
+          which puts them at ~1.0 too. Add-not-remove used defensively:
+          the cheapest way to stop a new anchor stealing a department is
+          to anchor the department.
           `biomedical sciences` must not reach `school of biomedical
           sciences` if marketing later says biomedical IS clinical - that
           one is 1.2 and is flagged rather than prevented.
