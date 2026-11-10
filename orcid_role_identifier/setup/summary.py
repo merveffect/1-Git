@@ -73,39 +73,48 @@ def build(d):
 
     # ------------------------------------------------------------ THE TABLE
     h(d, "10.3  Where each audience stands", 2)
-    para(d, "Counted after the build of 4 November, except the three rows marked "
-            "*5 Nov*, which were re-counted after that day's rule changes.",
-            space_after=4)
-    table(d, ["Audience", "Confirmed", "Probable", "Marketing consent", "State"],
-     [["**Lecturer**", "406,860", "308", "109,117", "Most worked, best validated"],
-      ["**Researcher**", "332,026", "763", "64,981", "Solid; ships as ONE audience"],
-      ["**HCP broad**", "124,223", "37,031", "26,790",
-       "Wide, but the job title is now mandatory"],
-      ["**HCP practitioner**", "61,421", "2,910", "13,887", "Long tail — least read"],
-      ["**HCP researcher**", "53,621", "2,077", "9,750", "Follows Researcher"],
-      ["**Head of Faculty**", "15,048", "—", "—",
-       "**Narrowed 5 Nov; 83.3% read correct**"],
-      ["**HCP administrator**", "7,528", "—", "—",
-       "**Fixed 5 Nov: 89% → 94.9% read correct**"],
-      ["**Pharmacist**", "2,051", "—", "—",
-       "**Fixed 5 Nov: 82% → 95.7% read correct**"],
-      ["**Librarian**", "692", "0", "177", "Small, entirely rule-driven"]],
+    para(d, "One measurement, taken from the build of 10 November 2026. Every figure "
+            "in this table comes from that single count — earlier versions of it "
+            "mixed three dates.", space_after=4)
+    table(d, ["Audience", "Confirmed", "Probable", "Can be emailed", "State"],
+     [["**Lecturer**", "410,504", "315", "109,324", "Most worked, best validated"],
+      ["**Researcher**", "334,689", "769", "64,919", "Solid; ships as ONE audience"],
+      ["**HCP broad**", "124,944", "37,243", "26,468",
+       "Wide, but the job title is mandatory"],
+      ["**HCP practitioner**", "61,935", "2,937", "13,922", "Long tail — least read"],
+      ["**HCP researcher**", "54,041", "2,098", "9,690", "Lowest measured accuracy, 90.0%"],
+      ["**Head of Faculty**", "15,160", "17,796", "4,582",
+       "Narrowed 5 Nov, −19.7%; 83.3% correct"],
+      ["**HCP administrator**", "7,566", "2,017", "2,062",
+       "Org veto fixed 5 Nov; 94.9% correct"],
+      ["**Pharmacist**", "2,065", "1,494", "529",
+       "Pharmacologists removed 5 Nov, −10.4%"],
+      ["**Librarian**", "699", "0", "177", "Small, entirely rule-driven"]],
      widths=[1.5, 0.95, 0.85, 1.25, 2.1], size=9)
     para(d, "**Measured accuracy for every audience, read by hand, is in section 6.0**: "
             "Researcher 99.0%, Lecturer 98.7%, Librarian 98.5%, Pharmacist 95.7%, HCP "
             "administrator 94.9%, the other healthcare audiences 90–93%, Head of Faculty "
             "83.3% — each the share correct of the cases that could be decided.",
             size=9, space_after=4)
-    para(d, "**Three warnings about that table.** The rows **overlap** — one person can be "
+    para(d, "**Two warnings about that table.** The rows **overlap** — one person can be "
             "both a Lecturer and an HCP researcher — so the columns must not be added up. "
-            "\"Marketing consent\" here is `mkt_pref_opt_in` only; *legitimate "
-            "interest* is a wider basis and is not counted in it. And the consent column "
-            "was measured on 4 November **before** that day's build, so it trails the "
-            "Confirmed column by roughly +0.7% everywhere except HCP broad, whose figure "
-            "is post-build. The first five rows also predate the 5 November rule "
-            "changes, which moved named chairs into Lecturer and pharmacologists out "
-            "of Pharmacist, so they will move a little at the next full count.",
-            space_after=8)
+            "And \"can be emailed\" is `mkt_pref_opt_in` only; *legitimate interest* is a "
+            "wider basis and is not counted in it.", space_after=6)
+    box(d, "THE AUDIENCES GREW AND THE REACHABLE PART DID NOT", [
+     "Against the 4 November build, the six audiences that no rule touched all grew by "
+     "the same **+0.6% to +1.0%** — the underlying data refreshing, not anything we did. "
+     "The three that moved further moved by exactly what was predicted of them: Head of "
+     "Faculty −19.7%, Pharmacist −10.4%, HCP administrator −0.7% where it would otherwise "
+     "have gained 0.8%.",
+     "",
+     "**But the consent column did not follow.** Lecturer gained 3,644 confirmed people "
+     "and 207 contactable ones. Researcher, HCP broad and HCP researcher each gained "
+     "people and *lost* contactable ones. Between 18% and 30% of any audience can be "
+     "emailed, and that share is falling slightly as the audiences grow.",
+     "",
+     "This is 10.5 restated with fresh numbers: effort spent on precision is no longer "
+     "what limits this project.",
+    ], fill="FDF8EF", accent=AMBER)
 
     # ------------------------------------------------------------ ONE BY ONE
     h(d, "10.4  One by one", 2)
@@ -189,10 +198,10 @@ def build(d):
             "decided on 5 November, the weakest audience, because the embedding cannot "
             "tell pharmacology from pharmacy. Four patterns scoped to the pharmacist group "
             "moved pharmacologists to Lecturer or Researcher and students and technicians "
-            "out, each vetoed by any pharmacist word. **2,304 → 2,051 people; 95.7% "
+            "out, each vetoed by any pharmacist word. **2,304 → 2,065 people; 95.7% "
             "correct** on a fresh sample.")
 
-    para(d, "**Librarian** — 692 people, and every single one scores exactly 1.000. The "
+    para(d, "**Librarian** — 699 people, and every single one scores exactly 1.000. The "
             "reason is worth knowing: the group is **99.9% decided by pattern** and the "
             "role is weighted 1.00 on the title and 0.00 on the organisation, so the "
             "threshold is inert at every value from 0.60 to 0.95. Librarian quality cannot "
