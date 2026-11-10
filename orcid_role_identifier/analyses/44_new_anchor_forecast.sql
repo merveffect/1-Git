@@ -138,24 +138,48 @@ order by frequency desc
 --    would mean an exact phrase does not beat `faculty of medicine`, and
 --    the add-not-remove approach does not work on this axis.
 -- ----------------------------------------------------------------------------
+/*
+    EXISTS IS NOT ALLOWED INSIDE A JOIN PREDICATE in BigQuery - the first
+    version of this query failed with "EXISTS subquery is not supported
+    inside join predicate". It is allowed in a WHERE clause, which is why
+    analyses/42 and 43 run with the same shape.
+
+    So matched_anchors is flattened FIRST and the join becomes a plain
+    equality. One row per (department, anchor), which is also what the
+    question wants: a department matched by two of the new anchors should
+    count under both.
+
+    sqlglot parses the broken version happily, so setup/check_analyses.py
+    cannot catch this class - it checks syntax, not BigQuery's semantics.
+*/
 with new_anchors as (
     select * from unnest([
         'school of life sciences', 'faculty of life sciences', 'faculty of biology',
         'department of biomedicine', 'biomedical sciences', 'plant pathology',
         'fisheries', 'aquaculture', 'crop science', 'physikalisches institut',
         'institut fur theoretische physik', 'institut fur philosophie',
-        'faculty of arts and humanities'
+        'faculty of arts and humanities',
+        'department of pathology', 'department of pathology and laboratory medicine',
+        'institute of pathology'
     ]) as anchor_term
+),
+exploded as (
+    select
+        department,
+        discipline,
+        frequency,
+        a as anchor_term
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline`,
+         unnest(matched_anchors) as a
+    where is_assigned
 )
 select
     n.anchor_term,
-    count(distinct m.department)  as departments_held,
-    sum(m.frequency)              as records_held,
-    string_agg(distinct m.discipline, ', ')  as disciplines_it_landed_in
+    count(distinct e.department)              as departments_held,
+    sum(e.frequency)                          as records_held,
+    string_agg(distinct e.discipline, ', ')   as disciplines_it_landed_in
 from new_anchors n
-left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline` m
-    on m.is_assigned
-       and exists (select 1 from unnest(m.matched_anchors) a where a = n.anchor_term)
+left join exploded e using (anchor_term)
 group by n.anchor_term
 order by records_held desc
 ;
