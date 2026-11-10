@@ -1140,6 +1140,72 @@ public, and it checks the two ways the row can fail: too wide, by taking a
 credential hiding in a long title, and too narrow, by the veto firing on a
 real student.
 
+### 2.13 Reachable was reported at a third of its size for a month — 2026-11-10
+
+Merve: *"ben coktan book legitimate interest ve legitimate interestlerin
+alinmasi gerektigini soylemistim reachable audience a"*.
+
+Correct, and **the pipeline had done it since 16 October**. `dbt_project.yml`
+sets `consent_basis: 'any_basis'`, `consent_predicate()` unions the bases,
+and `fct_role_audience_summary.reachable` counts the union — its own header
+says *"REACHABLE IS ANY OF THE THREE, from 2026-10-16. It was the two
+opt-ins only; legitimate interest is a third legal basis and was being
+ignored."*
+
+**The data was right and my reporting was wrong.** `analyses/37` query 2
+counted `mkt_pref_opt_in` alone off the raw layer, re-deriving a narrower
+number instead of reading the model built to answer the question:
+
+| Audience | As reported | Actually reachable | |
+| --- | --- | --- | --- |
+| Lecturer | 109,323 | **319,291** | 2.9× |
+| Researcher | 64,618 | **237,391** | 3.7× |
+| HCP broad | 26,436 | **93,377** | 3.5× |
+| HCP practitioner | 13,930 | **46,450** | 3.3× |
+| **HCP researcher** | 9,668 | **39,758** | **4.1×** |
+| Head of Faculty | 4,582 | **11,962** | 2.6× |
+| HCP administrator | 2,050 | **5,949** | 2.9× |
+| Pharmacist | 526 | **1,531** | 2.9× |
+| Librarian | 177 | **384** | 2.2× |
+
+Legitimate interest is the whole gap: 295,314 of Lecturer against 109,323
+with marketing consent.
+
+**And it corrected a claim that was wrong the other way.** Section 10.3 said
+*"between 18% and 30% of any audience can be emailed, and that share is
+falling"*. It is **71% to 79%**, and 54.9% for Librarian. The observation
+that confirmed people grew while contactable people did not was measured on
+the narrow column and is withdrawn rather than restated.
+
+**ASKING THE SOURCE WHAT IT HAS, instead of guessing one column name, found
+five consents we were not using.** Book-author consent is now the fourth
+legal basis — Merve's own decision, *"book author consent kesinlikle
+sayiliyor, they dont need to confirm"* — and 26,654 people hold it.
+
+The other three are **carried and counted but deliberately not a basis**,
+because each is permission for a different communication: an editor's
+referral, a mailing to editorial board members, a webshop buyer's receipts.
+None is permission for a role campaign, and widening a legal basis is not
+an engineering call.
+
+**That question is now settled by measurement rather than by asking.** The
+people those three reach and nothing else does:
+
+| | People |
+| --- | --- |
+| reachable in total | 756,093 |
+| **reachable ONLY on those three** | **251** |
+| | **0.033%** |
+
+Ruling all three in would grow the reachable audience by three hundredths
+of a percent. **It is not worth marketing's time to answer**, and that is
+one question off the list rather than one more on it.
+
+`analyses/37` query 2a does the same for the four that ARE a basis, and its
+`only_book_author` column decides whether marketing question 5 was ever
+material: if every book author already holds another basis, the question is
+moot whichever way it is answered.
+
 ### 2.12 Two anchors describe a building, not a field — 2026-11-10
 
 `analyses/39` was written to confirm that the wrong healthcare departments

@@ -199,3 +199,47 @@ qualify row_number() over (
     order by farm_fingerprint(cast(r.snid as string))
 ) <= sample_size
 ;
+
+
+-- ----------------------------------------------------------------------------
+-- 2a. WHAT EACH LEGAL BASIS CONTRIBUTES ON ITS OWN.
+--
+--    fct_role_audience_summary counts each basis, but a person can hold
+--    several, so those counts overlap and none of them says what would be
+--    LOST if a basis went away. This does, from fct_role_audience, which
+--    carries the flags per person.
+--
+--    Why it matters. Query 2 showed book-author consent at 26,654 people
+--    across the audiences, and the three purpose-specific consents adding
+--    only 251 people that nothing else reaches - 0.03% of the 756,093
+--    reachable. That is small enough to settle marketing question 5's
+--    sibling: asking whether editor-referral, editorial-board and
+--    webshop-buyer consent should count is not worth marketing's time.
+--    This query gives the same treatment to the four that ARE a basis.
+-- ----------------------------------------------------------------------------
+with a as (
+    select
+        role_key,
+        is_marketable, is_advertisable, is_legitimate_interest, is_book_author
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+    where role_label = 'CONFIRMED'
+)
+select
+    role_key,
+    countif(is_marketable or is_advertisable or is_legitimate_interest
+            or is_book_author)                                  as reachable,
+    countif(is_marketable and not (is_advertisable or is_legitimate_interest
+            or is_book_author))                                 as only_mkt_opt_in,
+    countif(is_advertisable and not (is_marketable or is_legitimate_interest
+            or is_book_author))                                 as only_advertising,
+    countif(is_legitimate_interest and not (is_marketable or is_advertisable
+            or is_book_author))                                 as only_legitimate_interest,
+    /*  THE NUMBER THAT SETTLES MARKETING QUESTION 5. If this is near zero,
+        every book author is already reachable on another basis and the
+        question is moot whichever way it is answered.  */
+    countif(is_book_author and not (is_marketable or is_advertisable
+            or is_legitimate_interest))                         as only_book_author
+from a
+group by role_key
+order by reachable desc
+;
