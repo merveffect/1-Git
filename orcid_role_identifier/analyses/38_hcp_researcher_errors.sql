@@ -262,3 +262,57 @@ group by r.country_code
 order by bare_fellow_people desc
 limit 40
 ;
+
+
+-- ----------------------------------------------------------------------------
+-- 6. DOES CORRECTING A DEPARTMENT LOSE THE PERSON, OR ONLY MOVE THEM?
+--
+--    Merve, 2026-11-10: "alan farketmeksizin bir kisi her turlu researcher
+--    olabilir ki? yani plant pathology alaninda research yapiyor olabilirler."
+--
+--    Correct, and that is exactly why the two roles are configured
+--    differently:
+--
+--      researcher       disciplines: []                 the title alone
+--                       weights role 0.75, org 0.25     0.75 > 0.60, so a
+--                       confirmed at 0.60               research title on its
+--                                                       own CONFIRMS
+--
+--      hcp_researcher   disciplines: ['health_clinical']
+--                       match: title_and_field          BOTH are required
+--
+--    So a plant pathologist is a researcher in Researcher, and the only
+--    question is whether they are a HEALTHCARE researcher. This query
+--    checks that claim against the data instead of asserting it: for the
+--    people whose department is one of the non-health themes, what else
+--    are they CONFIRMED in right now.
+--
+--    also_in_researcher SHOULD equal people. If it does not, correcting
+--    the department would drop someone out of every audience, and the
+--    correction needs to be looked at again before it is written.
+-- ----------------------------------------------------------------------------
+with flagged as (
+    select distinct r.snid, r.evidence_dept
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
+    where r.role_key   = 'hcp_researcher'
+      and r.role_label = 'CONFIRMED'
+      and not regexp_contains(lower(r.evidence_dept),
+            r'(medic|medizin|clinic|klinik|patient|hospital|surg|oncolog|onkolog|psychiatr|radiolog|nurs|health|salud|sant[eé]|biomed|epidemiolog|pharmac|cardio|neuro|p[ae]diatr|immunolog|genomic|diagnos|therap|dent|rehabilit)')
+      and regexp_contains(lower(r.evidence_dept),
+            r'(\bplant|\bagri|\bcrop|\bsoil|\bforest|\bfisher|\bbotan|\bentomolog|\bhorticult|\bagronom|\bphysik|\bphysics|\bastronom|\bphilosoph|\bhumanit|\btheolog|\blinguist|\bliterat)')
+),
+others as (
+    select snid, role_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+    where role_label = 'CONFIRMED'
+)
+select
+    count(distinct f.snid)                                                   as people,
+    count(distinct if(o.role_key = 'researcher',  f.snid, null))             as also_in_researcher,
+    count(distinct if(o.role_key = 'lecturer',    f.snid, null))             as also_in_lecturer,
+    count(distinct if(o.role_key = 'hcp_broad',   f.snid, null))             as also_in_hcp_broad,
+    count(distinct if(o.role_key not in ('researcher', 'hcp_researcher'),
+                      f.snid, null))                                         as in_any_other_audience
+from flagged f
+left join others o using (snid)
+;
