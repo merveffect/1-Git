@@ -16,8 +16,7 @@
     lecturer, postdoc - state a rung on the academic ladder, not a field.
     From the department the same method leaves 1.6% unusable.
 
-    There is no '__distractor' list any more. With 21 groups competing,
-    the non-target groups are the distractors.
+
 */
 
 select
