@@ -15,7 +15,7 @@ r.font.color.rgb=PLUM; r.font.name=SANS
 p=d.add_paragraph(); p.paragraph_format.space_after=Pt(4)
 r=p.add_run("Questions for Marketing"); r.bold=True; r.font.size=Pt(22)
 r.font.color.rgb=INK; r.font.name=SANS
-para(d,"Fourteen open decisions  ·  updated 4 November 2026  ·  Analytics Engineering",
+para(d,"Sixteen open decisions  ·  updated 10 November 2026  ·  Analytics Engineering",
      size=9.5,color=MUT,space_after=12)
 
 para(d,"Every question in here is a **definition**, not a technical problem. None of "
@@ -43,7 +43,9 @@ table(d,["#","Question","Size","Our working answer","Need"],
   ["12","Does book-author consent cover a role campaign?","NEW","Assumed yes","**High**"],
   ["13","Should a job title be allowed in two professions?","78,000 records","**DECIDED — no.** Please confirm","Confirm"],
   ["14","Two deliberate exclusions from Librarian","small","Both excluded","Low"],
-  ["15","*Should Researcher split into early and senior?*","—","**WITHDRAWN 4 Nov — not splitting**","—"]],
+  ["15","*Should Researcher split into early and senior?*","—","**WITHDRAWN 4 Nov — not splitting**","—"],
+  ["16","Are vets healthcare professionals?","91+ people","**NEW** — in today, by accident","Medium"],
+  ["17","Is sport science a healthcare field?","78+ people","**NEW** — in today, by accident","Medium"]],
  widths=[0.3,2.55,1.05,1.55,0.6], size=8.5)
 
 # ---------------------------------------------------------------- 1
@@ -251,7 +253,7 @@ para(d,"**A measurement worth doing first.** The existing legitimate-interest ba
        "publish less. We would measure the overlap before promising a number.")
 
 # ---------------------------------------------------------------- MEDIUM BLOCK
-h(d,"6.  Six medium questions, each one line to change")
+h(d,"6.  Nine medium questions, each one line to change")
 
 h(d,"6.1  Are psychologists healthcare professionals?  (~4,500 records)",2)
 para(d,"All six psychologist titles currently match our **psychiatrist** example word and "
@@ -495,13 +497,75 @@ table(d,["Priority","Question","Why it cannot wait"],
    "226,210 records, and the never-academic list is ready to apply"],
   ["5","Everything else","One line each, any time"]],
  widths=[0.65,2.6,3.0], size=9)
-para(d,"**One thing we cannot give you, and will not invent.** There is no accuracy "
-       "percentage for any of this. ORCID has no profession field, so there is no correct "
-       "answer anywhere to compare against. What we have instead is that every decision is "
-       "inspectable: name any person and we can show you the words they typed, what it "
-       "matched, how close it was, and whether a human or the model decided. We are also "
-       "now matching against survey answers, where people told us their own job title — "
-       "that will be the first outside check this project has had.")
+para(d,"**There is now an accuracy figure, and here is exactly what it is.** ORCID has "
+       "no profession field, so there is nothing to compare against automatically. "
+       "Instead, on 5 November 400 Confirmed people were drawn at random from each "
+       "audience and read one at a time — job title, employer, department — and marked "
+       "correct, wrong or not sure.")
+table(d,["Audience","Correct, of the cases that could be decided"],
+ [["Researcher","99.0%"],
+  ["Lecturer","98.7%"],
+  ["Librarian (all 692 read)","98.5%"],
+  ["Pharmacist","95.7%"],
+  ["HCP administrator","94.9%"],
+  ["HCP practitioner","93.4%"],
+  ["HCP broad","90.6%"],
+  ["Clinical researcher","90.0%"],
+  ["Head of Faculty","83.3%"]],
+ widths=[2.4,3.0], size=9)
+para(d,"**On 10 November the lowest of those was read again, by a different reader, on "
+       "100 different people: 89.0%.** One point apart from 90.0%. That is the first "
+       "quality figure in this project that has been reproduced rather than asserted.")
+para(d,"Two things the table does not say. *Not sure* is left out of the percentage, and "
+       "for Head of Faculty it is a third of the sample — almost all of it the `director` "
+       "question, Question 4 here, so answering that question is what moves the number. "
+       "And the figure is about whether we read the job title correctly, not about "
+       "whether the person is still in that job.")
+para(d,"Underneath it, every decision is inspectable: name any person and we can show you "
+       "the words they typed, what it matched, how close it was, and whether a human or "
+       "the model decided.")
+
+h(d,"6.8  NEW — Are veterinarians healthcare professionals?  (91+ people)",2)
+para(d,"Found on 10 November while reading a sample of the Clinical Researcher audience "
+       "by hand. Veterinary departments are being read as clinical, so vets are in the "
+       "healthcare audiences today. Nobody decided that — it happened because veterinary "
+       "medicine is medicine and the word carries.")
+table(d,["Department","People"],
+ [["`Faculty of Veterinary Medicine`","43"],
+  ["`Veterinary Pathology`","13"],
+  ["`School of Biodiversity, One Health and Veterinary Medicine`","14"],
+  ["`Veterinary Public Health`","7"],
+  ["`Veterinary Epidemiology`","2"]],
+ widths=[4.2,0.9])
+para(d,"**91 is a floor, not a total.** It was counted inside one audience, Clinical "
+       "Researcher, from a truncated list. The same departments also feed HCP broad and "
+       "HCP practitioner, so the real figure across healthcare is larger.")
+para(d,"**The case for yes.** A vet is a regulated clinician who diagnoses, prescribes "
+       "and operates, and reads clinical literature to do it. For a journals campaign "
+       "that may be the whole point.")
+para(d,"**The case for no.** Every other audience here is defined by treating people. A "
+       "campaign about patient outcomes, clinical guidelines or hospital practice does "
+       "not apply to a vet, and arriving in their inbox is the kind of mismatch that "
+       "costs more than a missing contact.")
+para(d,"**One genuinely hard case either way:** *One Health* departments, 14 people. "
+       "Their subject is by definition the intersection of human and animal health.")
+para(d,"**Our working answer: no**, consistent with Question 3. Say the word and it is "
+       "one line.")
+
+h(d,"6.9  NEW — Is sport and exercise science a healthcare field?  (78+ people)",2)
+para(d,"Same reading, same day, and this one splits cleanly down the middle of its own "
+       "vocabulary.")
+table(d,["Department","People","Reads as"],
+ [["`Sports Medicine`, `Institute of Sport and Exercise Medicine`","~25","**Clinical** — medicine"],
+  ["`Faculty of Sport Sciences`, `Department of Sport Science`","~45","Not clinical"],
+  ["`Physical Education and Sports`","6","Not clinical"],
+  ["`Faculty of Sport and Health Sciences`","~35","Both words in one name"]],
+ widths=[3.1,0.7,1.4])
+para(d,"A sports physician treats patients. A sport scientist studies performance. The "
+       "department names sit on both sides and a third group names both at once, which "
+       "is why this needs a line drawn rather than a judgement per department.")
+para(d,"**Our working answer: keep the ones that say *medicine*, drop the rest.** That is "
+       "the same test as Question 3 — the work, not the subject.")
 
 # The repo copy is the deliverable - Merve pulls from git, so a file that
 # exists only in one machine's Downloads folder reaches nobody. Downloads is

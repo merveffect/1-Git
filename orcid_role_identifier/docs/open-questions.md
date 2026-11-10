@@ -808,6 +808,99 @@ produce the right answer, which is why it is evidence rather than a defect.
 
 ---
 
+### 1.18 Are veterinarians healthcare professionals? — ASKED 2026-11-10
+
+Found while reading 100 CONFIRMED `hcp_researcher` people by hand. Veterinary
+departments read as `health_clinical`, so vets are in the healthcare audiences
+today. **Nobody decided this.** It happened because veterinary medicine is
+medicine and the word carries.
+
+| Department | People |
+| --- | --- |
+| `Faculty of Veterinary Medicine` | 43 |
+| `School of Biodiversity, One Health and Veterinary Medicine` | 14 |
+| `Veterinary Pathology` | 13 |
+| `Veterinary Public Health` | 7 |
+| `Veterinary Epidemiology` | 2 |
+| others | 12 |
+
+**91 is a floor.** Counted inside `hcp_researcher` CONFIRMED only, from a
+truncated list. The same departments feed `hcp_broad` and `hcp_practitioner`,
+so the figure across healthcare is larger and has not been measured.
+
+For: a vet is a regulated clinician who diagnoses, prescribes and operates,
+and reads clinical literature to do it. Against: every other audience here is
+defined by treating people, and a campaign about patient outcomes or hospital
+practice does not apply to a vet. Hard case either way: *One Health*
+departments, 14 people, whose subject is by definition the intersection.
+
+Working answer **no**, consistent with 1.11. One line to change.
+
+### 1.19 Is sport and exercise science a healthcare field? — ASKED 2026-11-10
+
+Same reading, same day, and this one splits down the middle of its own
+vocabulary.
+
+| Department family | People | Reads as |
+| --- | --- | --- |
+| `Sports Medicine`, `Institute of Sport and Exercise Medicine` | ~25 | clinical |
+| `Faculty of Sport Sciences`, `Department of Sport Science` | ~45 | not clinical |
+| `Physical Education and Sports` | 6 | not clinical |
+| `Faculty of Sport and Health Sciences` | ~35 | both words in one name |
+
+A sports physician treats patients; a sport scientist studies performance.
+The third family names both at once, which is why this needs a line drawn
+rather than a judgement per department. Working answer: **keep the ones that
+say *medicine*, drop the rest** — the work, not the subject, same test as
+1.11. Also a floor, same reason as 1.18.
+
+### 1.20 A plant pathologist is a researcher — and that is not the question
+
+Merve, on being shown the department list, 2026-11-10:
+
+> "alan farketmeksizin bir kisi her turlu researcher olabilir ki? yani plant
+> pathology alaninda research yapiyor olabilirler. bunlari neden elemek
+> gerekiyor anlamadim"
+
+**The objection is right and the project already agrees with it**, which is
+worth recording because the answer is in the config rather than in anything
+written down:
+
+| | `researcher` | `hcp_researcher` |
+| --- | --- | --- |
+| disciplines | `[]` — none | `['health_clinical']` |
+| match | `title_required` | `title_and_field` |
+| weights | role 0.75, org 0.25, **dept 0.00** | role and dept equal |
+| confirmed at | 0.60 | — |
+
+A research title alone scores 0.75 against a threshold of 0.60, so **anyone
+whose title says research is CONFIRMED in Researcher, in any field**. That is
+the audience that does not care about the field, and it is 334,689 people.
+`hcp_researcher` is not a second Researcher — it is the research arm of
+`hcp_broad`, and its whole definition is a research title **and** a clinical
+field.
+
+**Measured rather than asserted**, analyses/38 query 6, on the 436 people in
+the agriculture, physics and humanities themes:
+
+| | People |
+| --- | --- |
+| in `hcp_researcher` on a non-health department | **436** |
+| of those, also CONFIRMED in `researcher` | **436** |
+| also in `lecturer` | 141 |
+
+Every one of them keeps their place in Researcher. Correcting the department
+removes nobody from anything except the healthcare family, which is where
+they do not belong.
+
+The defect is one layer below the audience: `dim_department_discipline` reads
+`Plant Pathology` as `health_clinical` because `pathology` is one of the
+strongest clinical words there is, and the embedding matched the word rather
+than the field. The correction is to the discipline, not to the role, and it
+moves `hcp_broad`, `hcp_practitioner`, `hcp_researcher` and
+`hcp_administrator` together while leaving `researcher` and `lecturer`
+untouched.
+
 ## Part 2 — Limitations to state plainly
 
 ### 2.1 There is no accuracy percentage and there will not be one
