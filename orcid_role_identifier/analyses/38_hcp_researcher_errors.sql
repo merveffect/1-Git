@@ -32,27 +32,86 @@
 -- ----------------------------------------------------------------------------
 -- 1. THE DEPARTMENT IS NOT HUMAN HEALTH.
 --
---    Seen: `Physikalisches Institut`, `Plant Pathology`, `Comparative
---    Molecular Endocrinology` at a marine sciences centre, and a `Facultad
---    de Ciencias y Humanidades`. The 5 November reading named the same
---    cause independently — veterinary epidemiology, plant pathology,
---    physics — so this is now twice observed.
+--    THE FIRST VERSION OF THIS QUERY WAS WRONG AND IS WORTH RECORDING.
+--    It matched the words as SUBSTRINGS, with no word boundary, so:
 --
---    This is a candidate list to READ, not a list to delete. A word like
---    `animal` appears in both `animal science` and `laboratory animal
---    medicine`, and only one of those is wrong.
+--        gyn-ECOLOG-y         matched `ecolog`     374 people
+--        g-ASTRO-enterology   matched `astro`      269 people
+--        trans-PLANT-ation    matched `plant`       35 people
+--
+--    45% of the first result was obstetrics, gastroenterology and
+--    transplant surgery - three of the most unambiguously clinical
+--    departments there are. Same family as 2.4f and 2.4g in
+--    open-questions: a short token matches its spelling, not its meaning.
+--    Every token is now anchored with \b.
+--
+--    A boundary alone is not enough either. `Medical Physics`,
+--    `Computational Medicine` and `Biomedical Informatics` all match at a
+--    boundary and all belong here. So a department that carries a clinical
+--    anchor word keeps its place, and only `veterinary` overrides that -
+--    veterinary medicine is medicine, and it is not human.
+--
+--    This is a list to READ, not to delete.
 -- ----------------------------------------------------------------------------
+with depts as (
+    select
+        r.evidence_dept,
+        count(distinct r.snid) as people
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
+    where r.role_key   = 'hcp_researcher'
+      and r.role_label = 'CONFIRMED'
+      and r.evidence_dept is not null
+    group by r.evidence_dept
+),
+marked as (
+    select
+        evidence_dept,
+        people,
+        regexp_contains(lower(evidence_dept),
+            r'(medic|medizin|clinic|klinik|patient|hospital|surg|oncolog|onkolog|psychiatr|radiolog|nurs|health|salud|sant[eé]|biomed|epidemiolog|pharmac|cardio|neuro|p[ae]diatr|immunolog|genomic|diagnos|therap|dent|rehabilit)'
+        ) as has_clinical_anchor
+    from depts
+)
 select
-    r.evidence_dept,
-    count(distinct r.snid)  as people,
-    count(*)                as rows_
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
-where r.role_key   = 'hcp_researcher'
-  and r.role_label = 'CONFIRMED'
-  and regexp_contains(lower(r.evidence_dept), r'(plant|agri|crop|soil|forest|marine|fish|aquat|veterinar|animal|zoo|entomolog|botan|ecolog|geolog|astro|physik|physics|chemistry|chimie|engineer|informatic|comput|mathemat|humanit|histor|philosoph|theolog|linguist|literat|econom|law|juris|architect|sport)')
-group by r.evidence_dept
-order by people desc
-limit 200
+    case
+        /*  veterinary first and unconditionally: `Faculty of Veterinary
+            Medicine` carries `medic` and would otherwise be cleared by the
+            anchor test, which is exactly the wrong answer.  */
+        when regexp_contains(lower(evidence_dept), r'\bveterinar')
+            then '1 veterinary'
+        when has_clinical_anchor
+            then null
+        when regexp_contains(lower(evidence_dept),
+             r'(\bplant|\bagri|\bcrop|\bsoil|\bforest|\bfisher|\bbotan|\bentomolog|\bhorticult|\bagronom)')
+            then '2 agriculture and plants'
+        when regexp_contains(lower(evidence_dept),
+             r'(\bsport|\bkinesiolog|physical education|\bmovement|\bexercise)')
+            then '3 sport and exercise science'
+        when regexp_contains(lower(evidence_dept),
+             r'(\bphysik|\bphysics|\bastronom|\bastrophys)')
+            then '4 physics'
+        when regexp_contains(lower(evidence_dept),
+             r'(\bphilosoph|\bhumanit|\btheolog|\bhistor|\blaw\b|\bjuris|\blinguist|\bliterat|\barts\b)')
+            then '5 humanities, law, arts'
+        when regexp_contains(lower(evidence_dept),
+             r'(\becolog|\bzoo|\bmarine|\baquat|\bgeolog|\bfish\b|\banimal)')
+            then '6 ecology, animal, earth'
+        when regexp_contains(lower(evidence_dept),
+             r'(\bengineer|\boptical|\bmechanic|\bchemistry|\bchimie|\bmathemat|\bcomput)')
+            then '7 engineering, chemistry, computing'
+        else null
+    end                     as theme,
+    evidence_dept,
+    people
+from marked
+where case
+        when regexp_contains(lower(evidence_dept), r'\bveterinar') then true
+        when has_clinical_anchor then false
+        else regexp_contains(lower(evidence_dept),
+             r'(\bplant|\bagri|\bcrop|\bsoil|\bforest|\bfisher|\bbotan|\bentomolog|\bhorticult|\bagronom|\bsport|\bkinesiolog|physical education|\bmovement|\bexercise|\bphysik|\bphysics|\bastronom|\bastrophys|\bphilosoph|\bhumanit|\btheolog|\bhistor|\blaw\b|\bjuris|\blinguist|\bliterat|\barts\b|\becolog|\bzoo|\bmarine|\baquat|\bgeolog|\bfish\b|\banimal|\bengineer|\boptical|\bmechanic|\bchemistry|\bchimie|\bmathemat|\bcomput)')
+      end
+order by theme, people desc
+limit 300
 ;
 
 
