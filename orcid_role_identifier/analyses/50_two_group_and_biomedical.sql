@@ -439,6 +439,66 @@ select
 
 
 -- ----------------------------------------------------------------------------
+-- 2f. BEFORE - THE DECISIVE QUERY. 2e ruled out the explanation 2e was written
+--     to test, so the cause has to be named rather than guessed at again.
+--
+--     WHAT 2e SHOWED. The corpus is NOT stale: 1,764,535 records when the
+--     dictionary was built against 1,767,500 live, a 0.17% difference. But
+--     every named title is 14 to 30 times larger in the dictionary than the
+--     live view, and the ratio is different for each title - 14.5 for
+--     `graduate research assistant`, 29.5 for `professor & director`. A stale
+--     corpus would have moved the total and would have moved every title by
+--     the same factor. Neither happened.
+--
+--     SO THE RECORDS HAVE NOT GONE: THE KEYS HAVE MOVED. title_key is
+--     md5(role_title) where role_title is the NORMALISED title, built by
+--     macros/normalize.sql. If that macro's output changed after the
+--     dictionary was built, the same record now hashes to a different key -
+--     the corpus total is untouched, the dictionary still holds the old string
+--     with its old frequency, and a join between the live view and the old
+--     dictionary silently finds only the fraction of records whose
+--     normalisation happens to be unchanged. Varying per-title ratios are
+--     exactly what that produces.
+--
+--     WHY IT MATTERS MORE THAN THIS BUILD. If that is the answer, then EVERY
+--     query in this project that joins stg_role_records to the dictionary is
+--     undercounting right now - including query 1 above, whose 86,240 records
+--     and 63,767 people I reported this morning, and query 2c's people
+--     figures. The queries that read the dictionary ALONE are unaffected,
+--     which is queries 2, 2b and 2d, so the tail reading and the
+--     bare-director sizing both stand.
+-- ----------------------------------------------------------------------------
+select
+    count(*)                                            as live_records,
+    countif(t.title_key is not null)                    as matched_to_dictionary,
+    round(100 * countif(t.title_key is not null) / count(*), 1)
+                                                        as pct_records_matched,
+    count(distinct s.title_key)                         as live_distinct_titles,
+    count(distinct if(t.title_key is not null, s.title_key, null))
+                                                        as matched_distinct_titles
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+       using (title_key)
+;
+
+-- 2f-ii. And the biggest live titles the dictionary has never seen. If the
+--        normalisation moved, the cause is readable straight off this list -
+--        these will be near-spellings of titles the dictionary already holds,
+--        and the difference between the two strings IS the change.
+select
+    s.role_title,
+    count(*)                                            as records
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+       using (title_key)
+where t.title_key is null
+group by s.role_title
+order by records desc
+limit 30
+;
+
+
+-- ----------------------------------------------------------------------------
 -- 3. AFTER - did the second group land at all?
 --
 --    The first thing to look at. If title_group_2 is null everywhere, the
