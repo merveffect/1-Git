@@ -323,10 +323,18 @@ order by hash_position;
 -- marketing audiences. For each row, decide whether the assignment to the
 -- audience named below is right.
 --
+-- SEND docs/AI-REVIEWER-RULES.md FIRST, BEFORE THIS PROMPT. It is the full set
+-- of rules this pipeline applies to a job title, the decisions already made
+-- about edge cases, the failure modes it has actually been caught in, and the
+-- open questions where UNSURE is the right answer. Without it the AI judges
+-- from its own idea of what a job title means, which is not what is being
+-- audited.
+--
 -- THE AUDIENCE AND ITS RULE:
 --   Every row carries an audience column naming the audience being judged,
 --   and it is the same for all of them. The rule for it is:
---   <paste the one rule for this audience from THE RUBRIC above>
+--   <paste the one rule for this audience from THE RUBRIC above, or from
+--    section 3 of AI-REVIEWER-RULES.md>
 --
 -- TWO COLUMNS THAT CHANGE WHAT YOU ARE JUDGING. Read them before the title.
 --
