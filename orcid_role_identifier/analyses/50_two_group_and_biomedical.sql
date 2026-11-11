@@ -146,6 +146,233 @@ limit 60
 
 
 -- ----------------------------------------------------------------------------
+-- 2b. BEFORE - THE TAIL OF EACH RULE, because query 2 only shows its head.
+--
+--     WHY THIS QUERY EXISTS. Query 2 ran on 2026-11-11 and two of the five
+--     rules came back around EIGHT TIMES the forecast written beside them:
+--     researcher -> teaching_academic was put at ~120,000 records and measured
+--     384,699, and researcher -> student was put at ~48,000 and measured
+--     344,285. The forecasts were built from the half-dozen titles I could
+--     name, and 5,647 distinct titles cannot be judged from eight of them.
+--
+--     So this draws the top 5 of each rule plus roughly 25 more spread evenly
+--     down its frequency distribution, and prints the rank so it is obvious
+--     which part of the tail each row comes from. What you are reading for is
+--     ONE thing: does the title name a SECOND JOB, or does it name a subject,
+--     a grade or a department? `research professor` names two jobs.
+--     `professor of research methods` names a subject and must not be here.
+-- ----------------------------------------------------------------------------
+with dict as (
+    select title_key, title, frequency, title_group
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned
+),
+rules as (
+    select applies_when_title_group, name_pattern, second_title_group, unless_pattern
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.title_group_second`
+),
+matched as (
+    select
+        r.applies_when_title_group                      as from_group,
+        r.second_title_group                            as gains_group,
+        d.title,
+        d.frequency,
+        row_number() over (partition by r.applies_when_title_group,
+                                        r.second_title_group
+                           order by d.frequency desc)   as rank_in_rule,
+        count(*)    over (partition by r.applies_when_title_group,
+                                       r.second_title_group)
+                                                        as titles_in_rule
+    from dict d
+    join rules r
+         on regexp_contains(d.title, r.name_pattern)
+        and d.title_group = r.applies_when_title_group
+        and r.second_title_group != d.title_group
+        and (r.unless_pattern is null or r.unless_pattern = ''
+             or not regexp_contains(d.title, r.unless_pattern))
+)
+select
+    from_group,
+    gains_group,
+    rank_in_rule,
+    titles_in_rule,
+    title,
+    frequency
+from matched
+/*  The top 5 always, then every (n/25)th title the rest of the way down, so
+    a rule with 5,647 titles and a rule with 1,571 both come back at about
+    thirty rows and the sample is spread rather than piled at the top.  */
+where rank_in_rule <= 5
+   or mod(rank_in_rule,
+          greatest(1, cast(floor(titles_in_rule / 25) as int64))) = 0
+order by from_group, gains_group, rank_in_rule
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 2c. BEFORE - AND THE SAME THING IN PEOPLE, WHICH IS WHAT AN AUDIENCE IS.
+--
+--     Query 2 counts records at title grain and the header of this file warns
+--     that the two are not comparable. This is the comparable number: how many
+--     PEOPLE hold a record the rule matches, and how many of them are not
+--     already CONFIRMED in the audience that second group feeds.
+--
+--     `could_be_new` IS NOT A CEILING FOR TWO OF THE THREE AUDIENCES, and that
+--     is the finding that makes this query worth running before the build. The
+--     second group carries a FLAT score of 1.0, because it is a literal
+--     pattern match - the same reasoning pattern_hits already uses. Lecturer
+--     weights the role axis 0.75 and confirms at 0.60, so 0.75 x 1.0 = 0.75
+--     clears the threshold on the title ALONE, with no help from the employer;
+--     Researcher is weighted and thresholded identically. So for those two,
+--     `could_be_new` is not an upper bound on new members, it is close to the
+--     count of them, and they arrive as CONFIRMED rather than PROBABLE.
+--
+--     faculty_head is the exception and the arithmetic is worth stating: role
+--     0.60 x 1.0 = 0.60 against a 0.65 threshold, so a second-group entry
+--     CANNOT confirm on its title. It needs the 0.40 organisation term, which
+--     org_type_scores gives only to Education - and the role is current-only.
+-- ----------------------------------------------------------------------------
+with dict as (
+    select title_key, title, title_group
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned
+),
+rules as (
+    select applies_when_title_group, name_pattern, second_title_group, unless_pattern
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.title_group_second`
+),
+hits as (
+    select distinct
+        s.snid,
+        r.applies_when_title_group                      as from_group,
+        r.second_title_group                            as gains_group,
+        /*  Which audience that group actually feeds. student and
+            support_technical feed none, which is why the student rule is the
+            largest one in query 2 and the least consequential.  */
+        case r.second_title_group
+            when 'teaching_academic' then 'lecturer'
+            when 'researcher'        then 'researcher'
+            when 'leadership'        then 'faculty_head'
+            else null
+        end                                             as target_audience
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+    join dict d on s.title_key = d.title_key
+    join rules r
+         on regexp_contains(d.title, r.name_pattern)
+        and d.title_group = r.applies_when_title_group
+        and r.second_title_group != d.title_group
+        and (r.unless_pattern is null or r.unless_pattern = ''
+             or not regexp_contains(d.title, r.unless_pattern))
+),
+already as (
+    select distinct snid, role_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles`
+    where role_label = 'CONFIRMED'
+)
+select
+    h.from_group,
+    h.gains_group,
+    coalesce(h.target_audience, 'none - feeds no audience') as target_audience,
+    count(distinct h.snid)                              as people_matching_rule,
+    count(distinct if(a.snid is not null, h.snid, null))  as already_in_target,
+    count(distinct if(a.snid is null,     h.snid, null))  as could_be_new
+from hits h
+left join already a
+       on a.snid = h.snid
+      and a.role_key = h.target_audience
+group by from_group, gains_group, target_audience
+order by could_be_new desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 2d. BEFORE - THE BARE-DIRECTOR RISK, which query 2 showed in its own top 8.
+--
+--     `course director` came back as one of the eight biggest titles in the
+--     teaching_academic -> leadership rule. A course director runs a programme;
+--     they are not faculty management, and faculty_head is the audience on the
+--     other side of that rule.
+--
+--     THIS IS 1.3's LESSON ARRIVING FROM A NEW DIRECTION. A leadership WORD is
+--     not a leadership JOB. We already know bare `director`, `chair` and `head`
+--     with no faculty word beside them are about 15% of faculty_head and are
+--     the first row of the UNSURE table in the reviewer rules. The LEAD_JOB
+--     list takes bare `director`, so this rule WIDENS that known ambiguity
+--     rather than inheriting it.
+--
+--     AND BARE DIRECTOR CANNOT SIMPLY BE DROPPED FROM THE LIST: `professor &
+--     director` is bare director, and it is the exact title that motivated the
+--     rule. So the question this query answers is how big the narrow-director
+--     half is, and whether it can be vetoed by compound instead.
+--
+--     The classifier below is a NEW regex, not a copy of LEAD_JOB - it asks
+--     only whether a faculty-level word is present, and it carries the same
+--     languages LEAD_JOB does, because an English-only veto beside a
+--     multilingual name pattern has now failed four times.
+-- ----------------------------------------------------------------------------
+with dict as (
+    select title, frequency
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned and title_group = 'teaching_academic'
+),
+rule as (
+    select name_pattern, unless_pattern
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.title_group_second`
+    where applies_when_title_group = 'teaching_academic'
+      and second_title_group       = 'leadership'
+),
+matched as (
+    select
+        d.title,
+        d.frequency,
+        regexp_contains(d.title,
+            r'(dean|dekan|decano|decana|doyen|rector|rektor|rectora|provost|chancellor|vice chancellor|pro vice chancellor|head of (the )?(department|school|faculty|division|institute)|hod|department chair|chair of (the )?(department|division|school|faculty)|chairman|chairperson|chairwoman|b[aö][sş]kan)')
+                                                        as has_faculty_word
+    from dict d
+    cross join rule r
+    where regexp_contains(d.title, r.name_pattern)
+      and (r.unless_pattern is null or r.unless_pattern = ''
+           or not regexp_contains(d.title, r.unless_pattern))
+)
+select
+    if(has_faculty_word, 'faculty-level word present',
+                         'DIRECTOR OR CHAIR ALONE')     as kind,
+    count(*)                                            as distinct_titles,
+    sum(frequency)                                      as records
+from matched
+group by kind
+order by records desc
+;
+
+-- 2d-ii. And the narrow half itself, biggest first, so the veto can be written
+--        from what is actually there rather than from the three compounds I can
+--        name. Read it for titles where the director word runs a COURSE, a
+--        CLINIC or a PROJECT rather than a faculty.
+with dict as (
+    select title, frequency
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned and title_group = 'teaching_academic'
+),
+rule as (
+    select name_pattern, unless_pattern
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.title_group_second`
+    where applies_when_title_group = 'teaching_academic'
+      and second_title_group       = 'leadership'
+)
+select d.title, d.frequency
+from dict d
+cross join rule r
+where regexp_contains(d.title, r.name_pattern)
+  and (r.unless_pattern is null or r.unless_pattern = ''
+       or not regexp_contains(d.title, r.unless_pattern))
+  and not regexp_contains(d.title,
+        r'(dean|dekan|decano|decana|doyen|rector|rektor|rectora|provost|chancellor|vice chancellor|pro vice chancellor|head of (the )?(department|school|faculty|division|institute)|hod|department chair|chair of (the )?(department|division|school|faculty)|chairman|chairperson|chairwoman|b[aö][sş]kan)')
+order by d.frequency desc
+limit 60
+;
+
+
+-- ----------------------------------------------------------------------------
 -- 3. AFTER - did the second group land at all?
 --
 --    The first thing to look at. If title_group_2 is null everywhere, the
