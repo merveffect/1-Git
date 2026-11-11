@@ -15,12 +15,13 @@ r.font.color.rgb=PLUM; r.font.name=SANS
 p=d.add_paragraph(); p.paragraph_format.space_after=Pt(4)
 r=p.add_run("Questions for Marketing"); r.bold=True; r.font.size=Pt(22)
 r.font.color.rgb=INK; r.font.name=SANS
-para(d,"Sixteen open decisions  ·  updated 11 November 2026  ·  Analytics Engineering",
+para(d,"Eight open decisions  ·  updated 11 November 2026  ·  Analytics Engineering",
      size=9.5,color=MUT,space_after=12)
 
 para(d,"Every question in here is a **definition**, not a technical problem. None of "
        "them can be settled from the data. Each one changes who receives a campaign, so "
        "each one belongs to marketing rather than to us.")
+para(d,"**Nine questions were answered on 11 November and have been taken off this page** rather than left with a tick beside them — an answered question that stays on a list gets re-asked. They are recorded in section 6 with the date and the reasoning. What is left below is what is genuinely still open.", space_after=6)
 para(d,"We have made a working choice for every question so that nothing is blocked. "
        "Those choices are marked. Any of them can be reversed in one line of "
        "configuration, so changing an answer is cheap — **leaving it undecided is what "
@@ -29,26 +30,33 @@ para(d,"We have made a working choice for every question so that nothing is bloc
 # ---------------------------------------------------------------- SUMMARY
 h(d,"The whole list, at a glance")
 table(d,["#","Question","Size","Our working answer","Need"],
- [["1","Is \"healthcare professional\" about the work or the subject?","settles 5 others","Work (treats patients)","**High**"],
-  ["1a","Are biomedical researchers healthcare professionals?","15,588 people","No","**High**"],
-  ["2","Which leadership titles are a head of faculty?","**267 people = 15.0% of the audience**","Keep ambiguous ones in. **Hospitals now excluded**","**High**"],
-  ["3","Does the word \"research\" in a title decide the audience?","~55,000 records","No","**High**"],
-  ["4","Does book-author consent cover a role campaign?","26,654 people",
-   "**BUILT 10 Nov** — want it in writing","Confirm"],
-  ["5.1","Are psychologists healthcare professionals?","~4,500 records","Yes, currently in","Medium"],
-  ["5.2","Four smaller versions of the same question","2,743 records","Yes, currently in","Medium"],
-  ["5.3","Are visiting scholars and fellows teaching staff?","81,749 records","Yes, currently in","Medium"],
-  ["5.4","Is an honorary professor active?","6,651 records","Yes, currently in","Medium"],
-  ["5.5","Is an uninformative title (dr, md) acceptable evidence?","146,865 records","Yes, if the department agrees","Medium"],
-  ["5.6","Should a past role still count?","not measured","Yes, for seven of nine","Medium"],
-  ["5.8","Are vets healthcare professionals?","91+ people","In today, by accident","Medium"],
-  ["5.9","Is sport science a healthcare field?","78+ people","In today, by accident","Medium"],
-  ["6.1","Should a job title be allowed in two professions?","78,000 records","**DECIDED — no.** Please confirm","Confirm"],
-  ["6.1a","*professor and director* — split today by word order alone","68,000 records","Recommend Head of Faculty","**High**"],
-  ["6.2","Two deliberate exclusions from Librarian","small","Both excluded","Low"],
-  ["—","*Switch on the second confidence tier?*","*45,054 people*","**CLOSED 11 Nov — no. See 7**","—"],
-  ["—","*Should Researcher split into early and senior?*","—","**WITHDRAWN 4 Nov — not splitting**","—"]],
- widths=[0.35,2.5,1.05,1.55,0.6], size=8.5)
+ [["1","What does \"Healthcare Professional (broad)\" mean now?","93,377 reachable","Needs your line — see 1","**High**"],
+  ["2","Does the role library's grouping decide ours? *statistician, economist*","12,469 records","No working answer","**High**"],
+  ["3.1","Are visiting scholars and fellows teaching staff?","81,749 records","Yes, currently in","Medium"],
+  ["3.2","Is an honorary professor active?","6,651 records","Yes, currently in","Medium"],
+  ["3.3","Is a `dr` with a clinical department acceptable evidence?","146,865 records","Yes","Medium"],
+  ["3.4","Should a past role still count?","not measured","Yes, for seven of nine","Medium"],
+  ["3.5","Are vets healthcare professionals?","91+ people","In today, by accident","Medium"],
+  ["3.6","Is sport science a healthcare field?","78+ people","In today, by accident","Medium"],
+  ["4.1b","Should doctoral researchers be in Students as well?","~48,000 records","Yes, if 4.1 is yes","Confirm"],
+  ["4.2","Two deliberate exclusions from Librarian","small","Both excluded","Low"]],
+ widths=[0.4,2.8,1.0,1.4,0.6], size=8.5)
+box(d,"ANSWERED ON 11 NOVEMBER — AND ONE OF THEM SET A PRINCIPLE",[
+ "Nine questions were closed in one sitting. They are in section 6 in full; the two "
+ "that change what an audience MEANS are these.",
+ "",
+ "**The second confidence tier stays off. Nobody we are not certain about enters an "
+ "audience.** It would have added 45,054 unique people and nearly doubled the broad "
+ "healthcare audience, by delivering people whose two signals disagree — a Paediatrics "
+ "department against an Assistant Professor title.",
+ "",
+ "**Biomedical researchers ARE healthcare professionals.** 15,588 people join Clinical "
+ "Researcher and, through the roll-up, the broad healthcare audience. That answer has "
+ "a consequence for question 1 below and we would rather put it in front of you than "
+ "let you find it: the broad audience now contains people who have never seen a "
+ "patient, so the question left is what that audience should be CALLED and where its "
+ "edge is — not whether research counts.",
+], fill="F1F6F4", accent=TEAL)
 box(d,"ONE QUESTION CLOSED SINCE THE LAST VERSION, AND IT SETS A PRINCIPLE",[
  "**Merve, 11 November: the second confidence tier stays off. Nobody we are not "
  "certain about goes into an audience.**",
@@ -65,269 +73,137 @@ box(d,"ONE QUESTION CLOSED SINCE THE LAST VERSION, AND IT SETS A PRINCIPLE",[
 ], fill="F1F6F4", accent=TEAL)
 
 # ---------------------------------------------------------------- 2+3
-h(d,"1.  One question settles five of the others")
-para(d,"Questions 1a, 3, 5.1 and 5.2 are the same question asked about different jobs. Answer "
-       "it once and they all resolve.")
-box(d,"THE QUESTION",[
- "**Is \"healthcare professional\" about the work, or about the subject?**",
+h(d,"1.  What does \"Healthcare Professional (broad)\" mean now?")
+para(d,"This was asked on 10 November as *is healthcare about the work or the subject?* "
+       "Your answer on biomedical researchers settles most of it, so here is the question "
+       "that is actually left — and it is a narrower and more answerable one.")
+box(d,"FIRST, THE FOUR HEALTHCARE AUDIENCES ARE NOT ONE QUESTION",[
+ "We asked this as though it applied to all four. It does not, and three of them "
+ "already carry their answer in how they are built.",
  "",
- "A biomedical researcher, a psychologist, a medical physicist, a genetic counsellor and "
- "a mental health support worker all work in health **without practising medicine**.",
+ "`hcp_practitioner   a clinical title AND a health department`",
+ "`                   -> treating patients IS the definition. No question here.`",
  "",
- "If our healthcare campaigns are about **clinical practice** — journals for surgeons, "
- "drug information — then these people do not belong.",
+ "`hcp_researcher     a RESEARCH title AND a health department`",
+ "`                   -> patient contact was never required. Already subject-based.`",
  "",
- "If they are about **medical content** — biomedical journals, health research — then "
- "they do.",
+ "`hcp_administrator  a LEADERSHIP title AND a health department`",
+ "`                   -> runs a clinical unit. May never see a patient. No question.`",
  "",
- "That fact lives in your campaign plans. It is not in our data and no amount of "
- "analysis will find it.",
+ "`hcp_broad          a clinical title, PLUS everyone the three above roll up`",
+ "`                   -> THIS is the only one the question applies to.`",
 ], fill="FAF2F5", accent=PLUM)
-para(d,"**And today's line is inconsistent, which is why we are asking.**")
-table(d,["Who","Size","In today?","Sees patients?"],
- [["Biomedical researchers","15,588 people","**No**","No"],
-  ["Medical physicists / clinical scientists","346 records","**Yes**","No"],
-  ["Psychologists","~4,500 records","Yes","Usually"],
-  ["Genetic counsellors","866 records","Yes","Yes"],
-  ["Counsellors","1,205 records","Yes","Yes"],
-  ["Mental health support workers","326 records","Yes","Yes"]],
- widths=[2.3,1.1,0.9,1.1])
-para(d,"Look at the first two rows. **Medical physicists are in and biomedical researchers "
-       "are out, and neither sees patients.** There is no principled reason for that. One "
-       "is in because it is small enough that nobody asked; the other is out because it was "
-       "big enough that we had to choose.")
-para(d,"A useful test when you decide: *could two reasonable, equally well-informed people "
-       "disagree and both be right?* If yes, it is a definition question. \"Is an "
-       "internist a trainee?\" fails that test — one of them is simply wrong. \"Are "
-       "biomedical researchers healthcare professionals?\" passes it.")
-box(d,"WHAT EACH ANSWER ACTUALLY CHANGES — PRICED 11 NOVEMBER",[
- "**If the answer is WORK** — healthcare means treating patients:",
+para(d,"So medical physicists, psychologists and clinical scientists are **not** the "
+       "question we thought they were. They sit in the practitioner group today, they are "
+       "staying there, and that is now a closed decision — section 6.")
+h(d,"1a.  What your biomedical answer did to the broad audience",2)
+para(d,"`hcp_researcher` now accepts a biomedical department as well as a clinical one, so "
+       "**15,588 people** enter it, and because it rolls up, they enter `hcp_broad` too. "
+       "That is what you asked for and it is one word of configuration.")
+box(d,"AND IT MEANS THE BROAD AUDIENCE IS NO LONGER ALL CLINICIANS",[
+ "`hcp_broad` is labelled **Healthcare Professional (broad)** in Braze. After this "
+ "change it contains:",
  "",
- "`OUT        medical physicists / clinical scientists      346 records`",
- "`OUT        academic psychologists (bare psicólogo/a)    2,658 records`",
- "`OUT        veterinarians                                  91+ people`",
- "`OUT        sport science that does not say medicine       ~51 people`",
- "`STAYS OUT  biomedical researchers                     15,588 people`",
+ "`clinical practitioners        a clinical job title`",
+ "`clinical administrators       leadership in a clinical unit`",
+ "`clinical researchers          research in a health department`",
+ "`biomedical researchers        research in a biomedical department   <- NEW`",
  "",
- "The four healthcare audiences shrink by roughly **3,100 records**, which is under "
- "1% of them. The 15,588 biomedical researchers are not lost to us — they stay in the "
- "Researcher audience, which already reaches them. **This answer costs almost nothing "
- "and makes the word mean one thing.**",
+ "Somebody picking that audience for a campaign about **clinical guidelines or patient "
+ "outcomes** will now reach about 15,588 people for whom it does not apply. Nothing is "
+ "broken — the audience is doing what you asked — but the NAME no longer describes it.",
  "",
- "**If the answer is SUBJECT** — healthcare means medical content:",
+ "**Two ways to settle it, and this is the question:**",
  "",
- "`IN         biomedical researchers                   15,588 people`",
- "`IN         veterinarians                               91+ people`",
- "`IN         all sport and exercise science               ~78 people`",
- "`STAYS IN   medical physicists, all psychologists`",
+ "**(a) Rename it.** *Healthcare & Life Sciences* or *Health Professionals & "
+ "Researchers*. Costs nothing, one line, and anybody choosing the audience then knows "
+ "what they are getting. Clinical practice campaigns use `hcp_practitioner` instead, "
+ "which is 46,450 reachable people and is exactly that audience.",
  "",
- "The broad healthcare audience grows by about **16,000 people** and nothing leaves. "
- "The cost here is not a number. It is that *healthcare professional* would no longer "
- "mean a clinician, so a campaign about clinical practice could not be sent to that "
- "audience by name — a narrower clinical audience would have to be built underneath it, "
- "which is a week of our work rather than a line.",
+ "**(b) Keep the name and keep the broad audience clinical**, with biomedical "
+ "researchers in `hcp_researcher` only and not rolled up. This is a real change on our "
+ "side rather than a line, because the roll-up is how the four audiences are held "
+ "together.",
  "",
- "**Both answers are defensible and both are one word of configuration.** What is not "
- "defensible is today's line, which runs through the middle of the same reasoning.",
-], fill="FAF2F5", accent=PLUM)
+ "**We recommend (a).** The narrower audience you would want already exists.",
+], fill="FDF8EF", accent=AMBER)
+h(d,"1b.  And the two cases at the edge, which are the same question",2)
+para(d,"Veterinarians and sport science (3.5 and 3.6 below) are this question asked about "
+       "two fields. Both are in the healthcare audiences today by accident, neither was "
+       "decided, and both follow from wherever you draw this line.")
 
 # ---------------------------------------------------------------- 4
-h(d,"2.  Which leadership titles count as a head of faculty?")
-para(d,"Originally asked as \"is a Director at a university a head of faculty?\" — about "
-       "2,900 people. Reading the group showed it splits cleanly in two.")
-table(d,["Never academic — 53,599 records","","Could be either — 172,611 records",""],
- [["`ceo`","15,918","`director`","**144,252**"],
-  ["`founder`","6,952","`president`","11,625"],
-  ["`managing director`","5,568","`vice president`","6,324"],
-  ["`general manager`","3,513","`principal`","5,482"],
-  ["`owner`","3,395","`board member`","1,706"]],
- widths=[1.9,0.8,1.9,0.8])
-box(d,"THE DECISION IS SMALLER THAN THE NUMBERS LOOK",[
- "The organisation already does most of this work. Head of faculty scores a **company at "
- "zero**, so a corporate title at a company cannot be confirmed at all.",
+h(d,"2.  Does the role library's grouping decide ours?")
+para(d,"Chloe's role library gives every job title a `role_type`. For two families it "
+       "gives the SAME `role_type` to titles we treat completely differently, and on "
+       "11 November we found that one half of that was our own mistake and the other half "
+       "is a question for you.")
+box(d,"WHAT THE LIBRARY SAYS, BESIDE WHAT WE DO",[
+ "`                       library role_type                      ours        records`",
+ "`Research Statistician   Specialist researcher / practitioner   Researcher      299`",
+ "`Statistician            Specialist researcher / practitioner   no audience   7,094`",
+ "`Medical Statistician    Specialist researcher / practitioner   no audience     969`",
+ "`Research Economist      Specialist researcher / practitioner   Researcher    1,125`",
+ "`Economist               Specialist researcher / practitioner   no audience   4,406`",
+ "`Research Analyst        Research / policy analyst              Researcher    5,894`",
+ "`Research Officer        Research / policy analyst              no audience  34,376`",
  "",
- "`ceo       879 people found  ->  only 55 confirmed`",
- "`founder   411 people found  ->  only 31 confirmed`",
- "`owner     188 people found  ->  only  2 confirmed`",
- "",
- "So the question is not \"should a CEO be a head of faculty\" — almost none are. It is "
- "whether those 55, and the same residue on every other title, should be excluded by name.",
+ "The library makes **no distinction at all** inside either family. We make one, and "
+ "the only thing our distinction rests on is whether the person typed the word "
+ "*research*. Not what they do — what they typed.",
 ])
-para(d,"**Our working answer:** exclude the never-academic list by name; keep the "
-       "ambiguous list, because excluding `president` would lose real university presidents.")
-box(d,"NEW — WE HAVE NOW PRICED THIS QUESTION, AND IT IS THE LARGEST THING LEFT IN THE AUDIENCE",[
- "Measured 3 November against 1,775 people in Head of faculty whose own words we can "
- "check. The audience divides in three:",
+h(d,"2a.  Half of this was our own mistake, and it is being fixed",2)
+para(d,"`research officer` carries **34,376 records** and fed no audience. We assumed the "
+       "model had failed to recognise it. It had not.")
+box(d,"THE MODEL WAS RIGHT. THE DICTIONARY ENTRY WAS OURS.",[
+ "`research officer` was itself one of our **example titles for the support-staff "
+ "group**. So the model matched it against that example perfectly, scored it 1.000, and "
+ "filed 34,376 records under support staff — a group that feeds no audience at all.",
  "",
- "`79.2%  certainly right   223 called themselves leadership; 1,185 hold a title that`",
- "`                         names a faculty-level post`",
- "`15.0%  UNCERTAIN         267 people holding ONLY chair, director or head, with no`",
- "`                         faculty word anywhere beside it  <-- THIS QUESTION`",
- "` 5.7%  wrong             102 people with no leadership word at all`",
+ "The same group holds `analyst` and `data analyst` as examples, which is why "
+ "`research analyst` is being re-checked rather than assumed.",
  "",
- "So this is not a corner of the audience, it is **one person in seven**. And whichever "
- "way you answer, the uncertainty disappears: in, and those 267 are right by definition; "
- "out, and they leave. **After this answer the audience is as defensible as we can make "
- "it** — the remaining 5.7% is our error rate and we report it rather than hide it.",
-], fill="FDF8EF", accent=AMBER)
-box(d,"AND THE 11 NOVEMBER PRINCIPLE POINTS THE OTHER WAY FROM OUR OWN WORKING ANSWER",[
- "Our working answer above keeps the ambiguous titles **in**. Merve's decision on the "
- "second confidence tier was that **nobody we are not certain about enters an audience**.",
+ "**Fixed on 11 November, on Merve's instruction: the research-officer family belongs "
+ "in Researcher.** The example title is removed and a rule now sends `research "
+ "officer`, `research analyst` and `research executive` there. The before and after are "
+ "being measured rather than estimated — records are not people, and some of these "
+ "people are already in Researcher through a second employment record, so we will "
+ "report the figure once it is built.",
  "",
- "Those 267 people are not in the second tier — they are Confirmed, because their "
- "organisation is a university and `director` scores highly on its own. So the tier "
- "decision does not reach them. But the principle does, and applied here it would take "
- "them out: the share of this audience we can defend **from the person's own words "
- "would rise from 79.2% to 93.2%**, on an audience of 1,508 instead of 1,775.",
- "",
- "We are not making that change ourselves, because it is a definition and not a "
- "threshold — a Director at a university may genuinely be a head of faculty, and here, "
- "unlike the second tier, there is no second signal saying otherwise. **This is the one "
- "question we most need answered.**",
+ "**Nothing is needed from you on this half.** It is here because it is the clearest "
+ "example of something this project keeps proving: when an audience looks wrong, the "
+ "cause is far more often a line we wrote than the model guessing badly.",
 ], fill="F1F6F4", accent=TEAL)
-para(d,"One note for a publisher. `editor-in-chief`, **5,172 records**, was in this group "
-       "until 21 October — an editorial role reading as institutional leadership. Now moved.")
+h(d,"2b.  The other half IS a question — statisticians and economists",2)
+para(d,"`statistician` 7,094, `medical statistician` 969 and `economist` 4,406 — **12,469 "
+       "records** in no audience at all, while `research statistician` and `research "
+       "economist` sit in Researcher.")
+para(d,"**The argument for leaving them out.** The job title alone does not say whether the "
+       "person does research or provides statistical support to a research office. And the "
+       "Researcher audience has **no subject check** — unlike healthcare, where the "
+       "department has to agree, there is no second signal to catch a wrong one.")
+para(d,"**The argument for taking them in.** The library says they are the same job as the "
+       "ones we already accept, and a statistician at a university is doing research by "
+       "any normal reading of the word.")
+para(d,"**We have no working answer on this one, which is unusual for this document.** The "
+       "two readings are equally defensible, and the deciding factor is what your campaigns "
+       "are for. If a Researcher campaign is about research OUTPUT — publishing, "
+       "authorship, grants — a support statistician does not belong in it. If it is about "
+       "working in research, they do.")
+para(d,"**And if the answer is yes, there is a second part.** Should they go to Researcher, "
+       "or to a practitioner-style audience as specialists? The library files them under "
+       "*Specialist researcher / practitioner*, which is deliberately both.")
 
-h(d,"2a.  The hospital side of the same question",2)
-para(d,"Measured on 29 October. About **2,000 people** were reaching Head of Faculty "
-       "through an organisation that reads as a hospital rather than a university.")
-table(d,["Title at a hospital","People","Is this a head of faculty?"],
- [["`director`","826","Unclear"],
-  ["`head of department`","294","**Genuinely ambiguous** — medical school departments are often based in hospitals"],
-  ["`head`","225","Unclear"],
-  ["`chief`","213","Probably clinical, not academic"],
-  ["`medical director`","95","**No.** Runs a clinical unit"],
-  ["`dean`","17","**Yes** — a real academic title"]],
- widths=[1.6,0.7,4.3])
-box(d,"WHAT WE DID, AND WHY WE ARE TELLING YOU",[
- "**Merve's decision, 29 October: Head of Faculty is university heads only.**",
- "",
- "The reasoning: there is no second signal available in this audience. Healthcare has a "
- "department check, Lecturer has none but is huge — Head of Faculty is small and built "
- "for precision, so it takes only what we are certain of.",
- "",
- "**The cost, measured before deciding: those ~2,000 people leave**, including the 294 "
- "heads of department and the 17 deans above. We would rather have a small, certain "
- "audience and grow it later from a proper faculty-leadership source than keep a larger "
- "one we cannot defend.",
- "",
- "**One trap we caught on the way.** The word *medical school* was filed under hospitals "
- "in our settings, not under universities. Removing hospitals would have removed medical "
- "school deans too. It has been moved.",
- "",
- "If you would rather keep the hospital path, it is one line to put back — but then the "
- "`head of department` question above has to be answered.",
-], fill="FDF8EF", accent=AMBER)
+h(d,"3.  Six medium questions, each one line to change")
 
-# ---------------------------------------------------------------- 5 NEW
-h(d,"3.  Does the word \"research\" in a job title decide the audience?")
-para(d,"This started as one question about statisticians. Running a check against the "
-       "role library on 29 October showed it is a pattern, not a one-off, and the same "
-       "answer settles all of it.")
-box(d,"THE PATTERN, IN ONE PLACE",[
- "`biostatistician        7,723  ->  Researcher audience`",
- "`research statistician    299  ->  Researcher audience`",
- "`research economist     1,125  ->  Researcher audience`",
- "",
- "`statistician           7,094  ->  no audience at all`",
- "`medical statistician     969  ->  no audience at all`",
- "`economist              4,406  ->  no audience at all`",
- "",
- "**The only difference is whether the person typed the word \"research\".** Not what "
- "they do — what they typed.",
- "",
- "Market Intelligence's own role library lists each pair as ONE job. It describes a "
- "statistician as *\"a specialist who designs data collection and applies statistical "
- "methods to produce reliable evidence\"*, which is research work either way.",
-])
-para(d,"**20,000 records turn on this**, and it is one answer, not six.")
-para(d,"**The argument for leaving it out.** The job title on its own does not say whether "
-       "the person does research or provides statistical support to a research office. And "
-       "the Researcher audience has **no subject check** — there is no second signal to "
-       "catch a wrong one, unlike healthcare where the department has to agree. Moving "
-       "7,094 records into an audience with no safety net is riskier than it looks.")
-para(d,"**Our working answer: leave them out**, on the grounds of that missing safety net — "
-       "but the inconsistency is real, it is now six titles rather than one, and we would "
-       "rather you settled it.")
-
-h(d,"3a.  The biggest single case of the same pattern",2)
-para(d,"`research officer` carries **34,376 records** and sits in the group that feeds no "
-       "audience. `research analyst` (5,894 records) is in the Researcher audience. The "
-       "role library lists them as the same job.")
-para(d,"This one is larger than the whole statistician family put together, and it moves "
-       "in whichever direction you choose for question 4.")
-
-# ---------------------------------------------------------------- 12 NEW
-h(d,"4.  Does book-author consent cover a role-based campaign?  — BUILT, STILL WANTED IN WRITING")
-para(d,"**This is now in the pipeline**, on Merve's instruction that it counts. "
-       "`is_book_author_communications_opted_in` is the fourth consent basis and **26,654 "
-       "people across the nine audiences hold it**. Reachable means any one of the four: "
-       "marketing opt-in, advertising opt-in, legitimate interest, book-author consent.")
-box(d,"WHAT WE STILL WANT FROM YOU",[
- "Somebody opted in to hear about **books**.",
- "",
- "Does that cover a **healthcare practitioner campaign**?",
- "",
- "The number is already built and already going out. This is a legal scope question, not "
- "a technical one, and we would like the answer recorded in writing the way the third "
- "basis was on 16 October — so that whoever audits a send can see the permission was "
- "considered rather than assumed.",
-], fill="FDF8EF", accent=AMBER)
-para(d,"**And a correction we owe you.** Every \"reachable\" figure we have given you "
-       "before 10 November counted marketing opt-in ALONE — one basis out of four. It "
-       "understated the audience by between 2.2 and 4.1 times. Lecturer was reported as "
-       "109,323 and is **319,291**. Legitimate interest is the whole gap: 295,314 of "
-       "Lecturer hold it against 109,323 with marketing consent. The pipeline has been "
-       "right since 16 October; the reporting was reading a narrower column. Every number "
-       "in this document is now the four-basis figure.")
-para(d,"**One question we were going to ask you and are not, because we measured it "
-       "instead.** The CDP carries three more consents — editor referral, editorial board "
-       "members, webshop buyer. Each is permission for a different communication, so none "
-       "of them is a basis for a role campaign without your word. They reach **251 people** "
-       "that nothing else reaches, 0.03% of the reachable total. Ruling them in would not "
-       "move anything, so we are not asking.")
-
-# ---------------------------------------------------------------- MEDIUM BLOCK
-h(d,"5.  Nine medium questions, each one line to change")
-
-h(d,"5.1  Are psychologists healthcare professionals?  (~4,500 records)",2)
-para(d,"All six psychologist titles currently match our **psychiatrist** example word and "
-       "therefore sit in the clinical group. A psychologist is not a psychiatrist — no "
-       "medical degree — but a clinical psychologist is a regulated healthcare "
-       "professional in most countries, and an educational psychologist arguably is not.")
-table(d,["Title","Records","Note"],
- [["`psicóloga` / `psicólogo`","2,658","bare \"psychologist\", could be academic"],
-  ["`psicóloga clínica`","751","explicitly clinical"],
-  ["`forensic psychologist`","390","clinical, in a legal setting"],
-  ["`consultant clinical psychologist`","381","clinical"],
-  ["`educational psychologist`","367","works in schools"]],
- widths=[2.2,0.8,2.6])
-para(d,"**There is a third answer and it may be the right one: do not label them at all.** "
-       "A rejected title is simply left unassigned, which already happens to any title we "
-       "cannot place. The case for it: these people receive email. A clinical psychologist "
-       "in a psychiatry department is Confirmed today and would receive a clinical "
-       "campaign. If they are not healthcare professionals, a wrong inclusion costs more "
-       "than a temporary exclusion. The case against: it removes them from everything, "
-       "including a psychologist audience we might open later.")
-
-h(d,"5.2  Four smaller versions of the same question  (2,743 records)",2)
-table(d,["Question","Records","Today"],
- [["Are mental health support workers healthcare professionals?","326","Yes"],
-  ["Are medical physicists and clinical scientists?","346","Yes"],
-  ["Are genetic counsellors?","866","Yes"],
-  ["Are counsellors?","1,205","Yes"]],
- widths=[3.5,0.8,0.9])
-para(d,"All four are regulated health roles in some countries and support roles in others. "
-       "Question 1 settles all of them at once.")
-
-h(d,"5.3  Are visiting scholars and fellows teaching staff?  (81,749 records)",2)
+h(d,"3.1  Are visiting scholars and fellows teaching staff?  (81,749 records)",2)
 para(d,"`visiting scholar` 60,561, `visiting fellow` 15,832, `visiting research scholar` "
        "5,356 — all currently counted as teaching staff because of the word *visiting*.")
 para(d,"A visiting scholar may teach, or may only do research. We already moved "
        "`visiting scientist` (32,662 records) out without asking, because a scientist does "
        "not teach. These three are genuinely ambiguous and the word *scholar* leans academic.")
 
-h(d,"5.4  Is an honorary professor active?  (6,651 records)",2)
+h(d,"3.2  Is an honorary professor active?  (6,651 records)",2)
 para(d,"On 16 October you asked us to reject `emeritus professor`, `retired professor` and "
        "`honorary researcher` outright, on the grounds that a retired professor is not a "
        "researcher. We did. **`honorary professor` survived**, and it is not obviously "
@@ -343,7 +219,7 @@ box(d,"ONE WORD, TWO MEANINGS",[
  "Both readings are defensible. We would rather you chose than we guessed.",
 ])
 
-h(d,"5.5  Is an uninformative title acceptable evidence?  (146,865 records)",2)
+h(d,"3.3  Is a `dr` WITH a clinical department acceptable evidence?  (146,865 records)",2)
 para(d,"`dr` carries **96,676 records** and `md` **50,189**. Together that is 9.1% of the "
        "clinical group. Neither says anything about a profession beyond holding a "
        "doctorate.")
@@ -353,7 +229,7 @@ para(d,"Both are resolved entirely by the department. A clinical department conf
        "What is left of this question is narrower than it was: whether a `dr` WITH a "
        "clinical department is acceptable evidence on the department alone.")
 
-h(d,"5.6  Should a past role still count?",2)
+h(d,"3.4  Should a past role still count?",2)
 para(d,"Seven of the nine audiences count past employment. Somebody who was a researcher "
        "in 2010 and works in a bank today is still in the Researcher audience — on the "
        "reasoning that *researcher* is a profession you have rather than a post you hold.")
@@ -363,29 +239,7 @@ para(d,"**Head of faculty and Librarian are the exceptions** and count current p
        "should be before it is made.")
 
 # ---------------------------------------------------------------- LOW
-h(d,"5.7  What the Students audience will and will not contain",2)
-para(d,"The Students audience is being built now. One thing about its scope should be "
-       "said before it ships, because it is not obvious and it is not a mistake.")
-box(d,"THE SAME PERSON, TWO DIFFERENT AUDIENCES",[
- "`phd student           472,677  ->  Students`",
- "`phd candidate         184,217  ->  Students`",
- "`doctoral researcher    42,231  ->  Researcher`",
- "`postgraduate researcher 5,427  ->  Researcher`",
- "",
- "All four are doctoral students. The role library lists them as **one job**.",
- "",
- "They are split because of a decision you already made: *if they research, they go in "
- "the Researcher audience, doctoral student or not*. Somebody who describes themselves "
- "as a doctoral researcher is telling us they research.",
- "",
- "**The consequence:** the Students audience will not contain every doctoral student. "
- "About 48,000 records' worth describe themselves in research terms and sit in Researcher "
- "instead. Some people will be in both.",
-], fill="FDF8EF", accent=AMBER)
-para(d,"Nothing needs changing. We are flagging it so that nobody later reports the "
-       "Students audience as undercounting — it is working as decided.")
-
-h(d,"5.8  Are veterinarians healthcare professionals?  (91+ people)",2)
+h(d,"3.5  Are veterinarians healthcare professionals?  (91+ people)",2)
 para(d,"Found on 10 November while reading a sample of the Clinical Researcher audience "
        "by hand. Veterinary departments are being read as clinical, so vets are in the "
        "healthcare audiences today. Nobody decided that — it happened because veterinary "
@@ -409,10 +263,11 @@ para(d,"**The case for no.** Every other audience here is defined by treating pe
        "costs more than a missing contact.")
 para(d,"**One genuinely hard case either way:** *One Health* departments, 14 people. "
        "Their subject is by definition the intersection of human and animal health.")
-para(d,"**Our working answer: no**, consistent with Question 1. Say the word and it is "
-       "one line.")
+para(d,"**Our working answer: no.** But it follows from question 1 rather than standing "
+       "on its own — if the broad audience is renamed to cover life sciences as well as "
+       "clinical practice, the case for keeping vets out gets weaker, not stronger.")
 
-h(d,"5.9  Is sport and exercise science a healthcare field?  (78+ people)",2)
+h(d,"3.6  Is sport and exercise science a healthcare field?  (78+ people)",2)
 para(d,"Same reading, same day, and this one splits cleanly down the middle of its own "
        "vocabulary.")
 table(d,["Department","People","Reads as"],
@@ -424,23 +279,30 @@ table(d,["Department","People","Reads as"],
 para(d,"A sports physician treats patients. A sport scientist studies performance. The "
        "department names sit on both sides and a third group names both at once, which "
        "is why this needs a line drawn rather than a judgement per department.")
-para(d,"**Our working answer: keep the ones that say *medicine*, drop the rest.** That is "
-       "the same test as Question 1 — the work, not the subject.")
+para(d,"**Our working answer: keep the ones that say *medicine*, drop the rest.** Same "
+       "dependency as vets above: question 1 decides it.")
 
-h(d,"6.  Three longer-term questions")
-h(d,"6.1  A title stays in ONE profession — DECIDED 30 October, please confirm",2)
-para(d,"A title belongs to exactly one profession today. Some people write both jobs "
-       "into one title, and we have to choose. **We decided on 30 October to leave them "
-       "where they are, and we would like you to confirm it.**")
-table(d,["What the person wrote","Records","Our decision"],
- [["Teaching AND research — *lecturer and researcher*, *teaching and research*, *assistant professor research*",
-   "**~47,000**","**Stay in Lecturer**"],
-  ["Teaching AND leadership — *professor and chair*, *professor and head*, *professor and dean*",
-   "**~31,000**","**Stay in Lecturer**"]],
- widths=[3.6,0.9,1.9])
-para(d,"**Why.** Letting one title carry two professions is a change to how the system is "
-       "built, not a setting. 78,000 records is not enough to justify it, and in both "
-       "cases Lecturer is a defensible home: these people do teach.")
+h(d,"4.  Two decisions we are implementing, and one small exclusion")
+h(d,"4.1  A title may name TWO professions — REVERSED 11 November",2)
+para(d,"A title belongs to exactly one profession today. Some people write both jobs into "
+       "one title, and the system makes us choose. On 30 October we chose Lecturer and "
+       "asked you to confirm it.")
+box(d,"MERVE, 11 NOVEMBER: NO. IF THE TITLE SAYS TWO JOBS, THE PERSON IS IN BOTH AUDIENCES.",[
+ "`lecturer and researcher    ~47,000 records  ->  Lecturer AND Researcher`",
+ "`professor and chair/head   ~31,000 records  ->  Lecturer AND Head of Faculty`",
+ "`professor and director     ~68,000 records  ->  Lecturer AND Head of Faculty`",
+ "",
+ "**And the limit of the decision, stated because it is easy to over-read.** This "
+ "applies only where **the ORCID title itself names two jobs**. Where somebody wrote "
+ "only *Professor* in ORCID and told a survey they are a research scientist, ORCID "
+ "still wins and they are a Lecturer. We are not using survey answers to override what "
+ "people recorded about their own employment.",
+], fill="F1F6F4", accent=TEAL)
+para(d,"**It is being implemented now, and it is not a setting.** A title currently gets "
+       "exactly one group in our dictionary — one row, one answer — which is why the "
+       "nonsense in 4.1a below exists at all. The work is to let a title carry a second "
+       "group, measure what moves, and read the two affected audiences again afterwards. "
+       "We will report the before and after rather than estimate it.")
 para(d,"**What it costs you.** A professor who also runs a research group is in the "
        "Lecturer audience and not in Researcher. A professor who also heads a department "
        "is in Lecturer and not in Head of Faculty. If either of those matters for a "
@@ -478,7 +340,7 @@ box(d,"THE EXAMPLE THAT SHOWS IT",[
  "Letting one title carry two professions would fix it. That is a design change rather "
  "than a setting, so it is here for awareness, not for a decision now.",
 ])
-h(d,"6.1a  And one part of it is NOT settled",2)
+h(d,"4.1a  The same decision, applied to *professor and director*",2)
 para(d,"Measured the same day. Those compound titles are currently split between the "
        "teaching group and the leadership group **by word order**, which cannot be "
        "defended whichever way you answer.")
@@ -497,30 +359,131 @@ para(d,"One rule has to cover all of them, and it costs something either way. Se
        "them all to **Lecturer** removes 24,000 records from Head of Faculty, which is "
        "already our weakest audience. Sending them all to **Head of Faculty** removes "
        "44,000 from Lecturer — 0.4% of a group of twelve million.")
-para(d,"**Our recommendation is Head of Faculty**, because Lecturer is large enough not "
-       "to notice and Head of Faculty is small, precise and currently missing people "
-       "whose title literally says they head something. But the question is which "
-       "audience you would rather reach them in.")
+para(d,"**This is no longer a choice between the two, because of 4.1: all six spellings go "
+       "to BOTH.** A professor who is also a director is in Lecturer and in Head of "
+       "Faculty, which is what their own title says. Head of Faculty gains the ~24,000 "
+       "records it was losing to word order, Lecturer keeps its ~44,000, and the "
+       "separator stops deciding anything.")
 
-h(d,"6.2  Two deliberate exclusions from Librarian",2)
+h(d,"4.1b  The same decision, applied to doctoral researchers",2)
+para(d,"The third instance of the same decision, and the one we need confirmed. The "
+       "Students audience is being built now, and whether it holds every doctoral student depends on 4.1.")
+box(d,"THE SAME PERSON, TWO DIFFERENT AUDIENCES",[
+ "`phd student           472,677  ->  Students`",
+ "`phd candidate         184,217  ->  Students`",
+ "`doctoral researcher    42,231  ->  Researcher`",
+ "`postgraduate researcher 5,427  ->  Researcher`",
+ "",
+ "All four are doctoral students. The role library lists them as **one job**.",
+ "",
+ "They are split because of a decision you already made: *if they research, they go in "
+ "the Researcher audience, doctoral student or not*. Somebody who describes themselves "
+ "as a doctoral researcher is telling us they research.",
+ "",
+ "**The consequence:** the Students audience will not contain every doctoral student. "
+ "About 48,000 records' worth describe themselves in research terms and sit in Researcher "
+ "instead. Some people will be in both.",
+], fill="FDF8EF", accent=AMBER)
+para(d,"**The question: should those last two rows be in Students as well as Researcher?** With 4.1 answered yes, a title that says both *doctoral* and *researcher* can carry both groups, and the person appears in both audiences. We think that is right and it is the consistent answer, but Students is a new audience and ~48,000 records of it turn on this, so we want your word rather than our inference.")
+
+h(d,"4.2  Two deliberate exclusions from Librarian",2)
 para(d,"**Archivists are not included** — the word pulled in archaeologists, glaciologists "
        "and clerks, and archivists are a separate call from the one you made. "
        "**\"Information specialist\" is not included** — it pulled in every IT job in the "
        "data. Either can be added as one line, as a decision rather than a guess.")
-h(d,"6.3  Should Researcher split into early-career and senior?  — WITHDRAWN",2)
-para(d,"**Merve closed this on 4 November: Researcher ships as one audience and we are not "
-       "asking.** Nothing is needed from you. It is left on the page only so that nobody "
-       "re-opens it on seeing that two research groups already exist in our dictionary.")
-para(d,"Why it was closed rather than deferred. The split would be made entirely from "
-       "job-title words, and that is fragile in a way that cannot be patched: bare "
-       "`researcher` counts as early career while bare `scientist` counts as senior, so a "
-       "thirty-year veteran who typed \"researcher\" is classified as early career and the "
-       "person beside them who typed \"scientist\" is senior. If seniority is ever wanted "
-       "the route is **dates** — career length is already in the data and does not depend "
-       "on what someone called their job.")
+h(d,"5.  Head of Faculty — ANSWERED 11 November, recorded in full")
+para(d,"Originally asked as \"is a Director at a university a head of faculty?\" — about "
+       "2,900 people. Reading the group showed it splits cleanly in two.")
+table(d,["Never academic — 53,599 records","","Could be either — 172,611 records",""],
+ [["`ceo`","15,918","`director`","**144,252**"],
+  ["`founder`","6,952","`president`","11,625"],
+  ["`managing director`","5,568","`vice president`","6,324"],
+  ["`general manager`","3,513","`principal`","5,482"],
+  ["`owner`","3,395","`board member`","1,706"]],
+ widths=[1.9,0.8,1.9,0.8])
+box(d,"THE DECISION IS SMALLER THAN THE NUMBERS LOOK",[
+ "The organisation already does most of this work. Head of faculty scores a **company at "
+ "zero**, so a corporate title at a company cannot be confirmed at all.",
+ "",
+ "`ceo       879 people found  ->  only 55 confirmed`",
+ "`founder   411 people found  ->  only 31 confirmed`",
+ "`owner     188 people found  ->  only  2 confirmed`",
+ "",
+ "So the question is not \"should a CEO be a head of faculty\" — almost none are. It is "
+ "whether those 55, and the same residue on every other title, should be excluded by name.",
+])
+para(d,"**Our working answer:** exclude the never-academic list by name; keep the "
+       "ambiguous list, because excluding `president` would lose real university presidents.")
+box(d,"DECIDED 11 NOVEMBER — THEY STAY IN, AND HERE IS WHAT THAT COSTS",[
+ "**Merve, 11 November: if the person works at a university, the organisation is an "
+ "educational institution and the title is director, chair or head — keep them.**",
+ "",
+ "The question is closed and the 267 people below stay in the audience. Two things are "
+ "worth recording with it.",
+ "",
+ "**The organisation side was already as strict as it can be.** Since 5 November Head "
+ "of Faculty scores every ROR organisation type except Education at **zero**, including "
+ "an unresolved one. With a 0.65 threshold that means nobody confirms without a "
+ "verified educational employer — no hospitals, no research institutes, no companies, "
+ "no national laboratories, and nobody whose employer we could not identify. That "
+ "removed 1,968 people on 5 November and ~2,000 on 29 October.",
+ "",
+ "**So what remains is a reported error rate, not a hidden one.** The audience is "
+ "79.2% certainly right, 15.0% these 267 people, and **5.7% our own error**. We quote "
+ "the 5.7% rather than bury it, and the accuracy table at the end of this document "
+ "reads 83.3% for exactly this reason.",
+], fill="F1F6F4", accent=TEAL)
+box(d,"NEW — WE HAVE NOW PRICED THIS QUESTION, AND IT IS THE LARGEST THING LEFT IN THE AUDIENCE",[
+ "Measured 3 November against 1,775 people in Head of faculty whose own words we can "
+ "check. The audience divides in three:",
+ "",
+ "`79.2%  certainly right   223 called themselves leadership; 1,185 hold a title that`",
+ "`                         names a faculty-level post`",
+ "`15.0%  UNCERTAIN         267 people holding ONLY chair, director or head, with no`",
+ "`                         faculty word anywhere beside it  <-- THIS QUESTION`",
+ "` 5.7%  wrong             102 people with no leadership word at all`",
+ "",
+ "So this is not a corner of the audience, it is **one person in seven**. And whichever "
+ "way you answer, the uncertainty disappears: in, and those 267 are right by definition; "
+ "out, and they leave. **After this answer the audience is as defensible as we can make "
+ "it** — the remaining 5.7% is our error rate and we report it rather than hide it.",
+], fill="FDF8EF", accent=AMBER)
+para(d,"One note for a publisher. `editor-in-chief`, **5,172 records**, was in this group "
+       "until 21 October — an editorial role reading as institutional leadership. Now moved.")
 
-# ---------------------------------------------------------------- DECIDED
-h(d,"7.  Already decided — recorded so nobody re-opens them")
+h(d,"5a.  The hospital side of the same question",2)
+para(d,"Measured on 29 October. About **2,000 people** were reaching Head of Faculty "
+       "through an organisation that reads as a hospital rather than a university.")
+table(d,["Title at a hospital","People","Is this a head of faculty?"],
+ [["`director`","826","Unclear"],
+  ["`head of department`","294","**Genuinely ambiguous** — medical school departments are often based in hospitals"],
+  ["`head`","225","Unclear"],
+  ["`chief`","213","Probably clinical, not academic"],
+  ["`medical director`","95","**No.** Runs a clinical unit"],
+  ["`dean`","17","**Yes** — a real academic title"]],
+ widths=[1.6,0.7,4.3])
+box(d,"WHAT WE DID, AND WHY WE ARE TELLING YOU",[
+ "**Merve's decision, 29 October: Head of Faculty is university heads only.**",
+ "",
+ "The reasoning: there is no second signal available in this audience. Healthcare has a "
+ "department check, Lecturer has none but is huge — Head of Faculty is small and built "
+ "for precision, so it takes only what we are certain of.",
+ "",
+ "**The cost, measured before deciding: those ~2,000 people leave**, including the 294 "
+ "heads of department and the 17 deans above. We would rather have a small, certain "
+ "audience and grow it later from a proper faculty-leadership source than keep a larger "
+ "one we cannot defend.",
+ "",
+ "**One trap we caught on the way.** The word *medical school* was filed under hospitals "
+ "in our settings, not under universities. Removing hospitals would have removed medical "
+ "school deans too. It has been moved.",
+ "",
+ "If you would rather keep the hospital path, it is one line to put back — but then the "
+ "`head of department` question above has to be answered.",
+], fill="FDF8EF", accent=AMBER)
+
+# ---------------------------------------------------------------- 5 NEW
+h(d,"6.  Already decided — recorded so nobody re-opens them")
 table(d,["Question","Decision","When"],
  [["Should the second confidence tier be delivered? (45,054 unique people, "
    "and nearly double the broad healthcare audience)",
@@ -533,18 +496,33 @@ table(d,["Question","Decision","When"],
    "**Yes.** Same principle read across: if they research, they are a researcher.","21 Oct"],
   ["Should retired and emeritus people be in live audiences? (17,277 records removed)",
    "**No.** A retired professor is not a lecturer.","16 Oct, confirmed 29 Oct"],
-  ["Are school teachers in the Lecturer audience?",
-   "**Not asking.** Measured at 0.2% of the group — too small to be worth a decision.","21 Oct"],
+
   ["Should we build audiences for students and support staff?",
    "**Students yes, support staff no.** Students is being built now.","21 and 23 Oct"],
-  ["Is reachability any one of the consent bases, or all of them?",
-   "**Any one.** A third basis was added on your instruction.","16 Oct"],
+
   ["Should Head of faculty include hospital-based leaders? (~2,000 people)",
    "**No.** University heads only. Small and certain beats large and arguable.","29 Oct"],
-  ["Should a title that names two jobs count as both? (78,000 records)",
-   "**No.** They stay in Lecturer. See 6.1 — please confirm.","30 Oct"],
+
   ["Should Researcher split into early-career and senior?",
-   "**No, and withdrawn.** One Researcher audience. See 6.3.","4 Nov"],
+   "**No, and withdrawn.** One Researcher audience, and the route to seniority "
+   "would be dates rather than title words.","4 Nov"],
+  ["Does book-author consent cover a role-based campaign? (26,654 people)",
+   "**Yes**, from the Head of Marketing. The fourth consent basis is built and "
+   "delivering; reachable means any one of the four.","**11 Nov**"],
+  ["Are biomedical researchers healthcare professionals? (15,588 people)",
+   "**Yes.** They join Clinical Researcher and, through the roll-up, the broad "
+   "healthcare audience. See 1a for the one consequence.","**11 Nov**"],
+  ["Are psychologists, medical physicists and clinical scientists in the right "
+   "place? (~5,000 records)",
+   "**Leave them exactly as they are** — in the practitioner group and in the "
+   "broad healthcare audience. Four questions closed in one line.","**11 Nov**"],
+  ["Should a bare `director`, `chair` or `head` at a university be a head of "
+   "faculty? (267 people, 15.0% of the audience)",
+   "**Yes, keep them.** An educational employer is already required and already "
+   "verified. See 5.","**11 Nov**"],
+  ["Should a title that names two jobs count as both? (78,000+ records)",
+   "**YES — reversed from the 30 October answer.** See 4.1. Being implemented.",
+   "**11 Nov**"],
   ["Is a doctoral student in Researcher because they are a doctoral student?",
    "**No — the title has to say so.** Being a doctoral student is not the "
    "qualification; a title naming research is. `phd fellow`, 19,424 records, "
@@ -568,20 +546,34 @@ box(d,"ONE RESIDUE ON THE RETIREMENT DECISION",[
 ])
 
 # ---------------------------------------------------------------- CLOSE
-h(d,"8.  What we need from this meeting")
+h(d,"7.  What we need from this meeting")
 table(d,["Priority","Question","Why it cannot wait"],
- [["1","Is healthcare about the work or the subject? (Q1)",
-   "It settles five questions at once, it is priced on both sides, and the line today "
-   "is inconsistent"],
-  ["2","Which leadership titles are a head of faculty? (Q2)",
-   "15% of that audience, and the 11 November principle says those 267 people should "
-   "leave — we want your word before removing them"],
-  ["3","Does book-author consent cover role campaigns? (Q4)",
-   "Built and already going out; we want the permission recorded in writing"],
-  ["4","One rule for *professor and director*, all six spellings (Q6.1a)",
-   "68,000 records are split today by nothing but word order and a separator"],
-  ["5","Everything else","One line each, any time"]],
+ [["1","What should the broad healthcare audience be called, and where is its "
+   "edge? (Q1)",
+   "Your biomedical answer put 15,588 non-clinicians into an audience named "
+   "*Healthcare Professional*. The name is now wrong or the roll-up is — and vets "
+   "and sport science follow from the same line"],
+  ["2","Do statisticians and economists belong in an audience? (Q2b)",
+   "12,469 records, and the only question in this document where we have no "
+   "working answer to fall back on"],
+  ["3","Confirm doctoral researchers in Students as well as Researcher (Q4.1b)",
+   "~48,000 records, and Students is a new audience whose size depends on it"],
+  ["4","Everything else","One line each, any time"]],
  widths=[0.65,2.6,3.0], size=9)
+para(d,"**One correction we owe you, repeated here because it changes every number you "
+       "have been given.** Every \"reachable\" figure quoted before 10 November counted "
+       "marketing opt-in ALONE — one basis out of four. It understated the audience by "
+       "between 2.2 and 4.1 times. Lecturer was reported as 109,323 and is **319,291**. "
+       "Legitimate interest is the whole gap: 295,314 of Lecturer hold it against 109,323 "
+       "with marketing consent. The pipeline has been right since 16 October; the "
+       "reporting was reading a narrower column. Every number in this document is now the "
+       "four-basis figure.")
+para(d,"**And one question we were going to ask and are not, because we measured it "
+       "instead.** The CDP carries three more consents — editor referral, editorial board "
+       "members, webshop buyer. Each is permission for a different communication, so none "
+       "is a basis for a role campaign without your word. They reach **251 people** that "
+       "nothing else reaches, 0.03% of the reachable total. Ruling them in would not move "
+       "anything, so we are not asking.", space_after=12)
 para(d,"**There is now an accuracy figure, and here is exactly what it is.** ORCID has "
        "no profession field, so there is nothing to compare against automatically. "
        "Instead, on 5 November 400 Confirmed people were drawn at random from each "
