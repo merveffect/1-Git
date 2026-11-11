@@ -326,7 +326,7 @@ matched as (
         d.title,
         d.frequency,
         regexp_contains(d.title,
-            r'(dean|dekan|decano|decana|doyen|rector|rektor|rectora|provost|chancellor|vice chancellor|pro vice chancellor|head of (the )?(department|school|faculty|division|institute)|hod|department chair|chair of (the )?(department|division|school|faculty)|chairman|chairperson|chairwoman|b[aö][sş]kan)')
+            r'\b(dean|dekan|decano|decana|doyen|rector|rektor|rectora|provost|chancellor|vice chancellor|pro vice chancellor|head of (the )?(department|school|faculty|division|institute)|hod|department chair|chair of (the )?(department|division|school|faculty)|chairman|chairperson|chairwoman|b[aö][sş]kan)\b')
                                                         as has_faculty_word
     from dict d
     cross join rule r
@@ -366,9 +366,75 @@ where regexp_contains(d.title, r.name_pattern)
   and (r.unless_pattern is null or r.unless_pattern = ''
        or not regexp_contains(d.title, r.unless_pattern))
   and not regexp_contains(d.title,
-        r'(dean|dekan|decano|decana|doyen|rector|rektor|rectora|provost|chancellor|vice chancellor|pro vice chancellor|head of (the )?(department|school|faculty|division|institute)|hod|department chair|chair of (the )?(department|division|school|faculty)|chairman|chairperson|chairwoman|b[aö][sş]kan)')
+        r'\b(dean|dekan|decano|decana|doyen|rector|rektor|rectora|provost|chancellor|vice chancellor|pro vice chancellor|head of (the )?(department|school|faculty|division|institute)|hod|department chair|chair of (the )?(department|division|school|faculty)|chairman|chairperson|chairwoman|b[aö][sş]kan)\b')
 order by d.frequency desc
 limit 60
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 2e. BEFORE - RECONCILE THE RECORD COUNTS AGAINST THE SOURCE, because query 2
+--     and query 2c do not agree and one of them is wrong.
+--
+--     Query 2  : researcher -> student, 344,285 records.
+--     Query 2c : the same rule,          19,927 people.
+--
+--     Seventeen employment records per person is not credible. And the two
+--     cannot be measuring different populations by design: frequency is
+--     `count(*)` over stg_role_records in int_title_distinct line 27, which is
+--     the same view 2c counts distinct snid from. Query 1 reconciles perfectly
+--     on the same join - 86,240 records over 63,767 people, 1.35 each - so the
+--     fault is not in the join shape.
+--
+--     THE LIKELIEST EXPLANATION, AND WHY IT MATTERS FAR BEYOND THIS BUILD:
+--     stg_role_records is a VIEW, and int_title_distinct is a TABLE. If the
+--     ORCID source has been reloaded smaller since the dictionary was last
+--     built, every frequency in dim_title_group describes a corpus that no
+--     longer exists - and then every record figure quoted from frequency is
+--     stale, including the ones written into seed notes and the status
+--     document. If that is what this shows, the dictionary needs rebuilding
+--     before any of those figures are quoted again.
+-- ----------------------------------------------------------------------------
+with named as (
+    select title
+    from unnest([
+        'graduate research assistant',
+        'phd researcher',
+        'dottorandi',
+        'research assistant professor',
+        'research professor',
+        'professor & director'
+    ]) as title
+)
+select
+    n.title,
+    t.frequency                                         as dict_frequency,
+    sum(if(s.title_key is null, 0, 1))                  as source_records,
+    count(distinct s.snid)                              as source_people,
+    round(safe_divide(t.frequency,
+                      sum(if(s.title_key is null, 0, 1))), 2)
+                                                        as stale_ratio
+from named n
+left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+       on t.title = n.title
+left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+       on s.title_key = t.title_key
+group by n.title, t.frequency
+order by dict_frequency desc
+;
+
+-- 2e-ii. The same question as ONE number, for the whole corpus. int_title_distinct
+--        stored the total it was built from, so this compares that stored total
+--        against the live view. Equal means the dictionary is current and the
+--        fault is somewhere in query 2 or 2c; different means the dictionary is
+--        stale and says by how much.
+select
+    (select max(corpus_size)
+     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_title_distinct`)
+                                                        as corpus_when_dictionary_built,
+    (select count(*)
+     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+     where role_title is not null)                      as corpus_now
 ;
 
 
