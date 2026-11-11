@@ -102,6 +102,7 @@ support_technical,laboratory technician,en,
 support_technical,technician,en,
 support_technical,research technician,en,
 support_technical,project manager,en,
+support_technical,research officer,en,"RESTORED 2026-11-11 after measuring the cost of removing it - analyses/49 query 2. Removing it would have moved ~550 records of `program officer`, `policy officer`, `field officer`, `procurement officer`, `public relations officer` and `conservation officer` into PRACTITIONER, because this anchor is their top match and practitioner is next. Those are the titles that would then reach the healthcare audiences on a clinical department. The title_group_patterns row sends the research-officer family to researcher WITHOUT needing this anchor gone, because PATTERN beats VECTOR - so the removal bought nothing and cost that."
 support_technical,research manager,en,
 support_technical,administrator,en,
 support_technical,coordinator,en,

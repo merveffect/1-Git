@@ -31,7 +31,7 @@ para(d,"We have made a working choice for every question so that nothing is bloc
 h(d,"The whole list, at a glance")
 table(d,["#","Question","Size","Our working answer","Need"],
  [["1","What does \"Healthcare Professional (broad)\" mean now?","93,377 reachable","Needs your line — see 1","**High**"],
-  ["2","Does the role library's grouping decide ours? *statistician, economist*","12,469 records","No working answer","**High**"],
+  ["2","Does the role library's grouping decide ours? *statistician, economist*","~1,300 records, being re-counted","No working answer","Medium"],
   ["3.1","Are visiting scholars and fellows teaching staff?","81,749 records","Yes, currently in","Medium"],
   ["3.2","Is an honorary professor active?","6,651 records","Yes, currently in","Medium"],
   ["3.3","Is a `dr` with a clinical department acceptable evidence?","146,865 records","Yes","Medium"],
@@ -139,45 +139,67 @@ para(d,"Chloe's role library gives every job title a `role_type`. For two famili
        "11 November we found that one half of that was our own mistake and the other half "
        "is a question for you.")
 box(d,"WHAT THE LIBRARY SAYS, BESIDE WHAT WE DO",[
- "`                       library role_type                      ours        records`",
- "`Research Statistician   Specialist researcher / practitioner   Researcher      299`",
- "`Statistician            Specialist researcher / practitioner   no audience   7,094`",
- "`Medical Statistician    Specialist researcher / practitioner   no audience     969`",
- "`Research Economist      Specialist researcher / practitioner   Researcher    1,125`",
- "`Economist               Specialist researcher / practitioner   no audience   4,406`",
- "`Research Analyst        Research / policy analyst              Researcher    5,894`",
- "`Research Officer        Research / policy analyst              no audience  34,376`",
+ "The `role_type` column is the library's own. The right-hand column is measured — "
+ "where the records actually sit in our dictionary on 11 November.",
+ "",
+ "`                       library role_type                      ours`",
+ "`Research Statistician   Specialist researcher / practitioner   Researcher`",
+ "`Statistician            Specialist researcher / practitioner   SPLIT, see below`",
+ "`Medical Statistician    Specialist researcher / practitioner   SPLIT`",
+ "`Research Economist      Specialist researcher / practitioner   Researcher`",
+ "`Economist               Specialist researcher / practitioner   SPLIT`",
+ "`Research Analyst        Research / policy analyst              SPLIT`",
+ "`Research Officer        Research / policy analyst              support staff`",
  "",
  "The library makes **no distinction at all** inside either family. We make one, and "
  "the only thing our distinction rests on is whether the person typed the word "
  "*research*. Not what they do — what they typed.",
 ])
 h(d,"2a.  Half of this was our own mistake, and it is being fixed",2)
-para(d,"`research officer` carries **34,376 records** and fed no audience. We assumed the "
-       "model had failed to recognise it. It had not.")
+para(d,"The research-officer family fed no audience. We assumed the model had failed to "
+       "recognise it. It had not.")
 box(d,"THE MODEL WAS RIGHT. THE DICTIONARY ENTRY WAS OURS.",[
  "`research officer` was itself one of our **example titles for the support-staff "
- "group**. So the model matched it against that example perfectly, scored it 1.000, and "
- "filed 34,376 records under support staff — a group that feeds no audience at all.",
+ "group**. So the model matched it against that example perfectly, scored it 1.000, "
+ "and filed the family under support staff — a group that feeds no audience at all.",
  "",
- "The same group holds `analyst` and `data analyst` as examples, which is why "
- "`research analyst` is being re-checked rather than assumed.",
+ "Measured on 11 November, the family is **4,829 records**: 4,056 of them in support "
+ "staff and 738 already in Researcher, split by nothing but how verbose the title was.",
  "",
- "**Fixed on 11 November, on Merve's instruction: the research-officer family belongs "
- "in Researcher.** The example title is removed and a rule now sends `research "
- "officer`, `research analyst` and `research executive` there. The before and after are "
- "being measured rather than estimated — records are not people, and some of these "
- "people are already in Researcher through a second employment record, so we will "
- "report the figure once it is built.",
+ "**Fixed the same day, on Merve's instruction: the research-officer family belongs in "
+ "Researcher.** A rule now sends `research officer`, `research analyst` and `research "
+ "executive` there, scoped so it can only move titles out of support staff and cannot "
+ "touch anything already placed. `research support officer` is deliberately NOT caught "
+ "— that one really is support work.",
  "",
  "**Nothing is needed from you on this half.** It is here because it is the clearest "
  "example of something this project keeps proving: when an audience looks wrong, the "
  "cause is far more often a line we wrote than the model guessing badly.",
 ], fill="F1F6F4", accent=TEAL)
+box(d,"AND A CORRECTION TO A FIGURE WE GAVE YOU YESTERDAY",[
+ "Yesterday's version of this document said `research officer` carried **34,376 "
+ "records**. **It does not.** The whole family is 4,829 records, measured.",
+ "",
+ "The 34,376 was never produced by a query. It existed only in the script that builds "
+ "this document, so it was never a measurement, and the same is true of the per-title "
+ "figures this section used to carry for statisticians and economists.",
+ "",
+ "We are telling you because every other number in this document is traceable to a "
+ "named query, and the one way that stays true is by saying so when one is not. The "
+ "figures below are measured; where a measurement is still running it says so.",
+], fill="FBF1EF", accent=RED)
 h(d,"2b.  The other half IS a question — statisticians and economists",2)
-para(d,"`statistician` 7,094, `medical statistician` 969 and `economist` 4,406 — **12,469 "
-       "records** in no audience at all, while `research statistician` and `research "
-       "economist` sit in Researcher.")
+para(d,"**Measured, and smaller and stranger than we said.** Neither family is \"in no "
+       "audience\". Both are already split roughly down the middle by nothing anyone chose.")
+table(d,["Family","In an audience (Researcher)","In support staff — no audience"],
+ [["Statistician / biostatistician","1,084 records","**866 records**"],
+  ["Economist","569 records","**436 records**"]],
+ widths=[2.2,1.9,2.0])
+para(d,"So the question is about **~1,300 records** sitting in support staff while their "
+       "near-identical siblings sit in Researcher — not the 12,469 we said yesterday. "
+       "And that 1,300 is a **floor**: the measurement that produced it reads English and "
+       "Romance spellings only, so `statistiker`, `estatístico` and `istatistikçi` are "
+       "not in it yet. The multilingual count is running.")
 para(d,"**The argument for leaving them out.** The job title alone does not say whether the "
        "person does research or provides statistical support to a research office. And the "
        "Researcher audience has **no subject check** — unlike healthcare, where the "
@@ -554,7 +576,7 @@ table(d,["Priority","Question","Why it cannot wait"],
    "*Healthcare Professional*. The name is now wrong or the roll-up is — and vets "
    "and sport science follow from the same line"],
   ["2","Do statisticians and economists belong in an audience? (Q2b)",
-   "12,469 records, and the only question in this document where we have no "
+   "~1,300 records, and the only question in this document where we have no "
    "working answer to fall back on"],
   ["3","Confirm doctoral researchers in Students as well as Researcher (Q4.1b)",
    "~48,000 records, and Students is a new audience whose size depends on it"],

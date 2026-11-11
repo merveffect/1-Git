@@ -667,6 +667,70 @@ Same shape as `member` (23,157 records, 9 Oct), `fellow` (48,777, 29 Oct) and
 `associate` (6,631, 30 Oct): a word that means something only in company. This
 is the first time it was caught before shipping rather than after.
 
+### 2.15 An anchor removal measured and reverted, and three figures retracted — 2026-11-11
+
+Merve: *"Research Officer'i support_technical'in capasi yapmisiz ama bu capayi
+direkt cikartalim. Research Officer vektorden gelsin."* Both halves were
+written — the anchor removed and a pattern row added — and then
+`analyses/49` ran. **The anchor is back. The pattern stays and does the whole
+job.**
+
+**Query 2's own headline was wrong first.** It asked whether `research officer`
+was among a title's top THREE anchors, which over-counted the exposure by about
+five times: 22,157 records of "collateral". Removing one of three anchors
+changes nothing unless that anchor carried the maximum similarity, and
+`matched_anchors` is ordered descending, so only `matched_anchors[0]` matters.
+`research technician` (1,430 records, similarity 1.000 against its OWN anchor)
+sat at the top of that list and was never at risk. Query 2b is the corrected
+version and is the one to run before removing any anchor.
+
+**Reading the rows settled it anyway.** The titles that really do have
+`research officer` as their top match, with something other than researcher
+behind it:
+
+| title | records | would go to |
+| --- | --- | --- |
+| `program officer` | 157 | practitioner |
+| `programme officer` | 79 | practitioner |
+| `monitoring and evaluation officer` | 52 | practitioner |
+| `policy officer` | 36 | practitioner |
+| `statistical officer` | 28 | practitioner |
+| `field officer` | 27 | practitioner |
+| `conservation officer` | 18 | practitioner |
+| `development officer` | 17 | leadership |
+| `academic officer`, `gis officer` | 28 | practitioner |
+| `public relations officer`, `procurement officer` | 17 | practitioner |
+
+~550 records of procurement officers, PR officers and conservation officers
+into **practitioner**, which is the title arm of `hcp_broad` and
+`hcp_practitioner`. On a clinical department every one becomes a healthcare
+professional — the exact error class 2.12 and 1.15 were spent removing. And
+bought for nothing: PATTERN beats VECTOR in `dim_title_group`, so the pattern
+row moves the family whether the anchor exists or not.
+
+**2.12 restated for the title dictionary:** adding a rule puts a value where we
+chose, removing one sends it wherever happens to be second. Both halves were
+written on that principle and only one survived the measurement.
+
+#### Three figures retracted
+
+| claimed | measured | where the claim came from |
+| --- | --- | --- |
+| `research officer` 34,376 records | **4,829** in the whole family, 4,056 in support_technical | `setup/build_mkt.py` only |
+| statistician + economist "no audience", 12,469 records | **~1,300** in support_technical; 1,653 already in researcher | `setup/build_mkt.py` only |
+| `research analyst` is in Researcher | **split** | never verified |
+
+None of 34,376 / 7,094 / 4,406 / 5,894 / 1,125 / 969 / 299 is traceable to a
+query in this repository. They existed only in the document builder, so they
+were never measurements. Removed from the document, with the retraction stated
+in it rather than quietly corrected.
+
+**And the fourth English-only pattern failure.** Query 1's family regex reads
+English and Romance spellings only, so `statistiker`, `estatístico` and
+`istatistikçi` are missing and even 1,300 is a floor. Query 1b is
+multilingual from its first line. The 1.17 veto failed this way three times
+running; this is the fourth.
+
 ### 1.11 Is "healthcare professional" about the work or the subject?
 
 Several questions in 1.4 and 1.5 are really this one question asked about

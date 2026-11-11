@@ -232,3 +232,170 @@ where role_key in ('researcher', 'hcp_researcher', 'lecturer')
 group by role_key
 order by role_key
 ;
+
+
+/*
+    ============================================================================
+    ADDED AFTER QUERIES 1, 2 AND 2A RAN - 2026-11-11
+    ============================================================================
+    THE ANCHOR REMOVAL IS REVERTED. The pattern row stays and does the whole job.
+
+    WHY, IN ONE READING OF QUERY 2. Among the titles that reach support_technical
+    through the `research officer` anchor, these have it as their TOP match and
+    something other than researcher as their next best:
+
+        program officer                    157  ->  practitioner
+        programme officer                   79  ->  practitioner
+        monitoring and evaluation officer   52  ->  practitioner
+        policy officer                      36  ->  practitioner
+        statistical officer                 28  ->  practitioner
+        field officer                       27  ->  practitioner
+        conservation officer                18  ->  practitioner
+        development officer                 17  ->  leadership
+        senior programme officer            15  ->  teaching_academic
+        academic officer                    14  ->  practitioner
+        gis officer                         14  ->  practitioner
+        business development officer        12  ->  practitioner
+        information officer                 11  ->  practitioner
+        regulatory officer                  10  ->  practitioner
+        public relations officer             9  ->  practitioner
+        procurement officer                  8  ->  practitioner
+        evaluation officer                   8  ->  practitioner
+
+    About 550 records of procurement officers, PR officers, conservation officers
+    and GIS officers landing in PRACTITIONER - which is the title arm of
+    hcp_broad and hcp_practitioner. On a clinical department every one of them
+    becomes a healthcare professional. That is precisely the error class the last
+    two weeks were spent removing, and it would have been bought for nothing: the
+    pattern row sends the research-officer family to researcher whether or not the
+    anchor exists, because PATTERN beats VECTOR in dim_title_group.
+
+    2.12, restated for the title dictionary rather than the department one:
+    ADDING a rule puts a value where we chose; REMOVING one sends it wherever
+    happens to be second. Both halves of this change were written on that
+    principle and only one of them survived contact with the measurement.
+
+    AND TWO CORRECTIONS TO THE NUMBERS WE HAVE BEEN QUOTING.
+
+    (1) `research officer` does NOT carry 34,376 records. Query 1 measured the
+    whole family - every title matching `\bresearch (officer|analyst|executive)\b`
+    - at 4,829 records, of which 4,056 sit in support_technical. The 34,376
+    figure appears nowhere except in setup/build_mkt.py and this file's own
+    header. It is not traceable to any query in this repository, so it is not a
+    measurement and it has been removed from the document.
+
+    (2) The statistician and economist families are NOT in "no audience at all".
+    Query 1 shows both already split roughly in half:
+
+        statistician family   1,084 records researcher   845 support_technical
+        economist family        569 records researcher   385 support_technical
+
+    So the open question is about **1,302 records** sitting in support staff while
+    their near-identical siblings sit in Researcher - not the 12,469 the document
+    claimed. Same provenance problem: 7,094 / 4,406 / 5,894 / 1,125 / 969 / 299
+    exist only in the document builder.
+
+    (3) And query 1's own regex is English and Romance only, so even 1,302 is a
+    floor: `statistiker`, `estatistico`, `istatistikci` and the rest are missed.
+    Query 1b replaces it. Fourth time this project has been bitten by an
+    English-only pattern - see the 1.17 veto, which failed three times running.
+*/
+
+
+-- ----------------------------------------------------------------------------
+-- 1b. THE FAMILIES, COUNTED PROPERLY. Replaces query 1's regex.
+--
+--    Multilingual from the first line rather than patched afterwards, and it
+--    reports each family by the group it lands in, so "is this in an audience"
+--    is answerable instead of assumed.
+--
+--    support_technical and student feed NO audience. Everything else does.
+-- ----------------------------------------------------------------------------
+with records as (
+    select role_title, title_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+),
+dict as (
+    select title_key, title_group, is_assigned, decision_source
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+),
+tagged as (
+    select
+        r.role_title,
+        case
+            when regexp_contains(r.role_title,
+                   r'\bresearch (officer|analyst|executive)\b')
+                then '1 research-officer'
+            when regexp_contains(r.role_title,
+                   r'statistic(ian|ien|o|a|us|ko|ar|er|ian)\b|statistik|estad[ií]stic|estat[ií]stic|statisti[ck]|istatistik|\bbiostat')
+                then '2 statistician'
+            when regexp_contains(r.role_title,
+                   r'\beconomist\b|economista|[ée]conomiste|[öo]konom|ekonomist|iktisat|economisti')
+                then '3 economist'
+            else null
+        end                                             as family,
+        coalesce(d.title_group, '(no group)')           as title_group,
+        coalesce(d.is_assigned, false)                  as is_assigned
+    from records r
+    left join dict d using (title_key)
+)
+select
+    family,
+    case
+        when not is_assigned                           then 'NO AUDIENCE - unassigned'
+        when title_group in ('support_technical','student')
+                                                        then 'NO AUDIENCE - ' || title_group
+        else 'in an audience - ' || title_group
+    end                                                 as outcome,
+    count(*)                                            as records,
+    count(distinct role_title)                          as distinct_titles,
+    string_agg(distinct role_title order by role_title limit 4) as examples
+from tagged
+where family is not null
+group by family, outcome
+order by family, records desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 2b. THE TRUE BLAST RADIUS, kept for the next time an anchor is considered
+--     for removal.
+--
+--     Query 2 asked whether `research officer` was among a title's top THREE
+--     anchors, which over-counted the exposure by about five times: removing one
+--     of three anchors changes nothing unless that anchor was carrying the
+--     maximum similarity. matched_anchors is ordered by similarity descending,
+--     so the first element is the one that decided the group.
+--
+--     THIS is the query to run before removing any anchor. Change the one
+--     string at the top.
+-- ----------------------------------------------------------------------------
+declare doomed_anchor string default 'research officer';
+
+with records as (
+    select role_title, title_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+),
+dict as (
+    select title_key, title_group, runner_up, similarity, matched_anchors
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+)
+select
+    case
+        when regexp_contains(r.role_title, r'\bresearch (officer|analyst|executive)\b')
+            then 'INTENDED TARGET - a pattern row covers these anyway'
+        when d.runner_up = 'researcher'
+            then 'COLLATERAL, lands in researcher'
+        else 'COLLATERAL, lands in ' || coalesce(d.runner_up, '(nothing)')
+             || ' - THIS IS THE COST'
+    end                                                 as classification,
+    r.role_title,
+    count(*)                                            as records,
+    round(any_value(d.similarity), 3)                   as similarity,
+    any_value(d.runner_up)                              as goes_to_instead
+from records r
+join dict d using (title_key)
+where d.matched_anchors[safe_offset(0)] = doomed_anchor
+group by classification, r.role_title
+order by classification, records desc
+;
