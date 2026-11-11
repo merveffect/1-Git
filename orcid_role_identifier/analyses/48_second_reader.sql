@@ -227,9 +227,40 @@ declare target_audience string default 'faculty_head';
 declare round_no        int64  default 1;
 declare sample_size     int64  default 100;
 
-with ranked as (
+with
+-- Every CONFIRMED audience each person holds, so a row can say what else the
+-- person is. Judged on its own a title looks ambiguous far more often than it
+-- is: somebody in hcp_researcher who is ALSO in researcher and lecturer is a
+-- clinical academic, and that is usually the answer to the question the row
+-- was asking.
+all_audiences as (
+    select
+        snid,
+        string_agg(distinct role_key order by role_key) as all_confirmed_audiences
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+    where role_label = 'CONFIRMED'
+    group by snid
+),
+ranked as (
     select
         r.snid,
+        -- ⭐ THE AUDIENCE BEING JUDGED. It is the same for all 100 rows, and
+        -- it is carried on every row ON PURPOSE: once these rows are exported
+        -- and handed to an AI, the declare block above is gone and nothing
+        -- else in the payload says which rule to apply.
+        r.role_key                              as audience,
+        -- The sub-dimension this audience reports - a bucket for hcp_broad, a
+        -- setting for pharmacist, an organisation type for the rest.
+        r.role_detail                           as audience_detail,
+        -- ⭐ HOW THEY GOT IN. Null means the person qualified for this
+        -- audience in their own right. A value means they ARRIVED THROUGH A
+        -- CHILD ROLE rolling up - so an hcp_broad row reading
+        -- 'hcp_practitioner' is in the broad audience because they are a
+        -- practitioner, and it is the practitioner rule that has to hold for
+        -- the row to be correct.
+        r.derived_from_role                     as reached_via,
+        -- Every other audience this person is confirmed in.
+        a.all_confirmed_audiences,
         r.evidence_title                        as job_title,
         r.evidence_org                          as organisation,
         r.evidence_dept                         as department,
@@ -250,6 +281,7 @@ with ranked as (
             order by farm_fingerprint(cast(r.snid as string))
         )                                       as hash_position
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` r
+    join all_audiences a using (snid)
     where r.role_key   = target_audience
       -- CONFIRMED only. The second confidence tier is never delivered, so it
       -- is not what needs measuring.
@@ -292,7 +324,25 @@ order by hash_position;
 -- audience named below is right.
 --
 -- THE AUDIENCE AND ITS RULE:
+--   Every row carries an audience column naming the audience being judged,
+--   and it is the same for all of them. The rule for it is:
 --   <paste the one rule for this audience from THE RUBRIC above>
+--
+-- TWO COLUMNS THAT CHANGE WHAT YOU ARE JUDGING. Read them before the title.
+--
+--   reached_via  Empty means the person qualified for this audience in their
+--                own right, so apply the rule above. A VALUE means they
+--                arrived through that other audience rolling up into this one
+--                - so a row in hcp_broad reading hcp_practitioner is there
+--                because the person is a practitioner, and it is the
+--                PRACTITIONER rule that has to hold for the row to be right.
+--
+--   all_confirmed_audiences  Every audience this person is in. Use it as
+--                context, not as proof. Somebody in hcp_researcher who is
+--                also in researcher and lecturer is a clinical academic, and
+--                that usually answers the question the row was asking. But a
+--                person being in four audiences is not evidence that any one
+--                of them is correct.
 --
 -- For each row return exactly one verdict:
 --   CORRECT  the evidence satisfies the rule
