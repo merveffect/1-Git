@@ -684,29 +684,37 @@ changes nothing unless that anchor carried the maximum similarity, and
 sat at the top of that list and was never at risk. Query 2b is the corrected
 version and is the one to run before removing any anchor.
 
-**Reading the rows settled it anyway.** The titles that really do have
-`research officer` as their top match, with something other than researcher
-behind it:
+**Query 2b then measured it properly, and the cost is double my estimate.**
+Titles whose TOP anchor is `research officer`, grouped by where they would go
+instead:
 
-| title | records | would go to |
+| would go to | records | the ones that matter |
 | --- | --- | --- |
-| `program officer` | 157 | practitioner |
-| `programme officer` | 79 | practitioner |
-| `monitoring and evaluation officer` | 52 | practitioner |
-| `policy officer` | 36 | practitioner |
-| `statistical officer` | 28 | practitioner |
-| `field officer` | 27 | practitioner |
-| `conservation officer` | 18 | practitioner |
-| `development officer` | 17 | leadership |
-| `academic officer`, `gis officer` | 28 | practitioner |
-| `public relations officer`, `procurement officer` | 17 | practitioner |
+| researcher | ~1,900 | fine - same destination. `scientific officer` alone is **763** |
+| **practitioner** | **~800** | `program officer` 157, `programme officer` 79, `monitoring and evaluation officer` 52, `policy officer` 36, `statistical officer` 28, `field officer` 27, `conservation officer` 18, `gis officer` 14, `procurement officer` 8, `public relations officer` 9, plus a tail of ~250 records in 1-2 record titles |
+| leadership | ~150 | `development officer` 17, `deputy dean for research` 4 |
+| trainee_clinical | ~90 | `library officer` 7, `relationship officer` 5, `intelligence officer` 4 |
+| teaching_academic | ~60 | `senior programme officer` 15, `professor of operational research` 6 |
+| pharmacist | ~25 | `chief knowledge officer` 3, `regulatory executive` 2 |
+| student | ~16 | `international student recruitment officer` |
 
-~550 records of procurement officers, PR officers and conservation officers
-into **practitioner**, which is the title arm of `hcp_broad` and
-`hcp_practitioner`. On a clinical department every one becomes a healthcare
-professional — the exact error class 2.12 and 1.15 were spent removing. And
-bought for nothing: PATTERN beats VECTOR in `dim_title_group`, so the pattern
-row moves the family whether the anchor exists or not.
+**~1,150 records into groups we did not choose, ~800 of them into
+practitioner** - the title arm of `hcp_broad` and `hcp_practitioner`. On a
+clinical department a procurement officer, a PR officer and a GIS officer each
+become a healthcare professional. That is the exact error class 2.12 and 1.15
+were spent removing, and it would have been bought for nothing: PATTERN beats
+VECTOR in `dim_title_group`, so the pattern row moves the research-officer
+family whether the anchor exists or not.
+
+**One thing the query found that IS worth having.** `scientific officer`, 763
+records at similarity 0.875, has `research officer` as its top anchor and would
+land in `researcher` - correctly. The grade variants are there too (`scientific
+officer c/d/e/f/g/h`, the Indian BARC and DAE grades, `scientific project
+officer`, `senior scientific officer`, `assistant scientific officer`). These
+are research posts in every system that uses the title, and the pattern does
+not catch them. **Candidate for a second pattern row, ~900 records, Merve's
+call** - it is a different title from the research-officer family and not
+covered by the 11 November instruction.
 
 **2.12 restated for the title dictionary:** adding a rule puts a value where we
 chose, removing one sends it wherever happens to be second. Both halves were
@@ -716,9 +724,25 @@ written on that principle and only one survived the measurement.
 
 | claimed | measured | where the claim came from |
 | --- | --- | --- |
-| `research officer` 34,376 records | **4,829** in the whole family, 4,056 in support_technical | `setup/build_mkt.py` only |
-| statistician + economist "no audience", 12,469 records | **~1,300** in support_technical; 1,653 already in researcher | `setup/build_mkt.py` only |
+| `research officer` 34,376 records | **4,829** in the whole family, **4,075** reaching no audience | `setup/build_mkt.py` only |
+| statistician + economist "no audience", 12,469 records | **2,177** reaching no audience; 3,752 already in Researcher or Lecturer | `setup/build_mkt.py` only |
 | `research analyst` is in Researcher | **split** | never verified |
+
+**And my own correction was wrong in the other direction.** I replaced 12,469
+with "~1,300" from query 1, whose family regex was English and Romance only. The
+multilingual count in query 1b gives **2,177** - 40% higher, because the first
+pass missed German, Turkish and most compound academic titles. Three figures for
+one question in two days: one invented, one measured badly, one measured. The
+direction matters more than the number, which is why the document now carries
+all three.
+
+**The multilingual count also found something useful.** 1,166 records of the
+statistician family are already in `teaching_academic` - *professor of
+biostatistics*, *lecturer in medical statistics*, *associate professor in
+statistical science*. A third of the family, correctly placed, and invisible to
+the English-only regex. So the marketing question is narrower than the word
+*statistician* suggests: the academics are handled, and what is open is the
+1,631 statistician and 546 economist records in no audience at all.
 
 None of 34,376 / 7,094 / 4,406 / 5,894 / 1,125 / 969 / 299 is traceable to a
 query in this repository. They existed only in the document builder, so they

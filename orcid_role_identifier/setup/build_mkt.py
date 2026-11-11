@@ -31,7 +31,7 @@ para(d,"We have made a working choice for every question so that nothing is bloc
 h(d,"The whole list, at a glance")
 table(d,["#","Question","Size","Our working answer","Need"],
  [["1","What does \"Healthcare Professional (broad)\" mean now?","93,377 reachable","Needs your line — see 1","**High**"],
-  ["2","Does the role library's grouping decide ours? *statistician, economist*","~1,300 records, being re-counted","No working answer","Medium"],
+  ["2","Does the role library's grouping decide ours? *statistician, economist*","2,177 records","No working answer","Medium"],
   ["3.1","Are visiting scholars and fellows teaching staff?","81,749 records","Yes, currently in","Medium"],
   ["3.2","Is an honorary professor active?","6,651 records","Yes, currently in","Medium"],
   ["3.3","Is a `dr` with a clinical department acceptable evidence?","146,865 records","Yes","Medium"],
@@ -163,8 +163,10 @@ box(d,"THE MODEL WAS RIGHT. THE DICTIONARY ENTRY WAS OURS.",[
  "group**. So the model matched it against that example perfectly, scored it 1.000, "
  "and filed the family under support staff — a group that feeds no audience at all.",
  "",
- "Measured on 11 November, the family is **4,829 records**: 4,056 of them in support "
- "staff and 738 already in Researcher, split by nothing but how verbose the title was.",
+ "Measured on 11 November, the family is **4,829 records**. **4,075 of them are in no "
+ "audience at all** and 738 are already in Researcher — and the thing that separated "
+ "them was how verbose the person's title happened to be. `research officer` alone is "
+ "2,333 records; `senior research officer` another 595.",
  "",
  "**Fixed the same day, on Merve's instruction: the research-officer family belongs in "
  "Researcher.** A rule now sends `research officer`, `research analyst` and `research "
@@ -178,7 +180,8 @@ box(d,"THE MODEL WAS RIGHT. THE DICTIONARY ENTRY WAS OURS.",[
 ], fill="F1F6F4", accent=TEAL)
 box(d,"AND A CORRECTION TO A FIGURE WE GAVE YOU YESTERDAY",[
  "Yesterday's version of this document said `research officer` carried **34,376 "
- "records**. **It does not.** The whole family is 4,829 records, measured.",
+ "records**. **It does not.** The whole family is 4,829 records, measured — of which "
+ "4,075 reach no audience. The error was seven-fold.",
  "",
  "The 34,376 was never produced by a query. It existed only in the script that builds "
  "this document, so it was never a measurement, and the same is true of the per-title "
@@ -189,17 +192,33 @@ box(d,"AND A CORRECTION TO A FIGURE WE GAVE YOU YESTERDAY",[
  "figures below are measured; where a measurement is still running it says so.",
 ], fill="FBF1EF", accent=RED)
 h(d,"2b.  The other half IS a question — statisticians and economists",2)
-para(d,"**Measured, and smaller and stranger than we said.** Neither family is \"in no "
-       "audience\". Both are already split roughly down the middle by nothing anyone chose.")
-table(d,["Family","In an audience (Researcher)","In support staff — no audience"],
- [["Statistician / biostatistician","1,084 records","**866 records**"],
-  ["Economist","569 records","**436 records**"]],
- widths=[2.2,1.9,2.0])
-para(d,"So the question is about **~1,300 records** sitting in support staff while their "
-       "near-identical siblings sit in Researcher — not the 12,469 we said yesterday. "
-       "And that 1,300 is a **floor**: the measurement that produced it reads English and "
-       "Romance spellings only, so `statistiker`, `estatístico` and `istatistikçi` are "
-       "not in it yet. The multilingual count is running.")
+para(d,"**Measured on 11 November, and neither family is \"in no audience\".** Both are "
+       "already spread across several, by nothing anyone chose.")
+table(d,["Family","Researcher","Lecturer","Other audiences","**No audience**"],
+ [["Statistician / biostatistician","1,685","1,166","215","**1,631**"],
+  ["Economist","575","36","75","**546**"]],
+ widths=[1.9,0.9,0.8,1.1,1.2])
+para(d,"**So the question is about 2,177 records** — the people in no audience at all — "
+       "while 3,752 of their near-identical siblings are already in Researcher or Lecturer.")
+para(d,"The Lecturer column is the one worth looking at. **1,166 records of the "
+       "statistician family are already in Lecturer**, and correctly so: *professor of "
+       "biostatistics*, *lecturer in medical statistics*, *associate professor in "
+       "statistical science*. That is a third of the family, it is right, and it means the "
+       "question in front of you is narrower than the word *statistician* suggests — the "
+       "academics are already handled.")
+box(d,"AND WE HAVE TO CORRECT A FIGURE WE GAVE YOU TWICE IN TWO DAYS",[
+ "Yesterday this section said **12,469 records**. This morning we corrected it to "
+ "**~1,300**. The measured answer is **2,177**.",
+ "",
+ "The 12,469 was never produced by a query. The ~1,300 came from a query whose own "
+ "pattern read English and Romance spellings only — so it missed German, Turkish and "
+ "most of the compound academic titles, and it undercounted by 40%.",
+ "",
+ "The 2,177 comes from a multilingual count and is the figure we will defend. We are "
+ "showing you all three because the direction of the error matters: the first was "
+ "invented, the second was measured badly, and a project that hides that pattern "
+ "cannot be trusted on the numbers it gets right.",
+], fill="FBF1EF", accent=RED)
 para(d,"**The argument for leaving them out.** The job title alone does not say whether the "
        "person does research or provides statistical support to a research office. And the "
        "Researcher audience has **no subject check** — unlike healthcare, where the "
@@ -576,7 +595,7 @@ table(d,["Priority","Question","Why it cannot wait"],
    "*Healthcare Professional*. The name is now wrong or the roll-up is — and vets "
    "and sport science follow from the same line"],
   ["2","Do statisticians and economists belong in an audience? (Q2b)",
-   "~1,300 records, and the only question in this document where we have no "
+   "2,177 records, and the only question in this document where we have no "
    "working answer to fall back on"],
   ["3","Confirm doctoral researchers in Students as well as Researcher (Q4.1b)",
    "~48,000 records, and Students is a new audience whose size depends on it"],
