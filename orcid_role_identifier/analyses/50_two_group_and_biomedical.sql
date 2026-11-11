@@ -1,0 +1,244 @@
+/*
+    ============================================================================
+    50. THE 11 NOVEMBER BUILD - what to run, before and after
+    ============================================================================
+    Three decisions land in one build, because Merve asked for one build rather
+    than three: "surekli build etmek istemiyorum her seyi ekle sonra kontrol
+    edelim."
+
+      A  biomedical researchers join hcp_researcher, and hcp_broad by roll-up
+         (dbt_project.yml, one word)
+      B  a title may name TWO jobs      (seeds/title_group_second.csv, new)
+      C  the scientific-officer family joins researcher - PROPOSED, flagged
+         (seeds/title_group_patterns.csv, one row, delete to reverse)
+
+    RUN ORDER
+      Queries 1 and 2 on the CURRENT build, before anything is rebuilt.
+      Then:  dbt build --select title_group_second+ title_group_patterns+ \
+                               discipline_anchors+ role_title_overrides+
+      Then queries 3, 4, 5 and 6 on the new build.
+
+    WHY THAT BUILD COMMAND AND NOT `dbt build`. The two embedding models are
+    the expensive part - int_title_embeddings over 317,302 titles and
+    int_department_embeddings over 459,123 departments. Neither seed above is
+    upstream of them, so naming the seeds keeps both out. role_title_overrides
+    is named separately because it is NOT downstream of discipline_anchors and
+    a `+` on one does not reach the other - that mistake cost a build on
+    2026-11-10, where the log said "1 seed" and the fix never reached BigQuery.
+
+    WHAT CANNOT BE FORECAST, stated so nobody treats query 2 as a prediction.
+    Queries 1 and 2 count RECORDS at title grain. The audiences are counted in
+    PEOPLE, and a person has several employment records - so somebody whose
+    title gains `teaching_academic` may already be in Lecturer through a second
+    post. The record figure is an upper bound on the people figure and the two
+    are not comparable. Query 5 is the only honest answer and it needs the
+    build.
+*/
+
+
+-- ----------------------------------------------------------------------------
+-- 1. BEFORE - A. the biomedical population, and what it will actually add.
+--
+--    15,588 is a FOUND figure from analyses/17 query 8a, not a CONFIRMED one.
+--    hcp_researcher requires title AND field and confirms at 0.70, so this
+--    query asks how many of them clear it. The answer is what goes in the
+--    document, not 15,588.
+-- ----------------------------------------------------------------------------
+with scored as (
+    select
+        s.snid,
+        d.discipline,
+        round(d.discipline_score, 3)                    as discipline_score,
+        t.title_group,
+        round(t.group_score, 3)                         as title_score
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+    left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+           on s.title_key = t.title_key and t.is_assigned
+    left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_department_discipline` d
+           on to_hex(md5(s.department)) = d.department_key and d.is_assigned
+    where t.title_group = 'researcher'
+      and d.discipline  = 'life_biomedical'
+)
+select
+    count(*)                                            as records,
+    count(distinct snid)                                as people,
+    round(avg(title_score), 3)                          as avg_title_score,
+    round(avg(discipline_score), 3)                     as avg_discipline_score,
+    /*  hcp_researcher weights are role 0.40 / org 0.20 / dept 0.40 and it
+        confirms at 0.70. Without the org term the floor is
+        0.40*title + 0.40*dept, so this is the share that could not possibly
+        confirm however good their employer is, and the share that confirms
+        on the two axes alone.  */
+    countif(0.40 * title_score + 0.40 * discipline_score >= 0.70)
+                                                        as confirms_without_org,
+    countif(0.40 * title_score + 0.40 * discipline_score + 0.20 < 0.70)
+                                                        as cannot_confirm_at_all
+from scored
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 2. BEFORE - B. what each second-group rule will claim, at record weight.
+--
+--    Reproduces the join in dim_title_group's second_hits against the CURRENT
+--    dictionary, so it reads the state the rules will actually see. A rule
+--    returning zero here is a dead rule and the decision behind it has not
+--    happened - that is also what assert_second_group_rules_all_match_something
+--    tests, at warn severity.
+-- ----------------------------------------------------------------------------
+with dict as (
+    select title_key, title, frequency, title_group, is_assigned
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned
+),
+rules as (
+    select applies_when_title_group, name_pattern, second_title_group, unless_pattern
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.title_group_second`
+)
+select
+    r.applies_when_title_group                          as from_group,
+    r.second_title_group                                as gains_group,
+    count(*)                                            as distinct_titles,
+    sum(d.frequency)                                    as records,
+    string_agg(d.title order by d.frequency desc limit 8) as biggest_titles
+from dict d
+join rules r
+     on regexp_contains(d.title, r.name_pattern)
+    and d.title_group = r.applies_when_title_group
+    and r.second_title_group != d.title_group
+    and (r.unless_pattern is null or r.unless_pattern = ''
+         or not regexp_contains(d.title, r.unless_pattern))
+group by from_group, gains_group
+order by records desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 2a. BEFORE - and what the VETO is holding back on the student rule.
+--
+--    The one rule where the veto is the whole risk. `postdoctoral researcher`
+--    is not a doctoral student, and `research professor phd` carries phd as a
+--    credential rather than a status - the finding that scoped 1.17 to the
+--    early end of the group. If this returns something that looks like a real
+--    doctoral student, the veto is too wide.
+-- ----------------------------------------------------------------------------
+with dict as (
+    select title, frequency, title_group
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned and title_group = 'researcher'
+),
+rule as (
+    select name_pattern, unless_pattern
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.title_group_second`
+    where second_title_group = 'student'
+)
+select
+    d.title,
+    d.frequency,
+    'vetoed - stays researcher only'                    as outcome
+from dict d
+cross join rule r
+where regexp_contains(d.title, r.name_pattern)
+  and regexp_contains(d.title, r.unless_pattern)
+order by d.frequency desc
+limit 60
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 3. AFTER - did the second group land at all?
+--
+--    The first thing to look at. If title_group_2 is null everywhere, the
+--    seed did not reach BigQuery and the build command missed it - which is
+--    exactly what happened on 2026-11-10 when the log said "1 seed".
+-- ----------------------------------------------------------------------------
+select
+    title_group                                         as primary_group,
+    coalesce(title_group_2, '(none)')                   as second_group,
+    count(*)                                            as distinct_titles,
+    sum(frequency)                                      as records,
+    string_agg(title order by frequency desc limit 6)   as biggest_titles
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+where is_assigned
+group by primary_group, second_group
+having second_group != '(none)'
+order by records desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 4. AFTER - C. the two pattern families, so the flagged row can be judged.
+--
+--    research officer / analyst / executive should now read PATTERN with
+--    group_score 1.000 in `researcher`. So should the scientific-officer
+--    family, and if Merve says no to it, this is the list that leaves again.
+-- ----------------------------------------------------------------------------
+select
+    case
+        when regexp_contains(title, r'\bresearch (officer|analyst|executive)\b')
+            then '1 research-officer family (decided)'
+        else '2 scientific-officer family (PROPOSED - delete the row to reverse)'
+    end                                                 as family,
+    title_group,
+    decision_source,
+    round(group_score, 3)                               as group_score,
+    count(*)                                            as distinct_titles,
+    sum(frequency)                                      as records
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+where regexp_contains(title, r'\bresearch (officer|analyst|executive)\b')
+   or regexp_contains(title, r'\bscien[a-z]*\s+(project\s+)?officer\b')
+group by family, title_group, decision_source, group_score
+order by family, records desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 5. AFTER - THE ONLY FIGURE THAT GOES IN A DOCUMENT.
+--
+--    People, per audience, with the reachable count beside it. Compare against
+--    the 10 November state:
+--
+--      lecturer           400,445 confirmed    319,291 reachable
+--      researcher         322,266              237,391
+--      hcp_broad          126,270               93,377
+--      hcp_practitioner    60,083               46,450
+--      hcp_researcher      50,590               39,758
+--      faculty_head        20,222               11,962
+--      hcp_administrator    6,855                5,949
+--      pharmacist           2,335                1,531
+--      librarian              666                  384
+--
+--    EXPECT lecturer, researcher, faculty_head and hcp_researcher to move and
+--    nothing else. If pharmacist or librarian moves, a rule is firing where it
+--    should not and the second-group word lists are too wide.
+-- ----------------------------------------------------------------------------
+select
+    role_key,
+    countif(role_label = 'CONFIRMED')                   as confirmed_people,
+    countif(role_label = 'CONFIRMED'
+            and (is_marketable or is_advertisable
+                 or is_legitimate_interest or is_book_author)) as reachable
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+group by role_key
+order by confirmed_people desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 6. AFTER - who arrived through the SECOND group, per audience.
+--
+--    The accountability query. For every role, how many of its people are
+--    there because of a second group rather than their title's primary one -
+--    and it is these people, not the audience as a whole, that the next
+--    reading has to sample.
+-- ----------------------------------------------------------------------------
+select
+    e.role_key,
+    count(distinct e.snid)                              as people,
+    countif(e.title_group_2 is not null)                as records_with_a_second_group,
+    string_agg(distinct e.title_group order by e.title_group) as groups_that_carried_them
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
+where e.title_group_2 is not null
+group by e.role_key
+order by people desc
+;

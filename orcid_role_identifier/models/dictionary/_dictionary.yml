@@ -42,6 +42,38 @@ models:
           - accepted_values:
               arguments:
                 values: ['HUMAN', 'PATTERN', 'VECTOR', 'REJECTED']
+      - name: title_group_2
+        description: >
+          ⭐ THE SECOND GROUP, where the title names two jobs. Merve,
+          2026-11-11, reversing 1.10a: a title belonged to exactly one
+          profession, and that single constraint sorted 68,000 records by
+          punctuation - `professor and director` reached Head of Faculty
+          while `professor & director` reached Lecturer.
+
+          Null for almost every title. Where it is set, the person qualifies
+          for the audiences of BOTH groups: int_employment_scored tests this
+          column alongside title_group in every role's membership filter, and
+          role_score comes from whichever one matched.
+
+          The rules are in seeds/title_group_second.csv and are scoped to the
+          RESOLVED group rather than the model's guess, so an override moving
+          a title also moves which second-group rules can see it.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('int_title_group_registry')
+                field: title_group
+      - name: group_2_score
+        description: >
+          1.0 wherever title_group_2 is set, null otherwise. A second group
+          only ever comes from a literal pattern match, and a literal match
+          is not a guess - the same reasoning that gives pattern_hits a score
+          of 1.0 in the primary column.
+
+          Deliberately NOT used in preference to group_score: a title that
+          qualifies for a role on both columns carries its primary graded
+          score, because taking the flat 1.0 would quietly inflate every
+          compound title's final score.
       - name: model_title_group
         description: >
           The group the embedding model chose, before any override or

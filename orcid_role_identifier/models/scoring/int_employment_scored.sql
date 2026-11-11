@@ -35,7 +35,17 @@ with_title_group as (
     select
         r.*,
         t.title_group,
-        t.group_score       as title_group_score
+        t.group_score       as title_group_score,
+        /*
+            ⭐ A TITLE MAY NAME TWO JOBS - Merve, 2026-11-11. dim_title_group
+            carries a second group for the few thousand titles that name two,
+            and every role test below asks about both columns. See the block
+            comment on second_hits in that model for why it is a column
+            rather than a second row: fanning out here would change the grain
+            of everything downstream.
+        */
+        t.title_group_2,
+        t.group_2_score
     from records r
     left join {{ ref('dim_title_group') }} t
            on r.title_key = t.title_key
@@ -81,10 +91,30 @@ per_role as (
         w.*,
         '{{ k }}'                                   as role_key,
         {% if tg | length > 0 -%}
-        if(w.title_group in ({{ sql_in_list(tg) }}), coalesce(w.title_group_score, 0.0), 0.0)
+        /*  The primary group is asked first, so a title that qualifies on
+            both carries its primary score - which is the graded one. The
+            second group is always a literal pattern match and so always
+            1.0, and taking that in preference would quietly inflate every
+            compound title's score.  */
+        case
+            when w.title_group   in ({{ sql_in_list(tg) }})
+                then coalesce(w.title_group_score, 0.0)
+            when w.title_group_2 in ({{ sql_in_list(tg) }})
+                then coalesce(w.group_2_score, 0.0)
+            else 0.0
+        end
         {%- else -%}
         0.0
         {%- endif %}                                as role_score,
+        /*  WHICH group put this person in this role. Without it `title_group`
+            downstream would keep saying the primary one even where the role
+            was reached through the second, and the evidence would contradict
+            the membership.  */
+        {% if tg | length > 0 -%}
+        if(w.title_group in ({{ sql_in_list(tg) }}), w.title_group, w.title_group_2)
+        {%- else -%}
+        w.title_group
+        {%- endif %}                                as title_group_matched,
         {% if dg | length > 0 -%}
         if(w.discipline in ({{ sql_in_list(dg) }}), coalesce(w.discipline_score, 0.0), 0.0)
         {%- else -%}
@@ -98,15 +128,18 @@ per_role as (
     where
         {%- if tg | length > 0 and dg | length > 0 and mode == 'title_and_field' %}
         -- both axes required
-        w.title_group in ({{ sql_in_list(tg) }})
+        (   w.title_group   in ({{ sql_in_list(tg) }})
+         or w.title_group_2 in ({{ sql_in_list(tg) }}) )
         and w.discipline in ({{ sql_in_list(dg) }})
         {%- elif tg | length > 0 and dg | length > 0 and mode == 'title_or_field' %}
         -- either axis is enough
-        (   w.title_group in ({{ sql_in_list(tg) }})
-         or w.discipline  in ({{ sql_in_list(dg) }}) )
+        (   w.title_group   in ({{ sql_in_list(tg) }})
+         or w.title_group_2 in ({{ sql_in_list(tg) }})
+         or w.discipline    in ({{ sql_in_list(dg) }}) )
         {%- elif tg | length > 0 %}
         -- the title is the only way in; the discipline only adds score
-        w.title_group in ({{ sql_in_list(tg) }})
+        (   w.title_group   in ({{ sql_in_list(tg) }})
+         or w.title_group_2 in ({{ sql_in_list(tg) }}) )
         {%- else %}
         w.discipline in ({{ sql_in_list(dg) }})
         {%- endif %}
@@ -215,7 +248,12 @@ select
     role_score,
     org_score,
     dept_score,
-    title_group,
+    /*  The group that actually carried this role, not the title's primary
+        one - see title_group_matched above.  */
+    title_group_matched as title_group,
+    /*  Kept so a reviewer can see the person's title named two jobs, and
+        which other group it reached. Null for almost every row.  */
+    title_group_2,
     discipline,
     org_type,
     ror_id,

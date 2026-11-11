@@ -755,6 +755,97 @@ English and Romance spellings only, so `statistiker`, `estatístico` and
 multilingual from its first line. The 1.17 veto failed this way three times
 running; this is the fourth.
 
+### 1.10c A TITLE MAY NAME TWO JOBS — REVERSED 2026-11-11, BUILT
+
+**Merve, 2026-11-11:** *"eger bir kisi profesor ve lecturer yazdiysa ORCID'deki
+role title'ina, o zaman ikisi de dogru ve ikisini de o audience a almamiz
+gerekiyor."* Reverses 1.10a, decided 2026-10-30.
+
+**The limit, because it is easy to over-read.** This fires only where the ORCID
+title ITSELF names two jobs. Where ORCID says only `professor` and the person
+told a survey they are a research scientist, ORCID still wins and they are a
+lecturer. 1.10's survey gap is not what this fixes.
+
+**Mechanism: a second column, not a second row.** Fanning `dim_title_group` out
+to one row per (title, group) would multiply every record in
+`int_employment_scored`, change the grain of everything downstream and break
+`assert_one_row_per_researcher`. Instead `dim_title_group` gains
+`title_group_2` and `group_2_score`, and each role's membership filter in
+`int_employment_scored` asks about both columns. The grain never moves.
+
+The rules live in `seeds/title_group_second.csv`, five of them, each reading
+*a title already in group X whose text matches P also belongs to group Y*:
+
+| already in | gains | what it is for |
+| --- | --- | --- |
+| teaching_academic | leadership | 6.1a — `professor and director`, all six spellings |
+| leadership | teaching_academic | the mirror, so word order stops deciding |
+| teaching_academic | researcher | 6.1 — `lecturer and researcher`, ~47,000 records |
+| researcher | teaching_academic | the mirror — `research professor` 48,609, `research assistant professor` 71,785 |
+| researcher | student | 6.1b — `doctoral researcher` 42,231, `postgraduate researcher` 5,427 |
+
+Three things in the design are there because of earlier mistakes.
+
+**The word lists name JOBS, not subjects.** `dean`, `director`, `researcher`,
+`chercheur` name a post. `professor of educational leadership` and `professor
+of research methods` name a SUBJECT and are deliberately not matched. That is
+1.3's lesson restated — a leadership word is not a leadership job — and it is
+the single thing most likely to go wrong when a row is added.
+
+**They are multilingual from the first line.** The research list is lifted
+verbatim from `title_group_patterns.csv` rather than retyped, because the 1.17
+veto failed three times running on exactly this asymmetry.
+
+**Scoped to the RESOLVED group, not the model's guess.** An override that moves
+a title also moves which second-group rules can see it. The two pattern
+collision tests use `model_title_group` instead, for the opposite and equally
+deliberate reason, and `dim_title_group` now says why in both places.
+
+**Three tests, two of them at warn severity.**
+`assert_second_group_differs` is an error and should never fire — the join
+already forbids it. `assert_second_group_rules_all_match_something` and
+`assert_second_group_rules_do_not_collide` warn: a dead rule and a
+three-job title are both things we want the number for, and an error on either
+would skip every downstream model and turn one bad regex into a blocked build.
+
+**Forecast and verification: `analyses/50`.** Queries 1, 2 and 2a before the
+build; 3 to 6 after. Query 2a is the one that matters most — it lists what the
+student rule's veto is holding back, and `postdoctoral researcher` appearing
+there is the whole point of the veto existing.
+
+### 1.2a BIOMEDICAL RESEARCHERS ARE HCPs — ANSWERED 2026-11-11, BUILT
+
+`hcp_researcher.disciplines` gains `life_biomedical` and the label goes back to
+**Clinical / Biomedical Researcher**, the name it carried for one commit in
+October before being reverted because the config never matched it. 15,588
+people, and they reach `hcp_broad` for free through the parent roll-up.
+
+**The consequence, flagged to marketing rather than absorbed quietly.**
+`hcp_broad` is labelled *Healthcare Professional (broad)* and now contains
+people who have never seen a patient. Nothing is broken; the NAME is wrong, or
+the roll-up is. That is question 1 of the marketing document now, and the
+recommendation is to rename, because `hcp_practitioner` already IS the clinical
+audience at 46,450 reachable people.
+
+**15,588 is a FOUND figure, not a confirmed one.** `hcp_researcher` requires
+both axes and confirms at 0.70. `analyses/50` query 1 measures how many clear
+it, and that is the number that goes in the document.
+
+### 2.15a `scientific officer` — PROPOSED, IN THE BUILD, ONE ROW TO REVERSE
+
+763 records plus ~140 in grade variants (`scientific officer c/d/e/f/g/h`, the
+Indian DAE and BARC grades; `assistant`, `junior`, `higher`, `senior`;
+`scientific project officer`; `science officer` 50). All in
+`support_technical`, which feeds no audience. `analyses/49` query 2b found it:
+its top anchor is `research officer` and its next-best group is already
+`researcher`, so the embedding agrees.
+
+**Flagged rather than decided.** Merve's 11 November instruction covered the
+research-officer family and this is a different title. It is in the build so
+that one build covers it; deleting the row from
+`seeds/title_group_patterns.csv` is the whole reversal. `analyses/50` query 4
+is the list to judge it on.
+
 ### 1.11 Is "healthcare professional" about the work or the subject?
 
 Several questions in 1.4 and 1.5 are really this one question asked about
