@@ -60,7 +60,11 @@ def build(d):
     para(d, "The **job title**, the employer's **organisation type** from ROR (university, "
             "hospital, company), and the department's **discipline**. Each audience weights "
             "the three differently and has its own threshold; above it the person is "
-            "CONFIRMED, below it PROBABLE.")
+            "CONFIRMED, below it PROBABLE. **Only CONFIRMED is ever delivered, and as of "
+            "11 November that is settled rather than pending** — Merve closed the "
+            "question of switching the second tier on: nobody we are not certain about "
+            "enters an audience. It would have added 45,054 unique people and nearly "
+            "doubled the broad healthcare audience.")
     box(d, "THE PRINCIPLE BEHIND THE SCORE", [
      "**Certainty is two independent signals agreeing — not one signal scoring highly.**",
      "",

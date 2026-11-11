@@ -30,7 +30,29 @@ the per-role Reachable column sums far above 501,522.
 Each one is a definition, not a technical problem. None can be settled from
 the data, and each changes who receives a campaign.
 
-### 1.1 Should the second confidence tier be switched on? ⟳
+### 1.1 Should the second confidence tier be switched on? — CLOSED 2026-11-11
+
+**Merve, 2026-11-11: no. The second tier stays off. Nobody we are not certain
+about enters an audience.** Removed from the marketing questions document
+rather than deferred. `vars.contract.include_labels` keeps `CONFIRMED` alone
+and nothing in the pipeline changes — what changes is that 45,054 unique
+people are now deliberately not delivered rather than pending a decision.
+
+Two consequences worth recording. The `consultant` country rule below was a
+**precondition for switching the tier on**, so it falls away with it: the 1,613
+people it protected against are held in PROBABLE and never ship. And 1.9's
+`dr` / `md` question narrows — a bare `dr` with no clinical department sits in
+PROBABLE, so it is already excluded; what is left is whether a `dr` WITH a
+clinical department is acceptable evidence on the department alone.
+
+The principle also bears on **1.3**, where our own working answer points the
+other way: the 267 bare `director` / `head` / `chair` people are CONFIRMED, not
+PROBABLE, so the tier decision does not reach them — but applying the same
+principle would remove them, taking the own-words defensible share of Head of
+Faculty from 79.2% to 93.2% on 1,508 people instead of 1,775. Not ours to do:
+it is a definition, and there is no second signal contradicting the title.
+
+The measurement that was going to decide it is kept below.
 
 Only `CONFIRMED` is delivered today (`vars.contract.include_labels`). A
 `PROBABLE` tier exists for people where the evidence points one way without
@@ -652,6 +674,27 @@ different jobs. A psychologist, a medical physicist, a mental health support
 worker, a genetic counsellor and a clinical embryologist all work in health
 without practising medicine. One answer settles all of them and several that
 have not come up yet.
+
+**Priced on both sides, 2026-11-11**, because Merve asked what each answer
+actually makes us do rather than what it means.
+
+| If the answer is | What we change | Who moves |
+| --- | --- | --- |
+| **WORK** — treating patients | reject the non-clinical health titles from the four `health_clinical` audiences; the vet and sport-science anchors come out of `health_clinical` | **OUT:** medical physicists / clinical scientists 346 records, bare `psicólogo/a` 2,658 records, vets 91+ people, non-medicine sport science ~51 people. **STAYS OUT:** biomedical researchers 15,588 people |
+| **SUBJECT** — medical content | widen the clinical title list to health-adjacent research titles; keep the vet and sport anchors | **IN:** biomedical researchers 15,588 people, vets 91+, all sport science ~78. Nothing leaves |
+
+WORK costs about **3,100 records**, under 1% of the healthcare audiences, and
+the biomedical researchers are not lost — `researcher` has `disciplines: []`
+and already holds them. SUBJECT gains about **16,000 people** and loses
+nobody, but it costs the *name*: `hcp_broad` would no longer mean a clinician,
+so a clinical-practice campaign would need a narrower audience built beneath
+it. That is a build, not a config line, and it is the only asymmetry between
+the two answers.
+
+Either answer is one word of configuration per audience. See 1.18 and 1.19,
+which are the same question about vets and sport science and are settled by
+whichever answer comes back.
+
 ### 1.12 Is a teaching assistant in the Lecturer audience? — DECIDED, YES
 
 **Merve, 2026-10-21: if they teach, assign them to Lecturer, doctoral
