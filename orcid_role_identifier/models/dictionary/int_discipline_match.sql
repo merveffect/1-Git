@@ -16,7 +16,6 @@ with matches as (
     select
         query.department_key,
         query.department,
-        query.frequency,
         base.group_key,
         base.anchor_term,
         1 - distance    as similarity
@@ -30,6 +29,24 @@ with matches as (
 
 ),
 
+/*
+    ⭐ THE SAME FIX AS int_title_group_match, FOR THE SAME REASON.
+    int_department_embeddings is incremental with the identical
+    `department_key not in (select department_key from this)` filter, so its
+    frequency froze the first time each department was seen. See the long note
+    in int_title_group_match for the measurement; this side was not measured
+    separately because the defect is in the model shape, not in the data.
+*/
+with_frequency as (
+
+    select
+        m.*,
+        coalesce(d.frequency, 0)                                as frequency
+    from matches m
+    left join {{ ref('int_department_distinct') }} d using (department_key)
+
+),
+
 per_group as (
 
     select
@@ -39,7 +56,7 @@ per_group as (
         group_key,
         max(similarity)                                         as similarity,
         array_agg(anchor_term order by similarity desc limit 3)  as matched_anchors
-    from matches
+    from with_frequency
     group by department_key, department, frequency, group_key
 
 ),
