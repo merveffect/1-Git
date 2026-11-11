@@ -499,6 +499,79 @@ limit 30
 
 
 -- ----------------------------------------------------------------------------
+-- 2g. BEFORE - WHERE THE INFLATED frequency COMES FROM, and the last place it
+--     can be. Third hypothesis; the first two were both wrong and both were
+--     wrong in the same way, by reasoning from a shape instead of measuring.
+--
+--     RULED OUT SO FAR
+--       2e   the corpus is not stale - 1,764,535 built against 1,767,500 live.
+--       2f   the keys have not moved - 99.8% of live records join the
+--            dictionary, and the 2,969 titles that do not are junk: `other`,
+--            `无`, `-`, single letters, under 105 records each.
+--       code frequency is not fanned out in the dictionary chain.
+--            int_title_group_match carries it as a GROUP BY key (line 46) and
+--            never sums it, and dim_title_group selects r.frequency unchanged.
+--
+--     WHAT THAT LEAVES. The join is sound and the dictionary is current, so
+--     the fault is in the frequency COLUMN itself - the number
+--     int_title_distinct stored when it was built is not the number the view
+--     returns now, while the TOTAL of those numbers still is. This asks the
+--     two models the same question side by side and then sums both, which is
+--     the only arrangement that can say which one moved.
+--
+--     THE CORRECTION THIS FORCES, and it reverses what 2f's comment says.
+--     Because the join is 99.8% sound, the queries that count from the LIVE
+--     VIEW are the trustworthy ones - query 1's 86,240 records and 63,767
+--     people, and every people figure in 2c. The suspect number is `frequency`
+--     in the dictionary, which is exactly what the `records` columns of
+--     queries 2, 2b and 2d are built from. So it is the RECORD figures that
+--     cannot be quoted, not the people figures. Distinct-title counts are
+--     unaffected either way, so 2d's 2,447 against 615 titles stands.
+-- ----------------------------------------------------------------------------
+with live as (
+    select title_key, count(*) as live_records
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+    where role_title is not null
+    group by title_key
+)
+select
+    d.title,
+    d.frequency                                         as int_title_distinct_freq,
+    g.frequency                                         as dim_title_group_freq,
+    l.live_records,
+    round(safe_divide(d.frequency, l.live_records), 2)   as dict_over_live
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_title_distinct` d
+join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` g
+     using (title_key)
+left join live l using (title_key)
+where d.title in ('graduate research assistant', 'research assistant professor',
+                  'research professor', 'dottorandi', 'professor & director',
+                  'phd researcher')
+order by d.frequency desc
+;
+
+-- 2g-ii. The same three models summed, and counted. If the two frequency sums
+--        agree with each other and with the live count, then no column is
+--        inflated in aggregate and the distortion is a RESHUFFLE - frequency
+--        sitting against the wrong title - which is a different and worse
+--        defect than a stale table, because it has no uniform correction.
+select
+    (select sum(frequency) from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_title_distinct`)
+                                                        as sum_int_title_distinct,
+    (select sum(frequency) from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`)
+                                                        as sum_dim_title_group,
+    (select count(*) from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+     where role_title is not null)                      as live_records,
+    (select count(*) from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_title_distinct`)
+                                                        as rows_int_title_distinct,
+    (select count(*) from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`)
+                                                        as rows_dim_title_group,
+    (select count(distinct title_key) from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`)
+                                                        as keys_dim_title_group
+;
+
+
+-- ----------------------------------------------------------------------------
 -- 3. AFTER - did the second group land at all?
 --
 --    The first thing to look at. If title_group_2 is null everywhere, the
