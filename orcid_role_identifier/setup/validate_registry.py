@@ -142,5 +142,40 @@ if missing:
 else:
     print(f"\nvar check: {len(used)} vars used, all defined")
 
+# ---------------------------------------------------------------------------
+# dbt_project.yml MUST SURVIVE cp1252, AND ONLY THIS FILE HAS TO.
+#
+# dbt opens the project file with the interpreter's DEFAULT encoding rather
+# than utf-8, inside build_manifest_state_check, where it hashes the file to
+# decide whether the manifest is stale. On Windows that default is cp1252, and
+# cp1252 has no mapping for 0x81, 0x8D, 0x8F, 0x90 or 0x9D - so one such byte
+# anywhere in this file kills dbt before it parses a single model:
+#
+#   [ERROR]: 'charmap' codec can't decode byte 0x90 in position 23829
+#
+# That cost one build. The byte was the third of a UTF-8 star in a comment.
+#
+# THE RULE IS cp1252-DECODABLE, NOT ASCII, and the difference matters: the
+# librarian word list in this file is deliberately multilingual - bibliotek
+# in Cyrillic, the Japanese for library, a German umlaut - and every one of
+# those bytes decodes under cp1252 (as mojibake, which is harmless because dbt
+# only hashes the text). Demanding ASCII would delete working data to fix a
+# problem it does not have.
+#
+# Models, seeds and tests are opened as utf-8 by dbt and are not checked here.
+raw = open('dbt_project.yml', 'rb').read()
+try:
+    raw.decode('cp1252')
+    print("cp1252 check: dbt_project.yml is safe for a Windows dbt")
+except UnicodeDecodeError as e:
+    ok = False
+    bad = raw[e.start:e.end]
+    line = raw[:e.start].count(b"\n") + 1
+    print(f"\ndbt_project.yml HAS A BYTE WINDOWS dbt CANNOT READ: {bad!r} "
+          f"on line {line}")
+    print("  dbt will fail with \"'charmap' codec can't decode byte\" before "
+          "it parses anything.")
+    print("  Replace the character - *** instead of a star - and re-run.")
+
 print("\nOK" if ok else "\nFAILED")
 sys.exit(0 if ok else 1)

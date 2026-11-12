@@ -469,7 +469,16 @@ vars:
       # titles containing it overwhelmingly describe the person's own. The
       # lesson is about what the word denotes, not about its length.
       #
-      # ⭐ AN EDUCATION EMPLOYER IS REQUIRED - MERVE, 2026-11-12.
+      # *** AN EDUCATION EMPLOYER IS REQUIRED - MERVE, 2026-11-12.
+      #
+      # (The marker is *** and not the star used everywhere else in this
+      #  project. dbt reads dbt_project.yml with the interpreter's DEFAULT
+      #  encoding, not utf-8 - on Windows that is cp1252, where the star's
+      #  third byte 0x90 is undefined, and dbt dies before it parses
+      #  anything: "'charmap' codec can't decode byte 0x90". It cost one
+      #  build. setup/validate_registry.py now refuses any byte cp1252
+      #  cannot decode in THIS FILE ONLY - models and seeds are opened as
+      #  utf-8 by dbt and keep the star.)
       # "organizasyon bilgisi cozulmeyenler ogrenci olarak atanmasin. egitim
       #  kurumunda olmalari sart"
       #
