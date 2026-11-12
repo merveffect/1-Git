@@ -3123,6 +3123,72 @@ post elsewhere), a bare `student` at a school rather than a university, and
 
 ---
 
+**ROUND 1 READ, 2026-11-12 — 97.8% ± 3.6, and the interval is the honest part.**
+
+| | Rows |
+|---|---|
+| correct | 88 |
+| wrong | 2 |
+| not sure | 10 |
+| **right, of the decided** | **97.8%** (88/90) |
+| counting not-sure as wrong | 88.0% |
+
+**One round of 100, where the other nine audiences were read over 400.** The
+Wilson interval is ±3.6 — as wide as faculty_head's on four times the data —
+so the point estimate sits with Lecturer and Researcher but cannot yet be
+stated beside them. Three more rounds bring it to about ±1.6. Round 2 is
+`round_no := 2` in query 7; the blocks are disjoint by construction.
+
+**The two wrong rows are both nameable, which is better than a rate.**
+
+- `Doctoral Supervisor` at a UK university, 0.906 — the **inverse** of a
+  student. 2.8a's lesson in a new place: a modifier can reverse a title and
+  the embedding reads the subject rather than the role.
+- `employee` at a Chinese university, 0.835 — names no student at all.
+
+**Nine of the ten not-sure rows are ONE problem: the bare degree.** `PhD`,
+`Ph.D`, `Ph. D.`, `Master` and `Master's in Marketing` as the entire job
+title. A degree is a **credential, not a status** — the person may be studying
+for it or may have held it for twenty years, and the title does not say
+which. This is 1.17's finding restated, and it is the single largest source of
+doubt in this audience. The tenth was `Master's in Marketing`, which names a
+degree programme rather than a post.
+
+**`research scholar` resolved itself.** It was added to the UNSURE table as
+ambiguous — a doctoral student in India, a senior visiting post elsewhere — and
+12 of the 100 rows carried it. **All twelve were Indian and all twelve were
+correct.** The country condition is doing the work, so the rule should stay
+written as "outside India" rather than as a blanket doubt.
+
+**And the diagnostic that is too clean to state from 100 rows.** Every one of
+the 12 problems sat below score 1.0:
+
+| | Rows | Not correct |
+|---|---|---|
+| score = 1.0 — PATTERN or HUMAN | 63 | **0** |
+| score < 1.0 — the embedding's graded answer | 37 | **12 (32.4%)** |
+
+A literal pattern match or a person's own decision was right 63 times out of
+63. That is a story about where to spend the next reading rather than a
+threshold, and **no threshold is proposed from it** — the bare-degree titles
+all sat at or below 0.927, and this project has twice turned a number like
+that into a rule it then had to take back out. Query 8c sizes the two bands
+over the whole audience so round 2 can be drawn to test the split instead of
+re-measuring the average.
+
+**Queries 8 and 8b count the two findings exactly rather than extrapolating.**
+9 of 100 reads as ~9,500 people, but the sample was drawn from CONFIRMED rows
+and these titles cluster, so the real figure is whatever the query says. 8b
+lists the strings themselves, because every veto this project has got wrong
+was written from a guessed spelling.
+
+**Per-person rows were not committed.** The 100 rows were read in
+conversation and the verdicts computed in a scratch file; what is recorded
+here is counts and reasons, for the same reason `validation_samples/` was
+removed on 2026-11-05.
+
+---
+
 ## Part 2b — How we find the next problem, and what is left
 
 One diagnostic turned out to generalise, and it is worth stating because it

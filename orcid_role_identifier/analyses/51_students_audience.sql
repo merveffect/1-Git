@@ -600,3 +600,138 @@ where hash_position between (round_no - 1) * sample_size + 1
                         and  round_no      * sample_size
 order by hash_position
 ;
+
+
+-- ----------------------------------------------------------------------------
+-- 8. WHAT ROUND 1 OF THE HAND-READ FOUND, COUNTED EXACTLY RATHER THAN
+--    EXTRAPOLATED FROM 100 ROWS.
+--
+--    Round 1 read 100 CONFIRMED students: 88 correct, 2 wrong, 10 unsure, so
+--    97.8% of the decided. Nine of the ten unsure rows were ONE problem and
+--    both wrong rows were nameable, so none of it needs estimating - these
+--    are patterns, and a pattern can be counted.
+--
+--    THE BARE DEGREE. `PhD`, `Ph.D`, `Ph. D.`, `Master`, `Master's in
+--    Marketing` as the whole job title. A degree is a CREDENTIAL, not a
+--    status: the person may be studying for it or may have held it for twenty
+--    years, and the title does not say which. This is 1.17's finding restated
+--    - the same reason the doctoral second-group rule vetoes the senior words
+--    - and it is the single largest source of doubt in this audience.
+--
+--    `DOCTORAL SUPERVISOR`, which is the inverse of a student and reached the
+--    group anyway. A supervisor word next to a doctoral word is a faculty
+--    post, and this is 2.8a's lesson in a new place: a MODIFIER can reverse a
+--    title, and the embedding reads the subject rather than the role.
+--
+--    `EMPLOYEE`, which names no student at all and arrived at 0.835.
+--
+--    Why extrapolation would have been wrong: 9 of 100 reads as 9% and would
+--    put ~9,500 people on the bare degree, but the sample was drawn from
+--    CONFIRMED rows and the bare-degree titles cluster in a narrow score band
+--    - so the real share is whatever this query says it is.
+-- ----------------------------------------------------------------------------
+with confirmed as (
+    select
+        snid,
+        evidence_title,
+        regexp_replace(lower(evidence_title), r'[^a-z0-9]', '')  as squashed,
+        role_final_score
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+    where role_key = 'students'
+      and role_label = 'CONFIRMED'
+)
+select
+    case
+        when regexp_contains(squashed, r'^(phd|phds|dphil|doctorate|doctor|dr)$')
+            then '1 BARE DOCTORATE - credential, not status'
+        when regexp_contains(squashed, r'^(master|masters|msc|mscs|ms|ma|mba|mtech|meng|me)$')
+            then '2 BARE MASTER - credential, not status'
+        when regexp_contains(squashed, r'supervisor|promotor|promoter|advisor|adviser')
+            then '3 SUPERVISOR WORD - the inverse of a student'
+        when regexp_contains(squashed, r'^employee[s]?$|^staff$|^personnel$')
+            then '4 NAMES NO STUDENT AT ALL'
+        when regexp_contains(squashed, r'^(academiceditor|editor|editorinchief)$')
+            then '5 EDITOR - not a student either'
+        else '0 names a student'
+    end                                                 as bucket,
+    count(*)                                            as records,
+    count(distinct snid)                                as people,
+    round(min(role_final_score), 3)                     as min_score,
+    round(max(role_final_score), 3)                     as max_score
+from confirmed
+group by bucket
+order by bucket
+;
+
+
+-- 8b. The exact strings behind buckets 1 to 5, so a pattern is written from
+--     what people typed rather than from what I guessed they typed. Every
+--     veto this project has got wrong was written from a guessed spelling -
+--     the 1.17 veto failed three times running because the name pattern was
+--     multilingual and the veto was English only.
+with confirmed as (
+    select
+        snid,
+        evidence_title,
+        regexp_replace(lower(evidence_title), r'[^a-z0-9]', '')  as squashed,
+        role_final_score
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+    where role_key = 'students'
+      and role_label = 'CONFIRMED'
+)
+select
+    lower(evidence_title)                               as title,
+    count(*)                                            as records,
+    count(distinct snid)                                as people,
+    round(max(role_final_score), 3)                     as score
+from confirmed
+where regexp_contains(squashed, r'^(phd|phds|dphil|doctorate|doctor|dr)$')
+   or regexp_contains(squashed, r'^(master|masters|msc|mscs|ms|ma|mba|mtech|meng|me)$')
+   or regexp_contains(squashed, r'supervisor|promotor|promoter|advisor|adviser')
+   or regexp_contains(squashed, r'^employee[s]?$|^staff$|^personnel$')
+   or regexp_contains(squashed, r'^(academiceditor|editor|editorinchief)$')
+group by title
+order by records desc
+limit 60
+;
+
+
+-- 8c. HOW BIG THE RISKY BAND IS, which is the finding I am least willing to
+--     state from 100 rows and so will not.
+--
+--     In round 1 the split was total: 63 rows at score 1.0 with ZERO errors
+--     and ZERO unsures, and 37 rows below 1.0 carrying all 12 problems -
+--     32.4% of them. A score of exactly 1.0 means PATTERN or HUMAN, which is
+--     a literal match or a person's own decision; anything below it is the
+--     embedding's graded answer.
+--
+--     That is a clean story and 100 rows is not enough to tell it. What this
+--     query does is size the two bands over the whole audience, so round 2
+--     can be drawn to TEST the split rather than re-measure the average: if
+--     the vector band really runs at ~32% doubtful, it deserves its own
+--     sample rather than being averaged into a headline.
+--
+--     NO THRESHOLD IS PROPOSED HERE. The bare-degree titles in round 1 all
+--     sat at or below 0.927, and that is exactly the kind of number this
+--     project has twice turned into a rule it had to take back out again.
+with confirmed as (
+    select snid, role_final_score, title_group
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+    where role_key = 'students'
+      and role_label = 'CONFIRMED'
+)
+select
+    case
+        when role_final_score >= 0.9999 then '1 score 1.0  - PATTERN or HUMAN, a literal match'
+        when role_final_score >= 0.95   then '2 0.95-0.99  - vector, confident'
+        when role_final_score >= 0.90   then '3 0.90-0.95  - vector'
+        when role_final_score >= 0.85   then '4 0.85-0.90  - vector'
+        else                                 '5 below 0.85 - vector, least confident'
+    end                                                 as band,
+    count(*)                                            as records,
+    count(distinct snid)                                as people,
+    round(100 * count(*) / sum(count(*)) over (), 1)     as pct_of_audience
+from confirmed
+group by band
+order by band
+;
