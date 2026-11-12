@@ -319,11 +319,17 @@ typed as (
 select
     org_type,
     count(distinct snid)                                as people,
-    case org_type
-        when 'Education' then '1 QUALIFIES'
-        when 'Healthcare' then '2 REFUSED - and these are real students'
-        when 'Facility'   then '2 REFUSED - and these are real students'
-        when 'Company'    then '3 REFUSED - intended, the graduate trainees'
+    /*  ⭐ ror_types VALUES ARE LOWERCASE - `education`, `healthcare`,
+        `facility`. The first version of this CASE compared against
+        'Education' and reported all 106,050 qualifying people as REFUSED,
+        which is a wrong answer that looked like a finding. upper() on both
+        sides, which is what int_employment_scored already does on its own
+        join to this seed.  */
+    case upper(org_type)
+        when 'EDUCATION'  then '1 QUALIFIES'
+        when 'HEALTHCARE' then '2 REFUSED - and these are real students'
+        when 'FACILITY'   then '2 REFUSED - and these are real students'
+        when 'COMPANY'    then '3 REFUSED - intended, the graduate trainees'
         when 'UNKNOWN'    then '4 REFUSED BY NAME - unresolved organisation'
         else '5 REFUSED - intended'
     end                                                 as verdict
@@ -359,7 +365,7 @@ select
     count(*)                                            as records,
     count(distinct snid)                                as people
 from typed
-where org_type in ('Healthcare', 'Facility')
+where upper(org_type) in ('HEALTHCARE', 'FACILITY')  -- lowercase in the data
 group by org_type, role_title
 order by records desc
 limit 50
