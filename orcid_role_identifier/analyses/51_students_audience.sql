@@ -372,6 +372,61 @@ limit 50
 ;
 
 
+-- 1d-iii. THE FIVE TYPES I LABELLED "REFUSED - intended" WITHOUT READING THEM.
+--
+--         1d-ii read facility and healthcare because those are the two I had
+--         flagged as real students. The other five carry a note in
+--         org_type_scores.csv that says the refusal is intended, and that note
+--         is MY CLAIM, not a measurement - I wrote it from the shape of the
+--         ROR type name. One of them is bigger than healthcare:
+--
+--           funder      3,138 people   <- larger than healthcare's 2,370
+--           government    283
+--           nonprofit     241
+--           other         161
+--           archive       105
+--
+--         funder is the one that needs reading. A doctoral student's employer
+--         being typed `funder` is not obviously wrong: ROR types CNRS, INSERM,
+--         several research councils and some national agencies as funders, and
+--         those bodies host thousands of doctoral candidates. If these titles
+--         read like 1d-ii's did, the note is wrong and 3,138 people are being
+--         refused on a word I chose rather than on evidence.
+--
+--         company is deliberately NOT in this list. It was read in 1c-iii and
+--         it is the one refusal with a measured reason behind it.
+-- ----------------------------------------------------------------------------
+with student_records as (
+    select s.snid, s.role_title, s.organisation, s.org_id
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+         on s.title_key = t.title_key
+        and t.is_assigned
+        and (t.title_group = 'student' or t.title_group_2 = 'student')
+    where s.is_current
+),
+typed as (
+    select
+        r.*,
+        coalesce(o.ror_types[safe_offset(0)], 'UNKNOWN')    as org_type
+    from student_records r
+    left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_org_resolved` o
+           on r.organisation = o.organisation
+          and r.org_id is not distinct from o.org_id
+)
+select
+    org_type,
+    role_title,
+    count(*)                                            as records,
+    count(distinct snid)                                as people
+from typed
+where upper(org_type) in ('FUNDER', 'GOVERNMENT', 'NONPROFIT', 'OTHER', 'ARCHIVE')
+group by org_type, role_title
+order by records desc
+limit 50
+;
+
+
 -- ----------------------------------------------------------------------------
 -- 3. AFTER - the audience, beside the other nine so it can be read in scale.
 -- ----------------------------------------------------------------------------
