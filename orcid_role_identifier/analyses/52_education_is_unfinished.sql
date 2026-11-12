@@ -569,7 +569,7 @@ with ed as (
     hide a grain change rather than survive it.  */
 delivered as (
     select f.snid, f.role_key
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles` f
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` f
     where f.role_label = 'CONFIRMED'
       and f.role_key in ('students', 'lecturer', 'researcher')
 )

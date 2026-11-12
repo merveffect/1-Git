@@ -266,7 +266,7 @@ hits as (
 ),
 already as (
     select distinct snid, role_key
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles`
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
     where role_label = 'CONFIRMED'
 )
 select
@@ -716,7 +716,7 @@ select
     round(100 * safe_divide(
         count(distinct if(p.via_second > 0 and p.via_primary = 0, f.snid, null)),
         count(distinct f.snid)), 1)                     as pct_only_via_second
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles` f
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` f
 join per_person p
      on p.snid = f.snid
     and p.role_key = f.role_key

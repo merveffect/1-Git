@@ -429,13 +429,40 @@ limit 50
 
 -- ----------------------------------------------------------------------------
 -- 3. AFTER - the audience, beside the other nine so it can be read in scale.
+--
+--    TWO THINGS WRONG IN THE FIRST VERSION OF THIS QUERY, both mine, both
+--    worth leaving written down because they are easy to repeat:
+--
+--    `is_reachable` DOES NOT EXIST. Nothing in the project has a column by
+--    that name. Reachability is four consent flags OR-ed together, and the
+--    canonical expression is in fct_role_audience_summary:
+--
+--        is_marketable or is_advertisable
+--          or is_legitimate_interest or is_book_author
+--
+--    Book-author consent is the fourth and was a decision of Merve's against
+--    a column that was in the source and simply not selected - so an
+--    expression with only the first three silently under-reports.
+--
+--    AND fct_researcher_roles IS IN THE SCORING DATASET, not presentation.
+--    models/scoring/fct_researcher_roles.sql, despite being the model the
+--    whole presentation layer is built from. Presentation holds
+--    fct_role_audience, which is that table joined to the CDP contact rows -
+--    so it is the only place the consent flags exist, and this query has to
+--    read it rather than the fact table.
+--
+--    The reachable figure is the one marketing is given, so an audience
+--    stated without it is not a deliverable size.
 -- ----------------------------------------------------------------------------
 select
     role_key,
     role_label,
     count(distinct snid)                                as people,
-    countif(is_reachable)                               as reachable_records
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles`
+    count(distinct if(is_marketable or is_advertisable
+                      or is_legitimate_interest or is_book_author,
+                      snid, null))                      as reachable_people,
+    count(distinct if(in_cdp, snid, null))              as in_cdp_people
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
 group by role_key, role_label
 order by role_key, role_label
 ;
@@ -455,7 +482,7 @@ select
     end                                                 as route,
     count(distinct f.snid)                              as people,
     round(avg(f.role_final_score), 3)                   as avg_score
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles` f
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` f
 join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
      on e.snid = f.snid
     and e.role_key = f.role_key
@@ -482,7 +509,7 @@ select
     count(distinct snid)                                as people,
     round(avg(role_final_score), 3)                     as avg_score,
     string_agg(distinct evidence_title order by evidence_title limit 6) as example_titles
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles`
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 where role_key = 'students'
 group by org_type, role_label
 order by people desc
@@ -500,7 +527,7 @@ order by people desc
 -- ----------------------------------------------------------------------------
 with confirmed as (
     select snid, role_key
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles`
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
     where role_label = 'CONFIRMED'
 ),
 students as (select snid from confirmed where role_key = 'students')
@@ -540,7 +567,7 @@ with ranked as (
         role_detail,
         row_number() over (order by farm_fingerprint(cast(snid as string)))
                                                         as hash_position
-    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles`
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
     where role_key = 'students'
       and role_label = 'CONFIRMED'
 )
