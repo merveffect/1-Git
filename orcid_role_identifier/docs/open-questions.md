@@ -3003,6 +3003,91 @@ education evidence and no employment record has no row for a role to attach
 to and cannot enter any audience at all. Delivering on education evidence
 would mean a new model, not a new rule. analyses/52 query 8 sizes that.
 
+### 2.17 Students BUILT — and the Education-employer half of the rule is refusing 10,316 real students ⟳
+
+**The audience is built and it reconciles three ways**, which is the first
+thing worth saying because it means the figure can be quoted.
+
+| | People | Reachable | In CDP |
+|---|---|---|---|
+| **students CONFIRMED** | **105,658** | **68,959** | 100,099 |
+| students PROBABLE *(never delivered)* | 17,398 | 12,164 | 16,660 |
+
+105,658 + 17,398 = **123,056 exactly**, and 123,056 is also 15,254 + 107,802
+from analyses/52 query 3 and 184,265 − 61,209 from analyses/51 query 2. Three
+independent routes to the same number.
+
+**No other audience moved materially.** lecturer +600, researcher +481,
+hcp_broad +213, hcp_researcher +136, hcp_practitioner +70, faculty_head +14,
+hcp_administrator +8, pharmacist +1, librarian +0 against the 11 November
+figures. Those are ORCID's continuous appends, not the students build — so
+adding a tenth audience and rewriting two seeds disturbed nothing.
+
+**Students is the least reachable audience but one.** 65.3% against lecturer's
+77.7% and faculty_head's 78.4%; only librarian is lower at 54.9%. Marketing
+should be given 68,959, not 105,658.
+
+**The second-group rule earned its keep here.** Query 4:
+
+| Route | CONFIRMED | avg score |
+|---|---|---|
+| primary group | 98,514 | 0.973 |
+| **second group — a title naming two jobs** | **7,144** | **1.0** |
+
+7,144 of the delivered students arrived through the `doctoral researcher` →
+`student` rule of 2026-11-11 and would otherwise sit in Researcher alone. All
+at score 1.0, because a second group is always a literal pattern match.
+
+---
+
+**AND THE OPEN DECISION.** The rule says a student must be at a ROR Education
+employer — Merve, 2026-11-12: *"organizasyon bilgisi cozulmeyenler ogrenci
+olarak atanmasin. egitim kurumunda olmalari sart."* Queries 1d, 1d-ii and
+1d-iii have now read every refused population, and the two halves of that
+sentence have come apart.
+
+| Refused | People | What the titles say |
+|---|---|---|
+| facility | 4,018 | `phd student` 1,331, `phd candidate`, `doctoral researcher` |
+| funder | 3,138 | `phd student` 718, `phd candidate` 517, `medical student` |
+| healthcare | 2,370 | `student` 463, `medical student` 161, `asistan doktor` |
+| government | 283 | `phd student` 54, `student` 29 |
+| nonprofit | 241 | `phd student` 64, `student` 25 |
+| other | 161 | `phd student` 37, `student` 18 |
+| archive | 105 | `phd student` 25, `phd candidate` 13 |
+| **real students refused** | **10,316** | |
+| UNKNOWN | 7,442 | **Merve's named decision — stands** |
+| company | 201 | **the graduate trainees — the rule's actual target** |
+
+**The rule is refusing 10,316 people who wrote `phd student` in order to stop
+201 graduate trainees. 51 to 1 against.** And 1c-iii already showed the
+trainee family is 431 people with every one of them at a non-Education
+employer, so refusing `company` alone stops exactly the same people.
+
+**Why ROR is the reason, not the data.** A doctoral candidate at Max Planck,
+CNRS or INSERM is a student; ROR types those bodies `facility` or `funder`. A
+medical student at a teaching hospital is a student; ROR types it
+`healthcare`. "Education institution" turned out to be a proxy for "a place
+people study", and ROR does not use the word that way.
+
+**The unresolved half of the rule is untouched by all of this.** UNKNOWN 7,442
+refused is a separate decision Merve took by name and nothing here argues
+against it.
+
+**The change, if it is taken:** score 1.00 for facility, healthcare, funder,
+government, nonprofit, other and archive in `org_type_scores.csv`, leaving
+company and UNKNOWN at 0.00. Students would go from 105,658 to about
+**115,974**, and every one of those people would move from PROBABLE to
+CONFIRMED rather than being newly found — the evidence is already scored, it
+is the employer weight that refuses them.
+
+**One defect this would expose rather than cause.** `academic editor`, 16
+people, is in the `student` title group at archive employers and is not a
+student. It is a group problem, not an employer problem, and fixing the org
+score would simply deliver it. It needs its own look either way.
+
+Marked ⟳ because it is Merve's decision and the seed is unchanged.
+
 ---
 
 ## Part 2b — How we find the next problem, and what is left

@@ -395,6 +395,29 @@ limit 50
 --
 --         company is deliberately NOT in this list. It was read in 1c-iii and
 --         it is the one refusal with a measured reason behind it.
+--
+--         RAN 2026-11-12, AND MY NOTE WAS WRONG FOR ALL FIVE. The titles are
+--         the same titles 1d-ii returned:
+--
+--           funder      phd student 718, phd candidate 517, student 215,
+--                       phd 166, graduate student 122, md phd 90,
+--                       medical student 89, research scholar 74 ...
+--           government  phd student 54, student 29, phd 17,
+--                       research scholar 17, phd candidate 12
+--           nonprofit   phd student 64, student 25, phd candidate 23
+--           other       phd student 37, student 18
+--           archive     phd student 25, phd candidate 13, student 11
+--
+--         Every one of those is a student saying so in their own words. The
+--         note beside these rows in org_type_scores.csv claimed the refusal
+--         was intended; it was intended by me, from the word, and the data
+--         does not support it for a single one of the five.
+--
+--         ONE REAL NON-STUDENT IN THE WHOLE LIST: archive `academic editor`,
+--         16 people. That is a title in the `student` group that should not
+--         be there at all, and it is independent of the org rule - fixing the
+--         org score would simply deliver it. Small, but it is a defect in the
+--         group rather than in the employer, so it gets its own look.
 -- ----------------------------------------------------------------------------
 with student_records as (
     select s.snid, s.role_title, s.organisation, s.org_id
