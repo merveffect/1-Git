@@ -21,7 +21,7 @@ r.font.color.rgb = PLUM; r.font.name = SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Audience rules, as the pipeline applies them today")
 r.bold = True; r.font.size = Pt(20); r.font.color.rgb = INK; r.font.name = SANS
-para(d, "Reference for the AI reviewing audience membership  ·  11 November 2026  ·  "
+para(d, "Reference for the AI reviewing audience membership  ·  12 November 2026  ·  "
         "Analytics Engineering", size=9.5, color=MUT, space_after=10)
 
 para(d, "One section per audience. For each row you are asked: **does the evidence "
@@ -124,6 +124,28 @@ aud("hcp_researcher", "Clinical / Biomedical Researcher", [
  "**Past posts count.**",
 ])
 
+aud("students", "Student / Doctoral Candidate", [
+ "**Title must name a student.** PhD student, doctoral candidate, graduate "
+ "student, master's student, postgraduate - and `doctoral researcher` and "
+ "`postgraduate researcher`, which name research but describe a doctoral "
+ "student. **The title is the only way in**; there is no department check.",
+ "**Organisation: EDUCATION ONLY.** Every other ROR type scores zero, an "
+ "unresolved employer included. **So never mark a students row wrong for its "
+ "organisation — it is already a university.** This was measured and "
+ "reaffirmed: it refuses 10,316 people whose titles say `phd student` at "
+ "research institutes, teaching hospitals and research councils, because ROR "
+ "does not type those as Education. Those people are not in your sample.",
+ "**Excluded:** company graduate trainees — `graduate trainee`, `management "
+ "trainee` — who are employees being trained, not students. The employer rule "
+ "removes them, so you will not see them either.",
+ "**CURRENT POSTS ONLY.** A finished PhD is not a student. This is the one "
+ "rule that cost the audience most: 61,209 people were removed by it, and "
+ "they are today's professors and postdocs.",
+ "**Nothing is read from the education section of the profile.** A person's "
+ "degrees are not evidence here — only the employment title is. So do not "
+ "mark a row correct because the person obviously studied somewhere.",
+])
+
 aud("hcp_administrator", "Clinical Leadership / Administration", [
  "**Title must name a leadership post** AND **the field must be a human-health "
  "department.** Both required.",
@@ -151,6 +173,15 @@ table(d, ["What you see", "Code"],
   ["`visiting scholar`, `visiting fellow` in Lecturer", "`ambiguous_word`"],
   ["A psychologist in a clinical audience", "`ambiguous_word`"],
   ["`dr` or `md` alone", "`uninformative`"],
+  ["`md phd` or `md/phd` in Students — a US MD-PhD programme student, or a "
+   "qualified physician listing two degrees. The same credential-versus-status "
+   "problem as a bare `phd`", "`ambiguous_word`"],
+  ["`research scholar` in Students — a doctoral student in India, a senior "
+   "visiting post elsewhere. **Use `country_code`**", "`ambiguous_word`"],
+  ["`student` with no level in Students, where the employer is a school rather "
+   "than a university — a school pupil is not the audience", "`title_wrong`"],
+  ["`trainee` alone in Students at a hospital — a clinical trainee belongs to "
+   "trainee_clinical, not here", "`title_wrong`"],
   ["A title in a language you cannot read with confidence", "`language`"]],
  widths=[4.6, 1.5], size=9)
 

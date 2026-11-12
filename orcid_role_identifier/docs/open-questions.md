@@ -3003,7 +3003,7 @@ education evidence and no employment record has no row for a role to attach
 to and cannot enter any audience at all. Delivering on education evidence
 would mean a new model, not a new rule. analyses/52 query 8 sizes that.
 
-### 2.17 Students BUILT — and the Education-employer half of the rule is refusing 10,316 real students ⟳
+### 2.17 Students BUILT and the Education-employer rule REAFFIRMED — DECIDED 2026-11-12
 
 **The audience is built and it reconciles three ways**, which is the first
 thing worth saying because it means the figure can be quoted.
@@ -3086,7 +3086,40 @@ people, is in the `student` title group at archive employers and is not a
 student. It is a group problem, not an employer problem, and fixing the org
 score would simply deliver it. It needs its own look either way.
 
-Marked ⟳ because it is Merve's decision and the seed is unchanged.
+**DECIDED: Education-only stands.** Merve, 2026-11-12, having been shown the
+51-to-1 figure: *"hayir suanda education only kalsin."* So the audience is
+105,658 people, 68,959 reachable, and the 10,316 are recorded here rather
+than delivered.
+
+That is the second time this measurement has gone to Merve and come back
+unchanged, which makes it a decision rather than an oversight — and the
+reason it stays written down in full is that the next person to read
+`org_type_scores.csv` will see ten rows of zeros and wonder whether anybody
+checked. Somebody did, twice. Every students row in that seed now carries its
+measured people count and the titles behind it.
+
+**What was done instead: measure the accuracy.** Merve, same message:
+*"dogruluk oranini da olcelim mi cunku status dokumaninda her audience in
+accuracysi var studentsin da olsun."* The other nine audiences each have a
+hand-read accuracy in the status document and students had none, so it was
+the one column where this audience was weaker than the rest.
+
+The prerequisite was not the query — analyses/51 query 7 was already written
+— it was that **docs/AI-REVIEWER-RULES.docx had no students section**, and a
+reviewer with no rule to judge against produces a number that means nothing.
+It now has one, and it says the three things a reviewer would otherwise get
+wrong: never mark a students row wrong for its organisation, because the
+Education-only rule already guarantees a university; current posts only, so a
+finished PhD is not a student; and **nothing is read from the education
+section of the profile**, so do not mark a row correct because the person
+obviously studied somewhere.
+
+Four students rows were added to the UNSURE table, each of which is a real
+ambiguity rather than an error: `md phd` (an MD-PhD programme student, or a
+physician listing two degrees — the credential-versus-status problem of 1.17
+restated), `research scholar` (a doctoral student in India, a senior visiting
+post elsewhere), a bare `student` at a school rather than a university, and
+`trainee` alone at a hospital, which belongs to trainee_clinical.
 
 ---
 
