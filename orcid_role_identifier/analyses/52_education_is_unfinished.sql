@@ -48,12 +48,25 @@
 -- 1. THE SCHEMA, FIRST AND ALONE.
 --
 --    educations[] is a STRUCT array that no model in this project has ever
---    read. Queries 2-5 below assume it carries the same field names as
---    employments[] - full_start_date, full_end_date, role, organisation_name,
---    disambiguated_organisation_id - because both are ORCID affiliation types
---    and stg_orcid__employment uses exactly those. THAT IS AN ASSUMPTION, not
---    a fact, and this query is what turns it into one. If the names differ,
---    fix them in 2-5 before running anything.
+--    read. Queries 2-5 assumed it carried the same field names as
+--    employments[], because both are ORCID affiliation types. RUN 2026-11-12,
+--    and the assumption was right in every field but one:
+--
+--      SAME   visibility, ordering, original_start_date, full_start_date,
+--             original_end_date, full_end_date, department_name,
+--             organisation_name, organisation_address_*,
+--             disambiguated_organisation_id, disambiguated_organisation_source,
+--             source STRUCT
+--      ONE DIFFERENCE   employments[] has `role`; educations[] has `degree`.
+--
+--    full_start_date and full_end_date are real DATE columns, so the whole of
+--    Merve's rule - an education record with no end date - is answerable from
+--    this array exactly as written. Query 5 below was reading `role` and now
+--    reads `degree`; it is the only query that changed.
+--
+--    Kept rather than deleted: it is the only record of the array's shape
+--    anywhere in the project, and the next person to touch educations[] needs
+--    it before they write a staging model.
 -- ----------------------------------------------------------------------------
 select column_name, data_type
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.INFORMATION_SCHEMA.COLUMNS`
@@ -206,11 +219,17 @@ order by open_education_people desc
 -- 5. WHAT THE EDUCATION RECORD ACTUALLY SAYS, for the people the title route
 --    would never have found.
 --
---    If INSTEAD or a widened AND is chosen, these are the new members, and the
---    `role` field of an education record is a DEGREE rather than a job title -
---    phd, msc, bachelor of science. That is the thing worth knowing about this
---    signal: degrees are far more standardised than job titles, so this route
---    may be cleaner than the one we have. Read the list and see.
+--    If INSTEAD or a widened AND is chosen, these are the new members, and
+--    what an education record carries is `degree` - phd, msc, bachelor of
+--    science - where an employment record carries `role`. CONFIRMED BY QUERY
+--    1, which is also the reason this query changed: it was written against
+--    `role` by analogy and that field does not exist here.
+--
+--    That difference is the thing worth knowing about this signal. A degree is
+--    far more standardised than a job title - there are perhaps thirty real
+--    spellings of a doctorate against the 327,291 title values the dictionary
+--    holds - so this route may need no embedding at all, just a pattern list.
+--    Read the output and see how long the tail really is.
 -- ----------------------------------------------------------------------------
 with by_title as (
     select distinct s.snid
@@ -222,7 +241,7 @@ with by_title as (
     where s.is_current
 )
 select
-    lower(d.role)                                       as education_role,
+    lower(d.degree)                                     as education_degree,
     count(*)                                            as records,
     count(distinct r.snid)                              as people
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers` r,
@@ -231,7 +250,7 @@ left join by_title t on t.snid = r.snid
 where d.full_end_date is null
   and d.full_start_date >= date_sub(current_date(), interval 6 year)
   and t.snid is null
-group by education_role
+group by education_degree
 order by records desc
 limit 40
 ;
