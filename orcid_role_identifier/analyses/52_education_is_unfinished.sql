@@ -298,3 +298,195 @@ group by d.role_key, d.match_value
 order by rows_that_would_match_ignoring_case desc
 limit 30
 ;
+
+
+-- ----------------------------------------------------------------------------
+-- 7. THE HOLE IN THE RULE AS WRITTEN: AN END DATE IN THE FUTURE.
+--
+--    Merve's rule is "last date educationda girilmemis" - no end date entered.
+--    But a doctoral student who typed 2022-2026 HAS entered an end date and is
+--    still unfinished, and ORCID asks for an expected end date, so people fill
+--    it in. The strict reading refuses every one of them.
+--
+--    Queries 2 to 4 only ever looked at `full_end_date is null`, so this group
+--    has not been counted at all. If it is large, "unfinished" means
+--    `end_date is null or end_date > today`, which is a different rule from
+--    the one on the table and a better statement of what it was for.
+--
+--    THE BUCKETS ARE ASYMMETRIC ON PURPOSE. An end date in the future is a
+--    claim about the future and so cannot be a stale leftover - which is
+--    exactly what makes it stronger evidence than a blank field, and the
+--    reason this query exists.
+-- ----------------------------------------------------------------------------
+with ed as (
+    select
+        r.snid,
+        d.full_end_date                                 as end_date,
+        d.full_start_date                               as start_date
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers` r,
+    unnest(r.educations) d
+),
+bucketed as (
+    select
+        case
+            when end_date is null                     then '1 BLANK - the rule as written'
+            when end_date >  current_date()           then '2 FUTURE - unfinished and dated'
+            when end_date >= date_sub(current_date(), interval 1 year)
+                                                      then '3 ended within the last year'
+            else                                           '4 ended over a year ago'
+        end                                             as standing,
+        snid,
+        start_date
+    from ed
+)
+select
+    standing,
+    count(*)                                            as education_records,
+    count(distinct snid)                                as people,
+    count(distinct if(start_date is null, snid, null))  as people_with_no_start_date_either
+from bucketed
+group by standing
+order by standing
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 8. ⭐ WHO THE 183,014 ACTUALLY ARE - the query that decides this.
+--
+--    Query 3 says an open education record would add 183,014 people the title
+--    route never finds. It does not say whether they are students. Two things
+--    have to be true for one of them to be a student we can deliver, and this
+--    query tests both at once.
+--
+--    FIRST, AND IT IS A MECHANISM PROBLEM, NOT A SCORING ONE. The audience is
+--    built on int_employment_scored, whose grain is an EMPLOYMENT record. A
+--    person with an education record and no employment record cannot enter any
+--    audience at all, however strong the evidence - there is no row to attach
+--    the role to. If that bucket is large, the education route needs a new
+--    model that emits rows for education records, not a config change, and the
+--    size of this bucket is the size of that work.
+--
+--    SECOND, WHAT THEIR CURRENT JOB SAYS. A person whose current employment
+--    reads `professor` and who also recorded an open PhD is the stale-record
+--    risk in person, and every one of them would be delivered as a student by
+--    the INSTEAD reading. A person with no title group at all, or an
+--    uninformative one, is the honest gap this route exists to close.
+--
+--    A person can hold several groups, so the group rows sum to more than the
+--    people total. The two "no" buckets are disjoint from them and from each
+--    other.
+-- ----------------------------------------------------------------------------
+with by_title as (
+    select distinct s.snid
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+         on s.title_key = t.title_key
+        and t.is_assigned
+        and (t.title_group = 'student' or t.title_group_2 = 'student')
+    where s.is_current
+),
+education_only as (
+    select distinct r.snid
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers` r,
+    unnest(r.educations) d
+    left join by_title t on t.snid = r.snid
+    where d.full_end_date is null
+      and t.snid is null
+),
+current_jobs as (
+    select
+        e.snid,
+        t.title_group,
+        t.is_assigned
+    from education_only e
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+         on s.snid = e.snid
+        and s.is_current
+    left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+         on s.title_key = t.title_key
+),
+buckets as (
+
+    select
+        '0 NO CURRENT EMPLOYMENT RECORD - cannot be delivered at all' as bucket,
+        e.snid
+    from education_only e
+    left join (select distinct snid from current_jobs) c using (snid)
+    where c.snid is null
+
+    union all
+
+    select '1 has a job, but no title group was assigned to it', snid
+    from current_jobs
+    where title_group is null or not is_assigned
+
+    union all
+
+    select '2 current job group: ' || title_group, snid
+    from current_jobs
+    where is_assigned
+
+)
+select
+    bucket,
+    count(distinct snid)                                as people
+from buckets
+group by bucket
+order by bucket
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 9. AND THE ORG RULE, APPLIED TO THE EDUCATION RECORD'S OWN INSTITUTION.
+--
+--    Merve, 2026-11-12: "organizasyon bilgisi cozulmeyenler ogrenci olarak
+--    atanmasin. egitim kurumunda olmalari sart." That rule is currently
+--    enforced against the EMPLOYER, through org_type_scores. On the education
+--    route the institution is in the education record itself, which is a
+--    better place to ask it from - an education record names where somebody
+--    studied by definition.
+--
+--    So this prices the same rule on the new evidence. ROR id and source come
+--    straight off the education struct, and the join is to stg_ror__organisations
+--    by ror_id rather than through int_org_resolved, because int_org_resolved
+--    is keyed on the NORMALISED employment organisation name and an education
+--    record's organisation_name has never been through that normalisation.
+--
+--    ⭐ ror_types VALUES ARE LOWERCASE - `education`, `healthcare`, `facility`.
+--    analyses/51 query 1d compared against 'Education' and printed all 106,050
+--    qualifying people as REFUSED. upper() on both sides, every time.
+-- ----------------------------------------------------------------------------
+with ed as (
+    select
+        r.snid,
+        d.disambiguated_organisation_id                 as ror_id_raw,
+        upper(d.disambiguated_organisation_source)      as id_source,
+        d.full_start_date                               as start_date
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers` r,
+    unnest(r.educations) d
+    where d.full_end_date is null
+),
+typed as (
+    select
+        e.*,
+        case
+            when e.id_source != 'ROR' or e.ror_id_raw is null then 'UNRESOLVED'
+            else coalesce(upper(o.ror_types[safe_offset(0)]), 'UNRESOLVED')
+        end                                             as org_type
+    from ed e
+    left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_ror__organisations` o
+           on o.ror_id = e.ror_id_raw
+          and e.id_source = 'ROR'
+)
+select
+    org_type,
+    if(org_type = 'EDUCATION', 'QUALIFIES', 'refused by the org rule')
+                                                        as verdict,
+    count(*)                                            as education_records,
+    count(distinct snid)                                as people,
+    count(distinct if(start_date >= date_sub(current_date(), interval 6 year),
+                      snid, null))                      as people_within_6_years
+from typed
+group by org_type
+order by people desc
+;
