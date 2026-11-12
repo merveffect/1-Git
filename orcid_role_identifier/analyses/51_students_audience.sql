@@ -101,6 +101,109 @@ order by standing
 
 
 -- ----------------------------------------------------------------------------
+-- 1b. BEFORE - QUERY 1 CONFLATED TWO THINGS AND HAS TO BE SPLIT.
+--
+--     decision_source describes how the title's PRIMARY group was decided, not
+--     how it reached `student`. So `graduate research assistant` and `phd
+--     researcher`, which arrive through the researcher -> student rule, were
+--     counted under their primary's VECTOR decision, and query 1's 188,054
+--     VECTOR records are two populations added together.
+--
+--     This separates them, because they do not carry the same risk. A title
+--     whose PRIMARY group is student was chosen by the embedding against 11
+--     anchors and is a guess. A title that gains student as a SECOND group
+--     matched a literal pattern and is certain.
+-- ----------------------------------------------------------------------------
+select
+    case
+        when title_group   = 'student' then '1 PRIMARY group is student'
+        when title_group_2 = 'student' then '2 SECOND group - a title naming two jobs'
+    end                                                 as route,
+    decision_source,
+    count(*)                                            as distinct_titles,
+    sum(frequency)                                      as records,
+    round(avg(coalesce(group_score, group_2_score)), 3) as avg_score,
+    string_agg(title order by frequency desc limit 8)   as biggest_titles
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+where is_assigned
+  and (title_group = 'student' or title_group_2 = 'student')
+group by route, decision_source
+order by records desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 1c. BEFORE - THE BARE `student` ANCHOR, which is the librarian lesson
+--     arriving in a new group.
+--
+--     The anchor list carries `student,student,en,` - one word, and a generic
+--     occupational noun. The librarian block in dbt_project.yml records what
+--     that does: a one-word profession forces the embedding to match on a word
+--     that other jobs also contain, and 'library manager' pulled in 'manager',
+--     17,340 records. Here the same shape predicts STAFF who work WITH
+--     students being read as students: student affairs, student services, dean
+--     of students, student recruitment.
+--
+--     This is a measurement, not a claim. If it comes back small the anchor is
+--     fine as it is. If it is large, the fix is a veto row in
+--     title_group_patterns, not a threshold change - the same conclusion
+--     librarian reached.
+--
+--     THE REGEX IS MULTILINGUAL FROM THE FIRST LINE. An English-only pattern
+--     beside a multilingual anchor set has now been wrong four times in this
+--     project, every time in the same direction, so the Spanish, Portuguese,
+--     French, German and Turkish forms are here from the start rather than
+--     added after the first reading.
+-- ----------------------------------------------------------------------------
+with flagged as (
+    select
+        title,
+        frequency,
+        title_group,
+        decision_source,
+        round(group_score, 3)                           as group_score,
+        regexp_contains(title, r'\b(student|students|studierenden|studenten|estudiantil|estudiantiles|etudiante?s?|öğrenci)\s+(affairs|services|service|success|support|welfare|experience|engagement|life|union|administration|records|recruitment|admissions|placement|advisor|adviser|advising|counsel\w*|mentor\w*|wellbeing|well being|accommodation|housing|finance|funding)\b') as staff_of_students,
+        regexp_contains(title, r'\b(dean|director|head|manager|coordinator|coordinador\w*|officer|administrator|registrar|secretar\w*|advisor|adviser|counsel\w*|dekan\w*|decano)\b.{0,24}\b(student|students|studierenden|studenten|estudiantil|estudiantiles|etudiante?s?|öğrenci)\b') as leads_students,
+        regexp_contains(title, r'\b(intern|interne|internee|internship|internships|estagi\w+|praktikant\w*|stagiaire|stajyer|trainee|trainees|graduate trainee|management trainee)\b') as intern_or_trainee
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned
+      and (title_group = 'student' or title_group_2 = 'student')
+)
+select
+    case
+        when staff_of_students or leads_students
+             then '1 STAFF WHO WORK WITH STUDENTS - almost certainly wrong'
+        when intern_or_trainee
+             then '2 INTERN OR TRAINEE - a definition question for marketing'
+        else '3 reads as a student'
+    end                                                 as kind,
+    count(*)                                            as distinct_titles,
+    sum(frequency)                                      as records,
+    round(avg(group_score), 3)                          as avg_score,
+    string_agg(title order by frequency desc limit 20)  as biggest_titles
+from flagged
+group by kind
+order by kind
+;
+
+-- 1c-ii. The staff half itself, biggest first, so a veto can be written from
+--        what is actually there rather than from the four compounds I can name.
+with flagged as (
+    select title, frequency, title_group, round(group_score, 3) as group_score
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group`
+    where is_assigned
+      and (title_group = 'student' or title_group_2 = 'student')
+      and (regexp_contains(title, r'\b(student|students|studierenden|studenten|estudiantil|estudiantiles|etudiante?s?|öğrenci)\s+(affairs|services|service|success|support|welfare|experience|engagement|life|union|administration|records|recruitment|admissions|placement|advisor|adviser|advising|counsel\w*|mentor\w*|wellbeing|well being|accommodation|housing|finance|funding)\b')
+        or regexp_contains(title, r'\b(dean|director|head|manager|coordinator|coordinador\w*|officer|administrator|registrar|secretar\w*|advisor|adviser|counsel\w*|dekan\w*|decano)\b.{0,24}\b(student|students|studierenden|studenten|estudiantil|estudiantiles|etudiante?s?|öğrenci)\b'))
+)
+select title, frequency, title_group, group_score
+from flagged
+order by frequency desc
+limit 60
+;
+
+
+-- ----------------------------------------------------------------------------
 -- 3. AFTER - the audience, beside the other nine so it can be read in scale.
 -- ----------------------------------------------------------------------------
 select
