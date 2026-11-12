@@ -43,7 +43,7 @@ faculty_head,Education,1.00,only meaningful at an academic institution
 faculty_head,Facility,0.00,"Merve 2026-11-05: Head of Faculty is ROR Education only. Was 0.60, which with the 0.60 title weight scored 0.84 and confirmed every bare Director at Max Planck, Fraunhofer, Helmholtz, CAS and national labs. Measured on the 400-person validation sample (validation_samples/): the 58 people at ROR-typed non-Education organisations were 2 correct, 22 wrong, 34 unsure. Together with Nonprofit, Government and Archive below this removes 1,968 people; precision on decided cases 67.7% -> 76.6% with the name-pattern change in org_name_patterns."
 faculty_head,Healthcare,0.00,"Merve 2026-10-29: Head of Faculty is university heads only. A hospital medical director is not a faculty head, and nothing in the design can stop a leadership title reaching this audience once it is in the group - see 2.8a. Measured cost of this line: ~2,000 people leave, including 294 heads of department and 17 deans whose record names a hospital. Accepted: a small and certain audience is preferred, and coverage is expected to come back from a faculty-leadership source rather than from loosening this."
 faculty_head,Nonprofit,0.00,"Was 0.40: 0.60 + 0.40*0.40 = 0.76 cleared the 0.65 threshold, so any Director or Executive Director at ASAPbio, Coral Reef Alliance or a heritage trust confirmed. ROR Education only - see Facility."
-faculty_head,Government,0.00,"Was 0.30: 0.60 + 0.40*0.30 = 0.72 confirmed WHO division directors and ministry heads. ROR Education only - see Facility."
+faculty_head,Government,0.00,Was 0.30: 0.60 + 0.40*0.30 = 0.72 confirmed WHO division directors and ministry heads. ROR Education only - see Facility.
 faculty_head,Company,0.00,a company executive is not a faculty head
 faculty_head,Archive,0.00,"Was 0.20 (museums, archives). ROR Education only - see Facility."
 faculty_head,Other,0.00,not an academic institution
@@ -89,13 +89,13 @@ lecturer,Archive,0.20,
 lecturer,Other,0.20,
 lecturer,Funder,0.20,funding body - weak signal for every role
 lecturer,UNKNOWN,0.25,no ROR match
-students,Education,1.00,university - the primary target
-students,Facility,1.00,"doctoral student at a research institute - Max Planck, CNRS"
-students,Nonprofit,0.80,"inherited from researcher, not measured"
-students,Government,0.80,"inherited from researcher, not measured"
-students,Healthcare,0.80,medical student or clinical trainee at a hospital
-students,Company,0.60,"MEASURE THIS ONE FIRST - for a researcher this means industrial R&D, for a student an intern or Werkstudent"
-students,Archive,0.20,"inherited from researcher, not measured"
-students,Other,0.25,"inherited from researcher, not measured"
-students,Funder,0.40,funding body - ROR type - weak signal for every role
-students,UNKNOWN,0.25,"inherited from researcher, not measured"
+students,Education,1.00,university - the only qualifying employer
+students,Facility,0.00,a doctoral student at a research institute IS a student and is refused by this - sized in analyses/51 query 1d
+students,Healthcare,0.00,a medical student at a hospital IS a student and is refused by this - sized in analyses/51 query 1d
+students,Nonprofit,0.00,"MERVE 2026-11-12: an education employer is required - ""egitim kurumunda olmalari sart"". Every type but Education is 0.00, UNKNOWN by name because an unresolved organisation is not evidence. The weights carry this: 0.60 role against a 0.65 threshold cannot confirm without the 0.40 org term. See the block in dbt_project.yml."
+students,Government,0.00,"MERVE 2026-11-12: an education employer is required - ""egitim kurumunda olmalari sart"". Every type but Education is 0.00, UNKNOWN by name because an unresolved organisation is not evidence. The weights carry this: 0.60 role against a 0.65 threshold cannot confirm without the 0.40 org term. See the block in dbt_project.yml."
+students,Company,0.00,and this is what removes the graduate trainees - Merve 2026-11-12
+students,Archive,0.00,"MERVE 2026-11-12: an education employer is required - ""egitim kurumunda olmalari sart"". Every type but Education is 0.00, UNKNOWN by name because an unresolved organisation is not evidence. The weights carry this: 0.60 role against a 0.65 threshold cannot confirm without the 0.40 org term. See the block in dbt_project.yml."
+students,Other,0.00,"MERVE 2026-11-12: an education employer is required - ""egitim kurumunda olmalari sart"". Every type but Education is 0.00, UNKNOWN by name because an unresolved organisation is not evidence. The weights carry this: 0.60 role against a 0.65 threshold cannot confirm without the 0.40 org term. See the block in dbt_project.yml."
+students,Funder,0.00,"MERVE 2026-11-12: an education employer is required - ""egitim kurumunda olmalari sart"". Every type but Education is 0.00, UNKNOWN by name because an unresolved organisation is not evidence. The weights carry this: 0.60 role against a 0.65 threshold cannot confirm without the 0.40 org term. See the block in dbt_project.yml."
+students,UNKNOWN,0.00,"REFUSED BY NAME - ""organizasyon bilgisi cozulmeyenler ogrenci olarak atanmasin"""

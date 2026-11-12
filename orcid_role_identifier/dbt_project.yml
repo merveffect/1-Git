@@ -426,8 +426,47 @@ vars:
       # argued from the shape of the problem. They are a starting point to be
       # measured, and the first reading of the review queue is what should
       # change them.
-      weights: {role: 0.75, org: 0.25, dept: 0.00}
-      thresholds: {confirmed: 0.60, probable: 0.30}
+      #
+      # ⭐ AN EDUCATION EMPLOYER IS REQUIRED - MERVE, 2026-11-12.
+      # "organizasyon bilgisi cozulmeyenler ogrenci olarak atanmasin. egitim
+      #  kurumunda olmalari sart"
+      #
+      # THE WEIGHTS CHANGED BECAUSE THE RULE WOULD OTHERWISE NOT HAVE BOUND.
+      # They were 0.75 / 0.25 / 0.00 with a 0.60 threshold, and under those
+      # numbers the organisation axis could not refuse anybody: a PATTERN or
+      # second-group assignment pins role_score to 1.0, so 0.75 x 1.0 = 0.75
+      # cleared 0.60 on the title alone and the employer was decoration. That
+      # is the same emptiness the librarian block records about its own 0.25.
+      #
+      # 0.60 / 0.40 with a 0.65 threshold is faculty_head's arithmetic, and it
+      # is copied deliberately because faculty_head already enforces exactly
+      # this rule:
+      #
+      #     title alone, best case    0.60 x 1.00            = 0.60  < 0.65
+      #     title + Education         0.60 x 1.00 + 0.40     = 1.00  >= 0.65
+      #     weakest vector title      0.60 x 0.70 + 0.40     = 0.82  >= 0.65
+      #
+      # So nobody confirms without an Education employer, and with one
+      # essentially everybody does. org_type_scores gives Education 1.00 and
+      # every other ROR type 0.00, UNKNOWN included - an unresolved
+      # organisation is not evidence of anything and is refused by name.
+      #
+      # AND IT SETTLES THE TRAINEE QUESTION WITHOUT A TITLE RULE. Merve's
+      # other decision the same day was that a student on an internship is a
+      # student while a graduate trainee at a company is an employee. A
+      # company trainee scores 0.00 on the organisation and cannot confirm, so
+      # the org rule removes them on its own. A `graduate trainee` employed BY
+      # a university is the case it does not catch; analyses/51 query 1c sizes
+      # the family and says whether a title veto is needed as well.
+      #
+      # WHAT THIS COSTS, STATED RATHER THAN DISCOVERED LATER. A medical
+      # student whose employer is a hospital and a doctoral student at a
+      # research institute are both real students at a non-Education ROR type,
+      # and both are now refused. Query 1d measures how many. If the number is
+      # large enough to matter, Healthcare and Facility get a score and this
+      # comment gets the reason.
+      weights: {role: 0.60, org: 0.40, dept: 0.00}
+      thresholds: {confirmed: 0.65, probable: 0.30}
       current_only: true
 
   contract:

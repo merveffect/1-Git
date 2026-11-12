@@ -204,6 +204,106 @@ limit 60
 
 
 -- ----------------------------------------------------------------------------
+-- 1d. BEFORE - WHAT "AN EDUCATION EMPLOYER IS REQUIRED" COSTS, BY ROR TYPE.
+--
+--     Merve, 2026-11-12: "organizasyon bilgisi cozulmeyenler ogrenci olarak
+--     atanmasin. egitim kurumunda olmalari sart". Implemented as Education
+--     1.00 and every other type 0.00, with weights 0.60 / 0.40 against a 0.65
+--     threshold so the organisation can actually refuse somebody - at the
+--     previous 0.75 / 0.25 and 0.60 it could not have refused anyone at all.
+--
+--     THIS QUERY IS THE BILL FOR THAT DECISION, and it is run before the build
+--     rather than discovered after. Two of the rows it will return are real
+--     students that the rule now refuses:
+--
+--       Healthcare   a medical student or clinical trainee at a hospital
+--       Facility     a doctoral student at a research institute - Max Planck,
+--                    CNRS, CSIC
+--
+--     The rest are the intended effect: Company is the graduate trainees
+--     Merve excluded in the same message, and UNKNOWN is refused by name.
+--
+--     If Healthcare and Facility together are large, they are one seed edit
+--     away from being let back in and this is the number that argues for it.
+--     It reproduces int_employment_scored's own org join - on organisation AND
+--     org_id, with ror_types[safe_offset(0)] as the type - so it reads what
+--     the scoring will read rather than something near enough.
+-- ----------------------------------------------------------------------------
+with student_records as (
+    select
+        s.snid,
+        s.organisation,
+        s.org_id,
+        s.is_current
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+         on s.title_key = t.title_key
+        and t.is_assigned
+        and (t.title_group = 'student' or t.title_group_2 = 'student')
+    /*  current_only: true, so a past post cannot carry anybody and counting
+        them here would overstate every row.  */
+    where s.is_current
+),
+typed as (
+    select
+        r.snid,
+        coalesce(o.ror_types[safe_offset(0)], 'UNKNOWN')    as org_type
+    from student_records r
+    left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_org_resolved` o
+           on r.organisation = o.organisation
+          and r.org_id is not distinct from o.org_id
+)
+select
+    org_type,
+    count(distinct snid)                                as people,
+    case org_type
+        when 'Education' then '1 QUALIFIES'
+        when 'Healthcare' then '2 REFUSED - and these are real students'
+        when 'Facility'   then '2 REFUSED - and these are real students'
+        when 'Company'    then '3 REFUSED - intended, the graduate trainees'
+        when 'UNKNOWN'    then '4 REFUSED BY NAME - unresolved organisation'
+        else '5 REFUSED - intended'
+    end                                                 as verdict
+from typed
+group by org_type, verdict
+order by people desc
+;
+
+-- 1d-ii. The two refused populations that are real students, with their
+--        titles, so the decision to let them back in or not is made on what
+--        the people actually wrote rather than on the ROR type alone.
+with student_records as (
+    select s.snid, s.role_title, s.organisation, s.org_id
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+         on s.title_key = t.title_key
+        and t.is_assigned
+        and (t.title_group = 'student' or t.title_group_2 = 'student')
+    where s.is_current
+),
+typed as (
+    select
+        r.*,
+        coalesce(o.ror_types[safe_offset(0)], 'UNKNOWN')    as org_type
+    from student_records r
+    left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_org_resolved` o
+           on r.organisation = o.organisation
+          and r.org_id is not distinct from o.org_id
+)
+select
+    org_type,
+    role_title,
+    count(*)                                            as records,
+    count(distinct snid)                                as people
+from typed
+where org_type in ('Healthcare', 'Facility')
+group by org_type, role_title
+order by records desc
+limit 50
+;
+
+
+-- ----------------------------------------------------------------------------
 -- 3. AFTER - the audience, beside the other nine so it can be read in scale.
 -- ----------------------------------------------------------------------------
 select
