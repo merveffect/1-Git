@@ -204,6 +204,69 @@ limit 60
 
 
 -- ----------------------------------------------------------------------------
+-- 1c-iii. BEFORE - MERVE'S TRAINEE RULE, AND WHETHER THE ORG RULE ALREADY
+--         IMPLEMENTS IT.
+--
+--         Merve, 2026-11-12: "Staj yapan bir ogrenci -> ogrencidir / Sirketteki
+--         graduate trainee -> ogrenci degil, calisan". Query 1c sized the
+--         family at 424 titles and 3,942 records, which is large enough to
+--         need an answer and small enough that the answer is cheap either way.
+--
+--         THE CLAIM TO TEST is that no title rule is needed, because the
+--         Education-only organisation rule decided in the same message already
+--         removes the company trainees on its own. This splits the family two
+--         ways at once - by employer type, and by whether the title names a
+--         STUDENT as well as a trainee - so the claim is checked rather than
+--         assumed.
+--
+--         HOW TO READ IT. The only cell that matters is Education with no
+--         student word: a `graduate trainee` or `management trainee` employed
+--         by a university, which the org rule cannot refuse and Merve's rule
+--         says is an employee. If that cell is small, nothing more is needed.
+--         If it is not, it is one veto row in title_group_patterns.
+-- ----------------------------------------------------------------------------
+with family as (
+    select
+        s.snid,
+        s.role_title,
+        s.organisation,
+        s.org_id,
+        regexp_contains(s.role_title,
+            r'\b(student|students|studierende\w*|studenten|estudiante\w*|etudiante?s?|öğrenci|phd|ph d|doctoral|doctorate|postgraduate|post graduate|graduate school|undergraduate|master|masters|bachelor)\b')
+                                                        as also_names_a_student
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records` s
+    join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.dim_title_group` t
+         on s.title_key = t.title_key
+        and t.is_assigned
+        and (t.title_group = 'student' or t.title_group_2 = 'student')
+    where s.is_current
+      and regexp_contains(s.role_title,
+            r'\b(intern|interne|internee|internship|internships|estagi\w+|praktikant\w*|stagiaire|stajyer|trainee|trainees)\b')
+),
+typed as (
+    select
+        f.*,
+        coalesce(o.ror_types[safe_offset(0)], 'UNKNOWN')    as org_type
+    from family f
+    left join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_org_resolved` o
+           on f.organisation = o.organisation
+          and f.org_id is not distinct from o.org_id
+)
+select
+    case when org_type = 'Education' then 'Education - QUALIFIES'
+         else 'not Education - already refused' end     as employer,
+    if(also_names_a_student, 'title also names a student',
+                             'TRAINEE WORD ONLY')       as title_says,
+    count(*)                                            as records,
+    count(distinct snid)                                as people,
+    string_agg(distinct role_title order by role_title limit 25) as example_titles
+from typed
+group by employer, title_says
+order by employer, title_says
+;
+
+
+-- ----------------------------------------------------------------------------
 -- 1d. BEFORE - WHAT "AN EDUCATION EMPLOYER IS REQUIRED" COSTS, BY ROR TYPE.
 --
 --     Merve, 2026-11-12: "organizasyon bilgisi cozulmeyenler ogrenci olarak

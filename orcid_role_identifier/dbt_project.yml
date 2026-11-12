@@ -427,6 +427,27 @@ vars:
       # measured, and the first reading of the review queue is what should
       # change them.
       #
+      # THE BARE `student` ANCHOR WAS A WORRY AND THE MEASUREMENT SAYS IT IS
+      # NOT ONE. analyses/51 query 1c, 2026-11-12. The anchor list carries
+      # `student,student,en,` - one word, a generic occupational noun - which
+      # is the exact shape the librarian block blames for its own failure:
+      # 'library manager' matched on 'manager' and pulled 17,340 records. The
+      # same shape here predicted staff who work WITH students being read as
+      # students.
+      #
+      # Measured: 80 titles, 130 records, in an audience of 196,161. That is
+      # 0.07%, and it is not worth a veto row. Several of those 80 are not
+      # even errors - `counseling psychology doctoral student` and `genetic
+      # counseling student` are students OF counselling that the measuring
+      # regex caught on its own `counsel` stem, and `department manager / phd
+      # student` is a doctoral student who also manages a department.
+      #
+      # WHY THE LIBRARIAN ANALOGY DID NOT HOLD, since the next one-word anchor
+      # will raise the same question: `library` names a PLACE, so every job in
+      # the building contains the word, while `student` names a STATUS, and
+      # titles containing it overwhelmingly describe the person's own. The
+      # lesson is about what the word denotes, not about its length.
+      #
       # ⭐ AN EDUCATION EMPLOYER IS REQUIRED - MERVE, 2026-11-12.
       # "organizasyon bilgisi cozulmeyenler ogrenci olarak atanmasin. egitim
       #  kurumunda olmalari sart"
