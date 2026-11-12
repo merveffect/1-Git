@@ -603,7 +603,7 @@ select
     case
         when regexp_contains(title, r'\bresearch (officer|analyst|executive)\b')
             then '1 research-officer family (decided)'
-        else '2 scientific-officer family (PROPOSED - delete the row to reverse)'
+        else '2 scientific-officer family (NO - pattern row deleted 11 Nov)'
     end                                                 as family,
     title_group,
     decision_source,
@@ -619,7 +619,16 @@ order by family, records desc
 
 
 -- ----------------------------------------------------------------------------
--- 5. AFTER - THE ONLY FIGURE THAT GOES IN A DOCUMENT.
+-- 5. THE ONLY FIGURE THAT GOES IN A DOCUMENT - AND RUN IT BEFORE THE BUILD TOO.
+--
+--    IT WAS ONLY RUN AFTER, ON 2026-11-12, AND THAT WAS A MISTAKE. The only
+--    baseline left to compare against was the table in setup/audiences.py,
+--    measured 5 November - a week and several builds earlier, including the
+--    1.17 student rule and the pharmacology fix on 10 November. So every delta
+--    read off that comparison carries three builds' worth of change, not this
+--    one's, and faculty_head going DOWN by 324 while gaining members cannot be
+--    attributed to anything in particular. Run this query before and after,
+--    every time.
 --
 --    People, per audience, with the reachable count beside it. Compare against
 --    the 10 November state:
@@ -653,18 +662,65 @@ order by confirmed_people desc
 -- ----------------------------------------------------------------------------
 -- 6. AFTER - who arrived through the SECOND group, per audience.
 --
---    The accountability query. For every role, how many of its people are
---    there because of a second group rather than their title's primary one -
---    and it is these people, not the audience as a whole, that the next
---    reading has to sample.
+--    THE FIRST VERSION OF THIS QUERY WAS WRONG AND ITS ANSWER WAS BELIEVABLE,
+--    which is the dangerous combination. It filtered on `title_group_2 is not
+--    null`, which keeps every row whose TITLE names two jobs regardless of
+--    which group actually carried the role. So a person in faculty_head whose
+--    title is `professor and director` was counted as having arrived through
+--    the second group when their PRIMARY group, leadership, is what put them
+--    there. It reported 8,116 people for faculty_head against a rule that
+--    covers 4,144 records in the whole dictionary - more people than there are
+--    records, which is what gave it away.
+--
+--    Its second column was worse: countif(title_group_2 is not null) inside a
+--    WHERE that already requires it non-null, so it could only ever equal
+--    count(*), and it duly printed the same number as the people column on
+--    every row.
+--
+--    THE CORRECT TEST. int_employment_scored emits title_group_matched AS
+--    title_group - the group that carried this role - alongside title_group_2.
+--    The seed forbids a second group from restating the primary, so
+--    `title_group = title_group_2` is true exactly when the SECOND group is
+--    what matched. Anything else means the primary carried it.
+--
+--    AND THE QUESTION WORTH ASKING IS NARROWER STILL: not who has a second
+--    group, but who would NOT BE IN THE AUDIENCE WITHOUT IT. A person with
+--    several posts may reach the role on one record's primary group and
+--    another record's second, and they are not new. only_via_second is the
+--    figure the next reading has to sample.
 -- ----------------------------------------------------------------------------
+with scored as (
+    select snid, role_key, title_group, title_group_2
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored`
+    /*  role_score > 0 stands in for "this record matched this role at all".
+        A matched record can still score 0 if its group was REJECTED, so this
+        is marginally conservative and never the other way.  */
+    where role_score > 0
+),
+per_person as (
+    select
+        snid,
+        role_key,
+        countif(title_group_2 is null or title_group != title_group_2) as via_primary,
+        countif(title_group_2 is not null and title_group = title_group_2) as via_second
+    from scored
+    group by snid, role_key
+)
 select
-    e.role_key,
-    count(distinct e.snid)                              as people,
-    countif(e.title_group_2 is not null)                as records_with_a_second_group,
-    string_agg(distinct e.title_group order by e.title_group) as groups_that_carried_them
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
-where e.title_group_2 is not null
-group by e.role_key
-order by people desc
+    f.role_key,
+    count(distinct f.snid)                              as confirmed_people,
+    count(distinct if(p.via_second > 0 and p.via_primary = 0, f.snid, null))
+                                                        as only_via_second,
+    count(distinct if(p.via_second > 0 and p.via_primary > 0, f.snid, null))
+                                                        as both_routes,
+    round(100 * safe_divide(
+        count(distinct if(p.via_second > 0 and p.via_primary = 0, f.snid, null)),
+        count(distinct f.snid)), 1)                     as pct_only_via_second
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles` f
+join per_person p
+     on p.snid = f.snid
+    and p.role_key = f.role_key
+where f.role_label = 'CONFIRMED'
+group by f.role_key
+order by only_via_second desc
 ;
