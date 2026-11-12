@@ -89,3 +89,13 @@ lecturer,Archive,0.20,
 lecturer,Other,0.20,
 lecturer,Funder,0.20,funding body - weak signal for every role
 lecturer,UNKNOWN,0.25,no ROR match
+students,Education,1.00,university - the primary target
+students,Facility,1.00,"doctoral student at a research institute - Max Planck, CNRS"
+students,Nonprofit,0.80,"inherited from researcher, not measured"
+students,Government,0.80,"inherited from researcher, not measured"
+students,Healthcare,0.80,medical student or clinical trainee at a hospital
+students,Company,0.60,"MEASURE THIS ONE FIRST - for a researcher this means industrial R&D, for a student an intern or Werkstudent"
+students,Archive,0.20,"inherited from researcher, not measured"
+students,Other,0.25,"inherited from researcher, not measured"
+students,Funder,0.40,funding body - ROR type - weak signal for every role
+students,UNKNOWN,0.25,"inherited from researcher, not measured"

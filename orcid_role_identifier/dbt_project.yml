@@ -385,6 +385,50 @@ vars:
       weights: {role: 0.75, org: 0.25, dept: 0.00}
       thresholds: {confirmed: 0.60, probable: 0.30}
       current_only: false
+    students:
+      display_name: 'Student'
+      detail_dimension: org_type
+      enabled: true
+      label: 'Student / Doctoral Candidate'
+      axis: position
+      match: title_required   # no fields listed, so the title is the only axis
+      title_groups: ['student']
+      disciplines: []
+      # THE GROUP ALREADY EXISTS AND HAS FED NOTHING UNTIL NOW. `student` is
+      # one of the nine title groups and has 11 anchors, so the model has been
+      # assigning it all along - it simply had no audience on the other end.
+      # This block is the other end. Three things fill the group:
+      #
+      #   VECTOR          the 11 anchors - phd student, doctoral candidate,
+      #                   graduate student, doktorand, phd scholar...
+      #   PATTERN         title_group_patterns row 28, which moves a title out
+      #                   of researcher when it names a student and no research
+      #                   word - Merve's 1.17 decision of 10 November
+      #   SECOND GROUP    title_group_second, researcher -> student, which is
+      #                   21,668 records: doctoral researcher, phd researcher,
+      #                   dottorandi, graduate research assistant. These people
+      #                   stay in Researcher AND arrive here, which is exactly
+      #                   what marketing question 4.1b asked for
+      #
+      # current_only: true, AND THIS IS THE SETTING THAT DEFINES THE AUDIENCE.
+      # Seven of the nine roles count a post somebody has left, because a
+      # researcher in 2010 is still a researcher. A student in 2010 is not a
+      # student - they are most likely a professor by now, and with
+      # current_only false this audience would fill up with the very people
+      # Lecturer and Researcher already contain. It is the one setting here
+      # that is an argument about what the word means rather than a number to
+      # be tuned, which is why it is not copied from anywhere.
+      #
+      # WEIGHTS AND THRESHOLDS ARE COPIED FROM Lecturer AND Researcher, NOT
+      # DERIVED. Those two have the identical shape - title_required, no
+      # disciplines, org at 0.25 - and nothing about this audience has been
+      # measured yet, so inventing a bespoke curve for it would be a number
+      # argued from the shape of the problem. They are a starting point to be
+      # measured, and the first reading of the review queue is what should
+      # change them.
+      weights: {role: 0.75, org: 0.25, dept: 0.00}
+      thresholds: {confirmed: 0.60, probable: 0.30}
+      current_only: true
 
   contract:
     # any_basis: a person qualifies on ANY of the three flags -
