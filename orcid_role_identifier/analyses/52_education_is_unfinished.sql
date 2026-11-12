@@ -18,9 +18,26 @@
     rule was; it needs a new staging model, and this file measures the ground
     before one is written.
 
-    THERE IS ONE QUESTION I CANNOT ANSWER FROM THE INSTRUCTION, and it changes
-    the audience by an order of magnitude, so queries 3 and 4 measure both
-    readings rather than guessing:
+    ⭐ DECIDED 2026-11-12, AND THE DECISION WAS TO REFUSE THE RULE. Merve,
+    after reading queries 2 to 4: "bugunku kural kalsin. Education'i kapi
+    olarak degil, elimizdeki kisileri dogrulamak icin kullaniriz." The
+    audience keeps the rule it has - a student job title, a ROR Education
+    employer, current posts only, 123,056 people - and the education record
+    becomes a corroboration measure on the people we already deliver. That is
+    query 10, and it is the only query in this file that is still live work.
+
+    WHY IT WAS REFUSED, in one line each: of the 198,268 people with an open
+    education record, 99,665 hold a record with NO DATES AT ALL and 29,846
+    more started over ten years ago; 83% of all education records ARE closed,
+    which proves people fill the field in when they finish; the strict reading
+    would have cut the audience to 15,254 and the loose one would have traded
+    107,802 certain people for 183,014 mostly undated ones. Full figures in
+    docs/open-questions.md 2.16. Queries 1 to 9 are the record of that
+    measurement and are kept because the rule will be proposed again.
+
+    THE QUESTION THE INSTRUCTION COULD NOT ANSWER, which is what queries 3 and
+    4 were for - it changed the audience by an order of magnitude, so both
+    readings were measured rather than guessed:
 
       AND      a person is a student if they have a current student JOB TITLE
                *and* an open education record. Narrower and more certain than
@@ -39,8 +56,17 @@
     than studenthood, and the rule needs a date floor to mean what Merve
     intends it to mean.
 
-    RUN ORDER: 1 first and on its own - it prints the schema, and queries 2 to
-    5 assume field names that only query 1 can confirm.
+    AND ONE FINDING THAT OUTLIVES THE DECISION. The education route could not
+    have been a config change in any case: int_employment_scored's grain is an
+    EMPLOYMENT record, so a person with education evidence and no employment
+    record has no row for a role to attach to and cannot enter any audience at
+    all. Query 8 sizes that. Whoever proposes this rule next starts there.
+
+    RUN ORDER: 1 has already run and its answer is recorded on it - educations[]
+    matches employments[] in every field except that `role` is called `degree`.
+    Query 10 is the live one and runs AFTER the students build. Queries 7, 8
+    and 9 were written to decide a question that is now closed; they are worth
+    running only to answer the next proposal, not this one.
 */
 
 
@@ -489,4 +515,73 @@ select
 from typed
 group by org_type
 order by people desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 10. ⭐ THE DECIDED USE OF THE SIGNAL: A CORROBORATION MEASURE, NOT A GATE.
+--
+--     Merve, 2026-11-12, after queries 2 to 4: "bugunku kural kalsin.
+--     Education'i kapi olarak degil, elimizdeki kisileri dogrulamak icin
+--     kullaniriz." The audience keeps its own rule - a student title, a ROR
+--     Education employer, current posts only - and the education record
+--     becomes an accuracy figure on the people we already deliver.
+--
+--     THE BASELINE IS THE WHOLE QUERY. "68% of our students also hold an open
+--     education record" means nothing on its own, because a professor who
+--     recorded their own PhD and left the end date blank has one too. So
+--     Lecturer and Researcher are measured beside Students on the identical
+--     definition, and only the DIFFERENCE between the rows is evidence. If
+--     Students does not separate from them, the signal is measuring ORCID
+--     form-filling habits rather than studenthood, and we say so.
+--
+--     THREE READINGS OF "UNFINISHED", side by side, because query 2 showed the
+--     first one is mostly stale and query 7 exists to size the second:
+--
+--       open_or_future     end date blank OR in the future - the widest
+--       future_dated       an end date that has not arrived yet. The strongest
+--                          of the three: a claim about the future cannot be a
+--                          leftover from a degree finished in 1994.
+--       unfinished_recent  blank-or-future AND started within six years
+--
+--     RUN AFTER THE BUILD. fct_researcher_roles has no students rows until
+--     `dbt build --select org_type_scores+ role_detail_map+ int_employment_scored+`
+--     has run. Run it on the other two roles first if you want the baseline
+--     early - they are already built and their figures will not move.
+-- ----------------------------------------------------------------------------
+with ed as (
+    select
+        r.snid,
+        logical_or(d.full_end_date is null
+                   or d.full_end_date > current_date())  as open_or_future,
+        logical_or(d.full_end_date > current_date())     as future_dated,
+        logical_or((d.full_end_date is null
+                    or d.full_end_date > current_date())
+                   and d.full_start_date
+                       >= date_sub(current_date(), interval 6 year))
+                                                         as unfinished_recent
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_raw.raw_orcid_researchers` r,
+    unnest(r.educations) d
+    group by r.snid
+),
+/*  fct_researcher_roles is unique on (snid, role_key), so countif over these
+    rows is already a people count - no distinct needed, and using one would
+    hide a grain change rather than survive it.  */
+delivered as (
+    select f.snid, f.role_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_researcher_roles` f
+    where f.role_label = 'CONFIRMED'
+      and f.role_key in ('students', 'lecturer', 'researcher')
+)
+select
+    v.role_key,
+    count(*)                                            as confirmed_people,
+    countif(e.snid is null)                             as no_education_record_at_all,
+    round(100 * countif(e.open_or_future)    / count(*), 1) as pct_open_or_future,
+    round(100 * countif(e.future_dated)      / count(*), 1) as pct_future_dated,
+    round(100 * countif(e.unfinished_recent) / count(*), 1) as pct_unfinished_recent
+from delivered v
+left join ed e using (snid)
+group by v.role_key
+order by pct_future_dated desc
 ;

@@ -2293,6 +2293,10 @@ occupation**. Someone with an MD now working in venture capital still has an
 MD. Education should raise confidence in a role the employment already
 suggests, or supply a missing field — never assign a role on its own.
 
+That constraint was written before anything was measured, and it was then
+put to the test by a direct proposal to make an education record the gate
+for the Students audience. It held, and the figures are in **2.16**.
+
 ### 2.8 One measured defect left in deliberately
 
 HTML entities survive normalisation: a title stored as `R&amp;D Manager`
@@ -2928,6 +2932,76 @@ question - work or field - and is left as it is until it is answered.
 chairs) were committed before they were built; this sample caught it, because
 `chief innovation officer` was still confirmed. Built and verified the same day:
 faculty_head **15,048**, hcp_administrator **7,528**, pharmacist **2,051**.
+
+### 2.16 An open education record is a CHECK, not a gate — DECIDED 2026-11-12
+
+Merve, 2026-11-12, proposing the rule: *"educations i daha bitmemis yani last
+date educationda girilmemis kisiler alinsin sadece."* A student is somebody
+whose education has no end date.
+
+It was measured before it was built, and the measurement refused it. Merve,
+same day, on the result: *"bugünkü kural kalsın. Education'ı kapı olarak
+değil, elimizdeki kişileri doğrulamak için kullanırız."*
+
+**What the rule would have cost.** `educations[]` turns out to carry
+`full_start_date` and `full_end_date` as real DATE columns, so the rule was
+answerable exactly as stated — the problem is not the mechanism, it is what
+a blank end date means.
+
+| Open education record, by how long ago it started | People |
+|---|---|
+| **no start date either** | **99,665** |
+| within 3 years | 24,924 |
+| 3–6 years | 30,031 |
+| 6–10 years | 20,930 |
+| 10–20 years | 19,359 |
+| over 20 years | 10,487 |
+| *(closed, for scale)* | *575,203* |
+
+Of 198,268 people with an open education record, **99,665 hold a record with
+no dates at all** and a further 29,846 started over ten years ago — 65% of
+the evidence fails before any other test. And 83% of all education records
+*are* closed, which is the proof that people do fill the field in when they
+finish. A blank end date in this array does not mean "ongoing". It mostly
+means "not filled in".
+
+**The two readings, in people.**
+
+| | People |
+|---|---|
+| both — the strict AND | **15,254** |
+| title only — INSTEAD would lose these | 107,802 |
+| open education only — INSTEAD gains | 183,014 |
+
+AND cuts the audience from 123,056 to an eighth. INSTEAD trades 107,802
+certain people for 183,014 of which two thirds carry no usable date.
+(123,056 = 15,254 + 107,802 reconciles exactly with the `current_only`
+measurement in analyses/51, so the two queries confirm each other.)
+
+**And AND fails for a reason that is not arithmetic.** ORCID asks for an
+EXPECTED end date and people supply it, so a doctoral student who typed
+2022–2026 has an end date and the strict rule refuses them. Every query up
+to this point tested only `full_end_date is null` and so never counted that
+group at all.
+
+**What was decided instead.** The audience keeps the rule it has — a student
+job title, a ROR Education employer, current posts only. The education
+record becomes a **corroboration measure**: of the people we deliver, how
+many also hold an education record that is open or ends in the future. That
+is an accuracy figure, not a filter, and it is the use 2.7 argued for before
+any of this was measured.
+
+**The measure needs a baseline or it means nothing**, because a professor
+who recorded their own PhD has an open education record too. analyses/52
+query 10 runs the same corroboration rate against Lecturer and Researcher
+beside Students; only the difference between them is evidence.
+
+**One thing found on the way that is independent of the decision.** The
+education route could not have been a config change in any case.
+`int_employment_scored`'s grain is an EMPLOYMENT record, so a person with
+education evidence and no employment record has no row for a role to attach
+to and cannot enter any audience at all. Delivering on education evidence
+would mean a new model, not a new rule. analyses/52 query 8 sizes that.
 
 ---
 

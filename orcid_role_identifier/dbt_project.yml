@@ -386,6 +386,27 @@ vars:
       thresholds: {confirmed: 0.60, probable: 0.30}
       current_only: false
     students:
+      # AN OPEN EDUCATION RECORD WAS PROPOSED AS THE GATE HERE, AND MEASURED
+      # DOWN. Merve, 2026-11-12: "educations i daha bitmemis yani last date
+      # educationda girilmemis kisiler alinsin sadece." educations[] does
+      # carry full_start_date and full_end_date as real DATE columns, so the
+      # rule was answerable as stated - but of the 198,268 people with an open
+      # education record, 99,665 hold a record with NO DATES AT ALL and
+      # another 29,846 started over ten years ago. 83% of education records
+      # are closed, which proves people fill the field in when they finish, so
+      # a blank end date here mostly means "not filled in" rather than
+      # "ongoing". The strict reading would have cut this audience from
+      # 123,056 to 15,254; the loose one would have traded 107,802 certain
+      # people for 183,014 mostly undated ones. Merve, same day: "bugunku
+      # kural kalsin. Education'i kapi olarak degil, elimizdeki kisileri
+      # dogrulamak icin kullaniriz."
+      #
+      # So THIS config is the rule, and education is a corroboration measure
+      # that lives in analyses/52 query 10 - with Lecturer and Researcher as
+      # the baseline, because a professor who recorded their own PhD has an
+      # open education record too. Full figures in docs/open-questions.md
+      # 2.16; the constraint it confirms was written in 2.7 before anything
+      # was measured.
       display_name: 'Student'
       detail_dimension: org_type
       enabled: true
