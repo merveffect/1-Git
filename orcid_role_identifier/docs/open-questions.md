@@ -3133,11 +3133,16 @@ post elsewhere), a bare `student` at a school rather than a university, and
 | **right, of the decided** | **97.8%** (88/90) |
 | counting not-sure as wrong | 88.0% |
 
-**One round of 100, where the other nine audiences were read over 400.** The
+**100 of the 400 this audience needs.** 2.12 drew 400 CONFIRMED people per
+audience in a single sample, so 400 is the house figure and students is a
+quarter of the way there. The
 Wilson interval is ±3.6 — as wide as faculty_head's on four times the data —
 so the point estimate sits with Lecturer and Researcher but cannot yet be
-stated beside them. Three more rounds bring it to about ±1.6. Round 2 is
-`round_no := 2` in query 7; the blocks are disjoint by construction.
+stated beside them. The remaining 300 bring it to about ±1.6. Query 7 now
+takes an explicit position range and defaults to 101–400, so the rows
+already read are not read twice and the union of the two draws is one random
+sample of 400 — consecutive slices of a single hash order concatenate to
+exactly what drawing 400 at once would have given.
 
 **The two wrong rows are both nameable, which is better than a rate.**
 

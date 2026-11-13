@@ -569,13 +569,29 @@ order by people_shared desc
 -- 7. AFTER - 100 people to read, so this audience gets a measured accuracy
 --    like the other nine rather than an assumed one.
 --
---    Same sampler as analyses/48: row_number over
---    farm_fingerprint(cast(snid as string)) is random with respect to the data
---    and repeatable with respect to the person, and consecutive blocks of 100
---    are disjoint, so round 2 is a different hundred people.
+--    400 PEOPLE, IN ONE DRAW, because that is what the other audiences got.
+--    docs/open-questions.md 2.12: "400 CONFIRMED people at random per
+--    audience (seed val_2026_11)". It was a single sample, not four rounds of
+--    100 - analyses/48's round mechanism is a later instrument and the
+--    published accuracies do not come from it. Merve, 2026-11-13: "biz
+--    digerlerini de 4 round calistirmamistik ki ... 400 row bakmistik sanki
+--    tekte dimi?" Correct, and this query said otherwise until now.
+--
+--    row_number over farm_fingerprint(cast(snid as string)) is random with
+--    respect to the data and REPEATABLE with respect to the person, so the
+--    same positions return the same people after a rebuild and a reading can
+--    be re-run to ask whether those same people are still in the audience.
+--    rand() would throw that away.
+--
+--    THE RANGE IS EXPLICIT so the 100 already read are not read twice.
+--    Positions 1-100 were read on 2026-11-12: 88 correct, 2 wrong, 10 unsure.
+--    Set from_position := 101 and to_position := 400 for the remaining 300,
+--    and the union of the two is one random sample of 400 - the blocks are
+--    consecutive slices of a single hash order, so concatenating them is the
+--    same thing as having drawn 400 at once.
 -- ----------------------------------------------------------------------------
-declare round_no    int64 default 1;
-declare sample_size int64 default 100;
+declare from_position int64 default 101;
+declare to_position   int64 default 400;
 
 with ranked as (
     select
@@ -596,8 +612,7 @@ with ranked as (
 )
 select * except (hash_position)
 from ranked
-where hash_position between (round_no - 1) * sample_size + 1
-                        and  round_no      * sample_size
+where hash_position between from_position and to_position
 order by hash_position
 ;
 

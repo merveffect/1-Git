@@ -45,8 +45,8 @@ table(d, ["Audience", "People", "Right, of the decided", "Where that comes from"
    "**Not weak — undefined.** Question 1"],
   ["Clinical researcher", "108,805", "90.0% ± 3.1", "400 read one by one",
    "Good. Grew with question 1"],
-  ["**Students**", "105,658", "**97.8% ± 3.6**", "100 read — one round of four",
-   "**New.** Figure is provisional"],
+  ["**Students**", "105,658", "**97.8% ± 3.6**", "100 of 400 read so far",
+   "**New.** 300 still to read"],
   ["Practitioner", "62,141", "93.4% ± 2.6", "400 read one by one", "Good"],
   ["Head of faculty", "17,218", "83.3% ± 4.4", "400 read one by one",
    "**Parked** — not being delivered"],
@@ -161,9 +161,9 @@ box(d, "TWO THINGS ABOUT THE NUMBERS ON THIS PAGE", [
  "from it.",
  "",
  "**Students is measured on 100 records, not 400.** Its 97.8% sits with the strongest "
- "audiences, but on a quarter of the reading the others had — so the true figure could be "
- "anywhere from 94% to 99%. Three more rounds of reading close that, and we will do them "
- "before anybody runs a campaign on it.",
+ "audiences, but on a quarter of the reading every other audience had — so the true "
+ "figure could be anywhere from 94% to 99%. The remaining 300 are being read now, and "
+ "they will be done before anybody runs a campaign on it.",
 ], fill="FBF6EE", accent=AMBER)
 
 for out in (os.path.join(os.path.dirname(SP), "docs",
