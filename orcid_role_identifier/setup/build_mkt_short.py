@@ -45,8 +45,8 @@ table(d, ["Audience", "People", "Right, of the decided", "Where that comes from"
    "**Not weak — undefined.** Question 1"],
   ["Clinical researcher", "108,805", "90.0% ± 3.1", "400 read one by one",
    "Good. Grew with question 1"],
-  ["**Students**", "105,658", "**97.8% ± 3.6**", "100 of 400 read so far",
-   "**New.** 300 still to read"],
+  ["**Students**", "105,658", "**98.7% ± 1.3**", "400 read one by one",
+   "**New.** Solid"],
   ["Practitioner", "62,141", "93.4% ± 2.6", "400 read one by one", "Good"],
   ["Head of faculty", "17,218", "83.3% ± 4.4", "400 read one by one",
    "**Parked** — not being delivered"],
@@ -160,10 +160,11 @@ box(d, "TWO THINGS ABOUT THE NUMBERS ON THIS PAGE", [
  "changed and no decision was taken on a wrong basis. The sizes on this page do not come "
  "from it.",
  "",
- "**Students is measured on 100 records, not 400.** Its 97.8% sits with the strongest "
- "audiences, but on a quarter of the reading every other audience had — so the true "
- "figure could be anywhere from 94% to 99%. The remaining 300 are being read now, and "
- "they will be done before anybody runs a campaign on it.",
+ "**Students was the newest audience and is now read like the rest** — 400 records, one "
+ "by one, finished 13 November. It came out at 98.7%, third of the ten. Its one known "
+ "soft spot is people who wrote only a qualification as their job title, such as *PhD* "
+ "or *Master*: 6% of the sample, where we cannot tell from the record whether the person "
+ "is studying for it or has held it for twenty years.",
 ], fill="FBF6EE", accent=AMBER)
 
 for out in (os.path.join(os.path.dirname(SP), "docs",

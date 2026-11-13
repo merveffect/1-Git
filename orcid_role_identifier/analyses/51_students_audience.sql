@@ -714,21 +714,27 @@ limit 60
 -- 8c. HOW BIG THE RISKY BAND IS, which is the finding I am least willing to
 --     state from 100 rows and so will not.
 --
---     In round 1 the split was total: 63 rows at score 1.0 with ZERO errors
---     and ZERO unsures, and 37 rows below 1.0 carrying all 12 problems -
---     32.4% of them. A score of exactly 1.0 means PATTERN or HUMAN, which is
---     a literal match or a person's own decision; anything below it is the
---     embedding's graded answer.
+--     Across the full 400, 32 of the 33 problems sat below score 1.0 and
+--     exactly one did not.
 --
---     That is a clean story and 100 rows is not enough to tell it. What this
---     query does is size the two bands over the whole audience, so round 2
---     can be drawn to TEST the split rather than re-measure the average: if
---     the vector band really runs at ~32% doubtful, it deserves its own
---     sample rather than being averaged into a headline.
+--     ⭐ AND THAT ONE CORRECTS WHAT I WROTE HERE FIRST. This comment said "a
+--     score of exactly 1.0 means PATTERN or HUMAN". It does not. An EXACT
+--     ANCHOR MATCH also reaches 1.0: similarity 1.0 puts the vector score at
+--     least(1.0, 0.70 + (1.0-0.65)/0.35 * 0.30) = 1.0, so a title that IS one
+--     of the eleven student anchors is indistinguishable from a literal
+--     pattern by score alone. The exception is `research scholar`, which is
+--     an anchor, and anchors carry no country condition - see 1d-iii's note
+--     and docs/open-questions.md 2.17.
 --
---     NO THRESHOLD IS PROPOSED HERE. The bare-degree titles in round 1 all
---     sat at or below 0.927, and that is exactly the kind of number this
---     project has twice turned into a rule it had to take back out again.
+--     So the band is "literal match, human decision, OR exact anchor", and
+--     the last of those is the one that can be wrong. Sizing the bands is
+--     still worth doing; reading 1.0 as a guarantee is not.
+--
+--     NO THRESHOLD IS PROPOSED HERE. Across the 400 the bare-degree titles
+--     sat between 0.836 and 0.927, which is exactly the kind of number this
+--     project has twice turned into a rule it had to take back out again -
+--     and `research scholar` at 1.0 is the standing reminder that the band
+--     does not separate right from wrong on its own.
 with confirmed as (
     select snid, role_final_score, title_group
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
@@ -749,4 +755,54 @@ select
 from confirmed
 group by band
 order by band
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 9. THE FIVE HEADLINE NUMBERS THE STATUS DOCUMENT OPENS WITH.
+--
+--    docs/ORCID-Role-Enrichment-Status-and-Plan.docx section 1 is a five-row
+--    table and every row of it was counted before the students build and
+--    before the two-group change. It is the first thing anybody reads, so it
+--    is the worst place in the project for a stale number.
+--
+--    These are DISTINCT PEOPLE ACROSS ALL AUDIENCES, not the sum of the
+--    per-audience counts - a person in Lecturer and Researcher is one person
+--    with a profession, and query 3's rows add up to far more than the
+--    population because most people hold two or three roles.
+--
+--    Reachable uses the four-consent expression from fct_role_audience_summary
+--    and not three of them: book-author consent was Merve's decision against a
+--    column that was in the source and simply not selected, and leaving it out
+--    under-reports silently.
+-- ----------------------------------------------------------------------------
+select
+    'people with a profession'                          as measure,
+    cast(count(distinct snid) as string)                as value
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+where role_label = 'CONFIRMED'
+
+union all
+select
+    'of those, reachable',
+    cast(count(distinct if(is_marketable or is_advertisable
+                           or is_legitimate_interest or is_book_author,
+                           snid, null)) as string)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+where role_label = 'CONFIRMED'
+
+union all
+select 'audiences', cast(count(distinct role_key) as string)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+where role_label = 'CONFIRMED'
+
+union all
+select 'different job titles handled', cast(count(*) as string)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_title_distinct`
+
+union all
+select 'different departments handled', cast(count(*) as string)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_department_distinct`
+
+order by measure
 ;

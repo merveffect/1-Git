@@ -3194,6 +3194,73 @@ removed on 2026-11-05.
 
 ---
 
+**THE FULL 400 — 98.7% ± 1.3, 2026-11-13.** Positions 101–400 were read, and
+the audience now rests on the same evidence base as every other one.
+
+| | Rows 1–100 | Rows 101–400 | **All 400** |
+|---|---|---|---|
+| correct | 88 | 279 | **367** |
+| wrong | 2 | 3 | **5** |
+| not sure | 10 | 18 | **28** |
+| right, of the decided | 97.8% | 98.9% | **98.7% ± 1.3** |
+
+That puts Students third of the ten, behind Researcher (99.0%) and level
+with Lecturer (98.7%) inside the interval. The second draw came in slightly
+*higher* than the first, so the opening hundred were not a flattering sample.
+
+**NOTHING BELOW NAMES AN EMPLOYER OR A DEPARTMENT**, and that is deliberate
+rather than tidy. A title on its own is a generic string shared by thousands
+of records; title *plus* organisation *plus* department is the combination
+that can point at one real ORCID profile, which is why `validation_samples/`
+was deleted on 2026-11-05. The findings keep the title and the score and drop
+the rest.
+
+**The five wrong rows are all nameable as title shapes.** Rows 1–100 gave a
+title naming a doctoral *supervisor* and a title that was simply `employee`.
+The three new ones are the same family from another side:
+
+- a title naming an **affiliate scholar** at 0.869 — an affiliated or
+  visiting academic post, not a student.
+- a title naming a **tutor and supervisor on a named master's programme** at
+  0.830 — the degree in it is what the person teaches on, not what they
+  study. The embedding read the qualification and missed the two job words in
+  front of it.
+- **`Phd holder`** at 0.932 — says in words that the degree is already held.
+  That is the bare-degree ambiguity resolving itself *against* us, and it is
+  the clearest single argument that the family needs a rule.
+
+**The bare degree is 6.0% of the sample: 24 rows of 400.** `PhD`, `Ph.D`,
+`PHD`, `phD`, `Ph.D.`, `master`, `Bachelor`, `bachelor` as the entire job
+title, scoring between 0.836 and 0.927 — three quarters of every not-sure
+row. A degree is a credential, not a status, and `Phd holder` shows which way
+it can fall.
+
+**⭐ And one finding that corrects what was written here yesterday.** Rows
+1–100 had zero problems at score 1.0, recorded as "a literal pattern match or
+a person's own decision was right 63 times out of 63". The second draw
+produced the exception, and it is a mechanism rather than noise: a
+`Research Scholar` row scored **1.0** and could not be judged.
+
+`research scholar` is **one of the eleven `student` anchors**, not a pattern.
+An exact anchor match gives similarity 1.0, and `least(1.0, 0.70 +
+(1.0−0.65)/0.35 × 0.30)` is 1.0 — so an anchor cannot be told apart from a
+literal pattern by score alone. **Score 1.0 means "literal match, human
+decision, or exact anchor", and the third of those can be wrong.**
+
+It is wrong here for a nameable reason: that anchor was chosen because in
+India `research scholar` means a doctoral student, and **an anchor carries no
+country condition**. Across the 400 the title appeared around thirty times
+and all but two were Indian — one written `STIP, Research Scholar`, where
+*stipendiat* settles it, and one British, where nothing does. The UNSURE
+table in AI-REVIEWER-RULES already says "outside India"; the pipeline has no
+such distinction, and that gap is now named.
+
+**So 32 of the 33 problems sat below 1.0 and one did not.** The band is worth
+sizing — query 8c — but reading 1.0 as a guarantee is not safe, and no
+threshold is proposed from it.
+
+---
+
 ## Part 2b — How we find the next problem, and what is left
 
 One diagnostic turned out to generalise, and it is worth stating because it

@@ -156,10 +156,18 @@ h(d, "1.  Where we are today")
 para(d, "ORCID is where researchers write their own employment history: job title, "
         "organisation, department. All of it is free text. There is no field anywhere "
         "that says what profession someone is. We read that text and work it out.")
+# ⚠ FOUR OF THESE FIVE ROWS ARE A 5 NOVEMBER COUNT AND THREE BUILDS HAVE
+# LANDED SINCE. They are DISTINCT PEOPLE ACROSS ALL AUDIENCES, which is not
+# the sum of the per-audience figures - most people hold two or three roles -
+# so they cannot be derived from anything already in this file. `analyses/51`
+# query 9 counts all five; paste its output here and rebuild. Only the
+# audience count is updated below, because that one is knowable without a
+# query. Section 1 is the first thing anybody reads, so it is the worst place
+# in the project for a stale number.
 table(d, ["", "Today", "What it means"],
  [["People with a profession", "**673,851**", "We can name a profession for them"],
   ["Reachable", "**501,508**", "In the CDP and opted in. This is what a campaign can use"],
-  ["Audiences", "**9**", "Before this project there was one"],
+  ["Audiences", "**10**", "Before this project there was one"],
   ["Different job titles handled", "**317,302**", "The work runs once per title, not once per person"],
   ["Different departments handled", "**459,123**", "Same again, for the subject area"]],
  widths=[2.3,1.1,3.3])
@@ -230,7 +238,7 @@ table(d, ["Profession", "Records", "Read", "Condition", "What it needs next"],
   ["Leadership","962,236","62%","Good","Watch one side effect after the next build."],
   ["Pharmacist","74,951","51%","Fixed","Was the dirtiest group. 21% of its records were wrong and it cost the audience 91 people."],
   ["Librarian","21,855","n/a","Solid","Decided by the word itself, not by the machine. 0.4% known wrong."],
-  ["Student","1,970,615","**0%**","**Not read**","About to become an audience. Nobody has reviewed it."],
+  ["Student","1,970,615","**read**","**Solid**","Now an audience of 105,658 people, read over 400 records on 13 November at 98.7%. One soft spot: a bare qualification used as a job title."],
   ["Support / technical","1,453,643","n/a","Parked","Feeds nothing. Deliberately holds titles that belong nowhere."]],
  widths=[1.25,0.85,0.5,0.75,3.25], size=9)
 
@@ -593,17 +601,34 @@ box(d, "A RULE WE LEARNED THE HARD WAY THIS WEEK", [
 # ============================================================ 9
 h(d, "9.  What happens next")
 table(d, ["#", "What", "Why now", "Who"],
- [["1","Run the synonym check","Written as `analyses/28`. Finds splits like the 85,845-record one automatically. No judgement needed.","Us"],
-  ["2","Fold its findings into the next build","So Students, the consent basis and these corrections all land in one rebuild and one round of checking.","Us"],
-  ["3","Add the Students audience","Agreed at the meeting. All decisions already made: internships count, trainees do not, current post only, one bucket for all levels.","Us"],
-  ["4","Add the fourth consent basis","`is_book_author_communications_opted_in`. Agreed. Half an hour.","Us"],
-  ["5","Match the survey answers","The first real outside check. Needs the files.","Us"],
-  ["6","Clinical expert call","The one gap no data source covers.","Merve / Bernadeta"],
-  ["7","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"]],
+ [["1","**What \"Healthcare Professional (broad)\" means**","The only thing that blocks us. Biomedical researchers now roll up into it, so 54,426 people who have never seen a patient are in an audience with that name. One sentence from marketing settles it.","Marketing"],
+  ["2","A rule for the bare qualification","`PhD`, `Ph.D`, `Master`, `Bachelor` used as the whole job title — 6% of the Students reading and the single largest source of doubt in it. A degree is a credential, not a status, and one record says `Phd holder` outright. `analyses/51` queries 8 and 8b size it and list the real spellings.","Us"],
+  ["3","A country condition on `research scholar`","It is a `student` anchor, so it matches at score 1.0 with no country test. In India it means a doctoral student; elsewhere it can be a senior post. Found in the Students reading.","Us"],
+  ["4","Clinical expert call","The one gap no data source covers.","Merve / Bernadeta"],
+  ["5","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
+  ["6","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against.","Us"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
-para(d, "Items 3 and 4 should go in the same build, so there is one rebuild and one round "
-        "of checking rather than two.", space_after=4)
+box(d, "WHAT CAME OFF THIS LIST", [
+ "**The Students audience is built, delivered and read** — 105,658 people, 98.7% over "
+ "400 records. Internships count, company graduate trainees do not, current posts only, "
+ "one bucket for all levels, and the employer must be a university. Every decision on "
+ "the old item 3 held as written.",
+ "",
+ "**The fourth consent basis is in.** `is_book_author_communications_opted_in` is part of "
+ "the reachable figure everywhere it is quoted.",
+ "",
+ "**The synonym check ran and found something bigger than a synonym split**: the "
+ "dictionary's record counts had frozen the first time each job title was seen and were "
+ "running 14 to 30 times high. Fixed. It never touched the classification, so no audience "
+ "changed and no decision was taken on a wrong basis — but every *records* figure quoted "
+ "from the dictionary before 11 November was wrong, and this document's section 3 table "
+ "is the main place that still shows them.",
+ "",
+ "**A title may now name two jobs**, which was the other thing folded into that build. "
+ "7,144 of the Students arrived that way, and so did the biomedical researchers behind "
+ "item 1.",
+])
 box(d, "HOW THE 145 WERE RESOLVED — AND THE PATTERN TO REMEMBER", [
  "Moving **medical director** into Leadership was right for the Clinical Administrator "
  "audience. But Leadership feeds **two** audiences, and we only wanted one of them:",

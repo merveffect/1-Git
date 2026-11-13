@@ -14,7 +14,7 @@ We read the job title, employer and department that researchers typed into their
 | **Researcher** | 340,705 | **99.0% ± 1.0** | 400 read one by one | Solid |
 | Healthcare (broad) | 181,295 | 90.6% ± 3.0 | 400 read one by one | **Not weak — undefined.** Question 1 |
 | Clinical researcher | 108,805 | 90.0% ± 3.1 | 400 read one by one | Good. Grew with question 1 |
-| **Students** | 105,658 | **97.8% ± 3.6** | 100 of 400 read so far | **New.** 300 still to read |
+| **Students** | 105,658 | **98.7% ± 1.3** | 400 read one by one | **New.** Solid |
 | Practitioner | 62,141 | 93.4% ± 2.6 | 400 read one by one | Good |
 | Head of faculty | 17,218 | 83.3% ± 4.4 | 400 read one by one | **Parked** — not being delivered |
 | Clinical administrator | 8,258 | 94.9% ± 2.2 | 400 read one by one | Good. Was 88.9% in October |
@@ -77,4 +77,4 @@ A record that says only *Dr* in an oncology department tells us the person is me
 >
 > **Every figure here is a people figure, counted directly on 12 November.** Earlier versions sized some questions in *records*, from a column we found to be defective on 11 November — it froze the first time each job title was seen and had been running 14 to 30 times high. It is fixed, it never touched the classification, and no audience changed and no decision was taken on a wrong basis. The sizes on this page do not come from it.
 >
-> **Students is measured on 100 records, not 400.** Its 97.8% sits with the strongest audiences, but on a quarter of the reading every other audience had — so the true figure could be anywhere from 94% to 99%. The remaining 300 are being read now, and they will be done before anybody runs a campaign on it.
+> **Students was the newest audience and is now read like the rest** — 400 records, one by one, finished 13 November. It came out at 98.7%, third of the ten. Its one known soft spot is people who wrote only a qualification as their job title, such as *PhD* or *Master*: 6% of the sample, where we cannot tell from the record whether the person is studying for it or has held it for twenty years.
