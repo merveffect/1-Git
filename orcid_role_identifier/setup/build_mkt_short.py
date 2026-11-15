@@ -146,11 +146,16 @@ bullet(d, "**5  Honorary professors** — in Lecturer today. An honorary profess
           "at all. The record does not tell us which. Worth weighing: on 16 October you "
           "rejected `emeritus professor`, `retired professor` and `honorary researcher`, "
           "and `honorary professor` is the one nobody looked at.")
-bullet(d, "**6  What Students means** — it is *Student / Doctoral Candidate* today and it "
-          "contains master's and undergraduate students too, because that is what people "
-          "wrote. If a campaign means doctoral candidates only, say so and we will narrow "
-          "it. Separately: it is university employers only, which means a PhD student at a "
-          "research institute or a teaching hospital is not in it.")
+bullet(d, "**6  What Students means** — two separate things here. **One: it is one "
+          "bucket, not three.** PhD, master's and undergraduate students are all in it "
+          "together, because we never split them — people wrote *PhD student*, *master "
+          "student*, *undergraduate student* and all three count. If you want doctoral "
+          "candidates only, tell us and we will narrow it; that is one line to change. "
+          "**Two, and this one is a warning rather than a question: the employer has to "
+          "be a university.** A PhD student at a research institute such as Max Planck, "
+          "or at a teaching hospital, is NOT in the audience even when their job title "
+          "says *PhD student* plainly. That rule costs us 10,316 people, and it was "
+          "confirmed on 11 November after we measured the bill.")
 bullet(d, "**7  Veterinarians** — 91 people, in the healthcare audiences today by accident "
           "rather than by decision.")
 bullet(d, "**8  Sport and exercise science** — 78 people, same situation.")
