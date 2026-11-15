@@ -139,8 +139,15 @@ bullet(d, "**4  Past jobs** — ORCID keeps a person's whole job history, and se
           "only. Whichever way you decide, one thing is worth knowing: the job title and "
           "employer we show you are the ones that put the person in the audience, so for "
           "anybody who is in on a past job they can be years out of date.")
-bullet(d, "**5  Honorary professors** — in Lecturer today. The title is usually a mark of "
-          "respect rather than a job.")
+bullet(d, "**5  Honorary professors** — in Lecturer today. An honorary professor is not "
+          "paid by the university and holds no post there: the title is given to them, not "
+          "held by them. The trouble is that it covers two opposite people. A hospital "
+          "consultant who treats patients full time is often made an honorary professor so "
+          "they can supervise doctoral students — working, just not for the university. A "
+          "professor who has retired is often kept on as one out of courtesy — not working "
+          "at all. The record does not tell us which. Worth weighing: on 16 October you "
+          "rejected `emeritus professor`, `retired professor` and `honorary researcher`, "
+          "and `honorary professor` is the one nobody looked at.")
 bullet(d, "**6  Statisticians and economists** — in no audience at all today. Their titles "
           "name a discipline, not a job we recognise. A third of the family is already in "
           "Lecturer correctly, as *professor of biostatistics*.")
