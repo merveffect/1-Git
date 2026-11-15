@@ -3261,6 +3261,53 @@ threshold is proposed from it.
 
 ---
 
+### 2.18 Statisticians and economists stay OUT - DECIDED 2026-11-15
+
+**Merve, 2026-11-15:** *"o 2177 record disarda mi suan peki. bence bu soruyu
+cikaralim emin olmadiklarimiz disarda kalsin."*
+
+Answered: yes, they are already outside. The 2,177 records measured on 11
+November reach no audience at all, so this decision confirms the current
+behaviour and changes no model, no seed and no config. The question is removed
+from the marketing one-pager and questions 7-10 renumbered to 6-9.
+
+**THE RULE THIS CLOSES ON IS NOT "A DISCIPLINE NAME STAYS OUT".** That wording
+would contradict three ACCEPT rows already in `role_title_overrides.csv`, all
+of which name a discipline and all of which are deliberately IN researcher:
+
+| title | records | decided |
+| --- | --- | --- |
+| `biostatistician` | 7,723 | 2026-10-09, *"Biostatistics is research"* |
+| `bioinformatician` | 9,626 | 2026-10-16, for consistency with the above |
+| `health economist` | 1,601 | 2026-10-20 |
+
+18,950 records would be at risk from a reader applying "disciplines stay out"
+literally. The rule is instead: **a title enters an audience when somebody has
+read it and argued for it, and the 2,177 have never been read.** Those three
+were each measured, argued and recorded one at a time. The 2,177 were not, and
+until they are they stay where they are, which is nowhere.
+
+**WHAT IS BEING ACCEPTED, STATED PLAINLY.** This question is closed on the
+shape of the word *statistician* and not on the strings people actually typed.
+Nobody has listed the 2,177 titles. That is a real gap and it is the mistake
+this project has made before - the retracted 12,469 and the undercounted 1,300
+in 1.9b were both consequences of reasoning about this family without reading
+it. The decision is still right, because staying out is the default and a
+default needs no evidence to continue; but it could only ever be RE-OPENED by
+reading them, never broken. One query lists them when it is wanted.
+
+**And a third of the family was never the question.** 1,166 records of the
+statistician family are already in `teaching_academic` and correctly so -
+*professor of biostatistics*, *lecturer in medical statistics*. Of the whole
+family only the 1,631 statistician and 546 economist records in no audience
+were ever open, and the academics were handled before the question was asked.
+
+**Side effect in the status document.** Section 8's `statistician` row said
+"Asked of marketing"; it now reads "Closed 15 Nov - the unread ones stay out",
+and its record figure moved from the retracted 7,094 to the measured 2,177.
+
+---
+
 ## Part 2b — How we find the next problem, and what is left
 
 One diagnostic turned out to generalise, and it is worth stating because it

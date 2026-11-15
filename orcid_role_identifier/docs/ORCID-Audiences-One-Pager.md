@@ -40,11 +40,10 @@ We read the job title, employer and department that researchers typed into their
 | 3 | Are visiting scholars and visiting fellows teaching staff? | Large | Medium |
 | 4 | Should a job someone has left still count? | Affects seven of the ten audiences | Medium |
 | 5 | Is an honorary professor still an active academic? | Medium size | Medium |
-| 6 | Do statisticians and economists belong in an audience at all? | In no audience today | Medium |
-| 7 | Does Students mean doctoral candidates, or every student? | Master's and undergraduate students are in it today | Medium |
-| 8 | Are veterinarians healthcare professionals? | 91 | Low |
-| 9 | Is sport and exercise science a healthcare field? | 78 | Low |
-| 10 | Two titles we chose to keep out of Librarian | Small | Low |
+| 6 | Does Students mean doctoral candidates, or every student? | Master's and undergraduate students are in it today | Medium |
+| 7 | Are veterinarians healthcare professionals? | 91 | Low |
+| 8 | Is sport and exercise science a healthcare field? | 78 | Low |
+| 9 | Two titles we chose to keep out of Librarian | Small | Low |
 
 Every one of these is reversible in one line of configuration. Changing an answer later is cheap — **leaving it open is what costs us**, because until it is settled we cannot tell you what an audience means.
 
@@ -67,11 +66,10 @@ A record that says only *Dr* in an oncology department tells us the person is me
 - **3 Visiting scholars and fellows** — in Lecturer today. They teach, but the post is temporary and often unpaid.
 - **4 Past jobs** — ORCID keeps a person's whole job history, and seven of the ten audiences accept any of it. A researcher in 2010 who runs a bakery today is still in Researcher. And a label is never replaced by a newer job, only added to: somebody who treated patients in 2020 and runs a clinical department in 2026 is in Practitioner **and** Clinical Administration. Head of Faculty, Librarian and Students are the three that already count current posts only. Whichever way you decide, one thing is worth knowing: the job title and employer we show you are the ones that put the person in the audience, so for anybody who is in on a past job they can be years out of date.
 - **5 Honorary professors** — in Lecturer today. An honorary professor is not paid by the university and holds no post there: the title is given to them, not held by them. The trouble is that it covers two opposite people. A hospital consultant who treats patients full time is often made an honorary professor so they can supervise doctoral students — working, just not for the university. A professor who has retired is often kept on as one out of courtesy — not working at all. The record does not tell us which. Worth weighing: on 16 October you rejected `emeritus professor`, `retired professor` and `honorary researcher`, and `honorary professor` is the one nobody looked at.
-- **6 Statisticians and economists** — in no audience at all today. Their titles name a discipline, not a job we recognise. A third of the family is already in Lecturer correctly, as *professor of biostatistics*.
-- **7 What Students means** — it is *Student / Doctoral Candidate* today and it contains master's and undergraduate students too, because that is what people wrote. If a campaign means doctoral candidates only, say so and we will narrow it. Separately: it is university employers only, which means a PhD student at a research institute or a teaching hospital is not in it.
-- **8 Veterinarians** — 91 people, in the healthcare audiences today by accident rather than by decision.
-- **9 Sport and exercise science** — 78 people, same situation.
-- **10 Librarian exclusions** — we keep out archivists, because the word also collected archaeologists and glaciologists, and *information specialist*, because it collected every IT job in the data.
+- **6 What Students means** — it is *Student / Doctoral Candidate* today and it contains master's and undergraduate students too, because that is what people wrote. If a campaign means doctoral candidates only, say so and we will narrow it. Separately: it is university employers only, which means a PhD student at a research institute or a teaching hospital is not in it.
+- **7 Veterinarians** — 91 people, in the healthcare audiences today by accident rather than by decision.
+- **8 Sport and exercise science** — 78 people, same situation.
+- **9 Librarian exclusions** — we keep out archivists, because the word also collected archaeologists and glaciologists, and *information specialist*, because it collected every IT job in the data.
 
 > ### TWO THINGS ABOUT THE NUMBERS ON THIS PAGE
 >

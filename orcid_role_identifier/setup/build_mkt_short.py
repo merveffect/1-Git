@@ -88,13 +88,11 @@ table(d, ["", "The call", "How many people it moves", "Urgency"],
   ["4", "Should a job someone has left still count?",
    "Affects seven of the ten audiences", "Medium"],
   ["5", "Is an honorary professor still an active academic?", "Medium size", "Medium"],
-  ["6", "Do statisticians and economists belong in an audience at all?",
-   "In no audience today", "Medium"],
-  ["7", "Does Students mean doctoral candidates, or every student?",
+  ["6", "Does Students mean doctoral candidates, or every student?",
    "Master's and undergraduate students are in it today", "Medium"],
-  ["8", "Are veterinarians healthcare professionals?", "91", "Low"],
-  ["9", "Is sport and exercise science a healthcare field?", "78", "Low"],
-  ["10", "Two titles we chose to keep out of Librarian",
+  ["7", "Are veterinarians healthcare professionals?", "91", "Low"],
+  ["8", "Is sport and exercise science a healthcare field?", "78", "Low"],
+  ["9", "Two titles we chose to keep out of Librarian",
    "Small", "Low"]],
  widths=[0.3, 2.95, 2.1, 0.85], size=8.8)
 para(d, "Every one of these is reversible in one line of configuration. Changing an answer "
@@ -148,18 +146,15 @@ bullet(d, "**5  Honorary professors** — in Lecturer today. An honorary profess
           "at all. The record does not tell us which. Worth weighing: on 16 October you "
           "rejected `emeritus professor`, `retired professor` and `honorary researcher`, "
           "and `honorary professor` is the one nobody looked at.")
-bullet(d, "**6  Statisticians and economists** — in no audience at all today. Their titles "
-          "name a discipline, not a job we recognise. A third of the family is already in "
-          "Lecturer correctly, as *professor of biostatistics*.")
-bullet(d, "**7  What Students means** — it is *Student / Doctoral Candidate* today and it "
+bullet(d, "**6  What Students means** — it is *Student / Doctoral Candidate* today and it "
           "contains master's and undergraduate students too, because that is what people "
           "wrote. If a campaign means doctoral candidates only, say so and we will narrow "
           "it. Separately: it is university employers only, which means a PhD student at a "
           "research institute or a teaching hospital is not in it.")
-bullet(d, "**8  Veterinarians** — 91 people, in the healthcare audiences today by accident "
+bullet(d, "**7  Veterinarians** — 91 people, in the healthcare audiences today by accident "
           "rather than by decision.")
-bullet(d, "**9  Sport and exercise science** — 78 people, same situation.")
-bullet(d, "**10  Librarian exclusions** — we keep out archivists, because the word also "
+bullet(d, "**8  Sport and exercise science** — 78 people, same situation.")
+bullet(d, "**9  Librarian exclusions** — we keep out archivists, because the word also "
           "collected archaeologists and glaciologists, and *information specialist*, "
           "because it collected every IT job in the data.")
 d.paragraphs[-1].paragraph_format.space_after = Pt(12)
