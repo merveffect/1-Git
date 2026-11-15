@@ -130,9 +130,15 @@ para(d, "A record that says only *Dr* in an oncology department tells us the per
 h(d, "The remaining seven, one line each")
 bullet(d, "**3  Visiting scholars and fellows** — in Lecturer today. They teach, but the "
           "post is temporary and often unpaid.")
-bullet(d, "**4  Past jobs** — seven of the ten audiences count a job someone has left. A "
-          "researcher in 2010 who runs a bakery today is still in Researcher. Head of "
-          "Faculty, Librarian and Students already use current posts only.")
+bullet(d, "**4  Past jobs** — ORCID keeps a person's whole job history, and seven of "
+          "the ten audiences accept any of it. A researcher in 2010 who runs a bakery "
+          "today is still in Researcher. And a label is never replaced by a newer job, "
+          "only added to: somebody who treated patients in 2020 and runs a clinical "
+          "department in 2026 is in Practitioner **and** Clinical Administration. Head of "
+          "Faculty, Librarian and Students are the three that already count current posts "
+          "only. Whichever way you decide, one thing is worth knowing: the job title and "
+          "employer we show you are the ones that put the person in the audience, so for "
+          "anybody who is in on a past job they can be years out of date.")
 bullet(d, "**5  Honorary professors** — in Lecturer today. The title is usually a mark of "
           "respect rather than a job.")
 bullet(d, "**6  Statisticians and economists** — in no audience at all today. Their titles "
