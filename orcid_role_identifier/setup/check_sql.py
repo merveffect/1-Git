@@ -73,14 +73,9 @@ def role_display_name_expr(col='role_key'):
     return 'CASE ' + ' '.join(
         f"WHEN {col} = '{k}' THEN '{roles[k].get('display_name', k)}'" for k in role_keys()) + ' END'
 
-def role_detail_dimension_expr(col='role_key'):
-    return 'CASE ' + ' '.join(
-        f"WHEN {col} = '{k}' THEN '{roles[k].get('detail_dimension', 'none')}'" for k in role_keys()) + ' END'
-
 def roles_with_parent():
     return [{'child': k, 'parent': v['parent'],
-             'bucket': v.get('parent_bucket', 'X'),
-             'bucket_label': v.get('parent_bucket', 'X').lower().title()}
+             'bucket': v.get('parent_bucket', 'X')}
             for k, v in roles.items()
             if v.get('enabled', True) and v.get('parent') in role_keys()]
 
@@ -105,7 +100,6 @@ ctx = dict(config=lambda **k: '', ref=lambda n: f'`p.d.{n}`', source=lambda a, b
            role_flag_columns=role_flag_columns, consent_predicate=consent_predicate,
            contract_array_order=contract_array_order,
            role_display_name_expr=role_display_name_expr,
-           role_detail_dimension_expr=role_detail_dimension_expr,
            normalize_title=lambda c: f'LOWER({c})', clean_text=lambda c: f'LOWER({c})',
            this='`p.d.this`', is_incremental=lambda: False)
 

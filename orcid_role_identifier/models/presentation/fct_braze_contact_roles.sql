@@ -5,17 +5,21 @@
     One row = one contact. The final schema delivered to Braze / MPC.
 
     ─────────────────────────────────────────────────────────────────────
-    CRITICAL: THE FOUR ARRAYS MUST STAY POSITIONALLY ALIGNED
+    CRITICAL: THE THREE ARRAYS MUST STAY POSITIONALLY ALIGNED
 
         role_inferred[0]                          <-> Healthcare Professional
-        role_detailed_inferred[0]                 <-> Healthcare Professional - Practitioner
         role_inferred_data_source[0]              <-> Orcid
         role_inferred_data_source_last_updated[0] <-> 2026-09-29 10:00:00
 
-    All four are derived from the SAME ordered CTE with the SAME ORDER BY.
-    Writing four independent ARRAY_AGGs would drift silently, and Braze
+    All three are derived from the SAME ordered CTE with the SAME ORDER BY.
+    Writing three independent ARRAY_AGGs would drift silently, and Braze
     CANNOT detect it - the wrong person would land in the wrong role
     segment and nobody would notice.
+
+    THERE WAS A FOURTH, role_detailed_inferred - "Healthcare Professional
+    - Practitioner". Removed 2026-11-16: Merve, "data etiketi zaten
+    Braze'e, CDP'ye gitmeyecek ... sadece Braze'e audience'lar gidecek."
+    Only the audience goes. See docs/open-questions.md 2.21.
 
     To change the ordering: dbt_project.yml -> contract.array_order
     ─────────────────────────────────────────────────────────────────────
@@ -40,12 +44,6 @@ per_role as (
         a.role_key,
         {{ role_display_name_expr('role_key') }}    as role_inferred,
 
-        -- "Healthcare Professional - Practitioner"
-        concat(
-            {{ role_display_name_expr('role_key') }},
-            if(a.role_detail is null, '', concat('{{ var("contract").detail_separator }}', a.role_detail))
-        )                                           as role_detailed_inferred,
-
         -- Source display name. One source today; when web scraping
         -- arrives, add a WHEN branch and switch this to a STRING_AGG so
         -- a role asserted by both reads 'Orcid + Web scraping'.
@@ -54,7 +52,6 @@ per_role as (
 
         max(a.source_last_updated)                  as role_inferred_data_source_last_updated,
         max(a.role_final_score)                     as role_final_score,
-        any_value(a.role_detail)                    as role_detail,
         any_value(a.country_code)                   as country_code,
         any_value(a.contact_email)                  as contact_email,
         any_value(a.is_marketable)                  as is_marketable,
@@ -63,7 +60,7 @@ per_role as (
         any_value(a.is_book_author)                 as is_book_author,
         any_value(a.in_cdp)                         as in_cdp
     from audience a
-    group by a.snid, a.role_key, a.role_detail
+    group by a.snid, a.role_key
 
 ),
 
@@ -87,8 +84,6 @@ contact as (
         -- ── contract fields ──────────────────────────────────────────
         array_agg(role_inferred                             order by {{ contract_array_order() }})
             as role_inferred,
-        array_agg(role_detailed_inferred                    order by {{ contract_array_order() }})
-            as role_detailed_inferred,
         array_agg(role_inferred_data_source                 order by {{ contract_array_order() }})
             as role_inferred_data_source,
         array_agg(role_inferred_data_source_last_updated    order by {{ contract_array_order() }})
@@ -99,7 +94,6 @@ contact as (
             struct(
                 role_key,
                 role_inferred,
-                role_detailed_inferred,
                 role_inferred_data_source              as data_source,
                 role_inferred_data_source_last_updated as last_updated,
                 round(role_final_score, 3)             as confidence
@@ -128,7 +122,6 @@ select
     c.contact_email,
     c.snid,
     c.role_inferred,
-    c.role_detailed_inferred,
     c.role_inferred_data_source,
     c.role_inferred_data_source_last_updated,
 

@@ -98,7 +98,6 @@
     SELECT
         snid,
         '{{ m.parent }}'                       AS role_key,
-        '{{ m.bucket_label }}'                 AS role_detail,
         role_final_score,
         -- role_label is deliberately NOT carried. A child's label was
         -- computed against the CHILD's thresholds, and the parent's are

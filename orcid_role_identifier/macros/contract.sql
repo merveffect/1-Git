@@ -1,12 +1,15 @@
 {#-
     BRAZE DATA CONTRACT HELPERS
     ---------------------------
-    role_inferred / role_detailed_inferred / role_inferred_data_source /
-    ..._last_updated must stay POSITIONALLY aligned.
+    role_inferred / role_inferred_data_source / ..._last_updated must
+    stay POSITIONALLY aligned.
 
-    That is why all four are derived from ONE ordered source. Writing
-    four independent ARRAY_AGGs would silently drift - the single
+    That is why all three are derived from ONE ordered source. Writing
+    three independent ARRAY_AGGs would silently drift - the single
     biggest risk in this contract.
+
+    role_detailed_inferred was a fourth until 2026-11-16, when it was
+    removed from the contract - only the audience goes to Braze.
 -#}
 
 {#- role_key -> the display name used in the contract -#}
@@ -19,16 +22,6 @@
     END
 {% endmacro %}
 
-
-{#- role_key -> detail dimension ('bucket' | 'setting' | 'org_type' | 'none') -#}
-{% macro role_detail_dimension_expr(col='role_key') %}
-    CASE {{ col }}
-    {%- for k in role_keys() %}
-        WHEN '{{ k }}' THEN '{{ role(k).get("detail_dimension", "none") }}'
-    {%- endfor %}
-        ELSE 'none'
-    END
-{% endmacro %}
 
 
 {#-

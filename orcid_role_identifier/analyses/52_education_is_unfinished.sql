@@ -307,23 +307,38 @@ limit 40
 --    THIS QUERY DECIDES IT RATHER THAN ARGUING IT. It is the one thing in
 --    this file that is not about the students audience, and it is here
 --    because the same result surfaced it.
+--
+--    IT RAN ON 2026-11-16 AND IT WAS RIGHT: rows_that_match_exactly was 0
+--    on all 30 seed/live pairs, against 180,682 that match once case is
+--    ignored, with exactly one live value per seed spelling - case, not
+--    vocabulary drift. The join was fixed the same day.
+--
+--    THEN THE WHOLE COLUMN WAS REMOVED, four days later in the same week.
+--    Merve: "data etiketi zaten Braze'e, CDP'ye gitmeyecek ... sadece
+--    Braze'e audience'lar gidecek." role_detail was never read by any
+--    filter, any where clause or any delivered segment, so fixing it and
+--    then completing it would have been work spent on an output nobody
+--    consumes. int_role_detail, role_detail_map and the three tests around
+--    them are gone - docs/open-questions.md 2.21.
+--
+--    THE QUERY IS KEPT AS A COMMENT, NOT DELETED. It is the evidence for
+--    2.19 and it cannot run any more: role_detail_map no longer exists.
 -- ----------------------------------------------------------------------------
-select
-    d.role_key,
-    d.match_value                                       as seed_spelling,
-    count(distinct s.org_type)                          as distinct_live_values,
-    string_agg(distinct s.org_type order by s.org_type limit 5) as live_spellings,
-    countif(s.org_type = d.match_value)                 as rows_that_match_exactly,
-    countif(upper(s.org_type) = upper(d.match_value))   as rows_that_would_match_ignoring_case
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` s
-join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.role_detail_map` d
-     on d.role_key = s.role_key
-    and d.match_type = 'org_type'
-    and upper(s.org_type) = upper(d.match_value)
-group by d.role_key, d.match_value
-order by rows_that_would_match_ignoring_case desc
-limit 30
-;
+-- select
+--     d.role_key,
+--     d.match_value                                       as seed_spelling,
+--     count(distinct s.org_type)                          as distinct_live_values,
+--     string_agg(distinct s.org_type order by s.org_type limit 5) as live_spellings,
+--     countif(s.org_type = d.match_value)                 as rows_that_match_exactly,
+--     countif(upper(s.org_type) = upper(d.match_value))   as rows_that_would_match_ignoring_case
+-- from `...scoring.int_employment_scored` s
+-- join `...seeds.role_detail_map` d
+--      on d.role_key = s.role_key
+--     and d.match_type = 'org_type'
+--     and upper(s.org_type) = upper(d.match_value)
+-- group by d.role_key, d.match_value
+-- order by rows_that_would_match_ignoring_case desc
+-- limit 30
 
 
 -- ----------------------------------------------------------------------------
@@ -545,7 +560,7 @@ order by people desc
 --       unfinished_recent  blank-or-future AND started within six years
 --
 --     RUN AFTER THE BUILD. fct_researcher_roles has no students rows until
---     `dbt build --select org_type_scores+ role_detail_map+ int_employment_scored+`
+--     `dbt build --select org_type_scores+ int_employment_scored+`
 --     has run. Run it on the other two roles first if you want the baseline
 --     early - they are already built and their figures will not move.
 -- ----------------------------------------------------------------------------

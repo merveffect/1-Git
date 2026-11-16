@@ -42,7 +42,7 @@ models:
   - name: fct_braze_contact_roles
     description: >
       ⭐ BRAZE DATA CONTRACT. One row = one contact.
-      The four arrays are POSITIONALLY aligned; all are derived from a
+      The three arrays are POSITIONALLY aligned; all are derived from a
       single ordered source. Alignment is verified on every build by
       tests/assert_contract_arrays_aligned.sql.
     columns:
@@ -51,8 +51,6 @@ models:
       - name: role_inferred
         description: "e.g. ['Head of Faculty', 'Healthcare Professional']"
         tests: [not_null]
-      - name: role_detailed_inferred
-        description: "e.g. ['Head of Faculty - University', 'Healthcare Professional - Practitioner']"
       - name: role_inferred_data_source
         description: "e.g. ['Orcid', 'Orcid + Web scraping'] - not needed in marketing tools"
       - name: consent_basis

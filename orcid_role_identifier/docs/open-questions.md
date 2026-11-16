@@ -3261,7 +3261,69 @@ threshold is proposed from it.
 
 ---
 
-### 2.20 role_detail is still null for at least 656,021 people, and for three separate reasons - MEASURED 2026-11-16, TWO DECISIONS OPEN
+### 2.21 role_detail is removed from the project - DECIDED 2026-11-16
+
+**Merve, 2026-11-16:** *"data etiketi zaten Braze'e, CDP'ye gitmeyecek.
+Onlari kaldir. Data etiketi olmayacak. Yani biz organization type ve data
+etiketini zaten kullanmiyorsak ve bir yerde analizde veya herhangi bir filtre
+veya where clause yazmiyorsak onu siktir et. Sadece Braze'e audience'lar
+gidecek."*
+
+**This closes 2.19 and 2.20 by deleting what they were about.** Two days of
+work went into a column that nothing reads: 2.19 fixed its join, 2.20 measured
+that it was still null for 656,021 people and put two decisions on the table.
+Neither decision needs an answer now. The column is gone.
+
+**I had the delivery wrong, and I wrote it into two entries without checking.**
+2.19 and 2.20 both state that `role_detail` "ships to Braze". It was in the
+contract as `role_detailed_inferred`, so the claim was true of the CODE - but
+the question that mattered was whether anyone CONSUMES it, and I never asked
+it. The rule this closes on: **a column being in the output is not the same as
+a column being used, and only the second one justifies work.** Grep answers the
+first; only the person who owns the contract answers the second.
+
+**WHAT WAS REMOVED.** 282 lines of model, seed and test, plus the contract
+field:
+
+| | |
+| --- | --- |
+| `models/scoring/int_role_detail.sql` | deleted, 93 lines |
+| `seeds/role_detail_map.csv` | deleted, 44 rules |
+| `tests/assert_role_detail_map_rules_all_fire.sql` | deleted - written 2026-11-16, lived one day |
+| `tests/assert_every_role_has_detail_rules.sql` | deleted - written 2026-11-16, lived one hour |
+| `tests/assert_detailed_prefix_matches_role.sql` | deleted |
+| `role_detailed_inferred` | removed from the Braze contract |
+| `role_detail` | removed from `fct_researcher_roles`, `fct_role_audience`, `fct_braze_contact_roles` |
+| `detail_dimension` | removed from 9 role definitions in `dbt_project.yml` |
+| `detail_separator`, `detail_source_separator` | removed from `contract` |
+| `role_detail_dimension_expr` | removed from `macros/contract.sql` |
+| `bucket_label` | removed from `roles_with_parent()` - it existed only to label roll-ups |
+
+**The contract is now three aligned arrays, not four** - `role_inferred`,
+`role_inferred_data_source`, `role_inferred_data_source_last_updated`.
+`assert_contract_arrays_aligned` checks three.
+
+**WHAT DID NOT GO, AND MUST NOT.** `org_type` stays. Merve's sentence names
+"organization type ve data etiketi" together, but they are not the same thing
+in this pipeline: `org_type` is what `org_type_scores` joins on, it carries
+0.15 to 0.40 of every score, and it is the entire reason students and
+faculty_head are Education-only. Removing it would delete two audience
+definitions. What went is the org-type-derived LABEL, which was an output.
+`org_type_scores.csv` is untouched.
+
+**ONE THING TO TELL THE CDP SIDE.** `role_detailed_inferred` was a delivered
+column until this build. If anything downstream maps it, it disappears on the
+next run. Nothing in this repo reads it, but this repo is not where the
+ingestion lives.
+
+---
+
+### 2.20 role_detail is still null for at least 656,021 people, and for three separate reasons - MEASURED 2026-11-16, SUPERSEDED BY 2.21 THE SAME DAY
+
+> **Both decisions below are void.** `role_detail` was removed from the project
+> hours after this was written - see 2.21. Kept because the measurement is
+> sound and because the three causes are a catalogue of how a lookup table
+> goes wrong, not because anything here is still open.
 
 The case fix in 2.19 made the column work. It did not make it complete. The
 verification query after the build showed every audience still carrying nulls,
@@ -3342,7 +3404,12 @@ Nothing is being changed on either until they are answered. The test stays at
 
 ---
 
-### 2.19 role_detail was null for seven audiences - FOUND AND FIXED 2026-11-16
+### 2.19 role_detail was null for seven audiences - FOUND AND FIXED 2026-11-16, THEN THE COLUMN WAS DELETED - 2.21
+
+> **"And role_detail ships" below is the part that did not hold up.** It was in
+> the Braze contract, but nothing consumed it, and on the same day it was
+> removed from the project. The defect was real and the diagnosis stands; the
+> reason given for its urgency did not.
 
 **A delivered column had never worked, and nothing was looking.**
 `int_role_detail` joined `role_detail_map` on `coalesce(s.org_type,

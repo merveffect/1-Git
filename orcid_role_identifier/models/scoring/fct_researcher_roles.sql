@@ -32,12 +32,8 @@ with base as (
         emp.country_code,
         emp.is_current,
         emp.source_key,
-        emp.source_last_updated,
-        det.detail_label
+        emp.source_last_updated
     from {{ ref('int_employment_scored') }} emp
-    left join {{ ref('int_role_detail') }} det
-           on emp.snid = det.snid
-          and emp.role_key = det.role_key
 
 ),
 
@@ -56,7 +52,6 @@ labelled as (
     select
         snid,
         role_key,
-        detail_label                                as role_detail,
         {{ role_label_expr('role_final_score') }}   as role_label,
         role_final_score,
         role_score,
@@ -92,7 +87,7 @@ qualified as (
 with_parents as (
 
     select
-        snid, role_key, role_detail, role_final_score,
+        snid, role_key, role_final_score,
         -- the three component scores travel with the row: without them
         -- you cannot tell from this table WHICH axis carried a decision,
         -- which is the first question anyone asks of a result
@@ -137,7 +132,6 @@ relabelled as (
 select
     snid,
     role_key,
-    role_detail,
     role_label,
     role_final_score,
     role_score,

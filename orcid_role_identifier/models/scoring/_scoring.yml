@@ -30,8 +30,6 @@ models:
                 min_value: 0
                 max_value: 1.2
                 inclusive: true
-      - name: role_detail
-        description: The second part of role_detailed_inferred.
       - name: derived_from_role
         description: Source role when this row came from a roll-up (e.g. pharmacist -> hcp).
     tests:
