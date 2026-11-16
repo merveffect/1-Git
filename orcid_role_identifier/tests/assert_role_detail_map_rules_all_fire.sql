@@ -1,5 +1,3 @@
-{{ config(severity='warn') }}
-
 /*
     Every rule in role_detail_map must reach at least one person.
 
@@ -26,13 +24,13 @@
     explaining why it is pre-emptive, the same convention role_title_overrides
     uses.
 
-    SEVERITY IS 'warn' FOR THE FIRST RUN, DELIBERATELY. These rules have never
-    once fired, so nobody knows which of the 44 are live and which were always
-    dead - `librarian / Archive -> National Library` may well match nobody.
-    Failing the build on its first sight of the truth would cost a build to
-    learn something a warning tells us just as well. Once the list has been
-    read and the dead rows removed or annotated, this becomes an error and
-    stays one.
+    IT RAN WARN FOR EXACTLY ONE BUILD. These rules had never once fired, so
+    nobody knew which of the 44 were live and which were always dead, and
+    failing a build on its first sight of the truth would have cost a build to
+    learn what a warning says just as well. The build of 2026-11-16 returned
+    **zero rows**: every rule matches somebody. So the seed was right all
+    along and only the join was wrong, and there is nothing left to annotate.
+    Error from here on.
 */
 
 with rules as (
