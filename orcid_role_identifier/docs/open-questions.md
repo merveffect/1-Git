@@ -3261,6 +3261,59 @@ threshold is proposed from it.
 
 ---
 
+### 2.19 role_detail was null for seven audiences - FOUND AND FIXED 2026-11-16
+
+**A delivered column had never worked, and nothing was looking.**
+`int_role_detail` joined `role_detail_map` on `coalesce(s.org_type,
+'UNKNOWN') = m.match_value`. ROR writes its types lowercase - `education`,
+`healthcare`, `facility` - and the seed writes them capitalised. So the
+comparison was false for every row, every build, since the org_type rules
+were written.
+
+**Measured before touching anything**, analyses/52 query 6:
+
+| | |
+| --- | --- |
+| seed/live pairs checked | 30 |
+| `rows_that_match_exactly` | **0 on every pair** |
+| `rows_that_would_match_ignoring_case` | 180,682 on the largest pair alone |
+| distinct live values per seed spelling | 1 - so it is case, not a vocabulary drift |
+
+**Who it hit.** Seven audiences have ONLY org_type rules and no UNKNOWN
+fallback - researcher, students, librarian, faculty_head, hcp_practitioner,
+hcp_researcher, hcp_administrator - so their `role_detail` was null for every
+person. `hcp_broad` and `pharmacist` also carry title rules, which did fire,
+so theirs came out partly populated. That is why it survived: the column was
+never uniformly empty, so it never looked broken.
+
+**And role_detail ships.** It is a column of `fct_researcher_roles` and
+reaches Braze as the detailed role. This was a defect in delivered output,
+not in a diagnostic.
+
+**The fix is one line and its precedent was seven lines away.**
+`int_employment_scored` joins `org_type_scores` with `upper(trim())` on both
+sides. Somebody met this exact problem on the scoring axis and fixed it only
+there. The detail axis now does the same.
+
+**WHY IT WAS NEVER CAUGHT, which is the part worth keeping.**
+`assert_every_role_has_org_scores` checks that the seed is COMPLETE. No test
+checked that the seed is REACHED. A seed row matching nothing is
+indistinguishable from a seed row that does not exist, and the failure is
+silent in the way that matters most - the configuration looks finished. This
+is the third time the project has met that shape, after
+`assert_title_patterns_all_match_something` and
+`assert_org_patterns_all_match_something`, so the rule is now explicit: **a
+lookup table needs a test that it is hit, not only a test that it is well
+formed.** `assert_role_detail_map_rules_all_fire` is that test, at severity
+`warn` for its first run because nobody yet knows which of the 44 rules were
+always dead.
+
+**How it was found.** It was first in the priority list on 2026-11-16 on the
+reasoning that it was the only open item where we might be shipping something
+wrong, and that one run would settle it either way. It cost one query.
+
+---
+
 ### 2.18 Statisticians and economists stay OUT - DECIDED 2026-11-15
 
 **Merve, 2026-11-15:** *"o 2177 record disarda mi suan peki. bence bu soruyu

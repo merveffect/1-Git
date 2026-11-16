@@ -52,7 +52,27 @@ org_matches as (
     join {{ ref('role_detail_map') }} m
       on s.role_key = m.role_key
      and m.match_type = 'org_type'
-     and coalesce(s.org_type, 'UNKNOWN') = m.match_value
+     /*
+         CASE-INSENSITIVE, AND IT HAD TO BE. ROR writes its types in
+         lowercase - `education`, `healthcare`, `facility` - and the seed
+         writes them capitalised, so `'education' = 'Education'` was false
+         for every row and NOT ONE org_type rule had ever fired. Measured
+         2026-11-16, analyses/52 query 6: rows_that_match_exactly was 0 on
+         all 30 pairs, against 180,682 that match once case is ignored.
+
+         Seven audiences - researcher, students, librarian, faculty_head,
+         hcp_practitioner, hcp_researcher, hcp_administrator - have ONLY
+         org_type rules and no UNKNOWN fallback, so their role_detail was
+         null for every person. hcp_broad and pharmacist have title rules
+         as well, so theirs was partly populated and partly not, which is
+         why nobody noticed.
+
+         int_employment_scored already joins org_type_scores with
+         upper(trim()) on both sides, seven lines apart from this one.
+         Somebody hit this exact problem on the scoring axis and fixed it
+         only there.
+     */
+     and upper(trim(coalesce(s.org_type, 'UNKNOWN'))) = upper(trim(m.match_value))
 
 ),
 
