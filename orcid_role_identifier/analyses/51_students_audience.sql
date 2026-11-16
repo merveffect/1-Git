@@ -10,6 +10,7 @@
 
       dbt_project.yml         roles.students
       org_type_scores.csv     10 rows, inherited from researcher
+      role_detail_map.csv     6 org_type rows, same labels as researcher
 
     THE GROUP IS NOT NEW - THE AUDIENCE IS. `student` has been one of the nine
     title groups from the start and has 11 anchors, so the model has been
@@ -19,7 +20,7 @@
 
     RUN ORDER
       Queries 1 and 2 on the CURRENT build, before anything is rebuilt.
-      Then:  dbt build --select org_type_scores+ \
+      Then:  dbt build --select org_type_scores+ role_detail_map+ \
                                int_employment_scored+
       Then queries 3 to 7.
 
@@ -602,6 +603,7 @@ with ranked as (
         is_current,
         title_group,
         round(role_final_score, 3)                      as score,
+        role_detail,
         row_number() over (order by farm_fingerprint(cast(snid as string)))
                                                         as hash_position
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`

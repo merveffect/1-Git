@@ -46,16 +46,9 @@ veterinarian,veterinary nurse,exclude,en,separate occupation
 Exclude anchors matter more than they look. In calibration they caught
 9 of 15 false matches on their own.
 
-Optional: add rows to `dept_signals.csv` and `education_signals.csv`.
-Anything you skip simply scores 0 for that component.
-
-`org_type_scores.csv` is NOT optional - `assert_every_role_has_org_scores`
-fails without it, and the organisation axis carries 0.15 to 0.40 of the
-score, so a role with no rows spends that weight on nothing.
-
-(`role_detail_map.csv` used to be on this list. It was removed from the
-project on 2026-11-16 - only audiences go to Braze, not detail labels.
-See docs/open-questions.md 2.21.)
+Optional: add rows to `org_type_scores.csv`, `dept_signals.csv`,
+`education_signals.csv` and `role_detail_map.csv`. Anything you skip
+simply scores 0 for that component.
 
 ## 3. Run
 

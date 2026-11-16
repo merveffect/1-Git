@@ -33,6 +33,7 @@ cdp as (
 select
     r.snid,
     r.role_key,
+    r.role_detail,
     r.role_label,
     r.role_final_score,
     r.country_code,

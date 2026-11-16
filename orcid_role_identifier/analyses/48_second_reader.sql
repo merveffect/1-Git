@@ -251,6 +251,7 @@ ranked as (
         r.role_key                              as audience,
         -- The sub-dimension this audience reports - a bucket for hcp_broad, a
         -- setting for pharmacist, an organisation type for the rest.
+        r.role_detail                           as audience_detail,
         -- ⭐ HOW THEY GOT IN. Null means the person qualified for this
         -- audience in their own right. A value means they ARRIVED THROUGH A
         -- CHILD ROLE rolling up - so an hcp_broad row reading

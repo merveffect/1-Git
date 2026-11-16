@@ -3261,69 +3261,58 @@ threshold is proposed from it.
 
 ---
 
-### 2.21 role_detail is removed from the project - DECIDED 2026-11-16
+### 2.21 role_detail was removed and put straight back - 2026-11-16, STILL OPEN
 
-**Merve, 2026-11-16:** *"data etiketi zaten Braze'e, CDP'ye gitmeyecek.
-Onlari kaldir. Data etiketi olmayacak. Yani biz organization type ve data
-etiketini zaten kullanmiyorsak ve bir yerde analizde veya herhangi bir filtre
-veya where clause yazmiyorsak onu siktir et. Sadece Braze'e audience'lar
-gidecek."*
+**Removed in `012e43c`, reverted in the same session at Merve's instruction.**
+The entry that was here claimed the removal was decided; it was not, and it is
+gone with the revert. What follows is what actually happened, because the round
+trip is the useful part.
 
-**This closes 2.19 and 2.20 by deleting what they were about.** Two days of
-work went into a column that nothing reads: 2.19 fixed its join, 2.20 measured
-that it was still null for 656,021 people and put two decisions on the table.
-Neither decision needs an answer now. The column is gone.
+**What was proposed.** Merve, reading 2.20: *"data etiketi zaten Braze'e,
+CDP'ye gitmeyecek... biz bunu analizde veya herhangi bir filtre veya where
+clause'da kullanmiyorsak siktir et."* I took that as settled and deleted the
+column, the model, the seed, three tests and the contract field.
 
-**I had the delivery wrong, and I wrote it into two entries without checking.**
-2.19 and 2.20 both state that `role_detail` "ships to Braze". It was in the
-contract as `role_detailed_inferred`, so the claim was true of the CODE - but
-the question that mattered was whether anyone CONSUMES it, and I never asked
-it. The rule this closes on: **a column being in the output is not the same as
-a column being used, and only the second one justifies work.** Grep answers the
-first; only the person who owns the contract answers the second.
+**Why it came back.** Merve, immediately after: *"bu kontratin olacagini nereden
+anladin sen? Ben sana oyle bir bilgi mi verdim basinda? Yoksa sen kendin mi
+salladin?"* The right question, and the answer is that I read
+`fct_braze_contact_roles.sql`, saw its header - "THE FINAL SCHEMA DELIVERED TO
+BRAZE / MPC" - and treated a comment in our own repo as proof of what the
+downstream actually ingests. It is evidence of what we SEND. It is not evidence
+of what anyone READS, and it is not evidence that we may stop sending it.
 
-**WHAT WAS REMOVED.** 282 lines of model, seed and test, plus the contract
-field:
+**THE ACTUAL OPEN QUESTION, which neither 2.19, 2.20 nor the deleted 2.21
+stated correctly:**
+
+> Does anything downstream of `fct_braze_contact_roles` read
+> `role_detailed_inferred`? Nobody in this repo can answer it. Braze / MPC /
+> CDP can.
+
+Until that is answered by someone who owns the ingestion, the column stays and
+nothing about it gets worked on either. That is the stable position: **do not
+delete it on my reading of a comment, and do not complete it on my reading of a
+comment.**
+
+**What the column contains today**, so the question can be asked concretely:
 
 | | |
 | --- | --- |
-| `models/scoring/int_role_detail.sql` | deleted, 93 lines |
-| `seeds/role_detail_map.csv` | deleted, 44 rules |
-| `tests/assert_role_detail_map_rules_all_fire.sql` | deleted - written 2026-11-16, lived one day |
-| `tests/assert_every_role_has_detail_rules.sql` | deleted - written 2026-11-16, lived one hour |
-| `tests/assert_detailed_prefix_matches_role.sql` | deleted |
-| `role_detailed_inferred` | removed from the Braze contract |
-| `role_detail` | removed from `fct_researcher_roles`, `fct_role_audience`, `fct_braze_contact_roles` |
-| `detail_dimension` | removed from 9 role definitions in `dbt_project.yml` |
-| `detail_separator`, `detail_source_separator` | removed from `contract` |
-| `role_detail_dimension_expr` | removed from `macros/contract.sql` |
-| `bucket_label` | removed from `roles_with_parent()` - it existed only to label roll-ups |
+| Formula | `role_inferred` + `" - "` + `role_detail`, or just `role_inferred` when the detail is null |
+| With a detail | `"Healthcare Professional - Practitioner"`, `"Researcher - University"` |
+| Without one | `"Healthcare Professional"` - **byte-identical to `role_inferred`** |
+| How often without one | at least 656,021 people (2.20), including all 423,975 lecturers |
 
-**The contract is now three aligned arrays, not four** - `role_inferred`,
-`role_inferred_data_source`, `role_inferred_data_source_last_updated`.
-`assert_contract_arrays_aligned` checks three.
+So for most contacts the delivered array is a duplicate of `role_inferred`. That
+is the fact to put in front of whoever owns the ingestion.
 
-**WHAT DID NOT GO, AND MUST NOT.** `org_type` stays. Merve's sentence names
-"organization type ve data etiketi" together, but they are not the same thing
-in this pipeline: `org_type` is what `org_type_scores` joins on, it carries
-0.15 to 0.40 of every score, and it is the entire reason students and
-faculty_head are Education-only. Removing it would delete two audience
-definitions. What went is the org-type-derived LABEL, which was an output.
-`org_type_scores.csv` is untouched.
-
-**ONE THING TO TELL THE CDP SIDE.** `role_detailed_inferred` was a delivered
-column until this build. If anything downstream maps it, it disappears on the
-next run. Nothing in this repo reads it, but this repo is not where the
-ingestion lives.
+**Cost of the round trip:** one commit out, one commit back, no build in
+between, nothing lost. Recorded rather than quietly reverted because the
+mistake - a repo comment read as an external fact - is the same shape as the
+one in 2.19 and 2.20, three times in one week.
 
 ---
 
-### 2.20 role_detail is still null for at least 656,021 people, and for three separate reasons - MEASURED 2026-11-16, SUPERSEDED BY 2.21 THE SAME DAY
-
-> **Both decisions below are void.** `role_detail` was removed from the project
-> hours after this was written - see 2.21. Kept because the measurement is
-> sound and because the three causes are a catalogue of how a lookup table
-> goes wrong, not because anything here is still open.
+### 2.20 role_detail is still null for at least 656,021 people, and for three separate reasons - MEASURED 2026-11-16, TWO DECISIONS OPEN
 
 The case fix in 2.19 made the column work. It did not make it complete. The
 verification query after the build showed every audience still carrying nulls,
@@ -3404,12 +3393,7 @@ Nothing is being changed on either until they are answered. The test stays at
 
 ---
 
-### 2.19 role_detail was null for seven audiences - FOUND AND FIXED 2026-11-16, THEN THE COLUMN WAS DELETED - 2.21
-
-> **"And role_detail ships" below is the part that did not hold up.** It was in
-> the Braze contract, but nothing consumed it, and on the same day it was
-> removed from the project. The defect was real and the diagnosis stands; the
-> reason given for its urgency did not.
+### 2.19 role_detail was null for seven audiences - FOUND AND FIXED 2026-11-16
 
 **A delivered column had never worked, and nothing was looking.**
 `int_role_detail` joined `role_detail_map` on `coalesce(s.org_type,

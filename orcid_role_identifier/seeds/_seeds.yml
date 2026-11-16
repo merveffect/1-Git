@@ -50,6 +50,25 @@ seeds:
     config:
       column_types: {role_key: STRING, org_type: STRING, org_score: FLOAT64, note: STRING}
 
+  - name: role_detail_map
+    description: >
+      Rules producing the second part of role_detailed_inferred.
+      match_type='title' matches the job title, match_type='org_type'
+      matches the ROR organisation type. Lowest priority wins.
+    config:
+      column_types: {role_key: STRING, match_type: STRING, match_value: STRING, detail_label: STRING, priority: INT64, note: STRING}
+    columns:
+      - name: role_key
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ all_role_keys() }}"
+      - name: match_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['title', 'org_type']
+
   - name: role_title_overrides
     description: >
       HUMAN DECISIONS. Always beat the vector and LLM decisions.
