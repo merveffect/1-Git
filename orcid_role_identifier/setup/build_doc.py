@@ -3,7 +3,6 @@ import sys, os
 SP = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, SP)
 from docx_lib import *
 import audiences
-import summary
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH as AL
 # The committed figure directory. This said "fig" until 2026-11-03, which was a
@@ -131,8 +130,33 @@ table(d, ["Audience", "People", "Right, of the decided", "Verdict"],
   ["Pharmacist", "2,064", "95.7% \u00b1 1.9", "Good. Was 81.8% in October"],
   ["Librarian", "700", "98.5%", "Solid. All 700 read"]],
  widths=[1.6,0.85,1.3,2.85], size=8.8)
-para(d, "Each audience is written out in full in section 6: how it is decided, what was "
-        "corrected, and what is still open in it.", space_after=10)
+para(d, "Each audience is written out in section 6: how it is decided, how it was "
+        "measured, and what is still open in it.", space_after=10)
+
+h(d, "3.1  How much of each audience can actually be reached", 2)
+para(d, "Being in an audience and being contactable are different things. **Reachable** "
+        "means the person is in the CDP under any of four legal bases - marketing "
+        "opt-in, advertising opt-in, legitimate interest, or book-author consent. The "
+        "people column below was counted on 10 November, two days before section 3's, "
+        "and the Students row on 12 November when that audience was built; the share "
+        "reachable is what to read here and it is stable.", space_after=4)
+table(d, ["Audience", "People", "Reachable", "Of those"],
+ [["**Lecturer**", "410,499", "**319,291**", "77.8%"],
+  ["**Researcher**", "333,280", "**237,391**", "71.2%"],
+  ["**Healthcare (broad)**", "124,982", "**93,377**", "74.7%"],
+  ["**Students**", "105,658", "**68,959**", "**65.3%**"],
+  ["**Practitioner**", "61,945", "**46,450**", "75.0%"],
+  ["**Clinical researcher**", "54,016", "**39,758**", "73.6%"],
+  ["**Head of Faculty**", "15,159", "**11,962**", "78.9%"],
+  ["**Clinical administrator**", "7,563", "**5,949**", "78.7%"],
+  ["**Pharmacist**", "2,060", "**1,531**", "74.3%"],
+  ["**Librarian**", "699", "**384**", "54.9%"]],
+ widths=[1.9, 1.1, 1.2, 0.9], size=9)
+para(d, "**The rows overlap and must not be added up** - one person can be a Lecturer "
+        "and a Clinical researcher at once. **Students is the least reachable of the "
+        "ten at 65.3%**, so a campaign gets 68,959 of the 105,658; Librarian is lower "
+        "still on a much smaller base. Neither is a classification problem - it is "
+        "consent.", space_after=10)
 
 box(d, "WHY HEALTHCARE IS THE HARDEST PART", [
  "Academic titles are nearly the same everywhere: Professor, Associate Professor, "
@@ -347,7 +371,6 @@ para(d, "This is worth reading twice, because it is the shape of problem we will
         "meeting: **a correction that is right for one audience is wrong for another, "
         "because they share a group.** Nothing in the current design separates them.")
 
-summary.build(d)
 
 # See the note in build_mkt.py: the committed copy is the one Merve pulls.
 for out in (os.path.join(os.path.dirname(SP), "docs", "ORCID-Role-Enrichment-Status-and-Plan.docx"),
