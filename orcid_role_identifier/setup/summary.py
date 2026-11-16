@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Section 10: the whole project in one read.
+"""Section 8: the whole project in one read.
 
 Written 2026-11-04 on Merve's instruction, after they said the project as a
 whole had stopped being legible from the inside: "ben hala bu projede ne
@@ -12,27 +12,27 @@ from docx.shared import Pt
 
 
 def build(d):
-    h(d, "10.  Summary — the whole project in one read")
+    h(d, "8.  Summary — the whole project in one read")
     para(d, "Everything below appears in full earlier in this document. This section "
             "exists so that the project can be explained in five minutes without "
             "reading the other nine.", space_after=10)
 
     # ------------------------------------------------------------ THE PROBLEM
-    h(d, "10.1  The problem", 2)
+    h(d, "8.1  The problem", 2)
     para(d, "ORCID is a public registry where researchers keep their own records. People "
             "type their job titles as **free text**. We hold **1,737,768 employment "
             "records** that carry a Springer Nature identifier, and inside them are "
-            "**317,302 distinct job titles** — in every language, with every typo, from "
+            "**315,190 distinct job titles** — in every language, with every typo, from "
             "`professor` to `profossor` to `dean s chair associate professor`.")
     para(d, "What marketing needs is simple: *is this person a clinician, an academic, a "
             "librarian?* The project turns that free text into **nine audiences**.")
 
     # ------------------------------------------------------------ THE METHOD
-    h(d, "10.2  How it works — three steps", 2)
+    h(d, "8.2  How it works — three steps", 2)
 
     para(d, "**Step 1 — we label the dictionary, not the people.**", space_after=2)
     para(d, "This is the single most important decision in the design. We do not classify "
-            "1.7 million people; we classify the **317,302 distinct job titles once**, "
+            "1.7 million people; we classify the **315,190 distinct job titles once**, "
             "into ten title groups, and the 459,123 distinct departments alongside them. "
             "After that, labelling a person is a join.")
     para(d, "What it buys: a correction is one row. When `junior researcher` was found in "
@@ -76,28 +76,30 @@ def build(d):
     ])
 
     # ------------------------------------------------------------ THE TABLE
-    h(d, "10.3  Where each audience stands", 2)
-    para(d, "One measurement, taken from the second build of 10 November 2026, which "
-            "landed the doctoral-student rule. Every figure in this table comes from "
-            "that single count — earlier versions of it mixed three dates.",
+    h(d, "8.3  How much of each audience can actually be reached", 2)
+    para(d, "**Section 3 carries the current people figures, counted 16 November.** This "
+            "table is kept for the column that appears nowhere else — how much of each "
+            "audience a campaign can legally contact. Its people figures were counted on "
+            "10 November and are a few days behind section 3; the Students row was counted "
+            "on 12 November, when that audience was built. The share reachable is what to "
+            "read here, and it is stable.",
             space_after=4)
-    table(d, ["Audience", "Confirmed", "Reachable", "Of those", "State"],
-     [["**Lecturer**", "410,499", "**319,291**", "77.8%", "Most worked, best validated"],
-      ["**Researcher**", "333,280", "**237,391**", "71.2%",
-       "ONE audience; students removed 10 Nov"],
-      ["**HCP broad**", "124,982", "**93,377**", "74.7%",
-       "Job title mandatory; departments fixed 10 Nov"],
-      ["**HCP practitioner**", "61,945", "**46,450**", "75.0%", "Long tail — least read"],
-      ["**HCP researcher**", "54,016", "**39,758**", "73.6%",
-       "Read 3x; 94.3% after the department fix"],
-      ["**Head of Faculty**", "15,159", "**11,962**", "78.9%",
-       "Narrowed 5 Nov; 83.3% correct"],
-      ["**HCP administrator**", "7,563", "**5,949**", "78.7%",
-       "Org veto fixed 5 Nov; 94.9% correct"],
-      ["**Pharmacist**", "2,060", "**1,531**", "74.3%",
-       "Pharmacologists removed 5 Nov, −10.4%"],
-      ["**Librarian**", "699", "**384**", "54.9%", "Small, entirely rule-driven"]],
+    table(d, ["Audience", "People", "Reachable", "Of those", "Counted"],
+     [["**Lecturer**", "410,499", "**319,291**", "77.8%", "10 Nov"],
+      ["**Researcher**", "333,280", "**237,391**", "71.2%", "10 Nov"],
+      ["**HCP broad**", "124,982", "**93,377**", "74.7%", "10 Nov"],
+      ["**Students**", "105,658", "**68,959**", "65.3%", "**12 Nov** — the lowest of the ten"],
+      ["**HCP practitioner**", "61,945", "**46,450**", "75.0%", "10 Nov"],
+      ["**HCP researcher**", "54,016", "**39,758**", "73.6%", "10 Nov"],
+      ["**Head of Faculty**", "15,159", "**11,962**", "78.9%", "10 Nov"],
+      ["**HCP administrator**", "7,563", "**5,949**", "78.7%", "10 Nov"],
+      ["**Pharmacist**", "2,060", "**1,531**", "74.3%", "10 Nov"],
+      ["**Librarian**", "699", "**384**", "54.9%", "10 Nov"]],
      widths=[1.5, 0.95, 1.0, 0.7, 2.4], size=9)
+    para(d, "**Students is the least reachable of the ten at 65.3%**, so a campaign gets "
+            "68,959 of the 105,658. Librarian is lower still at 54.9%, on a much smaller "
+            "base. Neither is a classification problem — it is consent.",
+            size=9, space_after=4)
     para(d, "**Measured accuracy for every audience, read by hand, is in section 6.0**: "
             "Researcher 99.0%, Lecturer 98.7%, Librarian 98.5%, Pharmacist 95.7%, HCP "
             "administrator 94.9%, HCP practitioner 93.4%, HCP broad 90.6%, Head of "
@@ -137,12 +139,12 @@ def build(d):
      "54.9%. An earlier version of this section said 18% to 30%, which was one legal "
      "basis out of four being mistaken for all of them.",
      "",
-     "This is 10.5 restated with fresh numbers: effort spent on precision is no longer "
+     "This is 8.5 restated with fresh numbers: effort spent on precision is no longer "
      "what limits this project.",
     ], fill="FDF8EF", accent=AMBER)
 
     # ------------------------------------------------------------ ONE BY ONE
-    h(d, "10.4  One by one", 2)
+    h(d, "8.4  One by one", 2)
 
     para(d, "**Lecturer** — the most mature part of the project. Against the survey we "
             "find **91.1%** of the people who call themselves academics. Of the people we "
@@ -167,7 +169,7 @@ def build(d):
             "'senior' close together as two ends of one axis. Merve closed the "
             "early/senior split question on 4 November: **Researcher ships as one "
             "audience and we are not asking.** The doctoral-student rule was settled the "
-            "same day — see 10.6.")
+            "same day — see 8.6.")
 
     para(d, "**Head of Faculty — narrowed and re-measured on 5 November.** A hand reading "
             "of 400 people found 18.8% wrong, and the main cause was the organisation: "
@@ -261,7 +263,7 @@ def build(d):
             "library staff publish less and so ORCID knows fewer of them.")
 
     # ------------------------------------------------------------ THE LIMIT
-    h(d, "10.5  The real limit is reach, not accuracy", 2)
+    h(d, "8.5  The real limit is reach, not accuracy", 2)
     box(d, "WHERE THE PROJECT ACTUALLY NARROWS", [
      "`290,045   people answered the survey`",
      "`238,440   we could match to the CDP`",
@@ -273,7 +275,7 @@ def build(d):
     ], fill="FDF8EF", accent=AMBER)
 
     # ------------------------------------------------------------ WHAT IS LEFT
-    h(d, "10.6  What is genuinely left", 2)
+    h(d, "8.6  What is genuinely left", 2)
     table(d, ["What", "Whose call", "Note"],
      [["`director` family, psychologists, and three smaller definition questions",
        "**Marketing**", "Re-priced 5 Nov on a fresh sample: bare `director` / `head` / "

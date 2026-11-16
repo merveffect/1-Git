@@ -152,10 +152,15 @@ bullet(d, "**6  What Students means** — two separate things here. **One: it is
           "student*, *undergraduate student* and all three count. If you want doctoral "
           "candidates only, tell us and we will narrow it; that is one line to change. "
           "**Two, and this one is a warning rather than a question: the employer has to "
-          "be a university.** A PhD student at a research institute such as Max Planck, "
-          "or at a teaching hospital, is NOT in the audience even when their job title "
-          "says *PhD student* plainly. That rule costs us 10,316 people, and it was "
-          "confirmed on 11 November after we measured the bill.")
+          "be a university.** We test that on the employer, not on the person. Every "
+          "organisation named in ORCID is looked up in ROR, a public register that gives "
+          "each one a type, and Students accepts only the type *Education*. A research "
+          "institute such as Max Planck comes back as *Facility* or *Funder*, and a "
+          "teaching hospital as *Healthcare*, so a PhD student at either is **not** in "
+          "the audience even when their job title says *PhD student* plainly. We never "
+          "read the education section of someone's profile — their degrees play no part "
+          "in this. That rule costs us 10,316 people, and it was confirmed on 11 "
+          "November after we measured the bill.")
 bullet(d, "**7  Veterinarians** — 91 people, in the healthcare audiences today by accident "
           "rather than by decision.")
 bullet(d, "**8  Sport and exercise science** — 78 people, same situation.")

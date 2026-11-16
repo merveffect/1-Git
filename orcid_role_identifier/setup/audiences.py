@@ -9,10 +9,12 @@ def build(d, figdir):
     global F; F = figdir
 
     h(d, "6.  Every target audience, one by one")
-    para(d, "Nine audiences. This section gives each one its own heading: how big it is, "
+    para(d, "Ten audiences. This section gives each one its own heading: how big it is, "
             "how it is labelled, how accurate it has been shown to be, what we fixed and "
             "what is still open. Lecturer is written out in full because it is the one we "
-            "have measured most; the others are summarised and will be expanded in turn.")
+            "have measured most; the others are summarised and will be expanded in turn. "
+            "The people figures are in section 3 and are not repeated here, so that one "
+            "table stays the only place they are quoted.")
 
     para(d, "**Two numbers appear throughout and they are not the same thing.** They fail "
             "in opposite directions and an audience can be good at one and poor at the "
@@ -25,24 +27,25 @@ def build(d, figdir):
             "same way. Those people agree with themselves 88.9% of the time, so **88.9% is "
             "the ceiling** for either number.", space_after=10)
 
-    table(d, ["Audience","People","Did we find them?","Do they agree?","State"],
-     [["**Lecturer**","399,884","**91.1%**","**78.2%**","Best measured. Detailed below"],
-      ["Researcher","321,824","74.3%","43.9%","Good. Precision depressed by multi-role people"],
-      ["Healthcare (broad)","126,869","**90.9%**","22.7%","A wide net on purpose"],
-      ["Practitioner","60,937","—","35.8%","Survey cannot split the healthcare sub-audiences"],
-      ["Clinical researcher","50,600","—","48.2%","Same"],
-      ["**Head of faculty**","17,528","**23.8%**","**26.3%**","**The weak one.** Known causes"],
-      ["Clinical administrator","6,865","—","22.5%","71 people checked — too few"],
-      ["Pharmacist","2,245","—","—","**Cannot be measured** — no survey option"],
-      ["Librarian","668","—","—","**Cannot be measured** — 4 people"]],
-     widths=[1.4,0.8,1.0,0.85,2.55], size=8.8)
+    table(d, ["Audience","Did we find them?","Do they agree?","State"],
+     [["**Lecturer**","**91.1%**","**78.2%**","Best measured. Detailed below"],
+      ["Researcher","74.3%","43.9%","Good. Precision depressed by multi-role people"],
+      ["Healthcare (broad)","**90.9%**","22.7%","A wide net on purpose"],
+      ["Practitioner","—","35.8%","Survey cannot split the healthcare sub-audiences"],
+      ["Clinical researcher","—","48.2%","Same"],
+      ["**Head of faculty**","**23.8%**","**26.3%**","**The weak one.** Known causes"],
+      ["Clinical administrator","—","22.5%","71 people checked — too few"],
+      ["Pharmacist","—","—","**Cannot be measured** — no survey option"],
+      ["Librarian","—","—","**Cannot be measured** — 4 people"],
+      ["Students","—","—","**Cannot be measured** — the survey splits the levels, we do not"]],
+     widths=[1.4,1.05,0.9,3.25], size=8.8)
 
     # ------------------------------------------------- 6.0 READ BY HAND, 5 NOV
     h(d, "6.0  A third number: every audience read by hand — 5 November", 2)
     para(d, "The survey numbers above cannot reach Pharmacist or Librarian at all, and for "
             "the healthcare sub-audiences they cannot separate one from another. So on "
             "5 November each audience was measured a third way: **400 CONFIRMED people "
-            "drawn at random** (all 692 for Librarian), and every one read — job title, "
+            "drawn at random** (all 700 for Librarian), and every one read — job title, "
             "employer and department — and marked **correct**, **wrong** or **not sure**. "
             "*Not sure* is used for two things only: a definition marketing has not yet "
             "settled (psychologists, veterinarians, a bare `director`), and a record that "
@@ -50,7 +53,7 @@ def build(d, figdir):
     table(d, ["Audience", "Correct", "Wrong", "Not sure", "Correct, of the decided", "Wrong people, est."],
      [["**Researcher**", "96.8%", "1.0%", "2.3%", "**99.0% ± 1.0**", "~3,300"],
       ["**Lecturer**", "98.2%", "1.2%", "0.5%", "**98.7% ± 1.1**", "~5,100"],
-      ["**Librarian** (all 692)", "97.1%", "1.4%", "1.4%", "**98.5%**", "10"],
+      ["**Librarian** (all 700)", "97.1%", "1.4%", "1.4%", "**98.5%**", "10"],
       ["HCP practitioner", "82.0%", "5.8%", "12.2%", "93.4% ± 2.6", "~3,500"],
       ["HCP broad", "81.5%", "8.5%", "10.0%", "90.6% ± 3.0", "~10,600"],
       ["HCP researcher", "81.2%", "9.0%", "9.8%", "90.0% ± 3.1", "~4,800"],
@@ -100,9 +103,8 @@ def build(d, figdir):
 
     h(d, "6.1.1  How big it is, and who decided", 3)
     table(d, ["", "Figure", "Against what"],
-     [["Job titles in the group","**74,365**","out of 317,302 distinct titles in ORCID"],
-      ["Employment records","**11,994,600**","the largest group by a wide margin"],
-      ["People in the audience","**399,884**","308,671 of them reachable"],
+     [["Job titles in the group","**74,365**","out of 315,190 distinct titles in ORCID"],
+      ["People in the audience","**423,668**","counted 12 November — see section 3"],
       ["Example words behind it","**15**","professor, lecturer, docente, dozent, reader…"],
       ["Decided by the machine","**99.705%**","74,339 titles"],
       ["Decided by a person","**0.295%**","26 titles, 35,380 records"],
@@ -253,7 +255,7 @@ def build(d, figdir):
         h(d, f"6.{n[0]}  {title}", 2)
         for b in body: para(d, b, space_after=5)
 
-    short("RESEARCHER — 321,824 people", [
+    short("RESEARCHER — 340,705 people", [
       "**74.3% found, 43.9% agree.** Built from one title group, `researcher` "
       "(10.3M records). It was two, `researcher_early` and `researcher_established`, "
       "until 2026-11-10, when Merve removed the split: no audience ever read the two "
@@ -271,7 +273,7 @@ def build(d, figdir):
       "research vocabulary.",
       "**Same structural risk as Lecturer:** department weight zero, no second signal."])
 
-    short("HEALTHCARE (BROAD) — 126,869 people", [
+    short("HEALTHCARE (BROAD) — 181,295 people", [
       "**90.9% found, 22.7% agree.** The widest net: it admits anybody whose job title is "
       "clinical **or** whose department is, so that nobody clinical is missed.",
       "**The 22.7% is mostly the design working.** 887 of the people in it describe "
@@ -282,7 +284,7 @@ def build(d, figdir):
       "question 2: is *healthcare professional* about the work or about the subject. The "
       "argument used to be abstract; it now has a figure attached."])
 
-    short("HEAD OF FACULTY — 15,047 people after 5 November", [
+    short("HEAD OF FACULTY — 17,218 people", [
       "**5 NOVEMBER: narrowed to education organisations, and measured twice.** A hand "
       "reading of 400 people (section 6.0) found 18.8% wrong, and the largest single cause "
       "was the organisation axis, not the title. Facility scored 0.60, Nonprofit 0.40 and "
@@ -540,7 +542,7 @@ def build(d, figdir):
      "shipped rather than after, which is the first time that has happened.",
     ], fill="FDF8EF", accent=AMBER)
 
-    short("PRACTITIONER and CLINICAL RESEARCHER — 60,937 and 50,600 people", [
+    short("PRACTITIONER and CLINICAL RESEARCHER — 62,141 and 108,805 people", [
       "**35.8% and 48.2% agree; neither has a recall figure**, because the survey offers "
       "only *Physician/Clinician* and *Healthcare professional* with no sub-breakdown.",
       "**Practitioner is the least-read group in the project** — titles covering 38% of its "
@@ -551,7 +553,7 @@ def build(d, figdir):
       "words are absent from it — it has Physician, Clinician and Surgeon but no specialty "
       "list at all. That gap is what the clinical expert conversation exists to fill."])
 
-    short("CLINICAL ADMINISTRATOR — 7,528 people after 5 November", [
+    short("CLINICAL ADMINISTRATOR — 8,258 people", [
       "**Fixed and re-measured on 5 November: 88.9% → 94.9% correct of the decided**, the "
       "second figure on a fresh sample of 400. The organisation axis was confirming "
       "industry medical directors: title 1.00 × 0.35 plus a clinical department ~0.80 × 0.40 "
@@ -582,7 +584,7 @@ def build(d, figdir):
       "into Head of Faculty, where they do not belong, and that was accepted rather than "
       "fixed because removing them would have cost 294 heads of department and 17 deans."])
 
-    short("PHARMACIST — 2,051 people after 5 November", [
+    short("PHARMACIST — 2,064 people", [
       "**Cannot be measured against the survey — but it has now been read, fixed and read "
       "again.** 400 by hand on 5 November: **81.8% correct of the decided, 16.0% wrong**, "
       "then the weakest audience in the project. Sized on the full audience before "
@@ -616,7 +618,7 @@ def build(d, figdir):
       "confirmed in the first place. The clearest demonstration in the project that a "
       "dictionary and an audience are different things."])
 
-    short("LIBRARIAN — 668 people", [
+    short("LIBRARIAN — 700 people", [
       "**Cannot be measured externally** — four people in the ground truth set.",
       "**But it is the one audience whose error rate we actually know**, because every "
       "assignment is exact. It is decided by eleven literal patterns rather than by the "
@@ -626,4 +628,31 @@ def build(d, figdir):
       "That is a different kind of evidence from everything else here — not a sample, a "
       "complete reading. It is possible only because the group is small and the rule is "
       "literal."])
+
+    short("STUDENTS — 105,658 people", [
+      "**The newest audience, built and read in November, and third of the ten at "
+      "98.7% ± 1.3.** 400 records read one by one on 13 November: 367 correct, 5 wrong, "
+      "28 not sure.",
+      "**Three rules decide it, and all three were measured before they were set.** The "
+      "job title must name a student. The employer must be a university — every other "
+      "ROR type scores zero. And only posts a person currently holds count: a finished "
+      "doctorate is not a student, and that rule alone removed 61,209 people who are "
+      "today's professors and postdocs.",
+      "**The employer rule has a bill and it was paid knowingly.** It refuses 10,316 "
+      "people whose titles plainly say `phd student`, because ROR types Max Planck and "
+      "CNRS as a facility or a funder and teaching hospitals as healthcare. The "
+      "alternative was letting in company and hospital trainees, measured at 201 of "
+      "them, so the rule costs 51 real students for every trainee it stops. Reaffirmed "
+      "on 11 November with that number in front of us.",
+      "**It is one bucket, not three.** Doctoral, master's and undergraduate students "
+      "are in it together, because that is what people wrote and nobody has asked us to "
+      "split them. Narrowing it to doctoral candidates is one line.",
+      "**Nothing is read from the education section of a profile.** Using a person's "
+      "degrees as a second signal was measured in November and refused: 65% of open "
+      "education records carry no usable date, and the strict reading would have cut the "
+      "audience to 15,254. Education is a check on people we already have, not a way in.",
+      "**One soft spot, and it is named.** 6% of the sample wrote only a qualification "
+      "as their whole job title — `PhD`, `Master`, `Bachelor` — and the record cannot "
+      "say whether the person is studying for it or has held it for twenty years. One "
+      "of them wrote `Phd holder`. A rule for that family is item 2 in section 7."])
     return d

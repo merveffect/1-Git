@@ -21,134 +21,26 @@ r.font.color.rgb=TEAL; r.font.name=SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
-para(d, "Working document  ·  updated 10 November 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "Working document  ·  updated 16 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
-box(d, "WHAT CHANGED ON 10 NOVEMBER", [
- "**Researcher is one title group, not two.** `researcher_early` and "
- "`researcher_established` were merged. No audience had ever read them apart, and the "
- "project's largest single error — `junior researcher`, 42,949 records — was a title "
- "landing in the wrong one of two groups that meant the same thing. 22 anchors and 195 "
- "overrides now sit under one name.",
+box(d, "WHERE THIS STANDS", [
+ "**All ten audiences are built, and all ten have a measured accuracy.** Every one was "
+ "read by hand - 400 people per audience, one record at a time, marked correct, wrong "
+ "or not sure. Seven are at 93% or better and the two largest are at 99%. Nothing in "
+ "this document is a forecast.",
  "",
- "**Doctoral students leave Researcher unless the job title says research.** Merve\'s "
- "decision, on the loose reading: any research word keeps them, in any language, not "
- "only the noun *researcher*. `phd research fellow` stays, `phd fellow` — 19,424 "
- "records — goes. 1,400 people of 333,280, and no other audience moved by more than 10.",
+ "**Two are not ready, and for different reasons.** *Healthcare Professional (broad)* "
+ "is accurate but no longer describes itself: biomedical researchers now roll up into "
+ "it, so 54,426 people who have never seen a patient sit in an audience with that name. "
+ "*Head of Faculty* is the one weak audience at 83.3%, because the job title is the only "
+ "evidence it has. Both are waiting on marketing, not on engineering.",
  "",
- "**The department dictionary was reading 108,587 records of non-clinical departments as "
- "clinical, and 85% of that is gone.** `School of Life Sciences`, `Faculty of Science`, "
- "`Plant Pathology`, `Physikalisches Institut`, `Faculty of Arts and Humanities`. The "
- "cause was two anchors — `faculty of medicine` and `school of medicine` — which are "
- "four words of which two carry no field at all, so anything named *Faculty of "
- "something* sat close to them. 16 new anchors fixed it; the two magnets were left in "
- "place deliberately, because removing them would have sent 270 departments into "
- "`pharmacy`, the one receiving discipline that feeds a live audience.",
+ "**The newest audience is Students** - 105,658 people, built and read in November, "
+ "98.7% correct and third of the ten.",
  "",
- "**HCP researcher was read a third time: 94.3%, up from 89.0%.** On a fresh 100, after "
- "the department fix. The move is within sampling noise at that size and the error "
- "composition is the better evidence — field errors fell from 4 to 2, and both "
- "survivors are fields no anchor addressed. Section 10.4.",
- "",
- "**Reachable is three times what this document used to say.** Every reachable figure "
- "quoted here before today was `mkt_pref_opt_in` alone — one legal basis out of four. "
- "Lecturer read 109,323 and is **319,291**. Book-author consent was added as the fourth "
- "basis, which Merve had already decided counts. Section 10.3.",
- "",
- "**AND ON 5 NOVEMBER:**",
- "",
- "**Every audience now has a measured accuracy, read by hand.** A random sample of 400 "
- "CONFIRMED people per audience (all 692 librarians) was read one by one and marked "
- "correct, wrong or not sure. Lecturer, Researcher and Librarian are **98.5–99.0% "
- "correct** on the cases that could be decided; the four healthcare audiences 88–93%; "
- "Pharmacist 81.8%. Section 6.0 has the table and what each number does and does not "
- "mean.",
- "",
- "**Head of Faculty is now ROR Education only, and it went from 67.7% to 83.3%.** The "
- "organisation axis was letting Directors at Max Planck, Fraunhofer, WHO and nonprofits "
- "through on a partial score. Only organisations ROR types as *Education* count now, or, "
- "where ROR has no match, names containing *university*, *college* or *faculty*. 18,869 "
- "→ 15,047 people. Measured on a second, independent sample after the change, not on "
- "the one the rules were written from.",
- "",
- "**Named chairs moved to Lecturer, and administrative posts left.** `endowed chair`, "
- "`canada research chair`, `chair professor of x` are professorships, not headships. "
- "Moving them needed a new rule type — a pattern that can be vetoed when the same title "
- "also names a real post (`vice chair for research`, `dean and chair professor`). 52 "
- "administrative titles (`director of it`, `director of international relations`, "
- "`chief technology officer`) were rejected from leadership.",
- "",
- "**What is left in Head of Faculty is mostly one question for marketing.** 20% of the "
- "audience holds only `director`, `head` or `chair`. Section 10.6.",
- "",
- "**Pharmacist went from the weakest audience to 95.7%.** The embedding cannot tell "
- "pharmacology from pharmacy, so 11% of the audience were pharmacologists and "
- "pharmaceutical scientists. Four patterns scoped to the pharmacist group — each vetoed "
- "by any pharmacist word — moved them to Lecturer or Researcher and took students and "
- "technicians out. 2,304 → 2,051 people; 81.8% → 95.7% correct, again on a fresh sample.",
- "",
- "**HCP administrator 88.9% → 94.9%.** Industry medical directors — Amgen, Novartis, Vertex "
- "— were confirming on a company or funder organisation score of 0.15–0.25. Both are 0.00 "
- "now, with an industry-word veto where ROR has no match, and a code fix that makes a veto "
- "mean zero. 7,571 → 7,528, measured on a fresh sample.",
- "",
- "**EARLIER, 3 NOVEMBER:**",
- "",
- "**Section 6 is new: every target audience now has its own heading**, with Lecturer "
- "written out in full — how it is labelled, how accurate it has been shown to be in "
- "both directions, what was corrected and what is still open. The other eight are "
- "summarised and will be expanded in the same shape.",
- "",
- "**The validation was re-measured in both directions.** The earlier 81.8% answered only "
- "\"did we find them\". Measuring the other way as well — do the people we put in an "
- "audience agree — gives **59.3% of 11,635 memberships confirmed**, against a mechanical "
- "ceiling near 78%. Section 5 carries both numbers; neither alone is the answer.",
- "",
- "**Lecturer has been read end to end.** 91.1% found, 78.2% agree, and **99.2% of the "
- "titles were read correctly** — of 1,354 people who call themselves something else, "
- "only 50 have a title that is not a teaching title at all.",
- "",
- "**Fourteen corrections landed**, covering 16,507 records, and the Lecturer audience "
- "moved by **one person**. The dictionary is cleaner and the audience is not, because the "
- "people holding a bad title almost always hold a good one too. That is the third time "
- "this project has measured it and it is section 6.1.3.",
- "",
- "**A third instance of the one-word failure was found and fixed.** `associate` reaching "
- "teaching through `associate professor`, after `member` in October and `fellow` last "
- "week — **78,565 records** between them. It needs a standing check, not a third "
- "discovery.",
- "",
- "**Head of Faculty is now university heads only.** A medical director at a hospital was "
- "reaching it; rather than patch that one title the whole hospital path came out. 2,819 "
- "people leave, including 294 heads of department and 17 deans, and that cost was "
- "measured before the decision. A small, certain audience was preferred.",
- "",
- "**Head of Faculty is 33,242 people, up from 17,528, and it is now measured properly: "
- "79.2% certainly right, 15.0% uncertain, 5.7% wrong.** Only 1,715 of the growth is this "
- "work — the professor-plus-leadership compounds now reach the audience and brought "
- "exactly what was forecast, within 4%. The rest arrived in the same build because "
- "employers resolved to academic organisations, which is the thing this audience has "
- "always been starved by. Two findings, reported as two. Section 6.4.",
- "",
- "It took a new mechanism — a pattern scoped to one title group — because an unscoped "
- "one would have swept 14,500 records out of eight other groups, including 2.7% of the "
- "whole pharmacist group. `head of X` and `dean` are modifiers, not professions. The "
- "scoping then held to the record, across two builds: the eight other groups moved by "
- "zero both times.",
- "",
- "**Then the whole Head of Faculty roster was read by hand, and it is the clearest "
- "demonstration of this project's central lesson so far.** 106 corrections over 7,126 "
- "records; 201 people left the audience; and **the measured error rate did not move — 101 "
- "people wrong before, 102 after.** The people who are wrongly in an audience are not "
- "there through the titles you happen to review. Cleaning the dictionary and cleaning an "
- "audience are different jobs, now measured five times over.",
- "",
- "**Two guards earned their keep rather than being a nuisance.** A build failed because "
- "two pattern groups claimed one title — `associate dean for library operations`, which "
- "is a library job with a deanship as its grade — and would otherwise have been resolved "
- "alphabetically and silently. And 2 of 108 override rows written from a roster read by "
- "eye matched nothing: both spelling, both deleted rather than re-guessed. 98.1% of a "
- "hand-written list was exact, which is reliable enough to be worth doing and not "
- "reliable enough to do without a check.",
+ "**What this document is.** Where the work stands, how it decides, how we know it is "
+ "right, and what is still open. The decisions behind each rule, with their "
+ "measurements, are recorded separately in the project's open-questions log.",
 ], fill="F2F6F5", accent=TEAL)
 
 # ============================================================ 1
@@ -156,24 +48,25 @@ h(d, "1.  Where we are today")
 para(d, "ORCID is where researchers write their own employment history: job title, "
         "organisation, department. All of it is free text. There is no field anywhere "
         "that says what profession someone is. We read that text and work it out.")
-# ⚠ FOUR OF THESE FIVE ROWS ARE A 5 NOVEMBER COUNT AND THREE BUILDS HAVE
-# LANDED SINCE. They are DISTINCT PEOPLE ACROSS ALL AUDIENCES, which is not
-# the sum of the per-audience figures - most people hold two or three roles -
-# so they cannot be derived from anything already in this file. `analyses/51`
-# query 9 counts all five; paste its output here and rebuild. Only the
-# audience count is updated below, because that one is knowable without a
-# query. Section 1 is the first thing anybody reads, so it is the worst place
-# in the project for a stale number.
+# All five rows counted on 2026-11-16 by `analyses/51` query 9. They are
+# DISTINCT PEOPLE ACROSS ALL AUDIENCES, which is not the sum of the
+# per-audience figures - most people hold two or three roles - so they cannot
+# be derived from anything else in this file. Re-run that query after a build
+# before quoting them again. Section 1 is the first thing anybody reads, so it
+# is the worst place in the project for a stale number.
 table(d, ["", "Today", "What it means"],
- [["People with a profession", "**673,851**", "We can name a profession for them"],
-  ["Reachable", "**501,508**", "In the CDP and opted in. This is what a campaign can use"],
+ [["People with a profession", "**783,293**", "We can name a profession for them"],
+  ["Reachable", "**577,603**", "In the CDP and opted in. This is what a campaign can use"],
   ["Audiences", "**10**", "Before this project there was one"],
-  ["Different job titles handled", "**317,302**", "The work runs once per title, not once per person"],
-  ["Different departments handled", "**459,123**", "Same again, for the subject area"]],
+  ["Different job titles handled", "**315,190**", "The work runs once per title, not once per person"],
+  ["Different departments handled", "**458,263**", "Same again, for the subject area"]],
  widths=[2.3,1.1,3.3])
+para(d, "**Three quarters of the people we can name are reachable** - 577,603 of 783,293. "
+        "The rest are not in the CDP or have not opted in, and no amount of classification "
+        "changes that.")
 para(d, "The last two rows are the reason this is affordable. We do the thinking once, "
-        "over the vocabulary, and store the answers. Giving 1.8 million people their "
-        "profession after that is an ordinary database join.", space_after=10)
+        "over the vocabulary, and store the answers. Giving every person their profession "
+        "after that is an ordinary database join.", space_after=10)
 fig(d, f"{F}/pipeline.png", 6.6, "How one job title travels through the system.")
 
 # ============================================================ 2
@@ -209,43 +102,39 @@ para(d, "Now change one thing. Same job title, but the department says mechanica
      space_after=10)
 
 box(d, "EXAMPLE 2  —  A PERSON OVERRULES THE MACHINE", [
- "The title **junior researcher** appears on 42,949 records.",
+ "The title **junior researcher** appears on 42,949 records. The machine read *junior* "
+ "and *senior* as two ends of one idea and filed it as senior - 0.870 confident, and "
+ "completely wrong.",
  "",
- "The machine put it in the **senior** researcher group, and it was 0.870 confident. "
- "Very sure, and completely wrong. The reason is that the computer treats *junior* and "
- "*senior* as two ends of one idea, so they look similar to it.",
+ "Somebody wrote one line in a file to say: this is early career. **That line wins for "
+ "ever and survives every rebuild.**",
  "",
- "Someone wrote one line in a file to say: this is early career. That line wins for "
- "ever and survives every rebuild.",
- "",
- "**But notice what it did not change.** Both researcher groups feed the same audiences, "
- "so 42,949 records moved and not one person entered or left an audience. A correct "
- "dictionary and a correct audience are two different things.",
+ "This is why every question in this document is cheap to answer. A decision is one "
+ "row, it is permanent, and changing your mind later costs the same as deciding now.",
 ], fill="FAF2F5", accent=PLUM)
 
 # ============================================================ 3
-h(d, "3.  Where each profession stands")
-para(d, "\"Read\" below means a person has looked at job titles covering that share of the "
-        "group's records. It does not mean the rest is wrong — it means nobody has "
-        "checked it.")
-fig(d, f"{F}/coverage.png", 6.6, "How much of each profession a person has actually read.")
-table(d, ["Profession", "Records", "Read", "Condition", "What it needs next"],
- [["Practitioner","1,650,456","38%","**Weakest**","A clinical expert. 52 of its example words are not in any taxonomy we have."],
-  ["Clinical trainee","751,548","68%","Good","Nothing urgent."],
-  ["Teaching academic","11,994,600","69%","Exposed","No subject check at all, so a wrong title goes straight through."],
-  ["Researcher, early","8,408,047","75%","**Cleanest**","Nothing. Zero corrections were needed on the first read."],
-  ["Researcher, established","1,945,519","62%","Good","Two naming clashes to settle. See section 7."],
-  ["Leadership","962,236","62%","Good","Watch one side effect after the next build."],
-  ["Pharmacist","74,951","51%","Fixed","Was the dirtiest group. 21% of its records were wrong and it cost the audience 91 people."],
-  ["Librarian","21,855","n/a","Solid","Decided by the word itself, not by the machine. 0.4% known wrong."],
-  ["Student","1,970,615","**read**","**Solid**","Now an audience of 105,658 people, read over 400 records on 13 November at 98.7%. One soft spot: a bare qualification used as a job title."],
-  ["Support / technical","1,453,643","n/a","Parked","Feeds nothing. Deliberately holds titles that belong nowhere."]],
- widths=[1.25,0.85,0.5,0.75,3.25], size=9)
+h(d, "3.  The ten audiences")
+para(d, "Every figure here is a people figure, counted directly. *Right, of the decided* "
+        "leaves out the records a reader marked **not sure** - either a definition that is "
+        "not settled or a record that does not say enough to judge. It is never counted "
+        "as correct.")
+table(d, ["Audience", "People", "Right, of the decided", "Verdict"],
+ [["**Lecturer**", "423,668", "**98.7% \u00b1 1.1**", "Solid"],
+  ["**Researcher**", "340,705", "**99.0% \u00b1 1.0**", "Solid"],
+  ["Healthcare (broad)", "181,295", "90.6% \u00b1 3.0", "**Not weak - undefined.** Waiting on a name"],
+  ["Clinical researcher", "108,805", "90.0% \u00b1 3.1", "Good. Grew when biomedical research was ruled in"],
+  ["**Students**", "105,658", "**98.7% \u00b1 1.3**", "**New.** Solid"],
+  ["Practitioner", "62,141", "93.4% \u00b1 2.6", "Good"],
+  ["Head of faculty", "17,218", "83.3% \u00b1 4.4", "**Parked** - not being delivered"],
+  ["Clinical administrator", "8,258", "94.9% \u00b1 2.2", "Good. Was 88.9% in October"],
+  ["Pharmacist", "2,064", "95.7% \u00b1 1.9", "Good. Was 81.8% in October"],
+  ["Librarian", "700", "98.5%", "Solid. All 700 read"]],
+ widths=[1.6,0.85,1.3,2.85], size=8.8)
+para(d, "Each audience is written out in full in section 6: how it is decided, what was "
+        "corrected, and what is still open in it.", space_after=10)
 
-box(d, "WHY \"PRACTITIONER\" KEEPS COMING UP", [
- "It has the least review and it feeds the most audiences. Clinical job titles are also "
- "the most scattered vocabulary in the data.",
- "",
+box(d, "WHY HEALTHCARE IS THE HARDEST PART", [
  "Academic titles are nearly the same everywhere: Professor, Associate Professor, "
  "Lecturer. Clinical titles are not. **Resident, Registrar, Facharzt, Interno** and "
  "**Jefe de Servicio** can all mean a doctor in training, and they share no common word.",
@@ -253,6 +142,10 @@ box(d, "WHY \"PRACTITIONER\" KEEPS COMING UP", [
  "Real example: before October we had no example word for anaesthetists, so 2,765 of "
  "them were matched to **neurosurgeon**. And 2,684 veterinarians were matched to "
  "**dentist**, because dentist was the closest word we had given the machine.",
+ "",
+ "Both are fixed. It is here because it explains why the healthcare audiences sit at "
+ "90-95% while the academic ones sit at 99%, and why a clinical expert is still the one "
+ "outside source this project has never had.",
 ], fill="FBF1EF", accent=RED)
 
 # ============================================================ 4
@@ -289,7 +182,7 @@ box(d, "WHAT THIS MEANS IN PLAIN TERMS", [
  "been.",
 ])
 
-h(d, "4.2  The survey answers — ARRIVED, and measured in section 5", 2)
+h(d, "4.2  The survey answers", 2)
 para(d, "Market Intelligence asks people their job title in most surveys. It is a closed "
         "question with 21 options, so the answers are clean. Crucially, some surveys also "
         "record the person's email address, which means we can match them to our own "
@@ -300,7 +193,7 @@ table(d, ["Export", "Rows", "What it gives us"],
  widths=[1.9,0.9,3.9])
 para(d, "**Both exports arrived on 30 October and have been used.** 290,045 unique "
         "people after deduplication, 93.2% of whom could be mapped onto one of our ten "
-        "professions. The full result is section 5. The headline: 81.8% of the people we "
+        "professions. Section 5 has the result. The headline: 81.8% of the people we "
         "classified were put in the audience they put themselves in, against a ceiling "
         "of 88.9%.")
 box(d, "WHAT IT WILL AND WILL NOT TELL US", [
@@ -317,300 +210,78 @@ box(d, "WHAT IT WILL AND WILL NOT TELL US", [
  "checked this way.",
 ], fill="FDF8EF", accent=AMBER)
 
-h(d, "4.3  Clinical expertise", 2)
-para(d, "A call with Bernadeta is being arranged. Section 4.1 shows why this is still "
-        "needed even though we now have a taxonomy: the taxonomy is silent on exactly the "
-        "part where we are weakest. The three things worth asking for are any existing "
-        "clinical title list, anything that explains how clinical titles differ between "
-        "countries, and whether web-scraped data she worked on could help.")
 
 # ============================================================ 5
-h(d, "5.  VALIDATION — our answer against what people said about themselves")
-para(d, "Until the end of October every number in this project came from our own "
-        "pipeline. Market Intelligence then exported two surveys in which people had "
-        "picked their own job title from a fixed list and given an email address. That "
-        "let us compare our answer to the person's own answer for the first time.")
-table(d, ["Source", "Rows", "Period"],
- [["Researcher Panel","232,648","June 2022 – October 2026"],
-  ["Journal Author Satisfaction","109,396","April 2024 – October 2026"],
-  ["**Combined, one answer per person**","**290,045**","most recent answer kept"]],
- widths=[2.6,1.2,2.8])
+h(d, "5.  How we know it is right")
+para(d, "Two independent checks, and they answer different questions. Neither alone is "
+        "the answer.")
 
-h(d, "5.1  We measured the ceiling before measuring ourselves", 2)
-para(d, "34,372 people appear in both surveys, so they declared their own job twice. "
-        "That gives something rare: a way to find out how reliable the yardstick is "
-        "before using it.")
+h(d, "5.1  Read by hand - the number quoted everywhere else", 2)
+para(d, "400 CONFIRMED people per audience, drawn at random, read one record at a time "
+        "and marked correct, wrong or not sure. All 700 librarians were read. That is "
+        "where every percentage in section 3 comes from, and it is the measurement this "
+        "project trusts most, because somebody looked at each row.")
+
+h(d, "5.2  Against what people say about themselves", 2)
+para(d, "Market Intelligence exported two surveys in which people picked their own job "
+        "title from a fixed list and gave an email address - 290,045 people after "
+        "deduplication. That let us compare our answer to the person's own answer.")
 box(d, "PEOPLE DISAGREE WITH THEMSELVES 11% OF THE TIME", [
+ "34,372 of them answered both surveys, so they declared their own job twice:",
+ "",
  "`same person, two surveys, same profession   88.9%`",
  "`same person, two surveys, same words         60.6%`",
  "",
  "So **88.9% is the ceiling**. Nothing we do can score meaningfully above it, and 85% "
- "would be close to perfect rather than poor.",
- "",
- "Their disagreements are real rather than careless:",
- "",
- "`627  professor in one, research scientist in the other`",
- "`523  professor in one, editor in the other`",
- "`288  head of department in one, professor in the other`",
- "`180  student in one, academic in the other   (time: people move on)`",
+ "would be close to perfect rather than poor. Their disagreements are real rather than "
+ "careless - 627 said professor in one and research scientist in the other, 523 "
+ "professor and editor, 180 student and academic.",
  "",
  "Measuring this first is the point. Without it we would have compared our own number "
  "against an implied 100% and called a good result a failure.",
 ])
+para(d, "Measured against the people who did not contradict themselves: **81.8% of the "
+        "people we classified were put in the audience they put themselves in**, against "
+        "that ceiling of 88.9%.")
 
-h(d, "5.2  A cleaner yardstick: people who do not contradict themselves", 2)
-para(d, "Merve, 30 October: treat self-declaration as the truth, but only from people who "
-        "are consistent about it. Of the 34,372 who answered both surveys, **3,613 "
-        "contradicted themselves and were dropped**. The remaining **28,866** are the "
-        "ground truth used from here on.")
-
-h(d, "5.3  Two questions, not one — and they give different answers", 2)
-para(d, "A single agreement figure hides which way the system is failing. There are two "
-        "separate questions and they fail independently:", space_after=4)
-bullet(d, "**Did we FIND the people who say they are this?** A low score means we are "
-          "missing people. (Recall)")
-bullet(d, "**Do the people we PUT here say they are this?** A low score means we are "
-          "letting the wrong people in. (Precision)")
-fig(d, f"{F}/two_directions.png", 6.4,
-    "The same audiences, measured in both directions against the consistent ground truth.")
-table(d, ["Audience","People in it","Did we find them?","Do they agree?","Read"],
- [["Lecturer","6,206","**91.1%**","**78.2%**","Strong both ways"],
-  ["Researcher","2,967","74.3%","43.9%","Precision depressed by multi-role people"],
-  ["Healthcare (broad)","1,148","**90.9%**","22.7%","A wide net by design — see below"],
-  ["Practitioner","615","—","35.8%","Survey cannot split the healthcare sub-audiences"],
-  ["Clinical researcher","396","—","48.2%","Same"],
-  ["Head of faculty","232","**23.8%**","**26.3%**","**Weak both ways. Real.**"],
-  ["Clinical administrator","71","—","22.5%","71 people — too few to conclude"],
-  ["Pharmacist","20","—","—","**Cannot be measured** — no survey option"],
-  ["Librarian","4","—","—","**Cannot be measured**"]],
- widths=[1.5,0.85,1.0,0.9,2.35], size=8.8)
-para(d, "Overall, 6,902 of 11,635 audience memberships were confirmed by the person "
-        "themselves — **59.3%**.")
-
-box(d, "WHY PRECISION IS LOWER THAN IT LOOKS", [
- "The truth set records **one answer per person**. Our system gives each person **1.53 "
- "audiences** on average.",
- "",
- "So a professor who is in both Lecturer and Researcher, and who wrote \"Professor\" on "
- "the survey, is counted **right** for Lecturer and **wrong** for Researcher — even "
- "though they may well do both.",
- "",
- "That caps precision at roughly **78%** before anybody makes a mistake. The measured "
- "59.3% sits below it, so there is a real gap, but it is not the gap the raw numbers "
- "suggest.",
-])
-
-h(d, "5.4  Which of these are problems and which are the design working", 2)
-para(d, "**Healthcare (broad) at 22.7% is mostly deliberate.** That audience admits "
-        "anybody in a clinical department even when their job title is academic — a "
-        "Professor of Cardiology belongs in it. They write \"Professor\" on the survey "
-        "and the measurement calls it a miss.")
-box(d, "AND THAT NUMBER IS USEFUL: IT PRICES AN OPEN QUESTION", [
- "887 people in the Healthcare audience describe themselves as something other than a "
- "clinician — mostly professors and researchers in clinical departments.",
- "",
- "Whether they belong there is open question 2 in the marketing document: **is "
- "\"healthcare professional\" about the work or about the subject?**",
- "",
- "That has been an abstract argument about definitions. It now has a price: if marketing "
- "answers \"the work\", those 887 are wrong and the audience shrinks. If \"the "
- "subject\", they are right and nothing changes.",
-])
-para(d, "**Researcher at 43.9% and Practitioner at 35.8% are mostly the same effect** — a "
-        "professor who runs a research group, a consultant who is also a professor. Both "
-        "descriptions are true and the survey only takes one.")
-
-h(d, "5.5  The real limit is coverage, not accuracy", 2)
-fig(d, f"{F}/validation_funnel.png", 6.4,
-    "Where the 290,045 survey respondents go.")
-para(d, "We matched 238,440 of them to somebody in the CDP, and then knew the job of only "
-        "**46,656** — a quarter. The rest have no ORCID employment record we can read.")
-para(d, "This confirms from outside what the project has been saying from inside: the "
-        "ceiling on this work is **how many people we can say anything about at all**, "
-        "not how often we are right about the ones we can.")
-
-h(d, "5.6  What it found: the one-title-one-group rule", 2)
-para(d, "Head of Faculty scored 20%, and the Researcher audience 69.9%. The biggest "
-        "single cause is the same in both, and it is a design choice rather than a bug.")
-box(d, "A PROFESSOR CAN ONLY BE ONE THING", [
- "`4,210  said \"research scientist\"   we said teaching academic`",
- "`  654  said \"head of department\"   we said teaching academic`",
- "`2,602  said \"PhD student\"          we said teaching academic`",
- "",
- "All of them have **Professor** recorded as their ORCID job title, and a title belongs "
- "to exactly one profession in our system. A professor who researches, runs a department "
- "or supervises doctoral students is only a lecturer to us.",
- "",
- "This was already an open question — worth 463,603 records — and it was marked low "
- "priority because it is a design change rather than a setting. **It now has outside "
- "evidence**: more than ten thousand people describe themselves differently from us, and "
- "this rule is why.",
-], fill="FBF1EF", accent=RED)
-para(d, "Head of Faculty has two further causes, both of them decisions taken "
-        "deliberately in the last week: it counts current posts only, and it was narrowed "
-        "to universities only on 29 October.")
-
-h(d, "5.7  What this is not", 2)
+h(d, "5.3  Three things this check cannot do", 2)
 bullet(d, "**It is not an accuracy rate.** Self-declaration is a second opinion, not a "
-          "fact. People pick one option from a list to describe a life that has several.")
+          "fact. People pick one option from a list to describe a life that has several - "
+          "a professor who runs a research group is both, and the survey takes one.")
 bullet(d, "**The population is selected.** These are people who publish and who answer "
           "surveys. Librarians appear seven times. Students and support staff are barely "
-          "represented.")
-bullet(d, "**Two audiences cannot be checked this way at all** — the survey offers no "
-          "pharmacist and no librarian option worth the name.")
-bullet(d, "**Head of Faculty is the one genuine weakness.** It is poor in both "
-          "directions — we miss three quarters of the people who say they lead a faculty, "
-          "and three quarters of the people we put there do not say it. The causes are "
-          "all known and two of them were chosen on purpose: one title can only belong to "
-          "one profession, the audience counts current posts only, and it was narrowed to "
-          "universities on 29 October.")
-bullet(d, "**It is repeatable.** The comparison is a query, so it can be re-run after "
-          "every change as a regression check. That is new, and it is worth more than the "
-          "single number.")
+          "represented, and there is no pharmacist option at all - so three of the ten "
+          "audiences cannot be checked this way.")
+bullet(d, "**The real limit is coverage, not accuracy.** Of the 290,045 respondents we "
+          "could match 238,440 to somebody in the CDP, and then knew the job of only "
+          "**46,656** - a quarter. The rest have no ORCID employment record to read. That "
+          "confirms from outside what this project has said from inside: the ceiling is "
+          "how many people we can say anything about at all, not how often we are right "
+          "about the ones we can.")
+para(d, "It is also repeatable. The comparison is a query, so it re-runs after every "
+        "change as a regression check. That is worth more than the single number.",
+     space_after=10)
 
 # ============================================================ 6
 audiences.build(d, F)
 
 # ============================================================ 7
-h(d, "7.  How to use the taxonomy well — step by step")
-para(d, "The taxonomy is built for a B2C research audience, so most of it is not about "
-        "us. The aim is to take only the parts that improve our matching and leave the "
-        "rest. Here is the order to do it in, cheapest and surest first.")
-
-h(d, "Step 1 — Check the synonym groups.  (DONE 30 October)", 2)
-para(d, "The taxonomy groups titles that mean the same job. There are **124 such groups** "
-        "and **254 pairs** to check. The rule is simple: if two titles are the same job, "
-        "they must land in the same profession in our system. Where they do not, one of "
-        "them is wrong.")
-para(d, "**No judgement is needed and nobody has to read anything.** It is a query.")
-box(d, "WHY THIS IS THE BEST FIRST STEP", [
- "We already found one of these by hand, and it is the biggest open problem on the list:",
- "",
- "`assistant research professor   14,060 records  ->  Teaching academic`",
- "`research assistant professor   71,785 records  ->  Researcher, early`",
- "",
- "The taxonomy lists those two as **the same job**. We put them in different professions, "
- "which means they feed different audiences. That is **85,845 records** split by nothing "
- "more than word order.",
- "",
- "The synonym check would have found this automatically, and it will find the others we "
- "have not noticed.",
-])
-
-h(d, "Step 2 — Finish the gap list we already measured.", 2)
-para(d, "We compared every taxonomy title against our dictionary and measured which gaps "
-        "are real in ORCID. Four have been fixed, covering 80,417 records. Four are left "
-        "and are listed in section 6.")
-para(d, "**The rule that matters here: a gap is not automatically a new example word.** "
-        "A title nobody types into ORCID is not worth adding, and a title already landing "
-        "in the right place does not need anything.")
-box(d, "A PREDICTION THE MEASUREMENT KILLED", [
- "Before running it, I expected **allied health professional** to be a real gap. It is a "
- "standard umbrella term in the UK health service, covering physiotherapists, "
- "radiographers and occupational therapists.",
- "",
- "It appears **0 times** in ORCID. Nobody writes it as their job title.",
- "",
- "Had we added it as an example word without measuring, we would have gained nothing and "
- "taken on one more risk. This is why we measure before adding.",
-])
-
-h(d, "Step 3 — Use the descriptions to settle open questions.", 2)
-para(d, "The taxonomy has three columns we have not used at all: a description, typical "
-        "responsibilities, and typical outputs. These are the richest part of it, and they "
-        "are what settles an argument about where a job belongs.")
-box(d, "EXAMPLE — A BOUNDARY CASE THE DESCRIPTION SETTLES", [
- "`clinical scientist     1,671 records  ->  we put it in Clinical trainee`",
- "",
- "It got there through the example word **clinical fellow**, matching on one word.",
- "",
- "The taxonomy says: *\"A scientist applying laboratory or analytical expertise to "
- "diagnosis, monitoring and treatment in healthcare.\"*",
- "",
- "That is a qualified healthcare scientist, not a doctor in training. The description "
- "answers the question without anybody needing to be an expert.",
-])
-para(d, "We have thirteen open questions waiting on marketing. For several of them the "
-        "taxonomy's own words are the evidence to put in front of the meeting.")
-
-h(d, "Step 4 — Use the role type, but only where it is clear.", 2)
-para(d, "The taxonomy sorts titles into about 23 role types. Most do not line up with our "
-        "10 professions, because theirs is about seniority and ours is about occupation. "
-        "Comparing all of them would produce noise.")
-para(d, "**Four of them are unambiguous and worth checking:**", space_after=3)
-table(d, ["Taxonomy role type", "Must become", "If it does not, it is a real finding"],
- [["Clinical practitioner / researcher","`practitioner`","A doctor is in the wrong group"],
-  ["Clinical trainee","`trainee_clinical`","A trainee is in the wrong group"],
-  ["Student / trainee","`student`","A student is counted as staff"],
-  ["Former / inactive researcher","rejected","A retired person is in a live audience"]],
- widths=[2.2,1.3,3.1])
-
-h(d, "Step 5 — Do not use it for two things.", 2)
-bullet(d, "**Clinical specialties.** It does not have them. That is the clinical expert's job.")
-bullet(d, "**Non-English titles.** It has almost none. That is the survey data's job, and "
-          "our own reading.")
-para(d, "Trying to stretch the taxonomy over these would waste time and give false comfort.",
-     space_after=10)
-
-h(d, "Step 6 — Keep the useful part as a permanent test.", 2)
-para(d, "Once the synonym check is done, turn it into a test that runs with every build. "
-        "Then a future change to our example words cannot quietly split a synonym group "
-        "again. The one in step 1 went unnoticed for months.")
-
-# ============================================================ 8
-h(d, "8.  Which matches need the most attention")
-para(d, "Ranked by how many records are affected. The first two are the same problem seen "
-        "twice: the same job written two ways, landing in two professions.")
-table(d, ["What is wrong", "Records", "Why it happened", "What to do"],
- [["`research assistant professor` is in Researcher, while `assistant research professor` is in Teaching",
-   "**85,845**","The machine matched one on *research assistant* and the other on *assistant professor*",
-   "Decide which is right, then one line each"],
-  ["`research director` is a researcher, but `director of research` was in a group that feeds nothing",
-   "22,403","Same job, different word order","**Done** on 29 Oct"],
-  ["`fellow` on its own was treated as a doctor in training",
-   "48,777","Matched on *clinical fellow*, one word out of two","**Done** on 29 Oct"],
-  ["`pi` was given no profession at all","17,219",
-   "Scored 0.537, below the line we accept, so it was dropped","**Done** on 29 Oct"],
-  ["`statistician` feeds nothing, but `biostatistician` and `bioinformatician` are researchers",
-   "2,177 in no audience","Three similar jobs, one treated differently",
-   "**Closed 15 Nov** — the unread ones stay out"],
-  ["`medical director` was treated as someone who treats patients","7,715",
-   "A medical director runs a unit; they do not see patients","**Done** on 29 Oct — watch one side effect"],
-  ["`privatdozent` and `pd` are given no profession","2,046",
-   "German academic rank. Scored 0.642, just under the line","Check what `pd` really is, then two lines"],
-  ["Retired and emeritus titles still in live audiences","15,317 records / **1,065 people**",
-   "878 different spellings, no two alike","Recorded as a known limit. Not worth fixing"]],
- widths=[2.5,0.95,2.05,1.3], size=8.5)
-
-box(d, "A RULE WE LEARNED THE HARD WAY THIS WEEK", [
- "We have always picked what to review by how many **records** a title carries. For "
- "finding people who are wrongly in an audience, that is the wrong order — by a factor "
- "of fourteen.",
- "",
- "`retired and emeritus titles   15,317 records`",
- "`people they actually put in an audience      1,065`",
- "",
- "The reason is simple. A role looks at a person's whole career. Someone who typed "
- "*Professor Emeritus* usually also has *Professor, 1990-2020* behind it, and that older "
- "record keeps them in the audience anyway. Removing the first one changes nothing for "
- "them.",
- "",
- "So: to fix the **dictionary**, sort by records. To fix the **audience**, sort by people. "
- "Using the first to answer the second nearly bought us a change we did not need.",
-], fill="FAF2F5", accent=PLUM)
-
-# ============================================================ 9
-h(d, "9.  What happens next")
+h(d, "7.  What happens next")
 table(d, ["#", "What", "Why now", "Who"],
  [["1","**What \"Healthcare Professional (broad)\" means**","The only thing that blocks us. Biomedical researchers now roll up into it, so 54,426 people who have never seen a patient are in an audience with that name. One sentence from marketing settles it.","Marketing"],
   ["2","A rule for the bare qualification","`PhD`, `Ph.D`, `Master`, `Bachelor` used as the whole job title — 6% of the Students reading and the single largest source of doubt in it. A degree is a credential, not a status, and one record says `Phd holder` outright. `analyses/51` queries 8 and 8b size it and list the real spellings.","Us"],
   ["3","A country condition on `research scholar`","It is a `student` anchor, so it matches at score 1.0 with no country test. In India it means a doctoral student; elsewhere it can be a senior post. Found in the Students reading.","Us"],
-  ["4","Clinical expert call","The one gap no data source covers.","Merve / Bernadeta"],
-  ["5","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
-  ["6","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against.","Us"]],
+  ["4","**A decision-maker audience**","Marketing have asked for Head of Faculty to be opened up beyond academia, to reach opinion leaders, budget holders and purchase influencers. Seven definition questions are with them; the measurement on our side can start before they answer.","Marketing / us"],
+  ["5","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
+  ["6","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
+  ["7","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 4 may change what this audience is for.","Us"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
 box(d, "WHAT CAME OFF THIS LIST", [
+ "**Statisticians and economists are settled** — the 2,177 records in no audience stay "
+ "out. They were never read title by title, and an audience is something a title earns "
+ "by being read, not by resembling one that was.",
+ "",
  "**The Students audience is built, delivered and read** — 105,658 people, 98.7% over "
  "400 records. Internships count, company graduate trainees do not, current posts only, "
  "one bucket for all levels, and the employer must be a university. Every decision on "
@@ -623,8 +294,8 @@ box(d, "WHAT CAME OFF THIS LIST", [
  "dictionary's record counts had frozen the first time each job title was seen and were "
  "running 14 to 30 times high. Fixed. It never touched the classification, so no audience "
  "changed and no decision was taken on a wrong basis — but every *records* figure quoted "
- "from the dictionary before 11 November was wrong, and this document's section 3 table "
- "is the main place that still shows them.",
+ "from the dictionary before 11 November was wrong. Section 3 used to be the main place "
+ "they survived in this document; it now shows people and accuracy only.",
  "",
  "**A title may now name two jobs**, which was the other thing folded into that build. "
  "7,144 of the Students arrived that way, and so did the biomedical researchers behind "
