@@ -63,10 +63,15 @@ delivered, so it is not what you are judging.
 - **Field:** none. **The title and the employer are the only two signals**, so
   there is nothing to contradict a wrong title. This is why its accuracy is the
   lowest of the nine.
-- **Organisation: EDUCATION ONLY.** Every other ROR type scores zero, including
-  an unresolved one — no hospitals, no research institutes, no companies, no
-  national labs, nobody whose employer could not be identified. **So never mark
-  a `faculty_head` row wrong for its organisation. It is already verified.**
+- **Organisation: EDUCATION ONLY.** Every other ROR type scores zero — no
+  hospitals, no research institutes, no companies, no national labs. **An
+  employer ROR could not identify is the one exception**, and this line used to
+  deny it: when the organisation NAME carries an academic word — university,
+  college, faculty, hochschule, politecnico — it scores as Education on the name
+  alone. 4,204 people in this audience confirmed that way, with no ROR type at
+  all (measured 2026-11-16). A company word in the name vetoes it. **So never
+  mark a `faculty_head` row wrong for its organisation — it is either ROR-typed
+  Education or named like a university.**
 - **Excluded:** named chairs — `endowed chair`, `chair professor of X`,
   `canada research chair` are professorships, not leadership. Also
   `editor-in-chief`.

@@ -3261,6 +3261,81 @@ threshold is proposed from it.
 
 ---
 
+### 2.20 role_detail is still null for ~690,000 people, and for three separate reasons - MEASURED 2026-11-16, TWO DECISIONS OPEN
+
+The case fix in 2.19 made the column work. It did not make it complete. The
+verification query after the build showed every audience still carrying nulls,
+so the shape was measured rather than guessed. There are three causes and they
+do not overlap.
+
+**Cause 1 - `lecturer` has no rules at all. 423,975 people, 100% null.**
+`org_type_scores` covers 10 roles. `role_detail_map` covers 9. Nothing in the
+repo compared the two. This is not residue from the case bug - the largest
+audience we have has never had a detailed role, in any build, since the column
+existed. `assert_every_role_has_detail_rules` is the sibling of
+`assert_every_role_has_org_scores` and should have been written beside it; it
+exists now, at `warn`, and fails on exactly this one row.
+
+**Cause 2 - four ROR types have no rule in any role. ~62,000 people.**
+
+| Type | People with no detail | Why it was missed |
+| --- | --- | --- |
+| `funder` | ~58,500 | research councils, CNRS, INSERM, NIH - a large real employer, read as a word rather than as a population. The same mistake the `students` Funder row already records. |
+| `other` | ~2,900 | |
+| `archive` | ~900 | |
+| `government` / `company` on `faculty_head` | in PROBABLE only | the audience is Education-only, so these never confirm |
+
+`org_type_scores` carries all ten types for all ten roles, each with a measured
+note. `role_detail_map` carries between two and six. The two seeds were written
+to different standards and only one of them was tested.
+
+**Cause 3 - THE STRUCTURAL ONE. The detail map reads a column the scoring does
+not decide on. ~270,000 people.**
+
+`int_employment_scored` does not confirm on `org_type`. It confirms on
+`org_score`, and when ROR resolves nothing it recovers that score from the
+organisation NAME via `org_name_patterns` - `universi`, `colleg`, `institut`,
+`hochschule`. That fallback is deliberate and it works: it is what rescues
+"Istanbul University-Cerrahpasa" and "Universiti Malaysia Sabah".
+
+But it rescues the SCORE and leaves `org_type` at `UNKNOWN`. `role_detail_map`
+keys on `org_type`. So **every person the organisation fallback rescues is
+guaranteed to have no detail label**, by construction, no matter how many seed
+rows are added. 97,283 lecturers, 82,870 researchers, 21,736 clinical
+researchers and 16,894 practitioners sit here.
+
+This is the same shape as 2.19 one level up: there, two seeds compared the same
+column with different casing; here, two models key on different columns for the
+same decision. Both look finished from the inside.
+
+**It also makes a line in the reviewer brief false.** AI-REVIEWER-RULES said
+faculty_head accepts "nobody whose employer could not be identified". 4,204
+CONFIRMED faculty_head people have no ROR type at all - they are deans at
+universities ROR failed to resolve, confirmed on the name. The audience is
+still academic-only, so the instruction built on it ("never mark a faculty_head
+row wrong for its organisation") still holds, but the reason given for it was
+wrong. Corrected in both twins 2026-11-16. `students` is NOT affected: it has
+no `org_name_patterns` rows, so for students "an unresolved employer is
+refused" is exactly true.
+
+**TWO DECISIONS, NEITHER OF THEM ENGINEERING.**
+
+1. **Does `lecturer` get a detailed role, and what are its values?** The other
+   nine split the setting - University / Hospital / Research Institute /
+   Industry. There is no argument for lecturer being different; there is also
+   no measurement saying marketing wants it. 423,975 people.
+2. **What should the fallback-rescued people be labelled?** Three answers, not
+   two: label them from the name pattern that rescued them (needs a type column
+   on `org_name_patterns`, which has only a score today); label them `Unknown`
+   honestly; or leave them null and say so in the delivery contract. The first
+   is the only one that recovers 270,000 real labels, and it is also the only
+   one that costs a seed change.
+
+Nothing is being changed on either until they are answered. The test stays at
+`warn` so the build keeps saying it out loud.
+
+---
+
 ### 2.19 role_detail was null for seven audiences - FOUND AND FIXED 2026-11-16
 
 **A delivered column had never worked, and nothing was looking.**
@@ -3304,9 +3379,10 @@ is the third time the project has met that shape, after
 `assert_title_patterns_all_match_something` and
 `assert_org_patterns_all_match_something`, so the rule is now explicit: **a
 lookup table needs a test that it is hit, not only a test that it is well
-formed.** `assert_role_detail_map_rules_all_fire` is that test, at severity
-`warn` for its first run because nobody yet knows which of the 44 rules were
-always dead.
+formed.** `assert_role_detail_map_rules_all_fire` is that test. It ran `warn` for its
+first build, returned ZERO rows - all 44 rules reach somebody - and was
+promoted to `error` the same day. The seed was right; only the join was
+wrong.
 
 **How it was found.** It was first in the priority list on 2026-11-16 on the
 reasoning that it was the only open item where we might be shipping something
