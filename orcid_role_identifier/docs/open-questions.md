@@ -3261,6 +3261,102 @@ threshold is proposed from it.
 
 ---
 
+### 2.22 practitioner's 0.75+ band read for the first time - ACTED 2026-11-16
+
+**The band every previous practitioner review excluded.** Each one filtered
+`similarity < 0.75` on the reasoning that doubt lives in the low band. 2.4a
+records what that cost in researcher: `junior researcher` at 0.870, 42,949
+records, the largest single error in the project, invisible to every review
+query because they all excluded its band. analyses/35 query 3 was written on
+2026-11-04 to close the same gap in practitioner and ran on 2026-11-16.
+
+**FIRST FINDING, AND IT IS GOOD NEWS: there is no `junior researcher` here.**
+The largest title in the band is 4,964 records, a tenth of what the researcher
+defect was. practitioner's high band is not hiding one catastrophe; it is
+carrying a long tail of moderate ones. That is worth recording because the
+reason for reading the band was the fear of the opposite.
+
+**What the tail is made of**, about 1,470 records of clear error before
+touching anything already on the open list:
+
+| | Records | What it is |
+| --- | --- | --- |
+| `medical physicist` | 346 | the largest single wrong title. A physicist in radiotherapy and imaging. Treats nobody. |
+| Management titles | 415 | `chief medical officer` 178, `nurse educator` 40, `nurse manager` 38, `medical manager` 32, `hospital director` 22 … |
+| Consultant titles with a non-clinical word | 410 | `legal` 36, `management` 22, `gis` 21, `educational` 18, `external` 53, `independent` 63, `international` 41 … |
+| Non-clinical scientists on clinical anchors | 149 | `optical engineer` on `optometrist`, `plant pathologist` on `pathologist`, `neuroscientist` on `neurologist`, `radiochemist` on `radiologist` |
+| Academic titles carrying the word *doctor* | 118 | `dirigente di ricerca`, `investigador doctor`, `contratado doctor`, `profesor doctor` |
+| Students | 36 | `dental student` 19, `student nurse` 17, both with `student` already as runner-up |
+
+**One of these is a decision catching up with itself.** `medical director` was
+moved to `leadership` on 2026-10-29 - 7,715 records, *"was practitioner via
+medical officer"* - and its variants were left where they were. `chief medical
+officer`, `associate medical director`, `senior medical director` and
+`assistant medical director` are the same job and were still in practitioner.
+This is the third instance of the shape: `founder` alive while `co-founder` was
+rejected, and the case-sensitive join in 2.19. **A decision applied to one
+spelling is not applied.**
+
+---
+
+#### The consultant decision, recorded because it was argued
+
+**Merve, 2026-11-16:** *"consultant hepsini cikaralim ve not edelim dokumanlara
+bu karari."*
+
+Every consultant title leaves practitioner, with no country condition.
+
+**What I advised, so the record is complete.** The band splits cleanly in three.
+About 7,500 records are bare `consultant` (4,964) or a seniority variant -
+senior 914, associate 296, junior 115, honorary 96, locum 67 - and these are the
+genuine ambiguity: in Britain and Ireland a consultant is a senior hospital
+physician, in the United States a business adviser. Another 410 are the
+non-clinical ones the anchor collects. **But about 1,690 records are `consultant`
+followed by a clinical specialty** - consultant surgeon 165, consultant
+neurologist 129, consultant physician 116, consultant cardiologist 114,
+consultant psychiatrist 111 - and those are not ambiguous anywhere, because the
+title already says the specialty. I proposed splitting on bare-versus-qualified,
+which needs no country rule and is the same shape as faculty_head's
+Director/Head question. Merve chose to remove all of them. **It is written here
+because that is what was asked, and because a reader a month from now should be
+able to see the price that was accepted rather than infer it.**
+
+**Implemented as a pattern, not as overrides, and the reason matters.**
+`consultant <specialty>` titles no longer lean on the `consultant` anchor at
+all - `consultant nephrologist` sits on `nephrologist` at 0.912, because
+specialty anchors were added in October precisely to pull them off it. So
+deleting the anchor would have removed nothing. A pattern also catches the tail
+below the query's 400-row limit, which an exact-title list cannot: the reading
+stops at 15 records and there is more underneath it.
+
+**Destination is `support_technical`, not REJECT.** It reaches no audience, so
+the effect is identical, but it records that we could not place the title rather
+than that the title names nothing.
+
+---
+
+#### What was not touched
+
+- **`professor of X`** - about 632 records across sixteen titles. Closed in 1.10
+  and 1.10a; not reopened.
+- **Bare `doctor`, 4,465 records**, the second largest title in the band. A
+  physician in most languages, a PhD in some contexts. Left alone deliberately -
+  it needs the same bare-versus-qualified question that was just answered for
+  consultant, and answering it twice in one day from one reading would be
+  guessing.
+- **The research-nurse family** - `research nurse` 105, `clinical research
+  nurse` 29, `research midwife` 19, `research dietitian` 21, `research
+  physiotherapist` 20, `nurse scientist` 38, about 286 records. Whether a
+  research nurse treats patients is a real question and nobody has asked it.
+- **Veterinarians (403), psychologists (1,281), `exercise physiologist` (38)**
+  are already marketing's, on the one-pager.
+
+**Everything above is RECORDS, not people.** practitioner is 62,141 people and
+the ratio differs title by title. Nothing here has been converted, and the
+audience's accuracy figure should not be adjusted until it is.
+
+---
+
 ### 2.21 role_detail was removed and put straight back - 2026-11-16, STILL OPEN
 
 **Removed in `012e43c`, reverted in the same session at Merve's instruction.**
