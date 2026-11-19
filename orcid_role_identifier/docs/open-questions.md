@@ -3477,6 +3477,24 @@ already measured at 83.3% the moment it ships. It stays frozen with the rest of
 the Head of Faculty work until marketing answers; this is recorded so that the
 thaw starts from a known defect rather than from a clean slate.
 
+#### A second process gap: half the headline table is frozen
+
+The status document's section 1 counts people from `fct_role_audience` and job
+titles from `int_title_distinct`. The staging chain is all VIEWS, so the people
+counts read live ORCID every time the scoring models rebuild. `int_title_distinct`
+and `int_department_distinct` are TABLES and sit **upstream** of a
+`--select <seed>+` build, so that build does not touch them.
+
+Measured 19 November: people with a profession went 783,293 -> **787,057**
+(+3,764) while job titles stayed at **315,190** and departments at **458,263**,
+to the digit. A job title that arrived this week has no dictionary row and no
+embedding until the dictionary is rebuilt deliberately.
+
+Nothing is broken - the vocabulary is meant to be rebuilt on purpose rather
+than continuously. But the two halves of that table are different ages and it
+did not say so, and a people-per-title ratio read off it divides a live number
+by a frozen one. The document now says which rows are which.
+
 #### The process gap this exposed
 
 Query 1 of `analyses/54` had to be compared against a **seven-day-old**

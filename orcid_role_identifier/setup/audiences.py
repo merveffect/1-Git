@@ -29,20 +29,24 @@ def build(d, F):
             "only: a definition marketing has not settled, and a record that does not "
             "carry enough to decide.", space_after=6)
     table(d, ["Audience", "Correct", "Wrong", "Not sure", "Correct, of the decided", "Wrong people, est."],
-     [["**Researcher**", "96.8%", "1.0%", "2.3%", "**99.0% ± 1.0**", "~3,300"],
+     [["**Researcher**", "96.8%", "1.0%", "2.3%", "**99.0% ± 1.0**", "~3,400"],
       ["**Lecturer**", "98.2%", "1.2%", "0.5%", "**98.7% ± 1.1**", "~5,100"],
       ["**Students**", "91.8%", "1.2%", "7.0%", "**98.7% ± 1.3**", "~1,300"],
-      ["**Librarian** (all 700)", "97.1%", "1.4%", "1.4%", "**98.5%**", "10"],
+      ["**Librarian** (all 700 read)", "97.1%", "1.4%", "1.4%", "**98.5%**", "10"],
       ["**Pharmacist**", "82.5%", "3.8%", "13.8%", "**95.7% ± 1.9**", "~80"],
-      ["**HCP administrator**", "88.0%", "4.8%", "7.2%", "**94.9% ± 2.2**", "~360"],
-      ["HCP practitioner", "82.0%", "5.8%", "12.2%", "93.4% ± 2.6", "~3,500"],
-      ["HCP broad", "81.5%", "8.5%", "10.0%", "90.6% ± 3.0", "~10,600"],
-      ["HCP researcher", "81.2%", "9.0%", "9.8%", "90.0% ± 3.1", "~4,800"],
-      ["**Head of Faculty**", "56.2%", "11.2%", "32.5%", "**83.3% ± 4.4**", "~1,700"]],
+      ["**HCP administrator**", "88.0%", "4.8%", "7.2%", "**94.9% ± 2.2**", "~400"],
+      ["HCP practitioner", "82.0%", "5.8%", "12.2%", "93.4% ± 2.6", "~3,300"],
+      ["HCP broad", "81.5%", "8.5%", "10.0%", "90.6% ± 3.0", "~15,100"],
+      ["HCP researcher", "81.2%", "9.0%", "9.8%", "90.0% ± 3.1", "~9,900"],
+      ["**Head of Faculty**", "56.2%", "11.2%", "32.5%", "**83.3% ± 4.4**", "~1,900"]],
      widths=[1.75, 0.7, 0.65, 0.75, 1.35, 1.2], size=8.5)
     para(d, "**How to read it.** *Correct, of the decided* leaves the not-sure rows out, "
             "so it is the error rate where an answer exists; the not-sure column says how "
-            "much is waiting for a definition. The ± is a 95% interval. *Wrong people* "
+            "much is waiting for a definition. The ± is a 95% interval. The last column "
+            "is the *Wrong* share applied to the audience size in section 3, recomputed on "
+            "the 19 November build - two of its rows had been carried from an older and "
+            "smaller count of the healthcare audiences and were understating the error. "
+            "*Wrong people* "
             "scales the sample rate to the audience, so Lecturer's 1.2% is ~5,100 people "
             "and still a very clean audience.", space_after=4)
     para(d, "**What it is not: one reader, not two.** These are the analyst's judgements "
@@ -78,7 +82,7 @@ def build(d, F):
             bullet(d, t)
         d.paragraphs[-1].paragraph_format.space_after = Pt(10)
 
-    aud("LECTURER — 423,668 people, 98.7% correct", [
+    aud("LECTURER — 427,256 people, 98.7% correct", [
       "**How it is decided.** Does the job title name a teaching post — professor, "
       "lecturer, reader, docent, instructor, tutor. There is no department check at "
       "all, and past posts count.",
@@ -93,7 +97,7 @@ def build(d, F):
       "**Open:** visiting scholars and fellows, and honorary professors — both with "
       "marketing, both one line to change."])
 
-    aud("RESEARCHER — 340,705 people, 99.0% correct", [
+    aud("RESEARCHER — 343,716 people, 99.0% correct", [
       "**How it is decided.** Does the job title name research work — researcher, "
       "scientist, postdoc, principal investigator, group leader. Any field: a plant "
       "pathologist and a medieval historian are both correct. Past posts count.",
@@ -108,7 +112,7 @@ def build(d, F):
       "group is in both Lecturer and Researcher; the survey records one answer, so one "
       "of the two memberships is counted wrong whatever we do."])
 
-    aud("STUDENTS — 105,658 people, 98.7% correct", [
+    aud("STUDENTS — 107,091 people, 98.7% correct", [
       "**The newest audience, built and read in November, and third of the ten.** 400 "
       "records read one by one on 13 November: 367 correct, 5 wrong, 28 not sure.",
       "**Three rules, each measured before it was set.** The title must name a student. "
@@ -128,7 +132,7 @@ def build(d, F):
       "`PhD`, `Master`, `Bachelor` — and the record cannot say whether they are studying "
       "for it or have held it for twenty years. One wrote `Phd holder`."])
 
-    aud("HEALTHCARE (BROAD) — 181,295 people, 90.6% correct", [
+    aud("HEALTHCARE (BROAD) — 177,645 people, 90.6% correct", [
       "**How it is decided.** The widest net: a clinical job title is mandatory, and "
       "everyone from Practitioner, Clinical researcher, Clinical administrator and "
       "Pharmacist rolls up into it as well.",
@@ -140,7 +144,7 @@ def build(d, F):
       "Whether that is right is the one question blocking us, and it is a naming "
       "question, not an accuracy one."])
 
-    aud("PRACTITIONER and CLINICAL RESEARCHER — 62,141 and 108,805 people, "
+    aud("PRACTITIONER and CLINICAL RESEARCHER — 57,297 and 109,486 people, "
         "93.4% and 90.0% correct", [
       "**How they are decided.** Both need the title **and** the department to agree. "
       "Practitioner wants a clinician who treats patients; Clinical researcher wants "
@@ -153,10 +157,25 @@ def build(d, F):
       "**It is where the outside taxonomy cannot help.** 52 of our 58 clinical example "
       "words are absent from it — it lists Physician, Clinician and Surgeon and has no "
       "specialty list at all. That gap is what a clinical expert would fill.",
+      "**19 November: every job title containing *consultant* left Practitioner.** The "
+      "word is two different jobs. In Britain and Ireland a consultant is a hospital "
+      "specialist; in most of the rest of the world it is a business adviser, and the "
+      "record does not say which. It was the largest title in the audience. Taking "
+      "them all out cost about **5,400 people** - Practitioner went from 62,141 to "
+      "57,297 - and that price was accepted deliberately in exchange for an audience "
+      "that does not quietly contain management consultants. The titles are not lost: "
+      "they sit in a holding group and can be brought back by name once there is a "
+      "rule we trust.",
+      "**The 93.4% was measured before that change** and has not been re-measured on "
+      "the smaller audience. The people removed included known errors, so it is more "
+      "likely to understate than to overstate - but read it as out of date, not as a "
+      "current figure.",
       "**Open:** veterinarians (91 people) and sport and exercise science (78), both in "
-      "the healthcare audiences today by accident rather than decision."])
+      "the healthcare audiences today by accident rather than decision. And two titles "
+      "deliberately left alone in the November reading: `medical physicist` (346 "
+      "records) and a bare `doctor` (4,465)."])
 
-    aud("CLINICAL ADMINISTRATOR — 8,258 people, 94.9% correct", [
+    aud("CLINICAL ADMINISTRATOR — 8,377 people, 94.9% correct", [
       "**How it is decided.** A leadership title **and** a human-health department. "
       "Patient contact is not required: somebody running a cardiology unit is correct.",
       "**88.9% → 94.9% on 5 November, re-measured on a fresh sample.** The organisation "
@@ -170,7 +189,7 @@ def build(d, F):
       "**Open:** industry medical directors still keep Healthcare (broad), whose "
       "threshold is lower. Left as it is until that audience is defined."])
 
-    aud("HEAD OF FACULTY — 17,218 people, 83.3% correct — PARKED", [
+    aud("HEAD OF FACULTY — 17,305 people, 83.3% correct — PARKED", [
       "**How it is decided.** A faculty-level title — dean, head of department, rector, "
       "provost, chancellor — at an organisation ROR types as *Education*. Current posts "
       "only. It is the one audience built for precision rather than reach.",
@@ -188,7 +207,7 @@ def build(d, F):
       "**And it is about to change shape.** Marketing have asked for it to be opened up "
       "beyond academia, to reach decision makers and budget holders. Section 7, item 4."])
 
-    aud("PHARMACIST — 2,064 people, 95.7% correct", [
+    aud("PHARMACIST — 2,083 people, 95.7% correct", [
       "**How it is decided.** The title must name a pharmacist, and the title is the "
       "only way in — nobody becomes a pharmacist by working in a pharmacy department.",
       "**81.8% → 95.7% on 5 November**, the second figure on a fresh sample. It was the "
@@ -201,7 +220,7 @@ def build(d, F):
       "**Open:** Portuguese and Spanish forms the English stems miss, and clinical "
       "chemists. Overrides, not a new rule."])
 
-    aud("LIBRARIAN — 700 people, 98.5% correct", [
+    aud("LIBRARIAN — 708 people, 98.5% correct", [
       "**How it is decided.** Eleven literal patterns, not the machine: a title either "
       "contains a library word or it does not. The employer carries no weight at all. "
       "Current posts only.",

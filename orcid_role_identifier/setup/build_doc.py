@@ -20,7 +20,7 @@ r.font.color.rgb=TEAL; r.font.name=SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
-para(d, "Working document  ·  updated 16 November 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "Working document  ·  updated 19 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHERE THIS STANDS", [
  "**All ten audiences are built, and all ten have a measured accuracy.** Every one was "
@@ -37,6 +37,8 @@ box(d, "WHERE THIS STANDS", [
  "**The newest audience is Students** - 107,091 people, built and read in November, "
  "98.7% correct and third of the ten.",
  "",
+ "**Practitioner is about 5,400 people smaller than it was last week, on purpose.** Every job title containing the word *consultant* was taken out of it on 19 November. The word means a hospital specialist in Britain and Ireland and a business adviser almost everywhere else, and the record does not say which. The audience is smaller and more certain; section 6 gives the number and the reasoning.",
+ "",
  "**What this document is.** Where the work stands, how it decides, how we know it is "
  "right, and what is still open. The decisions behind each rule, with their "
  "measurements, are recorded separately in the project's open-questions log.",
@@ -47,22 +49,37 @@ h(d, "1.  Where we are today")
 para(d, "ORCID is where researchers write their own employment history: job title, "
         "organisation, department. All of it is free text. There is no field anywhere "
         "that says what profession someone is. We read that text and work it out.")
-# All five rows counted on 2026-11-16 by `analyses/51` query 9. They are
+# All five rows counted on 2026-11-19 by `analyses/51` query 9. They are
 # DISTINCT PEOPLE ACROSS ALL AUDIENCES, which is not the sum of the
 # per-audience figures - most people hold two or three roles - so they cannot
 # be derived from anything else in this file. Re-run that query after a build
 # before quoting them again. Section 1 is the first thing anybody reads, so it
 # is the worst place in the project for a stale number.
+#
+# ⭐ THE FIRST TWO ROWS AND THE LAST TWO ARE NOT THE SAME AGE, and the table
+# now says so. stg_role_records and the whole staging chain are VIEWS, so the
+# people counts read live ORCID every time the scoring models are rebuilt.
+# int_title_distinct and int_department_distinct are TABLES and sit UPSTREAM of
+# a `--select <seed>+` build, so they are not rebuilt by one: rows 4 and 5 are
+# frozen at the last dictionary build and did not move on 19 November while the
+# people counts grew by 3,764. Quoting a people-per-title ratio off this table
+# would divide a live number by a stale one.
 table(d, ["", "Today", "What it means"],
- [["People with a profession", "**783,293**", "We can name a profession for them"],
-  ["Reachable", "**577,603**", "In the CDP and opted in. This is what a campaign can use"],
+ [["People with a profession", "**787,057**", "We can name a profession for them"],
+  ["Reachable", "**580,462**", "In the CDP and opted in. This is what a campaign can use"],
   ["Audiences", "**10**", "Before this project there was one"],
   ["Different job titles handled", "**315,190**", "The work runs once per title, not once per person"],
   ["Different departments handled", "**458,263**", "Same again, for the subject area"]],
  widths=[2.3,1.1,3.3])
-para(d, "**Three quarters of the people we can name are reachable** - 577,603 of 783,293. "
+para(d, "**Three quarters of the people we can name are reachable** - 580,462 of 787,057. "
         "The rest are not in the CDP or have not opted in, and no amount of classification "
         "changes that.")
+para(d, "**The first two rows and the last two are not the same age.** The people counts "
+        "read ORCID live and moved by 3,764 in the week to 19 November. The vocabulary "
+        "counts are rebuilt deliberately rather than continuously, so they are the figures "
+        "from the last dictionary build - a job title that arrived this week is counted in "
+        "the people column only once the vocabulary is rebuilt. Worth knowing before "
+        "dividing one by the other.", size=9, color=MUT)
 para(d, "The last two rows are the reason this is affordable. We do the thinking once, "
         "over the vocabulary, and store the answers. Giving every person their profession "
         "after that is an ordinary database join.", space_after=10)
@@ -129,7 +146,7 @@ table(d, ["Audience", "People", "Right, of the decided", "Verdict"],
   ["Head of faculty", "17,305", "83.3% \u00b1 4.4", "**Parked** - not being delivered"],
   ["Clinical administrator", "8,377", "94.9% \u00b1 2.2", "Good. Was 88.9% in October"],
   ["Pharmacist", "2,083", "95.7% \u00b1 1.9", "Good. Was 81.8% in October"],
-  ["Librarian", "708", "98.5%", "Solid. All 708 read"]],
+  ["Librarian", "708", "98.5%", "Solid. All 700 were read in November"]],
  widths=[1.6,0.85,1.3,2.85], size=8.8)
 para(d, "**People counted on the build of 19 November; the accuracy column was not "
         "re-measured on it.** That matters for one row. Practitioner lost about 5,400 "
@@ -146,27 +163,29 @@ para(d, "Each audience is written out in section 6: how it is decided, how it wa
 h(d, "3.1  How much of each audience can actually be reached", 2)
 para(d, "Being in an audience and being contactable are different things. **Reachable** "
         "means the person is in the CDP under any of four legal bases - marketing "
-        "opt-in, advertising opt-in, legitimate interest, or book-author consent. The "
-        "people column below was counted on 10 November, two days before section 3's, "
-        "and the Students row on 12 November when that audience was built; the share "
-        "reachable is what to read here and it is stable. **The people column below is therefore smaller than section 3's and is not a correction of it** - it is an earlier count, kept with its own date because the reachable share was measured against it.", space_after=4)
+        "opt-in, advertising opt-in, legitimate interest, or book-author consent. "
+        "**Both columns were counted on 19 November on the same build as section 3**, so "
+        "the people figures here and there now agree; earlier versions of this document "
+        "carried two counts nine days apart.", space_after=4)
 table(d, ["Audience", "People", "Reachable", "Of those"],
- [["**Lecturer**", "410,499", "**319,291**", "77.8%"],
-  ["**Researcher**", "333,280", "**237,391**", "71.2%"],
-  ["**Healthcare (broad)**", "124,982", "**93,377**", "74.7%"],
-  ["**Students**", "105,658", "**68,959**", "**65.3%**"],
-  ["**Practitioner**", "61,945", "**46,450**", "75.0%"],
-  ["**Clinical researcher**", "54,016", "**39,758**", "73.6%"],
-  ["**Head of Faculty**", "15,159", "**11,962**", "78.9%"],
-  ["**Clinical administrator**", "7,563", "**5,949**", "78.7%"],
-  ["**Pharmacist**", "2,060", "**1,531**", "74.3%"],
-  ["**Librarian**", "699", "**384**", "54.9%"]],
+ [["**Lecturer**", "427,256", "**332,051**", "77.7%"],
+  ["**Researcher**", "343,716", "**244,942**", "71.3%"],
+  ["**Healthcare (broad)**", "177,645", "**132,373**", "74.5%"],
+  ["**Clinical researcher**", "109,486", "**80,976**", "74.0%"],
+  ["**Students**", "107,091", "**69,972**", "**65.3%**"],
+  ["**Practitioner**", "57,297", "**42,826**", "74.7%"],
+  ["**Head of Faculty**", "17,305", "**13,591**", "78.5%"],
+  ["**Clinical administrator**", "8,377", "**6,548**", "78.2%"],
+  ["**Pharmacist**", "2,083", "**1,543**", "74.1%"],
+  ["**Librarian**", "708", "**389**", "54.9%"]],
  widths=[1.9, 1.1, 1.2, 0.9], size=9)
 para(d, "**The rows overlap and must not be added up** - one person can be a Lecturer "
         "and a Clinical researcher at once. **Students is the least reachable of the "
-        "ten at 65.3%**, so a campaign gets 68,959 of the 105,658; Librarian is lower "
+        "ten at 65.3%**, so a campaign gets 69,972 of the 107,091; Librarian is lower "
         "still on a much smaller base. Neither is a classification problem - it is "
-        "consent.", space_after=10)
+        "consent. **Practitioner is reachable for 42,826 people**, down from 46,450 "
+        "before the consultant decision of 19 November - that is where the 5,400 are "
+        "felt in a campaign brief.", space_after=10)
 
 box(d, "WHY HEALTHCARE IS THE HARDEST PART", [
  "Academic titles are nearly the same everywhere: Professor, Associate Professor, "
@@ -316,7 +335,7 @@ box(d, "WHAT CAME OFF THIS LIST", [
  "out. They were never read title by title, and an audience is something a title earns "
  "by being read, not by resembling one that was.",
  "",
- "**The Students audience is built, delivered and read** — 105,658 people, 98.7% over "
+ "**The Students audience is built, delivered and read** — 107,091 people, 98.7% over "
  "400 records. Internships count, company graduate trainees do not, current posts only, "
  "one bucket for all levels, and the employer must be a university. Every decision on "
  "the old item 3 held as written.",
@@ -379,7 +398,9 @@ para(d, "**The decision went further than the measurement suggested.** Rather th
         space_after=4)
 para(d, "This is worth reading twice, because it is the shape of problem we will keep "
         "meeting: **a correction that is right for one audience is wrong for another, "
-        "because they share a group.** Nothing in the current design separates them.")
+        "because they share a group.** Nothing in the current design separates them.",
+     space_after=4)
+para(d, "**Re-measured on 19 November, and it is not closed.** Taking the hospital path out removed the route this box describes, but 52 people are still in Head of Faculty on a clinical job title - 27 of them on the words *medical director* alone. They arrive through employers that ROR types as education, or whose name reads like a university, rather than through hospitals. 42 of the 52 carry no academic word at all. The audience is parked and not delivered, so nobody can reach them today; the number is here so that the day it ships starts from a known defect rather than a clean slate.")
 
 
 # See the note in build_mkt.py: the committed copy is the one Merve pulls.
