@@ -345,15 +345,23 @@ audiences.build(d, F)
 h(d, "7.  What happens next")
 table(d, ["#", "What", "Why now", "Who"],
  [["1","**What \"Healthcare Professional (broad)\" means**","The only thing that blocks us. Biomedical researchers now roll up into it, so 54,426 people who have never seen a patient are in an audience with that name. One sentence from marketing settles it.","Marketing"],
-  ["2","A rule for the bare qualification","`PhD`, `Ph.D`, `Master`, `Bachelor` used as the whole job title — 6% of the Students reading and the single largest source of doubt in it. A degree is a credential, not a status, and one record says `Phd holder` outright. `analyses/51` queries 8 and 8b size it and list the real spellings.","Us"],
+  ["2","Build the five answers of 19 November","Marketing answered everything in sections 6.1 to 6.5. The seed rows are written and **not yet built**: visiting scholars and fellows out of Lecturer, honorary posts out of Lecturer, the bare qualification out of Students, `medical physicist` into Clinical researcher, a bare `doctor` confirmed in Practitioner. `analyses/55` sizes all five before the build and re-counts the audiences after it.","Us"],
   ["3","A country condition on `research scholar`","It is a `student` anchor, so it matches at score 1.0 with no country test. In India it means a doctoral student; elsewhere it can be a senior post. Found in the Students reading.","Us"],
   ["4","**A decision-maker audience**","Marketing have asked for Head of Faculty to be opened up beyond academia, to reach opinion leaders, budget holders and purchase influencers. Seven definition questions are with them; the measurement on our side can start before they answer.","Marketing / us"],
   ["5","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
   ["6","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
-  ["7","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 4 may change what this audience is for.","Us"]],
+  ["7","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 4 may change what this audience is for.","Us"],
+  ["8","Veterinarians and sport and exercise science","91 and 78 people, in the healthcare audiences by accident rather than by decision. The only item left open in sections 6.1 to 6.5, and the only one that is not an engineering call: somebody has to say whether the field is healthcare.","Matthew"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
 box(d, "WHAT CAME OFF THIS LIST", [
+ "**Five open items were answered on 19 November**, reading this document through to "
+ "section 6.5: visiting scholars and fellows and honorary posts leave Lecturer, the bare "
+ "qualification leaves Students, `medical physicist` becomes a Clinical researcher, and a "
+ "bare `doctor` stays in Practitioner. They are written into the seeds and are item 2 "
+ "above until they are built and counted. One item from the same reading stays open and "
+ "is now item 8.",
+ "",
  "**Statisticians and economists are settled** — the 2,177 records in no audience stay "
  "out. They were never read title by title, and an audience is something a title earns "
  "by being read, not by resembling one that was.",

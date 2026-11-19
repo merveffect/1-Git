@@ -30,8 +30,12 @@ delivered, so it is not what you are judging.
   docent, instructor, tutor, teaching assistant.
 - **Field:** no department check.
 - **Organisation:** any. Education scores highest, company lowest.
-- **Excluded:** `emeritus professor`, `retired professor`. School teachers are
-  in by default and were measured at 0.2% of the group.
+- **Excluded:** `emeritus professor`, `retired professor`. **And, from 19
+  November, every `honorary` post and every `visiting scholar` / `visiting
+  fellow`** — an honorary title is conferred rather than held, and a visit is
+  not a post. `visiting researcher` and `visiting scientist` are unaffected:
+  they name research and sit in Researcher. School teachers are in by default
+  and were measured at 0.2% of the group.
 - **Past posts count.**
 
 ## librarian — *Librarian / Information Professional*
@@ -101,7 +105,9 @@ delivered, so it is not what you are judging.
 - **Title must name research** AND
 - **Field must be a human-health OR a biomedical department.** Both required.
 - **PATIENT CONTACT IS NOT REQUIRED.** A clinical trials statistician in an
-  oncology department is correct.
+  oncology department is correct, and so is a `medical physicist`, moved here
+  from Practitioner on 19 November for the same reason `clinical scientist`
+  was moved in October.
 - **Organisation:** any, nothing excluded.
 - **Past posts count.**
 
@@ -119,7 +125,10 @@ delivered, so it is not what you are judging.
   does not type those as Education. Those people are not in your sample.
 - **Excluded:** company graduate trainees — `graduate trainee`, `management
   trainee` — who are employees being trained, not students. The employer rule
-  removes them, so you will not see them either.
+  removes them, so you will not see them either. **And, from 19 November, a
+  job title that is ONLY a qualification** — `PhD`, `Ph.D`, `Master`, `MSc`,
+  `Bachelor`, `Phd holder` — because a degree is a credential, not a status.
+  `PhD student` is untouched; the rule matches the whole title or nothing.
 - **CURRENT POSTS ONLY.** A finished PhD is not a student. This is the one rule
   that cost the audience most: 61,209 people were removed by it, and they are
   today's professors and postdocs.
@@ -151,8 +160,6 @@ delivered, so it is not what you are judging.
 | A veterinary department in a healthcare audience | `field_wrong` |
 | `Faculty of Sport Sciences` or `Sport and Health Sciences` in a healthcare audience | `field_wrong` |
 | `statistician`, `medical statistician`, `economist` | `title_wrong` |
-| `honorary professor` | `ended_role` |
-| `visiting scholar`, `visiting fellow` in Lecturer | `ambiguous_word` |
 | A psychologist in a clinical audience | `ambiguous_word` |
 | `dr` or `md` alone | `uninformative` |
 | `md phd` or `md/phd` in Students — a US MD-PhD programme student, or a qualified physician listing two degrees. The same credential-versus-status problem as a bare `phd` | `ambiguous_word` |

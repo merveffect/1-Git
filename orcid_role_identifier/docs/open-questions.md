@@ -3261,6 +3261,97 @@ threshold is proposed from it.
 
 ---
 
+### 2.23 Five open items answered off the status document - DECIDED 2026-11-19, NOT YET BUILT
+
+**How these were answered, which is the part worth copying.** Merve read
+`docs/ORCID-Role-Enrichment-Status-and-Plan.docx` from the top and wrote an
+answer beside each `Open:` bullet, in the document itself, as far as section
+6.5. Five of them are decisions the pipeline can act on; one is not ours to
+take. That is the first time the open items have been answered by reading the
+document rather than by being asked one at a time, and it closed more of them
+in one pass than the previous three weeks did.
+
+**The five, with the words they were answered in.**
+
+| Section | The open item | The answer |
+|---|---|---|
+| 6.1 | visiting scholars and visiting fellows in Lecturer | `(exclude)` |
+| 6.1 | honorary professors in Lecturer | `(exclude)` |
+| 6.3 | the bare qualification as a whole job title, in Students | `(exclude)` |
+| 6.5 | `medical physicist`, 346 records | `(include them in clinical researchers)` |
+| 6.5 | a bare `doctor`, 4,465 records | `(keep them in practitioner)` |
+
+**And the one that is not an engineering call.** Veterinarians (91 people) and
+sport and exercise science (78) stay open and now have an owner: `(ask
+Matthew)`. Neither can be settled by measuring anything. Somebody has to say
+whether the field is healthcare, and until they do the two groups stay where
+they are rather than being moved on our own judgement.
+
+**What was written.** Three rows in `seeds/title_group_patterns.csv`, all
+moving titles to `support_technical`, which feeds no audience and is the same
+holding group the consultant titles went to on 19 November:
+
+- `\bhonorary\b` scoped to `teaching_academic`
+- `\bvisiting\b.*\b(scholar|scholars|fellow|fellows)\b` scoped to `teaching_academic`
+- the bare qualification, anchored `^...$` on the normalised title, scoped to `student`
+
+And two rows in `seeds/role_title_overrides.csv`: `medical physicist` to
+`researcher`, and `doctor` to `practitioner`.
+
+**Both teaching patterns carry the librarian veto, copied verbatim.** This is
+2.22's lesson applied in advance rather than learned again. The eleven
+librarian patterns are the only UNCONDITIONAL rows in that seed, so any title
+carrying a library word is claimed by librarian as well as by a scoped
+pattern, and `assert_title_patterns_do_not_collide` fails the build. It cost a
+failed build on 19 November; it cost nothing this time.
+
+**`doctor` moves nothing, and was still written down.** The row records a
+decision rather than making a change: it turns a VECTOR match into a HUMAN one
+so the group cannot drift on the next dictionary rebuild. The argument for
+keeping it, since it looks like the `consultant` case and is not: `consultant`
+is a hospital specialist in two countries and a business adviser everywhere
+else, while `doctor` names a medical qualification in every language that
+borrowed it, and the audience already requires a human-health department
+beside the title. It is **not** the bare `dr` on the marketing list, which is
+a form of address and is still open.
+
+**Two deliberate narrowings, recorded because both are places a later reader
+would otherwise think the rule was sloppy.**
+
+- The Students rule does **not** include `doctor` or `dr`, although
+  `analyses/51` bucket 1 does. The same day ruled that a bare doctor stays in
+  Practitioner, and nothing here should read as contradicting it.
+- The Students rule is anchored to the WHOLE title. `PhD student` is
+  untouched; only a title that is nothing but the qualification is taken.
+
+**And one deliberate widening, recorded for the same reason.** The question
+named honorary PROFESSORS. The pattern takes honorary lecturer and honorary
+reader with them, because the argument is about the word *honorary* — a title
+conferred rather than held — and not about the rank standing beside it. It
+also completes the family marketing opened on 2026-10-16, which rejected
+`emeritus professor`, `professor emeritus`, `retired professor` and `honorary
+researcher` and left `honorary professor` as the one nobody had looked at.
+
+**The one consequence that needed checking before the decision, not after.**
+Moving `medical physicist` into the `researcher` group aims it at
+`hcp_researcher`, which is what was asked for. But that group also feeds the
+all-fields **Researcher** audience, which has no department test at all — so
+these people join Researcher as a side effect — and `hcp_researcher` *does*
+test the department, so a medical physicist whose department reads as physics
+rather than as clinical or biomedical leaves the healthcare audiences
+altogether. Both are accepted. The precedent is exact: `clinical scientist`
+was moved the same way on 2026-10-29 with the same two consequences written
+into its note. `analyses/55` query 3b counts each case before the build.
+
+**NOTHING HERE IS BUILT YET, AND THE BASELINE IS THE POINT.** 2.22 closes with
+the one thing to fix next time: analyses/54 could only bracket the cost of the
+consultant decision, because nobody counted the audiences before that build
+and a week of ORCID growth sat inside the comparison. `analyses/55` queries 1,
+2 and 3 are written to run on the CURRENT build, before these seeds are built,
+so the cost is a subtraction rather than an estimate. Queries 4 and 5 are the
+same questions afterwards. No size is quoted anywhere in the documents for any
+of these five decisions until those have run.
+
 ### 2.22 practitioner's 0.75+ band read for the first time - ACTED 2026-11-16
 
 **The band every previous practitioner review excluded.** Each one filtered

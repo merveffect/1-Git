@@ -94,8 +94,20 @@ def build(d, F):
       "**The structural risk.** The title is the only signal, so a wrong title goes "
       "straight through with nothing to contradict it. It scores 98.7% anyway because "
       "academic titles are the most standardised vocabulary in the data.",
-      "**Open:** visiting scholars and fellows, and honorary professors — both with "
-      "marketing, both one line to change."])
+      "**Settled 19 November, and not yet built.** Marketing answered both: exclude. "
+      "A visiting scholar or visiting fellow is not teaching staff — the post is "
+      "temporary, usually unpaid, and the title names a visit rather than a job. An "
+      "honorary post is conferred rather than held, which closes the family begun on "
+      "16 October when `emeritus professor`, `retired professor` and `honorary "
+      "researcher` were rejected and `honorary professor` was the one nobody had "
+      "looked at. Both are patterns scoped to the teaching group, so a clinical "
+      "honorary post keeps its clinical group, and the titles move to the holding "
+      "group rather than being deleted. **Wider than the question asked:** honorary "
+      "lecturer and honorary reader go with honorary professor, because the argument "
+      "is about the word *honorary* and not about the rank beside it.",
+      "**Not yet measured.** The size of both rules is counted before the build by "
+      "analyses/55 query 2, and the audience is re-counted after it by query 4. No "
+      "number is quoted here until those have run."])
 
     aud("RESEARCHER — 343,716 people, 99.0% correct", [
       "**How it is decided.** Does the job title name research work — researcher, "
@@ -128,9 +140,17 @@ def build(d, F):
       "in it together. Narrowing it to doctoral candidates is one line. Nothing is read "
       "from the education section of a profile — using degrees as a second signal was "
       "measured and refused, because 65% of open education records carry no usable date.",
-      "**Open:** 6% of the sample wrote only a qualification as their whole job title — "
-      "`PhD`, `Master`, `Bachelor` — and the record cannot say whether they are studying "
-      "for it or have held it for twenty years. One wrote `Phd holder`."])
+      "**Settled 19 November, and not yet built.** The bare qualification is excluded. "
+      "6% of the sample wrote only a degree as their whole job title — `PhD`, `Master`, "
+      "`Bachelor`, and one person wrote `Phd holder` — and a degree is a credential, "
+      "not a status: the record cannot say whether the person is studying for it or "
+      "has held it for twenty years. It was the single largest source of doubt in this "
+      "audience. The rule is anchored to the whole title, so `PhD student` is "
+      "untouched, and it is scoped to the student group. **`doctor` and `dr` are "
+      "deliberately left out of it**, because the same day ruled that a bare doctor "
+      "stays in Practitioner.",
+      "**Not yet measured.** analyses/55 query 2 lists the exact titles it takes "
+      "before the build; query 4 re-counts the audience after."])
 
     aud("HEALTHCARE (BROAD) — 177,645 people, 90.6% correct", [
       "**How it is decided.** The widest net: a clinical job title is mandatory, and "
@@ -170,10 +190,27 @@ def build(d, F):
       "the smaller audience. The people removed included known errors, so it is more "
       "likely to understate than to overstate - but read it as out of date, not as a "
       "current figure.",
-      "**Open:** veterinarians (91 people) and sport and exercise science (78), both in "
-      "the healthcare audiences today by accident rather than decision. And two titles "
-      "deliberately left alone in the November reading: `medical physicist` (346 "
-      "records) and a bare `doctor` (4,465)."])
+      "**Settled 19 November, and not yet built.** `medical physicist` (346 records) "
+      "moves to Clinical researcher. A medical physicist does not treat patients — "
+      "they plan radiotherapy doses and assure the quality of imaging equipment — so "
+      "an audience defined as a clinician who treats patients is the wrong one. It is "
+      "the same decision `clinical scientist` got on 29 October, for the same reason. "
+      "**Two consequences accepted with it:** they enter the all-fields Researcher "
+      "audience, which has no department test, and they stay in Healthcare (broad) "
+      "only through Clinical researcher, which does — so a medical physicist in a "
+      "physics department leaves the healthcare audiences altogether. analyses/55 "
+      "query 3b counts both cases before the build.",
+      "**Settled 19 November, nothing moves.** A bare `doctor` (4,465 records) stays "
+      "in Practitioner, written down as a human decision so it cannot drift on the "
+      "next dictionary rebuild. Unlike `consultant`, which is a hospital specialist "
+      "in two countries and a business adviser everywhere else, `doctor` names a "
+      "medical qualification in every language that borrowed it, and the audience "
+      "already requires a human-health department beside the title. This is not the "
+      "bare `dr` on the marketing list, which is a form of address and still open.",
+      "**Open — with Matthew:** veterinarians (91 people) and sport and exercise "
+      "science (78), both in the healthcare audiences today by accident rather than "
+      "decision. Neither is an engineering call; both need somebody to say whether "
+      "the field is healthcare."])
 
     aud("CLINICAL ADMINISTRATOR — 8,377 people, 94.9% correct", [
       "**How it is decided.** A leadership title **and** a human-health department. "

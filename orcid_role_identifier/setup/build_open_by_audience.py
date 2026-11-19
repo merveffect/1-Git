@@ -63,7 +63,10 @@ def aud(title, sub, rows, note=None):
         table(d, ["What is open", "Size", "Who answers"], rows,
               widths=[4.0, 1.25, 0.95], size=8.8)
     if note:
-        para(d, note, size=9, color=MUT, space_after=4)
+        # A list of notes, because an audience can carry a caveat AND a
+        # decision taken but not yet built, and the two are different things.
+        for n in ([note] if isinstance(note, str) else note):
+            para(d, n, size=9, color=MUT, space_after=4)
     d.paragraphs[-1].paragraph_format.space_after = Pt(11)
 
 
@@ -87,15 +90,16 @@ para(d, "Everything else below can wait without stopping anything.", size=9, col
 h(d, "By audience")
 
 aud("Lecturer — 427,256 people, 98.7% correct",
-    "Solid. Two definition questions, both one line to change.",
- [["**Are visiting scholars and visiting fellows teaching staff?** In Lecturer today. "
-   "They teach, but the post is temporary and often unpaid.", "not measured", "Marketing"],
-  ["**Is an honorary professor still an active academic?** It covers two opposite "
-   "people: a hospital consultant made honorary so they can supervise doctoral "
-   "students, and a retired professor kept on out of courtesy. The record does not say "
-   "which. `emeritus professor`, `retired professor` and `honorary researcher` were all "
-   "rejected on 16 October — this is the one nobody looked at.", "not measured",
-   "Marketing"]])
+    "**Nothing is open.** Both questions were answered on 19 November.",
+ [], "**Answered, written, and not yet built.** Visiting scholars and visiting fellows "
+     "are not teaching staff — the post is temporary, usually unpaid, and the title "
+     "names a visit rather than a job. An honorary post is conferred rather than held, "
+     "which completes the family begun on 16 October when `emeritus professor`, "
+     "`retired professor` and `honorary researcher` were rejected. Both leave Lecturer "
+     "for the holding group, so they can be brought back by name. `visiting researcher` "
+     "and `visiting scientist` are untouched — they name research and are already in "
+     "Researcher. Neither size has been counted yet; analyses/55 counts both before the "
+     "build.")
 
 aud("Researcher — 343,716 people, 99.0% correct",
     "**Nothing is open.** The highest-scoring audience in the project and the only one "
@@ -105,14 +109,9 @@ aud("Researcher — 343,716 people, 99.0% correct",
      "so one of the two is counted wrong whatever we do.")
 
 aud("Students — 107,091 people, 98.7% correct",
-    "Built and read in November. Four open items, one of them the largest source of "
-    "doubt in the reading.",
- [["**Is a bare qualification a student?** `PhD`, `Master`, `Bachelor` written as the "
-   "whole job title. The record cannot say whether the person is studying for it or has "
-   "held it for twenty years, and one wrote `Phd holder` outright. The employer rule "
-   "does not help — a professor is at a university too.", "6% of the sample",
-   "**Marketing**"],
-  ["**Does Students mean doctoral candidates, or every student?** Doctoral, master's and "
+    "Built and read in November. Three open items; the largest source of doubt in the "
+    "reading was answered on 19 November.",
+ [["**Does Students mean doctoral candidates, or every student?** Doctoral, master's and "
    "undergraduate are one bucket today. Narrowing it is one line.",
    "not measured", "**Marketing**"],
   ["**`research scholar` needs a country condition.** It is a student example word, so "
@@ -121,9 +120,15 @@ aud("Students — 107,091 people, 98.7% correct",
   ["**`md phd` and `md/phd`.** A US MD-PhD programme student, or a qualified physician "
    "listing two degrees. The same credential-versus-status problem as a bare `PhD`.",
    "not measured", "Us"]],
- "Not a question: the employer rule refuses 10,316 people whose titles plainly say "
- "`phd student`, because ROR types Max Planck as a facility and teaching hospitals as "
- "healthcare. That bill was measured and accepted on 11 November.")
+ ["**Answered 19 November, written, not yet built:** a bare qualification is NOT a "
+  "student. `PhD`, `Master`, `Bachelor` as the whole job title is a credential, not a "
+  "status — one person wrote `Phd holder` outright — and it was 6% of the sample and "
+  "the largest single source of doubt here. The rule matches the whole title or "
+  "nothing, so `PhD student` is untouched, and `doctor` and `dr` are deliberately left "
+  "out of it because the same day ruled a bare doctor stays in Practitioner.",
+  "Not a question: the employer rule refuses 10,316 people whose titles plainly say "
+  "`phd student`, because ROR types Max Planck as a facility and teaching hospitals as "
+  "healthcare. That bill was measured and accepted on 11 November."])
 
 aud("Healthcare Professional (broad) — 177,645 people, 90.6% correct",
     "Not weak — undefined. See question 1 above.",
@@ -147,31 +152,33 @@ aud("Clinical / Biomedical Researcher — 109,486 people, 90.0% correct",
 
 aud("Practitioner — 57,297 people, 93.4% correct",
     "The least-read group in the project: reviewed titles cover 38% of its records "
-    "against 75% for researchers. Seven items, the most of any audience.",
- [["**`medical physicist` — where does a hospital physicist belong?** They calibrate "
-   "radiotherapy machines and calculate doses. They do not treat patients. In "
-   "Practitioner today and that is wrong; the question is where they should go.",
-   "346 records", "Us"],
-  ["**A bare `doctor`.** A physician in most languages, a PhD in some contexts. The "
-   "second largest title in the audience and deliberately left alone in the November "
-   "reading rather than decided twice in one day.", "4,465 records", "Us"],
-  ["**Does a research nurse treat patients?** `research nurse`, `clinical research "
+    "against 75% for researchers. Five items left; two were answered on 19 November.",
+ [["**Does a research nurse treat patients?** `research nurse`, `clinical research "
    "nurse`, `research midwife`, `research dietitian`, `nurse scientist`. A real "
    "question and nobody has asked it.", "~286 records", "Us / clinical expert"],
   ["**Is a bare `dr` plus a clinical department enough?** It says the person is "
    "medically qualified and works in a clinical setting, but not what they do. Accepted "
    "as clinical evidence today.", "not measured", "**Marketing**"],
   ["**Are veterinarians healthcare professionals?** In the healthcare audiences today "
-   "by accident rather than by decision.", "91 people", "**Marketing**"],
+   "by accident rather than by decision.", "91 people", "**Matthew**"],
   ["**Is sport and exercise science a healthcare field?** Same situation.",
-   "78 people", "**Marketing**"],
+   "78 people", "**Matthew**"],
   ["**Is a psychologist a clinician?** Flagged unsure in the reviewer rules and never "
    "settled.", "not measured", "Marketing"]],
- "**A caveat rather than a question:** the 93.4% was measured before 19 November, when "
- "every title containing `consultant` left this audience and took about 5,400 people "
- "with it. The people removed included known errors, so the figure is more likely to "
- "understate than overstate — but it has not been re-read and should be quoted with "
- "its date.")
+ ["**Answered 19 November, written, not yet built.** `medical physicist` (346 records) "
+  "becomes a Clinical researcher: they plan radiotherapy doses and assure imaging "
+  "equipment, and they do not treat patients, so the same move `clinical scientist` got "
+  "in October. Two consequences accepted with it — they also enter the all-fields "
+  "Researcher audience, which has no department test, and one whose department reads as "
+  "physics leaves the healthcare audiences altogether. A bare `doctor` (4,465 records) "
+  "STAYS in Practitioner, written down so it cannot drift on the next rebuild; unlike "
+  "`consultant` it names a medical qualification in every language that borrowed it. "
+  "That is not the bare `dr` above, which is a form of address and is still open.",
+  "**A caveat rather than a question:** the 93.4% was measured before 19 November, when "
+  "every title containing `consultant` left this audience and took about 5,400 people "
+  "with it. The people removed included known errors, so the figure is more likely to "
+  "understate than overstate — but it has not been re-read and should be quoted with "
+  "its date."])
 
 aud("Clinical Administrator — 8,377 people, 94.9% correct",
     "**Nothing is open.** The one item this audience carried was checked on 19 November "
