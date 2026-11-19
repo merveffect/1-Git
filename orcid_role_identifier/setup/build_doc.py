@@ -131,12 +131,19 @@ para(d, "Now change one thing. Same job title, but the department says mechanica
      space_after=10)
 
 box(d, "EXAMPLE 2  —  A PERSON OVERRULES THE MACHINE", [
- "The title **junior researcher** appears on 42,949 records. The machine read *junior* "
- "and *senior* as two ends of one idea and filed it as senior - 0.870 confident, and "
- "completely wrong.",
+ "A person typed **chemist**. The nearest example word was **pharmacist**, so the "
+ "system made them a Pharmacist. In British English that is a reasonable reading - a "
+ "chemist is a shop that dispenses medicines.",
  "",
- "Somebody wrote one line in a file to say: this is early career. **That line wins for "
- "ever and survives every rebuild.**",
+ "**As an ORCID job title it is wrong every time.** A person who writes *chemist* in "
+ "their research record is a chemistry researcher. The system was not wrong about the "
+ "word; it was wrong about the world, and no amount of measuring would have found that "
+ "out.",
+ "",
+ "Somebody wrote one line in a file to say: chemist means Researcher. **That line wins "
+ "for ever and survives every rebuild.** The same file holds the French case, where "
+ "`praticien` - practitioner - sits three letters from `pharmacien` and sent a pile of "
+ "French hospital doctors into the Pharmacist audience.",
  "",
  "This is why every question in this document is cheap to answer. A decision is one "
  "row, it is permanent, and changing your mind later costs the same as deciding now.",
