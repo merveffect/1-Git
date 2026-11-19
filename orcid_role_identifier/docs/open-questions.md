@@ -3399,6 +3399,92 @@ the second-group rules are scoped to. The rest predate this commit.
 had to be measured rather than compared. Worth recording one the next time it
 runs clean.
 
+#### What the build actually did - measured 2026-11-19, `analyses/54`
+
+The second build ran clean: **PASS=54, ERROR=0, SKIP=0**, one warning, and
+`assert_second_group_rules_do_not_collide` held at **247** on a clean build.
+That is now the recorded baseline the paragraph above asked for.
+
+**The cost, in people.** The six audiences this commit did not touch all grew
+between 0.63% and 1.36% in the week since the one-pager was counted, median
+0.92% - that is ORCID growth and it is the only measurement of it we have.
+Applying it to practitioner gives an expected 62,713 against an actual
+**57,297**, so the consultant removal cost about **5,400 people**, and
+`hcp_broad` lost about 5,300 of the same ones through the roll-up.
+
+| audience | 12 Nov | 19 Nov | change |
+|---|---|---|---|
+| lecturer | 423,668 | 427,256 | +0.85% |
+| researcher | 340,705 | 343,716 | +0.88% |
+| **hcp_broad** | 181,295 | **177,645** | **−2.01%** |
+| hcp_researcher | 108,805 | 109,486 | +0.63% |
+| students | 105,658 | 107,091 | +1.36% |
+| **hcp_practitioner** | 62,141 | **57,297** | **−7.80%** |
+| faculty_head | 17,218 | 17,305 | +0.51% |
+| hcp_administrator | 8,258 | 8,377 | +1.44% |
+| pharmacist | 2,064 | 2,083 | +0.92% |
+| librarian | 700 | 708 | +1.14% |
+
+**5,400 is an estimate and is labelled one.** 14,083 people hold a consultant
+record; 2,535 of them - 18% - kept the audience through a second job, and
+11,548 are not in it now. 11,548 is an upper bound rather than the loss,
+because `hcp_practitioner` needs a health department as well as a title, so a
+share of them never confirmed in the first place. The bracket is 5,400 to
+11,548 and the low end is the one to quote.
+
+**⭐ The population was twice the size of the reading.** The pattern moved
+**17,360 records across 6,386 distinct titles**. `analyses/35` query 3 stopped
+at 400 rows and frequency 15, so the call was made on a view of roughly half
+of it, and the ~9,600 figure reported at the time was low. The decision was
+reaffirmed after the size was raised once and it stands; this is the price
+being recorded, not the question being reopened.
+
+**The scope and the veto both held.** Consultants in researcher,
+teaching_academic, trainee_clinical and leadership are untouched - the pattern
+never saw them. And the three collision titles now resolve to `librarian` by
+PATTERN: `library services consultant` is a librarian.
+
+#### ⭐ 52 people are confirmed in faculty_head on a clinical title
+
+The management titles reached their intended home - `medical director` gives
+hcp_administrator 179 and hcp_broad 161, and `nurse educator` gives lecturer
+20. But `leadership` is read by two audiences, and the second one leaked.
+
+| title | faculty_head CONFIRMED | ours? |
+|---|---|---|
+| `medical director` | 27 | no - moved 2026-10-29 |
+| `chief medical officer` | 4 | **yes** |
+| `nurse manager` | 4 | **yes** |
+| `hospital director` | 2 | **yes** |
+| `deputy medical director` | 2 | no |
+| `director of nursing department` | 2 | no |
+| `director of nursing` | 1 | **yes** |
+| ten titles pairing professor with a clinical post | 10 | no |
+
+**Only 11 of the 52 are ours.** Bare `medical director` has been putting 27
+people into Head of Faculty since 29 October and nobody noticed, because the
+move was verified in the group it was aimed at and not in the group it could
+leak into. That is the third instance this month of exactly that shape.
+
+42 of the 52 carry no academic word at all and are wrong. The other 10 pair a
+professorship with a clinical directorship - `professor and interim executive
+director of nursing` may well be real faculty leadership - and are a question
+rather than an error.
+
+**Not urgent, and not nothing.** faculty_head is parked and is not delivered,
+so no campaign reaches these 52 today. They are wrong members of an audience
+already measured at 83.3% the moment it ships. It stays frozen with the rest of
+the Head of Faculty work until marketing answers; this is recorded so that the
+thaw starts from a known defect rather than from a clean slate.
+
+#### The process gap this exposed
+
+Query 1 of `analyses/54` had to be compared against a **seven-day-old**
+baseline, because nobody ran it before the build. A week of ORCID growth sits
+inside every number above and the cost of the change had to be estimated
+instead of read. **Run the audience-size query before a seed change lands, not
+only after.**
+
 ---
 
 ### 2.21 role_detail was removed and put straight back - 2026-11-16, STILL OPEN

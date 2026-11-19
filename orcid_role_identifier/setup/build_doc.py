@@ -34,7 +34,7 @@ box(d, "WHERE THIS STANDS", [
  "*Head of Faculty* is the one weak audience at 83.3%, because the job title is the only "
  "evidence it has. Both are waiting on marketing, not on engineering.",
  "",
- "**The newest audience is Students** - 105,658 people, built and read in November, "
+ "**The newest audience is Students** - 107,091 people, built and read in November, "
  "98.7% correct and third of the ten.",
  "",
  "**What this document is.** Where the work stands, how it decides, how we know it is "
@@ -119,17 +119,27 @@ para(d, "Every figure here is a people figure, counted directly. *Right, of the 
         "not settled or a record that does not say enough to judge. It is never counted "
         "as correct.")
 table(d, ["Audience", "People", "Right, of the decided", "Verdict"],
- [["**Lecturer**", "423,668", "**98.7% \u00b1 1.1**", "Solid"],
-  ["**Researcher**", "340,705", "**99.0% \u00b1 1.0**", "Solid"],
-  ["Healthcare (broad)", "181,295", "90.6% \u00b1 3.0", "**Not weak - undefined.** Waiting on a name"],
-  ["Clinical researcher", "108,805", "90.0% \u00b1 3.1", "Good. Grew when biomedical research was ruled in"],
-  ["**Students**", "105,658", "**98.7% \u00b1 1.3**", "**New.** Solid"],
-  ["Practitioner", "62,141", "93.4% \u00b1 2.6", "Good"],
-  ["Head of faculty", "17,218", "83.3% \u00b1 4.4", "**Parked** - not being delivered"],
-  ["Clinical administrator", "8,258", "94.9% \u00b1 2.2", "Good. Was 88.9% in October"],
-  ["Pharmacist", "2,064", "95.7% \u00b1 1.9", "Good. Was 81.8% in October"],
-  ["Librarian", "700", "98.5%", "Solid. All 700 read"]],
+ [["**Lecturer**", "427,256", "**98.7% \u00b1 1.1**", "Solid"],
+  ["**Researcher**", "343,716", "**99.0% \u00b1 1.0**", "Solid"],
+  ["Healthcare (broad)", "177,645", "90.6% \u00b1 3.0", "**Not weak - undefined.** Waiting on a name"],
+  ["Clinical researcher", "109,486", "90.0% \u00b1 3.1", "Good. Grew when biomedical research was ruled in"],
+  ["**Students**", "107,091", "**98.7% \u00b1 1.3**", "**New.** Solid"],
+  ["Practitioner", "57,297", "93.4% \u00b1 2.6",
+   "**The figure predates 19 November** - needs re-reading"],
+  ["Head of faculty", "17,305", "83.3% \u00b1 4.4", "**Parked** - not being delivered"],
+  ["Clinical administrator", "8,377", "94.9% \u00b1 2.2", "Good. Was 88.9% in October"],
+  ["Pharmacist", "2,083", "95.7% \u00b1 1.9", "Good. Was 81.8% in October"],
+  ["Librarian", "708", "98.5%", "Solid. All 708 read"]],
  widths=[1.6,0.85,1.3,2.85], size=8.8)
+para(d, "**People counted on the build of 19 November; the accuracy column was not "
+        "re-measured on it.** That matters for one row. Practitioner lost about 5,400 "
+        "people on 19 November when every job title containing *consultant* was taken "
+        "out of it - a deliberate decision, recorded with its cost. The removed people "
+        "included known errors, so 93.4% is more likely to understate the audience than "
+        "to overstate it, but **it was measured on the population before the change and "
+        "should be read as out of date rather than as a current figure.** The other nine "
+        "rows moved only by a week of ORCID growth, between 0.5% and 1.4%.",
+     size=9, color=MUT, space_after=4)
 para(d, "Each audience is written out in section 6: how it is decided, how it was "
         "measured, and what is still open in it.", space_after=10)
 
@@ -139,7 +149,7 @@ para(d, "Being in an audience and being contactable are different things. **Reac
         "opt-in, advertising opt-in, legitimate interest, or book-author consent. The "
         "people column below was counted on 10 November, two days before section 3's, "
         "and the Students row on 12 November when that audience was built; the share "
-        "reachable is what to read here and it is stable.", space_after=4)
+        "reachable is what to read here and it is stable. **The people column below is therefore smaller than section 3's and is not a correction of it** - it is an earlier count, kept with its own date because the reachable share was measured against it.", space_after=4)
 table(d, ["Audience", "People", "Reachable", "Of those"],
  [["**Lecturer**", "410,499", "**319,291**", "77.8%"],
   ["**Researcher**", "333,280", "**237,391**", "71.2%"],
