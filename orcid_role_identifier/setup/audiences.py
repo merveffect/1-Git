@@ -195,11 +195,12 @@ def build(d, F):
       "health ministries, the NIH, Cleveland Clinic, Mayo. Forty rows cannot rule "
       "out a scattered tail of one- and two-person firms, but the leak this "
       "audience was worried about is not there.",
-      "**Open:** the 94.9% was read on 5 November, and on 19 November this audience "
+      "**Not a question, a caveat:** the 94.9% was read on 5 November, and on 19 November this audience "
       "gained members - `chief medical officer`, `nurse manager`, `hospital director`, `director of nursing` and the medical-director variants, taking it from "
       "8,258 to 8,377. The figure was measured on a sample that never saw them. The "
-      "change is small, about 1% of the audience, but the figure is older than the "
-      "audience it describes."])
+      "change is small, about 1% of the audience, so 94.9% is still the best figure "
+      "we have and nothing here needs deciding - but it is older than the audience "
+      "it describes, and the honest way to quote it is with its date."])
 
     aud("HEAD OF FACULTY — 17,305 people, 83.3% correct — PARKED", [
       "**How it is decided.** A faculty-level title — dean, head of department, rector, "
