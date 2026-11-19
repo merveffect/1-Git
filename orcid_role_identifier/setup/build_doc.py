@@ -91,26 +91,39 @@ para(d, "This is the whole system in one example. Everything later in this docum
         "refers back to it.")
 
 box(d, "EXAMPLE 1  —  THE MACHINE DECIDES", [
- "A person typed **Consultant Paediatrician** as their job title.",
+ "A person typed **Attending Doctor** as their job title. 333 people did.",
  "",
- "`what they typed       Consultant Paediatrician`",
- "`cleaned up            consultant paediatrician`",
- "`nearest example word  consultant`",
- "`how close             0.699 out of 1.00`",
+ "`what they typed       Attending Doctor`",
+ "`cleaned up            attending doctor`",
+ "`nearest example word  attending physician`",
+ "`how close             0.923 out of 1.00`",
  "",
- "So the title is given the profession **Practitioner**. That answer is stored once and "
- "reused for everyone who ever typed the same thing.",
+ "**Nobody told the system that a doctor and a physician are the same job.** It worked "
+ "that out from the words alone, and that is the whole point of this step: people do not "
+ "type the words we would have chosen. The title is given the profession "
+ "**Practitioner**, and that answer is stored once and reused for everyone who ever "
+ "typed the same thing.",
  "",
- "Now one actual person with that title. They work at a hospital, in a paediatrics "
+ "Now one actual person with that title. They work at a hospital, in an anaesthesiology "
  "department. Three things are scored and added up:",
  "",
- "`title         0.45 x 0.742  =  0.334`",
+ "`title         0.45 x 0.934  =  0.420`",
  "`organisation  0.15 x 1.000  =  0.150`",
  "`department    0.40 x 1.000  =  0.400`",
- "`                     TOTAL  =  0.884`",
+ "`                     TOTAL  =  0.970`",
  "",
  "The line for this audience is 0.70. They are in.",
+ "",
+ "**0.923 became 0.934** because a raw similarity never reaches 1.00 in practice and "
+ "anything under 0.65 is thrown away, so the surviving range is stretched onto a scale "
+ "where the weakest match we accept reads as 0.70. It adds no information - it makes the "
+ "number mean what it looks like.",
 ])
+para(d, "**Most common clinical titles do not need the guessing at all.** `physician`, "
+        "`attending physician`, `medical doctor` and `medical officer` each match an "
+        "example word exactly, at 1.000. The measuring matters at the edges - the "
+        "synonyms, the abbreviations and the other languages - which is where a list of "
+        "words on its own would simply fail.", space_after=10)
 para(d, "Now change one thing. Same job title, but the department says mechanical "
         "engineering. This audience needs the title **and** the subject to agree, so the "
         "person is not scored low — they simply do not appear at all. That second check "

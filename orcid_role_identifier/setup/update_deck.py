@@ -403,13 +403,14 @@ them unusable.
 So the chain is: the title is matched to its nearest anchor, the anchor belongs to a group, and
 the group feeds the audiences. Read that once and the rest of the deck follows.""",
 
-3: """Let me follow one title all the way through. Say somebody typed "Consultant Paediatrician".
+3: """Let me follow one title all the way through. Say somebody typed "Attending Doctor".
 
 First we normalise it - lowercase, strip the punctuation, keep the accents. Then that text goes to
 a Vertex AI model, which turns it into 768 numbers standing for its meaning. Then we compare those
-numbers against all 151 anchors at once and the nearest one wins. Here it is `consultant`, at a
-similarity of 0.699. And `consultant` only belongs to one group, practitioner - so that is the
-group this title gets.
+numbers against all 151 anchors at once and the nearest one wins. Here it is `attending
+physician`, at a similarity of 0.923. Nobody wrote a rule saying a doctor and a physician are the
+same job - it worked that out from the words. And `attending physician` only belongs to one group,
+practitioner, so that is the group this title gets.
 
 The important bit: this runs ONCE PER DISTINCT TITLE, not once per person. 317,302 titles, one
 pass. Everybody who typed the same string gets the same answer, and labelling a person afterwards
@@ -419,31 +420,30 @@ Now, group_score - this is the line at the bottom and it confused me for a while
 plainly.
 
 The raw similarity numbers live in a narrow band. Anything below 0.65 we throw away; that is the
-floor. And in practice nothing ever comes back above about 0.95. So a raw 0.699 LOOKS like a weak
-score when it is actually a perfectly good match that just sits near the bottom of the range.
+floor. And in practice nothing ever comes back above about 0.95. So a raw 0.70-something LOOKS
+like a weak score when it is actually a perfectly good match sitting near the bottom of the range.
 
 group_score re-spreads that surviving band so the number means what it looks like: the weakest
 match we would accept becomes 0.70, a perfect match stays 1.00, and everything in between is
-stretched evenly across the gap. 0.699 comes out at 0.742.
+stretched evenly across the gap. 0.923 comes out at 0.934.
 
 That is all the formula does. It adds no information - it just puts the score on a scale the rest
 of the pipeline can use.""",
 
 4: """Now the same title, but for an actual person. Three signals.
 
-The TITLE gives us practitioner, carrying that 0.742.
+The TITLE gives us practitioner, carrying that 0.934.
 
-The ORGANISATION we look up by its ROR id. Great Ormond Street Hospital, ROR type Healthcare -
-full marks, 1.00.
+The ORGANISATION we look up by its ROR id. A hospital, ROR type Healthcare - full marks, 1.00.
 
-The DEPARTMENT is Paediatrics, which maps to health_clinical - full marks again.
+The DEPARTMENT is Anaesthesiology, which maps to health_clinical - full marks again.
 
 Then each audience weights those three differently, because they do not matter equally. For
 Practitioner it is 0.45 title, 0.15 organisation, 0.40 department. The organisation is worth least
 because a hospital only weakly tells you somebody is clinical - plenty of non-clinical people work
 in hospitals. The department is worth a lot, because that is where the specific words live.
 
-Multiply and add: 0.334 plus 0.150 plus 0.400 is 0.884. That is above the confirm line, so this
+Multiply and add: 0.420 plus 0.150 plus 0.400 is 0.970. That is above the confirm line, so this
 person is CONFIRMED and gets delivered. If it had landed between 0.50 and the line, they would be
 PROBABLE instead.
 
