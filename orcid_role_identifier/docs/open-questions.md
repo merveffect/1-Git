@@ -3477,6 +3477,32 @@ already measured at 83.3% the moment it ships. It stays frozen with the rest of
 the Head of Faculty work until marketing answers; this is recorded so that the
 thaw starts from a known defect rather than from a clean slate.
 
+#### The industry leak the 5 November fix was supposed to leave behind
+
+`hcp_administrator` set Company and Funder to 0.00 on 2026-11-05, and the
+status document has carried an open item ever since: that industry medical
+directors would simply keep `hcp_broad`, where a company scores 0.60. Nobody
+checked it.
+
+Measured 2026-11-19, on `hcp_broad` CONFIRMED rows whose `title_group` is
+`leadership`, grouped by employer: of the forty employers contributing the
+most people, **not one is a company.** They are hospitals, medical faculties,
+health ministries, the NIH, Cleveland Clinic, Mayo, St Jude. The route the
+item warned about is not visible.
+
+**Forty rows is not zero.** A tail of one- and two-person pharma employers
+cannot be excluded from this, and the honest statement is that the leak is not
+where the document said it was, not that it does not exist. The bullet now
+says what was measured instead of what was feared.
+
+**An indicative query that was NOT the evidence.** Counting people with a
+medical-director title gave `hcp_broad` 501 against `hcp_administrator` 261,
+which looks like a leak and is not one: a person holds several employment
+records, so the excess is people reaching `hcp_broad` through a different job.
+The question could only be answered by looking at the employer on the
+`hcp_broad` row itself. Worth remembering - a person-level count cannot answer
+a question about which record did the work.
+
 #### A second process gap: half the headline table is frozen
 
 The status document's section 1 counts people from `fct_role_audience` and job

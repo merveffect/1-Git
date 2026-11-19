@@ -186,8 +186,20 @@ def build(d, F):
       "**A code fix came with it that had been wrong all along:** a veto used to fall "
       "back to the unknown-organisation score instead of zero, so it had never worked "
       "for this audience at all.",
-      "**Open:** industry medical directors still keep Healthcare (broad), whose "
-      "threshold is lower. Left as it is until that audience is defined."])
+      "**That bullet used to say the industry people simply moved next door, and on "
+      "19 November we checked.** Healthcare (broad) is gentler about employers - a "
+      "company scores 0.60 there against 0.00 here - so the worry was that blocking "
+      "them in one audience just left them in the other. Measured on the build: of "
+      "the forty employers sending the most leadership titles into Healthcare "
+      "(broad), **not one is a company.** They are hospitals, medical faculties, "
+      "health ministries, the NIH, Cleveland Clinic, Mayo. Forty rows cannot rule "
+      "out a scattered tail of one- and two-person firms, but the leak this "
+      "audience was worried about is not there.",
+      "**Open:** the 94.9% was read on 5 November, and on 19 November this audience "
+      "gained members - `chief medical officer`, `nurse manager`, `hospital director`, `director of nursing` and the medical-director variants, taking it from "
+      "8,258 to 8,377. The figure was measured on a sample that never saw them. The "
+      "change is small, about 1% of the audience, but the figure is older than the "
+      "audience it describes."])
 
     aud("HEAD OF FACULTY — 17,305 people, 83.3% correct — PARKED", [
       "**How it is decided.** A faculty-level title — dean, head of department, rector, "
