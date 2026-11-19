@@ -3355,6 +3355,50 @@ than that the title names nothing.
 the ratio differs title by title. Nothing here has been converted, and the
 audience's accuracy figure should not be adjusted until it is.
 
+#### The first build failed, and the test that stopped it was right
+
+`fec7941` was pushed unbuilt. The first `dbt build --select role_title_overrides+
+title_group_patterns+` on 19 November stopped at
+`assert_title_patterns_do_not_collide` with **3 titles**, and skipped all 30
+downstream models - so no audience ever moved on the broken rule.
+
+| title | frequency | model group | claimed by |
+|---|---|---|---|
+| `library services consultant` | 1 | practitioner | librarian, support_technical |
+| `library technology and open data consultant` | 1 | practitioner | librarian, support_technical |
+| `external consultant/ mixed methods ... global library of traditional medicine` | 1 | practitioner | librarian, support_technical |
+
+**The cause was structural, not a typo.** The eleven librarian rows are the only
+UNCONDITIONAL patterns in the seed, so they claim a title in any group. The
+consultant row is scoped to practitioner. A title the model put in practitioner
+that also carries a library word is therefore claimed twice.
+
+**`min()` would have picked `librarian` anyway** - it sorts before
+`support_technical`. The test exists precisely because min() would have made
+that choice silently, and the right answer here is the one nobody had written
+down. The fix is an `unless_pattern` on the consultant row carrying the librarian
+veto, **lifted verbatim from the `research officer` row** rather than retyped,
+for the reason 1.17 records: that list is multilingual and was got wrong three
+times when retyped.
+
+**Three records. The test was still worth having** - it did not catch a big
+mistake, it caught an undocumented decision, which is the thing this project
+keeps paying for later.
+
+#### A second number, and it is not ours
+
+The same build raised `assert_second_group_rules_do_not_collide` at **247**
+(warn, by design - 1.17 chose warn so one regex cannot block a build). Measured
+on the built dictionary: the 247 are `researcher` 170 and `teaching_academic`
+77. **`support_technical` does not appear at all**, so the consultant pattern
+contributed none of them. At most 11 can be ours - the 21 new overrides send 8
+titles to researcher and 3 to teaching_academic, and a resolved group is what
+the second-group rules are scoped to. The rest predate this commit.
+
+**There is no recorded baseline for this test**, which is why the composition
+had to be measured rather than compared. Worth recording one the next time it
+runs clean.
+
 ---
 
 ### 2.21 role_detail was removed and put straight back - 2026-11-16, STILL OPEN
