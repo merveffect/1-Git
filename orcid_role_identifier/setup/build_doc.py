@@ -224,9 +224,12 @@ box(d, "WHY HEALTHCARE IS THE HARDEST PART", [
 # ============================================================ 4
 h(d, "4.  The outside sources we now have")
 para(d, "Until this month every number in this project came from our own pipeline. That "
-        "is a closed loop. We now have three outside sources, and each one can check a "
-        "different thing. None of them can check everything.")
-fig(d, f"{F}/sources.png", 6.4, "What each outside source can and cannot check for us.")
+        "is a closed loop. We now have **two** outside sources, and each one can check a "
+        "different thing. Neither can check everything, and the gap between them is the "
+        "same gap in both: **clinical specialties**. The role library has no list of them "
+        "and the survey does not reach enough clinicians to settle them. That is what a "
+        "clinical expert would be for, and it is the one outside source this project has "
+        "asked for and does not have.")
 
 h(d, "4.1  The role library (the taxonomy)", 2)
 para(d, "Market Intelligence keeps a library of 315 job titles with a description, a "

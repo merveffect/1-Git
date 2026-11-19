@@ -61,6 +61,13 @@ ax.text(0,-.1,"runs ONCE for each different job title  —  not once per person"
 save(fig,"pipeline")
 
 # --- 4. what each outside source can check --------------------------------
+# ⭐ NOT USED BY ANY DOCUMENT SINCE 2026-11-19, AND DO NOT PUT IT BACK AS IT
+# STANDS. Merve, reading the status document before a meeting: "bu kismi direkt
+# cikart. bernatedanin datasi gelmedi zaten niye koydun buraya". The third column
+# is a clinical expert review that was asked for and has never arrived, so the
+# figure showed three sources when the project has two and made a planned source
+# look like a held one. The code is kept because the chart becomes true the day
+# that review happens - redraw it then, not before.
 fig,ax=plt.subplots(figsize=(6.6,2.5)); ax.axis("off")
 rows=["Academic career titles","Clinical specialties","Non-English titles","Who the person really is"]
 cols=["Role library\n(taxonomy)","Survey answers\n(incoming)","Clinical expert\n(Bernadeta)"]
