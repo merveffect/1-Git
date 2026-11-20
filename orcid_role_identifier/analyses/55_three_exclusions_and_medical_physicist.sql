@@ -37,13 +37,43 @@
 --    build, then run query 4. The difference between the two, minus the growth
 --    the six untouched audiences show, is what these four decisions cost.
 --
---    RESULT 2026-11-19 (before the build):
---      [paste here]
+--    RESULT 2026-11-19, BEFORE the build, CONFIRMED only:
+--
+--      lecturer           427,256     <- touched: honorary, visiting scholar/fellow
+--      researcher         343,716     <- touched: medical physicist joins
+--      hcp_broad          177,645     <- touched: medical physicist changes route
+--      hcp_researcher     109,486     <- touched: medical physicist joins
+--      students           107,091     <- touched: the bare qualification leaves
+--      hcp_practitioner    57,297     <- touched: medical physicist leaves
+--      faculty_head        17,305     <- CONTROL
+--      hcp_administrator    8,377     <- CONTROL
+--      pharmacist           2,083     <- CONTROL
+--      librarian              708     <- CONTROL
+--
+--    IDENTICAL TO analyses/54 QUERY 1, to the person, on every row. Both were
+--    run on 2026-11-19 and nothing has rebuilt in between, so this baseline is
+--    the same build rather than a fresh count of a moved population. That is
+--    the cleanest starting point this project has ever had for a seed change.
+--
+--    FOUR CONTROL AUDIENCES, which is what makes the subtraction honest. None
+--    of the five decisions can reach faculty_head, hcp_administrator,
+--    pharmacist or librarian. Whatever those four move by between this run and
+--    query 4 is the ORCID growth that happened in the hours between the two
+--    builds, and it applies to the other six as well.
+--
+--    ⭐ AND ONE THING THIS RESULT TEACHES, WORTH MORE THAN THE NUMBERS.
+--    `people` and `records` came back EQUAL on all ten rows. fct_researcher_roles
+--    is ONE ROW PER PERSON PER AUDIENCE - that is what
+--    assert_one_row_per_researcher asserts - so count(*) on it is not a record
+--    count and never was. The record counts in this project live in
+--    dim_title_group.frequency and in stg_role_records, and a figure quoted as
+--    `records` off this table is a people figure wearing the wrong label. The
+--    column is kept in these queries only so the equality stays visible.
 -- ----------------------------------------------------------------------------
 select
     role_key,
     count(distinct snid)                                as people,
-    count(*)                                            as records
+    count(*)                                            as rows_which_equal_people
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 where role_label = 'CONFIRMED'
 group by role_key
@@ -109,8 +139,36 @@ limit 200
 --     punctuation normalisation changes it (`Ph.D.` -> `ph d`) is counted by
 --     query 2 and missed here. It is the floor of the cost, not the cost.
 --
---     RESULT 2026-11-19 (before the build):
---       [paste here]
+--     RESULT 2026-11-19, BEFORE the build:
+--
+--       1 honorary                     lecturer      978 people
+--       2 visiting scholar / fellow    lecturer    1,727 people
+--       3 bare qualification           students    4,241 people
+--
+--     ⭐ ONE AUDIENCE EACH, AND NOTHING ELSE. Not a single one of these three
+--     rules reaches a second audience - no clinical row, no researcher row, no
+--     faculty_head row. That is the SCOPE HOLDING, and it is the thing that
+--     was worth measuring before the build rather than after: the consultant
+--     pattern was scoped the same way and still had to be measured twice,
+--     because scoping protects the groups the pattern cannot see and says
+--     nothing about the group it can.
+--
+--     WHAT IT COSTS, against query 1:
+--       Lecturer   427,256 -> about 424,551   -2,705   -0.63%
+--       Students   107,091 -> about 102,850   -4,241   -3.96%
+--
+--     Students pays six times the rate Lecturer does. That is not a surprise
+--     and not an argument against the decision - the bare qualification was 6%
+--     of the hand-read sample and the single largest source of doubt in the
+--     audience, so taking it out was always going to be the most expensive of
+--     the three. 3.96% measured against 6% read is the reading holding up
+--     well: the sample over-represented the problem slightly, as a sample
+--     drawn from CONFIRMED rows tends to.
+--
+--     These are FLOORS, for the reason in the caveat above: the regexes here
+--     run on evidence_title, so a title whose normalisation changes it
+--     (`Ph.D.` -> `ph d`) is counted by query 2 and missed here. Query 4 is
+--     what settles the real figure.
 select
     case
         when regexp_contains(lower(evidence_title), r'\bhonorary\b')
@@ -156,8 +214,36 @@ order by rule, people_in_that_audience_today desc
 --        Researcher ONLY, and leaves the healthcare audiences altogether
 --    Part (b) says how many are in each case before the build decides it.
 --
---    RESULT 2026-11-19 (before the build):
---      [paste here]
+--    RESULT 2026-11-19, BEFORE the build, part (b):
+--
+--      health_clinical   170 people   Cancer Center / Center for Radiology and
+--                                     Nuclear Medicine / Clinic for Radiooncology /
+--                                     Clinic for Radiotherapy / Clinical Oncology /
+--                                     Clinical Physics, Health Technology Management
+--                                     Unit / Comprehensive Cancer Center / Department
+--                                     for Medical Physics and Radiation Protection
+--
+--    ONE ROW. No life_biomedical, no other discipline, no NO DEPARTMENT MATCH.
+--    Every medical physicist this pipeline confirms today works in a
+--    radiotherapy, radiology or oncology department, and the example
+--    departments read like a list of exactly the places the decision assumed
+--    they would be. So the feared case - a medical physicist in a physics
+--    department who falls out of the healthcare audiences when the title moves
+--    to the researcher group - DOES NOT EXIST among the people we confirm.
+--    The move costs nothing in hcp_broad.
+--
+--    ⭐ AND THE GAP THAT RESULT OPENS, WHICH IS THE REAL FINDING HERE.
+--    The decision was taken on 346 RECORDS. This query sees 170 PEOPLE, and it
+--    can only ever see people who are CONFIRMED somewhere today - that is what
+--    the filter says. A medical physicist whose department does not read as
+--    clinical is in no audience at all right now, so they are invisible to
+--    this query by construction. After the move they would confirm in the
+--    all-fields Researcher audience, which has no department test, on the
+--    title alone.
+--
+--    So the healthcare side of this decision is measured and safe, and the
+--    Researcher side is NOT: query 3c sizes the population this one cannot
+--    see, and it has to be read before the gain in Researcher is quoted.
 -- ----------------------------------------------------------------------------
 select
     title,
@@ -185,6 +271,67 @@ where role_label = 'CONFIRMED'
   and lower(evidence_title) = 'medical physicist'
 group by discipline
 order by people desc
+;
+
+
+-- 3c. ⭐ THE POPULATION QUERY 3b CANNOT SEE. Everyone who typed this title,
+--     confirmed or not, read off the record table rather than off the audience
+--     table. The difference between this and 3b's 170 is the number of people
+--     who are in NO audience today and who the move puts into Researcher.
+--
+--     WHY IT IS A SEPARATE QUERY AND NOT A WIDER FILTER ON 3b: fct_researcher_roles
+--     only holds people an audience already claimed, so no filter on it can
+--     reach somebody it never claimed. Asking the same table more gently is how
+--     a selection bias survives a measurement.
+--
+--     RESULT 2026-11-19, BEFORE the build:
+--
+--       people_who_typed_it   291
+--       records               354
+--
+--     ⭐ AND THIS IS WHY 3b WAS NOT ENOUGH. 291 people typed this title; 3b
+--     found 170 of them. So roughly 121 PEOPLE - about 41% - typed `medical
+--     physicist` and are in NO AUDIENCE AT ALL today. They are not a cost of
+--     the move and they were not in the decision: the open item was phrased as
+--     a MOVE, from practitioner to clinical researcher, and it turns out to be
+--     a move AND a recruitment.
+--
+--     Why they are invisible today. The title sits in the practitioner group,
+--     and both audiences it feeds need more than the title: hcp_practitioner
+--     is title_and_field, so a non-clinical department keeps them out, and
+--     hcp_broad needs 0.60 from 0.35xtitle + 0.25xorg + 0.40xdept, which a
+--     clinical title with no clinical department cannot reach unless the
+--     employer scores full marks. After the move the title sits in the
+--     researcher group, and the all-fields Researcher audience is
+--     title_required at 0.75xtitle + 0.25xorg - so a HUMAN-decided title
+--     scores 0.75 on the title axis alone and confirms with no department and
+--     no employer at all. Every one of the 291 should appear in Researcher
+--     after the build.
+--
+--     READ THE 121 AS APPROXIMATE, and here is the exact reason. 3b filters
+--     lower(evidence_title) on fct_researcher_roles; this query filters
+--     role_title on stg_role_records, which is ALREADY normalised. They are
+--     not the same string test - `Medical Physicist.` normalises to `medical
+--     physicist` but does not survive a bare lower() - so 3b can undercount
+--     slightly and the gap can be a little smaller than 121. Query 4 settles
+--     it; nothing between here and there needs the exact number.
+--
+--     WHAT DOES NOT CHANGE. All 170 of the people already confirmed carry a
+--     health_clinical department, which is one of the two disciplines
+--     hcp_researcher accepts, so they re-confirm there and roll straight back
+--     up into hcp_broad. The healthcare side of this decision still costs
+--     nothing. The only open figure is how many of the 291 land in Researcher
+--     who were nowhere before.
+select
+    count(distinct snid)                                as people_who_typed_it,
+    count(*)                                            as records
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+-- role_title is ALREADY normalised in this model - title_key is
+-- md5(role_title) and joins straight to dim_title_group - so no Jinja and no
+-- lower() belongs here. analyses/20 is in check_analyses.py's known-bad list
+-- for exactly that mistake: a file carrying Jinja cannot be pasted into
+-- BigQuery without compiling it first.
+where role_title = 'medical physicist'
 ;
 
 
