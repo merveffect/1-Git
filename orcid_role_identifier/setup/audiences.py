@@ -181,11 +181,12 @@ def build(d, F):
       "Pharmacist rolls up into it as well.",
       "**It has no errors of its own.** Every one arrives through a child audience, so it "
       "improves when they do.",
-      "**It is not weak — it is undefined.** 887 of the people in it describe themselves "
-      "as professors or researchers rather than clinicians, and biomedical researchers "
-      "now roll up too, which brought in 54,426 people who have never seen a patient. "
-      "Whether that is right is the one question blocking us, and it is a naming "
-      "question, not an accuracy one."])
+      "**Settled on 20 November, and it is not being renamed.** This is what Healthcare Professional means in marketing's vocabulary. 887 of the people in it describe "
+      "themselves as professors or researchers rather than clinicians, and biomedical "
+      "researchers roll up too, which brought in 54,426 people who have never seen a "
+      "patient — all of them in the audience on purpose. The question had been carried "
+      "here as the one thing blocking delivery; it was answered on 11 November and "
+      "closed explicitly on 20 November, and nothing is waiting on marketing for it."])
 
     aud("PRACTITIONER and CLINICAL RESEARCHER — 57,351 and 109,854 people, "
         "93.4% and 90.0% correct", [

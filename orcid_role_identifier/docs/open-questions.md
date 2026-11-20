@@ -3400,6 +3400,67 @@ threshold is proposed from it.
 
 ---
 
+### 2.24 Eight questions closed in one conversation - DECIDED 2026-11-20
+
+Merve had read the status document, taken the two field questions to Matthew, and
+then went through the whole open list in one pass. Most of it had already been
+answered by marketing and was still being carried here as open, which is a
+failure of this log rather than of the decisions.
+
+| What | Decision |
+|---|---|
+| What *Healthcare Professional (broad)* means | **This is what it means.** Not renamed. The 54,426 who never saw a patient are in it on purpose. |
+| Is an honorary research fellow an active researcher? | **Yes. They stay in Researcher.** No rule widened. |
+| Is a bare `dr` plus a clinical department enough? | **Yes.** It belongs in the practitioner group. |
+| Is a psychologist a clinician? | **Yes, include them** - and size psychology and psychiatry separately, possibly a new audience. |
+| Does Students mean doctoral candidates or every student? | **Every level.** Already accepted; it was being re-carried. |
+| A country condition on `research scholar` | **Not doing it.** |
+| Veterinarians | **Out.** Recorded in 1.18. |
+| Sport and exercise science | **Split on the word** - keep *medicine*, drop *science*. Recorded in 1.19. |
+
+**⭐ THE THING TO LEARN FROM THIS, AND IT IS ABOUT THIS FILE.** Merve, on the
+first of them: *"bu marketing tarafindan aciklandi zaten. O yuzden lutfen bu
+soruyu kapat. E, Pazarlamada falan beklemiyor bu soru."* She was right, and the
+document was wrong in a specific, repeatable way: marketing answered the
+*Healthcare Professional (broad)* question on **11 November** - 2.11 and the
+`hcp_researcher` note in `dbt_project.yml` both record it - and what stayed open
+afterwards was OUR CAVEAT that the name no longer described the audience. A
+caveat was being carried in the Open column, dressed as a question, for nine
+days, in the document that tells people what blocks delivery.
+
+This is the same mistake Merve caught on 19 November, when a bullet labelled
+`Open:` turned out to be a caveat and was relabelled. It happened again
+immediately, on the biggest item in the document. **A caveat says "read this
+figure carefully". A question asks somebody to decide something.** When nobody
+is actually being waited on, it is not open - and listing it as open costs real
+credibility, because the one genuinely blocked audience sits in the same table.
+
+**What else that produced.** With *Healthcare Professional (broad)* closed,
+section 7 of the status document went from nine items to nine different items:
+three closed outright, three were questions about `role_detail` that had never
+been written into section 7 at all, and two are new work created by the day's
+own measurements. The list is no longer "everything anybody ever wondered".
+
+**And one item was downgraded rather than closed.** A way to exclude a
+department - the mechanism half of 1.18 and 1.19 need - was briefly item 8 and
+is now one half of a single item called *two small things we are choosing to
+live with*. Merve: *"buna gerek var mi gercekten?"* Measured: about 35 people in
+`Faculty of Sport and Health Sciences` plus an uncounted few hundred in
+veterinary faculties, against a model change. Recorded as a known defect rather
+than proposed as work, which is the honest answer and the one I should have
+given when I first wrote it up as item 8.
+
+**The psychology measurement is `analyses/56`, and it is written to answer a
+question that is not the one that was asked.** Merve asked how many
+psychologists and psychiatrists there are. The seeds say the two professions are
+not in the same position at all: `psychiatrist` is a practitioner anchor and
+`psychiatry` is a health_clinical discipline, so psychiatry satisfies
+`hcp_practitioner` on both axes. There is no `psychologist` anchor, and
+`psychology` is **social_behavioural**, not health_clinical - so a psychologist
+in a Psychology department fails the field test and cannot enter that audience
+at all. "Include psychologists" is therefore two changes, not one, and the
+measurement is shaped to price each.
+
 ### 2.23 Five open items answered off the status document - DECIDED 2026-11-19, BUILT AND MEASURED 2026-11-20
 
 **How these were answered, which is the part worth copying.** Merve read

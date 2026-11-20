@@ -118,6 +118,10 @@ aud("hcp_broad", "Healthcare Professional (broad)", [
 aud("hcp_practitioner", "Healthcare Practitioner", [
  "**Title must name a clinician who treats patients** AND **the field must be a "
  "human-health department.** Both are required.",
+ "**Settled 20 November, so do NOT mark these unsure any more.** A `psychologist` is a "
+ "clinician and belongs here. A bare `dr` beside a clinical department is enough - the "
+ "qualification plus the setting is the evidence, and the department test is what makes "
+ "it safe. A veterinarian is NOT here: every audience on this list is about humans.",
  "**Organisation:** any except archive. Hospital highest.",
  "**Past posts count.**",
 ])
@@ -176,12 +180,8 @@ table(d, ["What you see", "Code"],
    "**Use `country_code`**", "`ambiguous_word`"],
   ["A title that is the single word `Fellow` — a trainee physician in the US, a "
    "researcher in the UK", "`ambiguous_word`"],
-  ["A veterinary department in a healthcare audience", "`field_wrong`"],
-  ["`Faculty of Sport Sciences` or `Sport and Health Sciences` in a healthcare "
-   "audience", "`field_wrong`"],
   ["`statistician`, `medical statistician`, `economist`", "`title_wrong`"],
-  ["A psychologist in a clinical audience", "`ambiguous_word`"],
-  ["`dr` or `md` alone", "`uninformative`"],
+  ["`md` alone, with no clinical department", "`uninformative`"],
   ["`md phd` or `md/phd` in Students — a US MD-PhD programme student, or a "
    "qualified physician listing two degrees. The same credential-versus-status "
    "problem as a bare `phd`", "`ambiguous_word`"],

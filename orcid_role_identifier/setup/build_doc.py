@@ -28,11 +28,9 @@ box(d, "WHERE THIS STANDS", [
  "or not sure. Seven are at 93% or better and the two largest are at 99%. Nothing in "
  "this document is a forecast.",
  "",
- "**Two are not ready, and for different reasons.** *Healthcare Professional (broad)* "
- "is accurate but no longer describes itself: biomedical researchers now roll up into "
- "it, so 54,426 people who have never seen a patient sit in an audience with that name. "
- "*Head of Faculty* is the one weak audience at 83.3%, because the job title is the only "
- "evidence it has. Both are waiting on marketing, not on engineering.",
+ "**One is not ready, and it is not an accuracy problem.** *Head of Faculty* is the one weak audience at 83.3%, because the job title is the only evidence it has, and it is "
+ "parked rather than delivered. *Healthcare Professional (broad)* used to sit beside it here and no longer does: marketing settled on 20 November that the audience means what "
+ "its name says in their vocabulary, biomedical researchers included, and that it is not being renamed. The 54,426 people who have never seen a patient are in it on purpose.",
  "",
  "**The newest audience is Students** - 102,026 people, built and read in November, "
  "98.7% correct and third of the ten.",
@@ -372,15 +370,15 @@ audiences.build(d, F)
 # ============================================================ 7
 h(d, "7.  What happens next")
 table(d, ["#", "What", "Why now", "Who"],
- [["1","**What \"Healthcare Professional (broad)\" means**","The only thing that blocks us. Biomedical researchers now roll up into it, so 54,426 people who have never seen a patient are in an audience with that name. One sentence from marketing settles it.","Marketing"],
-  ["2","**Is an honorary research fellow an active researcher?**","Found by measuring the 20 November build. Honorary posts left Lecturer, but the rule is scoped to teaching titles, so **241 honorary titles carrying 1,127 records are still in Researcher** - `honorary research fellow` and its family. Marketing already rejected the exact string `honorary researcher` on 16 October, so the same reasoning removes one title and leaves 241 of its siblings in the project's best audience. Widening the rule is one field. `analyses/55` query 5.","Marketing"],
-  ["3","A country condition on `research scholar`","It is a `student` anchor, so it matches at score 1.0 with no country test. In India it means a doctoral student; elsewhere it can be a senior post. Found in the Students reading.","Us"],
-  ["4","**A decision-maker audience**","Marketing have asked for Head of Faculty to be opened up beyond academia, to reach opinion leaders, budget holders and purchase influencers. Seven definition questions are with them; the measurement on our side can start before they answer.","Marketing / us"],
-  ["5","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
-  ["6","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
-  ["7","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 4 may change what this audience is for.","Us"],
-  ["8","**A way to exclude a department**","Both decisions of 20 November are half-blocked by the same missing mechanism, which is what makes this worth building now. The **title** axis has three ways to intervene - a human override, a literal pattern, the model. The **department** axis has exactly one, the nearest anchor, so a department can be pulled IN and never pushed OUT. That leaves a veterinary faculty in Clinical researcher and *Faculty of Sport and Health Sciences* in the healthcare audiences, with no seed able to touch either. A new seed plus model logic.","Us"],
-  ["9","Close the bare-qualification bypass","Measured at 10 records. A title that is nothing but a degree, which the machine reads as research rather than as study, is routed into Students by a different rule the new exclusion is not scoped to see. One field on that other rule closes it. Small today, and it reopens every time the dictionary is rebuilt.","Us"]],
+ [["1","**Re-read Practitioner**","Its 93.4% was measured before two deliberate changes: every `consultant` title left on 19 November, about 5,400 people, and `medical physicist` left on 20 November. The audience it describes no longer exists. It is also the least-read group in the project - reviewed titles cover 38% of its records against 75% for researchers - so this is the one accuracy figure that should not be quoted without its date.","Us"],
+  ["2","**Size psychology and psychiatry**","Psychologists were ruled clinical on 20 November. Psychiatry is already in on both axes; psychology is in on the title only, because `psychology` is classified as a social and behavioural subject rather than a clinical one. `analyses/56` counts both professions, what we can reach, and what the field side would cost. It may be worth taking to Matthew as an audience of its own.","Us, then Matthew"],
+  ["3","**A decision-maker audience**","Marketing have asked for Head of Faculty to be opened up beyond academia, to reach opinion leaders, budget holders and purchase influencers. A separate meeting is being held for it; the measurement on our side can start before it.","Marketing / us"],
+  ["4","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
+  ["5","Does Lecturer get a detailed role, and what are its values?","`role_detail` is the drill-down beside each delivered row - Hospital, Academia, Industry. Lecturer has never had any rules for it, in any build: 423,975 people with no label. The other nine split the setting, and there is no argument for Lecturer being different - but no measurement says marketing wants it either. `docs/open-questions.md` 2.20.","Marketing"],
+  ["6","What do we call the people whose employer we rescued by name?","When ROR cannot identify an employer we recover the SCORE from its name - *universi*, *colleg*, *institut* - which is what saves \u201cIstanbul University-Cerrahpasa\u201d. It rescues the score and leaves the TYPE unknown, and the label keys on the type, so 172,469 people are guaranteed to have no label however many rules we add. Three answers: label them from the name pattern that rescued them, call them *Unknown*, or leave it blank and say so in the contract. Only the first recovers the labels.","Marketing / us"],
+  ["7","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
+  ["8","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 3 may change what this audience is for.","Us"],
+  ["9","Two small things we are choosing to live with","**A department cannot be excluded.** The job-title axis has three ways to intervene; the subject axis has one, and it can only pull a department in, never push it out - so a veterinary faculty stays in Clinical researcher and *Faculty of Sport and Health Sciences* stays in the healthcare audiences, about 35 people plus an uncounted few hundred. A model change for that is not proposed. **And a bare degree can still slip into Students** by a route the new rule is not scoped to see: 1 job title, 10 records, one field to close whenever that file is next touched.","Us"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
 box(d, "WHAT CAME OFF THIS LIST", [

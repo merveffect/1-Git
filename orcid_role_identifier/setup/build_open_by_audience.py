@@ -71,18 +71,18 @@ def aud(title, sub, rows, note=None):
 
 
 # ------------------------------------------------------------------ BLOCKING
-h(d, "The two that block other work")
+h(d, "The one that blocks other work")
 table(d, ["", "What is open", "Who answers"],
- [["1", "**What “Healthcare Professional (broad)” should mean, and be called.** "
-        "Biomedical researchers roll up into it, so 54,426 people who have never seen a "
-        "patient are in an audience with that name. Nothing is broken — the name no "
-        "longer describes the audience. Until it is settled we cannot tell anybody what "
-        "that audience means.", "**Marketing**"],
-  ["2", "**What Head of Faculty is for.** Seven questions went to marketing on 18 "
-        "November. The whole audience is frozen until they come back, because the "
-        "answers change what it is, not just how big it is.", "**Marketing**"]],
+ [["1", "**What Head of Faculty is for.** A separate meeting is being held to settle "
+        "whether it opens up beyond academia to reach decision makers and budget "
+        "holders. The whole audience is frozen until then, because the answer changes "
+        "what it is, not just how big it is.", "**Marketing**"]],
  widths=[0.3, 5.0, 0.9], size=8.8)
-para(d, "Everything else below can wait without stopping anything.", size=9, color=MUT,
+para(d, "**What came off this list on 20 November.** “What Healthcare Professional "
+        "(broad) should mean” is settled: it means what its name says in marketing's "
+        "vocabulary, biomedical researchers included, and it is not being renamed. The "
+        "54,426 people who have never seen a patient are in it on purpose. Everything "
+        "else below can wait without stopping anything.", size=9, color=MUT,
      space_after=11)
 
 
@@ -105,28 +105,21 @@ aud("Lecturer — 426,449 people, 98.7% correct",
      "so the measured cost is 2,956 — the prediction held.")
 
 aud("Researcher — 344,847 people, 99.0% correct",
-    "One item, and it arrived on 20 November from a decision taken about another "
-    "audience.",
- [["**Is an honorary research fellow an active researcher?** Honorary posts left "
-   "Lecturer on 20 November, but that rule is scoped to teaching titles, so `honorary "
-   "research fellow` and its family were never in its reach. Marketing rejected the "
-   "exact string `honorary researcher` on 16 October — so the same reasoning removes "
-   "one title and leaves 241 of its siblings in this audience. Widening the rule is "
-   "one field.", "241 titles, 1,127 records", "**Marketing**"]],
- "The 43.9% survey agreement is not a fault and not a question. A professor who runs "
+    "**Nothing is open.** One item arrived on 20 November and was answered the same day.",
+ [], ["**Answered 20 November: honorary research fellows STAY in Researcher.** Honorary "
+     "posts left Lecturer that day, and because the rule is scoped to teaching titles, "
+     "241 honorary titles carrying 1,127 records remained here — `honorary research "
+     "fellow` and its family. Raised as an inconsistency with the 16 October rejection "
+     "of the exact string `honorary researcher`; settled by deciding these stay. No "
+     "rule was widened.",
+     "The 43.9% survey agreement is not a fault and not a question. A professor who runs "
      "a research group is in both Lecturer and Researcher; the survey records one answer, "
-     "so one of the two is counted wrong whatever we do.")
+     "so one of the two is counted wrong whatever we do."])
 
 aud("Students — 102,026 people, 98.7% correct",
-    "Built and read in November. Three open items; the largest source of doubt in the "
-    "reading was answered on 19 November.",
- [["**Does Students mean doctoral candidates, or every student?** Doctoral, master's and "
-   "undergraduate are one bucket today. Narrowing it is one line.",
-   "not measured", "**Marketing**"],
-  ["**`research scholar` needs a country condition.** It is a student example word, so "
-   "it matches at full marks with no country test. In India it means a doctoral student; "
-   "elsewhere it can be a senior post.", "not measured", "Us"],
-  ["**`md phd` and `md/phd`.** A US MD-PhD programme student, or a qualified physician "
+    "Built and read in November. One open item left: two more were answered on 20 "
+    "November and the largest source of doubt on 19 November.",
+ [["**`md phd` and `md/phd`.** A US MD-PhD programme student, or a qualified physician "
    "listing two degrees. The same credential-versus-status problem as a bare `PhD`.",
    "not measured", "Us"]],
  ["**Answered 19 November, written, not yet built:** a bare qualification is NOT a "
@@ -147,14 +140,15 @@ aud("Students — 102,026 people, 98.7% correct",
   "healthcare. That bill was measured and accepted on 11 November."])
 
 aud("Healthcare Professional (broad) — 178,556 people, 90.6% correct",
-    "Not weak — undefined. See question 1 above.",
- [["**What it should mean and be called.** Our recommendation is to rename it, because "
-   "Practitioner already is the clinical audience and nobody needs two of those. The "
-   "alternative is to stop rolling researchers up, which keeps the name and shrinks the "
-   "audience.", "181,295 → 177,645 people", "**Marketing**"]],
- "It has no errors of its own — everyone arrives through a child audience, so it "
- "improves when they do. 887 of the people in it describe themselves as professors or "
- "researchers rather than clinicians.")
+    "**Nothing is open.** Settled on 20 November and not being renamed.",
+ [], ["**This is what Healthcare Professional means in marketing's vocabulary.** "
+     "Biomedical researchers roll up into it, so 54,426 people who have never seen a "
+     "patient are in it — on purpose. The question had been carried as the one thing "
+     "blocking delivery; it was answered on 11 November and closed explicitly on 20 "
+     "November. No rename, nothing waiting.",
+     "It has no errors of its own — everyone arrives through a child audience, so it "
+     "improves when they do. 887 of the people in it describe themselves as professors "
+     "or researchers rather than clinicians."])
 
 aud("Clinical / Biomedical Researcher — 109,854 people, 90.0% correct",
     "Grew when biomedical research was ruled in on 11 November. Two items, neither sized.",
@@ -168,22 +162,24 @@ aud("Clinical / Biomedical Researcher — 109,854 people, 90.0% correct",
 
 aud("Practitioner — 57,351 people, 93.4% correct",
     "The least-read group in the project: reviewed titles cover 38% of its records "
-    "against 75% for researchers. Four items left; two were answered on 19 November and "
-    "two more on 20 November.",
+    "against 75% for researchers. Three items left; two were answered on 19 November "
+    "and four more on 20 November.",
  [["**Does a research nurse treat patients?** `research nurse`, `clinical research "
    "nurse`, `research midwife`, `research dietitian`, `nurse scientist`. A real "
    "question and nobody has asked it.", "~286 records", "Us / clinical expert"],
-  ["**Is a bare `dr` plus a clinical department enough?** It says the person is "
-   "medically qualified and works in a clinical setting, but not what they do. Accepted "
-   "as clinical evidence today.", "not measured", "**Marketing**"],
+
   ["**A way to exclude a department.** Both calls of 20 November are half-blocked by "
    "the same gap. The job-title side has three ways to intervene; the department side "
    "has one, and it can only pull a department IN, never push it out. So a veterinary "
    "faculty stays in Clinical researcher and *Faculty of Sport and Health Sciences* "
    "stays in the healthcare audiences, and no configuration can touch either.",
    "~35 people here, plus the veterinary faculties, uncounted", "Us"],
-  ["**Is a psychologist a clinician?** Flagged unsure in the reviewer rules and never "
-   "settled.", "not measured", "Marketing"]],
+  ["**Psychology: the field side is not done.** Psychologists were ruled clinical on "
+   "20 November, and psychiatry is already in on both axes. But `psychology` is "
+   "classified as a social and behavioural subject rather than a clinical one, and this "
+   "audience needs the title AND the field to agree — so a psychologist in a Psychology "
+   "department cannot enter it. `analyses/56` sizes both professions and what the fix "
+   "would cost.", "being counted", "Us"]],
  ["**Answered 19 November, written, not yet built.** `medical physicist` (346 records) "
   "becomes a Clinical researcher: they plan radiotherapy doses and assure imaging "
   "equipment, and they do not treat patients, so the same move `clinical scientist` got "
@@ -192,7 +188,8 @@ aud("Practitioner — 57,351 people, 93.4% correct",
   "physics leaves the healthcare audiences altogether. A bare `doctor` (4,465 records) "
   "STAYS in Practitioner, written down so it cannot drift on the next rebuild; unlike "
   "`consultant` it names a medical qualification in every language that borrowed it. "
-  "That is not the bare `dr` above, which is a form of address and is still open. "
+  "The bare `dr` was settled the next day: a medical qualification beside a clinical "
+  "department is enough, and the department test is what makes it safe. "
   "**Measured on the build: all 170 of the medical physicists we confirm work in "
   "radiotherapy, radiology or oncology departments**, so every one re-confirms as a "
   "clinical researcher and rolls back up into Healthcare (broad) — which grew 0.513% "
