@@ -20,7 +20,7 @@
     underneath the comparison. Its closing note says: run the baseline BEFORE
     the seed change lands. This is that baseline. Queries 1 to 3 are written to
     be run on the CURRENT build, with the new seed rows committed and NOT yet
-    built; queries 4 and 5 are the same questions after.
+    built. Queries 4 and 5 are the same questions after.
 
     Queries 2 and 3 also do something the consultant change did not: they show
     the exact titles each new rule will take, before it takes them. The
@@ -259,7 +259,7 @@ order by records desc
 
 -- 3b. Where those people would land, read off the department they already
 --     carry. health_clinical and life_biomedical are the two disciplines
---     hcp_researcher accepts; anything else means the healthcare audiences
+--     hcp_researcher accepts - anything else means the healthcare audiences
 --     are lost for that person.
 select
     coalesce(discipline, 'NO DEPARTMENT MATCH')         as discipline,
@@ -289,7 +289,7 @@ order by people desc
 --       people_who_typed_it   291
 --       records               354
 --
---     ⭐ AND THIS IS WHY 3b WAS NOT ENOUGH. 291 people typed this title; 3b
+--     ⭐ AND THIS IS WHY 3b WAS NOT ENOUGH. 291 people typed this title and 3b
 --     found 170 of them. So roughly 121 PEOPLE - about 41% - typed `medical
 --     physicist` and are in NO AUDIENCE AT ALL today. They are not a cost of
 --     the move and they were not in the decision: the open item was phrased as
@@ -309,12 +309,12 @@ order by people desc
 --     after the build.
 --
 --     READ THE 121 AS APPROXIMATE, and here is the exact reason. 3b filters
---     lower(evidence_title) on fct_researcher_roles; this query filters
+--     lower(evidence_title) on fct_researcher_roles, while this query filters
 --     role_title on stg_role_records, which is ALREADY normalised. They are
 --     not the same string test - `Medical Physicist.` normalises to `medical
 --     physicist` but does not survive a bare lower() - so 3b can undercount
 --     slightly and the gap can be a little smaller than 121. Query 4 settles
---     it; nothing between here and there needs the exact number.
+--     it, and nothing between here and there needs the exact number.
 --
 --     WHAT DOES NOT CHANGE. All 170 of the people already confirmed carry a
 --     health_clinical department, which is one of the two disciplines
