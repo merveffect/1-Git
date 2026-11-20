@@ -661,7 +661,7 @@ order by people desc
 -- ----------------------------------------------------------------------------
 select
     case
-        when regexp_contains(lower(evidence_title), r'veterinar|\btierarzt|veteriner|veterinári|veterinario|\bdvm\b')
+        when regexp_contains(lower(evidence_title), r'veterinar|tierarzt|veteriner|veterinário|veterinario|\bdvm\b')
           or regexp_contains(lower(coalesce(evidence_dept, '')), r'veterinar|tiermedizin|veteriner')
             then '1 veterinary'
         else '2 sport and exercise science'
@@ -673,10 +673,104 @@ from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researche
 where role_label = 'CONFIRMED'
   and role_key in ('hcp_broad', 'hcp_practitioner', 'hcp_researcher', 'hcp_administrator')
   and (
-        regexp_contains(lower(evidence_title), r'veterinar|\btierarzt|veteriner|veterinári|veterinario|\bdvm\b')
+        regexp_contains(lower(evidence_title), r'veterinar|tierarzt|veteriner|veterinário|veterinario|\bdvm\b')
      or regexp_contains(lower(coalesce(evidence_dept, '')), r'veterinar|tiermedizin|veteriner')
      or regexp_contains(lower(coalesce(evidence_dept, '')), r'\bsport|\bexercise|kinesiolog|spor bilim')
       )
 group by question, role_key
 order by question, people desc
+;
+
+
+-- ----------------------------------------------------------------------------
+-- 8. ⭐ MATTHEW ASKED "HOW MANY WOULD WE HAVE?" AND IT IS NOT THE NUMBER WE
+--    WERE ABOUT TO GIVE HIM.
+--
+--    He answered the veterinary question with: "I'm not sure how much we work
+--    with pharma companies that do animal medicine. How many would we have?"
+--
+--    THE TWO NUMBERS DIFFER BY AN ORDER OF MAGNITUDE AND ANSWER DIFFERENT
+--    QUESTIONS.
+--
+--      THE CLEANUP NUMBER, ~90, is how many veterinarians are sitting in
+--      Healthcare Professional (broad) today. It is the answer to the question
+--      WE asked - should these people be in an audience with that name - and
+--      it is small because a vet only reaches that audience when the employer
+--      scores full marks (query 7 explains the arithmetic).
+--
+--      THE AUDIENCE NUMBER is how many veterinarians this pipeline can
+--      identify AT ALL, in any audience or none. The `veterinarian` anchor
+--      note records 2,684 real vets reaching `dentist` before 2026-10-20, so
+--      this is thousands, not ninety.
+--
+--    Matthew is sizing a possible AUDIENCE - he is thinking about animal-health
+--    pharma as a customer - not reviewing a cleanup. Answer him with ~90 and he
+--    will reasonably conclude vets are negligible and say take them out, having
+--    been given the wrong number for his question. Both numbers go in the
+--    reply, each labelled with the question it answers.
+--
+--    ONE REGEX, USED BY QUERIES 7 AND 8 ALIKE. It was three slightly different
+--    regexes when this file was first written - one carried a word boundary on
+--    `tierarzt` that the others did not - and two queries in one file that
+--    disagree by a spelling is exactly how a count ends up contradicting
+--    itself in a document. Standardised on:
+--      veterinar|tierarzt|veteriner|veterinário|veterinario|\bdvm\b
+--    Still English-leaning, still a floor, and the alternation is the thing to
+--    extend from what the output returns rather than from what I guessed.
+--
+--    RESULT 2026-11-20:
+--      [paste here]
+-- ----------------------------------------------------------------------------
+-- 8a. THE CEILING: every person whose job title names a veterinarian, in any
+--     audience or none. Read off the record table, so no audience filter can
+--     hide anybody - the same reason query 3c existed.
+select
+    count(distinct snid)                                as people_with_a_vet_title,
+    count(*)                                            as employment_records,
+    count(distinct role_title)                          as distinct_titles
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_staging.stg_role_records`
+where regexp_contains(role_title, r'veterinar|tierarzt|veteriner|veterinário|veterinario|\bdvm\b')
+;
+
+
+-- 8b. Of those, how many we could actually CONTACT, and through which
+--     audience. A person with a vet title who is in no audience is not
+--     reachable by us at all, whatever their consent says, because reachability
+--     is only known for people the CDP join reaches.
+select
+    role_key,
+    count(distinct snid)                                as people,
+    count(distinct if(is_marketable or is_advertisable
+                      or is_legitimate_interest or is_book_author,
+                      snid, null))                      as reachable
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+where role_label = 'CONFIRMED'
+  and regexp_contains(lower(evidence_title), r'veterinar|tierarzt|veteriner|veterinário|veterinario|\bdvm\b')
+group by role_key
+order by people desc
+;
+
+
+-- 8c. The employer side of Matthew's actual question. He is wondering whether
+--     there is an animal-medicine INDUSTRY here, so the employer sector matters
+--     more than the headcount.
+--
+--     IT USES role_detail RATHER THAN JOINING TO ROR, deliberately. The obvious
+--     query joins int_org_resolved on the organisation name, and that is wrong
+--     twice: the model has no `org_type` column (it carries `ror_types`), and
+--     its grain is organisation PLUS org_id, so a join on the name alone can
+--     multiply rows and inflate the count. The healthcare roles already set
+--     detail_dimension: org_type, so role_detail IS the resolved sector,
+--     derived once by the pipeline and tested by
+--     assert_role_detail_map_rules_all_fire. `Industry` is the value to look
+--     for - seeds/role_detail_map.csv maps ROR Company to it.
+select
+    role_key,
+    coalesce(role_detail, 'NO DETAIL')                  as sector,
+    count(distinct snid)                                as people
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+where role_label = 'CONFIRMED'
+  and regexp_contains(lower(evidence_title), r'veterinar|tierarzt|veteriner|veterinário|veterinario|\bdvm\b')
+group by role_key, sector
+order by people desc
 ;
