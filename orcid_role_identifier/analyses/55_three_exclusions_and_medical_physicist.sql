@@ -617,3 +617,66 @@ from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role
 where role_label = 'CONFIRMED'
 order by people desc
 ;
+
+
+-- ----------------------------------------------------------------------------
+-- 7. THE ONE ITEM FROM THIS READING THAT IS NOT OURS TO DECIDE, SIZED.
+--
+--    Veterinarians and sport and exercise science. Merve 2026-11-19: "(ask
+--    Matthew)". The figures carried in the documents - 91 people and 78 - are
+--    12 NOVEMBER counts and nobody has re-measured them since, so they are
+--    quoted to a colleague as "about 90" and "about 80" until this runs.
+--
+--    ⭐ AND THE TWO ARE IN FOR DIFFERENT REASONS, which is what a question to
+--    a non-engineer has to get right or it cannot be answered:
+--
+--      VETERINARIANS ARE IN BY DECISION, at the title. `veterinarian` is a
+--      practitioner anchor, added 2026-10-20 on purpose - before it, 2,684
+--      real vets were reaching `dentist` at 0.725 because dentist was the
+--      closest word the machine had. Their department is a different matter:
+--      `veterinary medicine` is a LIFE_BIOMEDICAL discipline anchor, not a
+--      health_clinical one, so a vet in a veterinary department is NOT in
+--      hcp_practitioner, which requires both axes to be human-health. They
+--      reach hcp_broad on the TITLE ALONE, because that role is
+--      title_required: 0.35x1.0 + 0.25xorg + 0.40x0 = 0.60 at the threshold,
+--      so only the ones whose employer scores full marks get in. That is why
+--      this is ~90 people and not 2,684.
+--
+--      SPORT SCIENCE IS IN BY RESEMBLANCE, at the department. There is no
+--      sport anchor in discipline_anchors.csv at all, in either direction, so
+--      `Faculty of Sport Sciences` is matched to whichever human-health
+--      subject it scores nearest. Nobody ever listed it in or out.
+--
+--    So the vet question is "is an animal clinician in an audience called
+--    Healthcare Professional", and the sport question is "is sport science a
+--    human-health subject". Same owner, different shape.
+--
+--    THE REGEX IS ENGLISH-LEANING AND THAT IS A KNOWN LIMIT. It will miss
+--    `tierarzt`, `veteriner`, `veterinario` unless they are listed, which is
+--    the mistake docs/open-questions.md 2.23 records twice. Read the output as
+--    the floor and extend the alternation from what it returns.
+--
+--    RESULT 2026-11-20:
+--      [paste here]
+-- ----------------------------------------------------------------------------
+select
+    case
+        when regexp_contains(lower(evidence_title), r'veterinar|\btierarzt|veteriner|veterinári|veterinario|\bdvm\b')
+          or regexp_contains(lower(coalesce(evidence_dept, '')), r'veterinar|tiermedizin|veteriner')
+            then '1 veterinary'
+        else '2 sport and exercise science'
+    end                                                 as question,
+    role_key,
+    count(distinct snid)                                as people,
+    string_agg(distinct lower(evidence_dept) order by lower(evidence_dept) limit 6) as example_departments
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
+where role_label = 'CONFIRMED'
+  and role_key in ('hcp_broad', 'hcp_practitioner', 'hcp_researcher', 'hcp_administrator')
+  and (
+        regexp_contains(lower(evidence_title), r'veterinar|\btierarzt|veteriner|veterinári|veterinario|\bdvm\b')
+     or regexp_contains(lower(coalesce(evidence_dept, '')), r'veterinar|tiermedizin|veteriner')
+     or regexp_contains(lower(coalesce(evidence_dept, '')), r'\bsport|\bexercise|kinesiolog|spor bilim')
+      )
+group by question, role_key
+order by question, people desc
+;
