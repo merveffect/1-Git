@@ -3261,7 +3261,7 @@ threshold is proposed from it.
 
 ---
 
-### 2.23 Five open items answered off the status document - DECIDED 2026-11-19, NOT YET BUILT
+### 2.23 Five open items answered off the status document - DECIDED 2026-11-19, BUILT AND MEASURED 2026-11-20
 
 **How these were answered, which is the part worth copying.** Merve read
 `docs/ORCID-Role-Enrichment-Status-and-Plan.docx` from the top and wrote an
@@ -3343,14 +3343,135 @@ altogether. Both are accepted. The precedent is exact: `clinical scientist`
 was moved the same way on 2026-10-29 with the same two consequences written
 into its note. `analyses/55` query 3b counts each case before the build.
 
-**NOTHING HERE IS BUILT YET, AND THE BASELINE IS THE POINT.** 2.22 closes with
-the one thing to fix next time: analyses/54 could only bracket the cost of the
-consultant decision, because nobody counted the audiences before that build
-and a week of ORCID growth sat inside the comparison. `analyses/55` queries 1,
-2 and 3 are written to run on the CURRENT build, before these seeds are built,
-so the cost is a subtraction rather than an estimate. Queries 4 and 5 are the
-same questions afterwards. No size is quoted anywhere in the documents for any
-of these five decisions until those have run.
+**THE BASELINE WAS THE POINT, AND IT WORKED.** 2.22 closes with the one thing to fix
+next time: analyses/54 could only bracket the cost of the consultant decision,
+because nobody counted the audiences before that build and a week of ORCID growth
+sat inside the comparison. `analyses/55` queries 1, 2 and 3 ran on the build
+BEFORE these seeds landed, and queries 4 and 5 on the build after. The cost is a
+subtraction for the first time in this project.
+
+**THE FOUR CONTROL AUDIENCES SET THE RESOLUTION.** No decision here could reach
+faculty_head, hcp_administrator, pharmacist or librarian, so whatever they moved
+by is growth plus a refreshed vocabulary:
+
+| Control | Before | After | Growth |
+|---|---|---|---|
+| faculty_head | 17,305 | 17,421 | +0.670% |
+| librarian | 708 | 713 | +0.706% |
+| pharmacist | 2,083 | 2,090 | +0.336% |
+| hcp_administrator | 8,377 | 8,398 | +0.251% |
+| **median** | | | **+0.503%** |
+
+**THE BILL.**
+
+| Audience | Before | After | Expected at +0.503% | Cost |
+|---|---|---|---|---|
+| Lecturer | 427,256 | 426,449 | 429,405 | **2,956** |
+| Students | 107,091 | 102,026 | 107,630 | **5,604** |
+| Practitioner | 57,297 | 57,351 | 57,585 | **234** |
+| Healthcare (broad) | 177,645 | 178,556 | 178,538 | **+18, i.e. nothing** |
+
+**THREE PREDICTIONS HELD AND ONE DID NOT.**
+
+- *Lecturer.* Predicted 2,705 before the build, measured 2,956. Held.
+- *Healthcare (broad).* Predicted to cost nothing, because 3b found all 170
+  confirmed medical physicists in `health_clinical` departments, so they
+  re-confirm as clinical researchers and roll straight back up. Measured
+  +0.513% against a control median of +0.503%. **Exact.**
+- *Practitioner.* Predicted to lose the 170 medical physicists, measured 234
+  against the control rate. Consistent.
+- *Students.* Predicted 4,241 **as a published floor**, measured 5,604. The floor
+  was 76% of the real cost, and it said why it was a floor: query 2a ran on the
+  raw title, so every spelling the normalisation changes - `Ph.D.` becomes
+  `ph d` - was invisible to it. Query 5 shows the rule took 26 titles carrying
+  11,304 records. **Publishing it as a floor rather than as an estimate is the
+  only reason this reads as a confirmation rather than as a miss.**
+
+**⭐ AND THE LIMIT THE METHOD JUST SHOWED US, WHICH IS WORTH MORE THAN THE BILL.**
+The medical physicist gain does not appear anywhere in query 4. 291 people is
+0.085% of Researcher and 170 is 0.155% of hcp_researcher, while the four control
+audiences spread across 0.455 percentage points - about 1,560 people at
+Researcher's size. The decision is four to eighteen times smaller than the
+instrument.
+
+So control subtraction has a floor of roughly **half a percent of the audience
+being measured**, and below it this method cannot tell a decision from a week of
+ORCID. The answer is not a better subtraction. It is query 5, which reads the
+DICTIONARY and sees the title itself - one title, 354 records, `researcher`,
+`HUMAN`, with no growth term in it at all. **Size a small decision on the
+dictionary and a large one on the audience.**
+
+**ALL FIVE LANDED WHERE THEY WERE AIMED**, on query 5: `medical physicist` ->
+researcher/HUMAN, `doctor` -> practitioner/HUMAN, honorary -> 568 titles /
+1,969 records to support_technical/PATTERN, visiting -> 479 titles / 4,338
+records, the bare qualification -> 26 titles / 11,304 records. Build was
+PASS=79 WARN=1 ERROR=0 SKIP=0, the one warning being the known
+`assert_second_group_rules_do_not_collide` baseline, which moved 247 -> 250 with
+the refreshed vocabulary.
+
+### 2.23a The residue nobody asked about before the build - FOUND 2026-11-20, ONE ITEM OPEN
+
+**The question that was not asked.** Both teaching patterns are scoped to the
+group the MODEL chose, which protects every group they cannot see. That was the
+design, it was measured before the build, and it held. What nobody asked is what
+is LEFT in those groups afterwards. Query 5 answers it, because it reads every
+title matching the regex regardless of where it ended up.
+
+| Rule | Still assigned, by VECTOR | Titles | Records |
+|---|---|---|---|
+| honorary | **researcher** | 241 | **1,127** |
+| honorary | trainee_clinical | 100 | 198 |
+| honorary | practitioner | 92 | 113 |
+| honorary | leadership | 17 | 19 |
+| visiting | **researcher** | 285 | **1,216** |
+| visiting | student | 33 | 38 |
+| visiting | trainee_clinical | 13 | 17 |
+
+**The two residues are not the same kind of thing, and that difference is the
+whole finding.**
+
+**Visiting is consistent and needs nothing.** `visiting researcher` (67,191
+records) and `visiting scientist` (32,662) were deliberately sent to the
+researcher group on 2026-10-09 and 2026-10-21, on the argument that they name
+research. `visiting research fellow` is that same title with a different noun, so
+leaving it in Researcher follows a decision already taken rather than escaping
+one. The question answered on 19 November was whether a visiting fellow is
+TEACHING STAFF, and it is answered.
+
+**Honorary is NOT consistent, and it contradicts a decision this project already
+took.** On 2026-10-16 marketing REJECTED `honorary researcher` outright - it is
+in the result as `researcher / HUMAN / 1 title / 71 records`, assigned to
+nothing. But 241 other honorary titles sit in the researcher group by VECTOR and
+ARE assigned, carrying 1,127 records: `honorary research fellow` and its family.
+**The same reasoning removes one string and leaves 241 of its siblings in the
+project's highest-scoring audience.**
+
+**NO RULE IS PROPOSED HERE, and that is deliberate.** Widening the honorary
+pattern to the researcher group is one field. It would take about 1,127 records
+out of a 99.0% audience, and "is an honorary research fellow an active
+researcher?" is a definition question of exactly the shape marketing answered for
+Lecturer, asked again about Researcher. It is not a thing to decide from the size
+of it. It is status-document item 2.
+
+**AND THE CLINICAL RESIDUE IS THE SCOPE WORKING, not a hole.** 198 records in
+trainee_clinical and 113 in practitioner are honorary clinical posts. An honorary
+consultant is usually a working clinician who holds the honorary title so they
+can supervise students - the person the November decision explicitly did not want
+to lose - and the teaching scope is what kept them. This is the one place where
+keeping a pattern narrow is the entire reason it was safe.
+
+**ONE SMALL STRUCTURAL HOLE, measured at 10 records and not patched.** Query 5
+returned `bare qualification / student / PATTERN / 1 title / 10 records`, which
+is not the new rule firing. Seed row 28 sends student-shaped titles from the
+RESEARCHER group into `student`, and its alternation contains `phd` and `ph d`.
+The new rule is scoped to model group `student`, so a bare qualification the model
+read as researcher is claimed by row 28, lands in Students, and the exclusion
+never sees it. The two do not collide because they are scoped to different
+groups, which is why `assert_title_patterns_do_not_collide` passed. The clean fix
+is an `unless_pattern` on row 28 - a title that is nothing but a qualification is
+not a doctoral student - and it is one field. Left alone pending Merve, because it
+is 10 records today and the honorary question above would land in the same build.
+It is status-document item 9.
 
 ### 2.22 practitioner's 0.75+ band read for the first time - ACTED 2026-11-16
 

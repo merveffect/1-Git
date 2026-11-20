@@ -344,13 +344,66 @@ where role_title = 'medical physicist'
 --    both are run on the same day. That is the whole point of running query 1
 --    first: the cost is then a subtraction rather than an estimate.
 --
---    RESULT 2026-11-19 (after the build):
---      [paste here]
+--    RESULT 2026-11-20, after the build. PASS=79 WARN=1 ERROR=0 SKIP=0, the
+--    one warning being the known assert_second_group_rules_do_not_collide
+--    baseline, which moved 247 -> 250 with the refreshed vocabulary.
+--
+--      THE FOUR CONTROLS FIRST, because they set the resolution:
+--        faculty_head        17,305 ->  17,421    +116   +0.670%
+--        librarian              708 ->     713      +5   +0.706%
+--        pharmacist           2,083 ->   2,090      +7   +0.336%
+--        hcp_administrator    8,377 ->   8,398     +21   +0.251%
+--                                              median   +0.503%
+--
+--      THE SIX THE DECISIONS TOUCHED:
+--        lecturer           427,256 -> 426,449    -807   -0.189%
+--        students           107,091 -> 102,026  -5,065   -4.729%
+--        researcher         343,716 -> 344,847  +1,131   +0.329%
+--        hcp_broad          177,645 -> 178,556    +911   +0.513%
+--        hcp_researcher     109,486 -> 109,854    +368   +0.336%
+--        hcp_practitioner    57,297 ->  57,351     +54   +0.094%
+--
+--    THE COST, as a subtraction against the control median rather than an
+--    estimate. This is what analyses/54 could not do.
+--
+--      Lecturer     expected 429,405, actual 426,449   cost 2,956
+--                   predicted before the build: 2,705.  HELD.
+--      Students     expected 107,630, actual 102,026   cost 5,604
+--                   predicted before the build: 4,241 as a FLOOR. The real
+--                   cost is 32% above the floor, and the floor said why:
+--                   query 2a ran on evidence_title, so `Ph.D.` -> `ph d` and
+--                   every other title the normalisation changes was invisible
+--                   to it. Query 5 shows the rule took 26 titles carrying
+--                   11,304 records, against the 4,241 people 2a could see.
+--      Practitioner expected  57,585, actual  57,351   loss   234
+--                   `medical physicist` took 170 confirmed people out of it.
+--                   Consistent, and the remaining 64 is inside the band.
+--      hcp_broad    expected 178,538, actual 178,556   difference +18
+--                   ⭐ THE PREDICTION THAT MATTERED MOST, AND IT IS EXACT.
+--                   3b found all 170 medical physicists in health_clinical
+--                   departments, so they re-confirm in hcp_researcher and roll
+--                   back up here, and the move costs this audience nothing.
+--                   +0.513% against a control median of +0.503%.
+--
+--    ⭐ AND THE TWO THE METHOD CANNOT MEASURE, WHICH IS WORTH MORE THAN THE
+--    NUMBERS ABOVE. The medical physicist gain in Researcher and in
+--    hcp_researcher does NOT appear. 291 people is 0.085% of Researcher and
+--    170 is 0.155% of hcp_researcher, while the four control audiences spread
+--    across 0.455 percentage points - which is about 1,560 people at
+--    Researcher's base. The decision is four to eighteen times smaller than
+--    the instrument's resolution.
+--
+--    So control subtraction has a FLOOR, and it is roughly half a percent of
+--    the audience being measured. Below that, this method cannot tell a
+--    decision from a week of ORCID. The answer is not a better subtraction:
+--    it is query 5, which reads the dictionary and sees the title itself -
+--    one title, 354 records, researcher, HUMAN, with no growth term in it at
+--    all. Size a small decision on the dictionary and a large one on the
+--    audience.
 -- ----------------------------------------------------------------------------
 select
     role_key,
-    count(distinct snid)                                as people,
-    count(*)                                            as records
+    count(distinct snid)                                as people
 from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
 where role_label = 'CONFIRMED'
 group by role_key
@@ -367,8 +420,81 @@ order by people desc
 --    and assert_title_patterns_all_match_something exist to catch, but those
 --    tests cannot see a pattern that fired on the wrong titles.
 --
---    RESULT 2026-11-19 (after the build):
---      [paste here]
+--    RESULT 2026-11-20, after the build. ALL FIVE LANDED:
+--
+--      medical physicist   researcher         HUMAN        1 title     354 recs
+--      doctor              practitioner       HUMAN        1 title   4,536 recs
+--      honorary            support_technical  PATTERN    568 titles  1,969 recs
+--      visiting            support_technical  PATTERN    479 titles  4,338 recs
+--      bare qualification  support_technical  PATTERN     26 titles 11,304 recs
+--
+--    ⭐ AND THEN THE RESIDUE, WHICH IS THE REAL FINDING IN THIS FILE AND WAS
+--    NOT PREDICTED. Both teaching patterns are scoped to the group the MODEL
+--    chose, which protects every group they cannot see - that was the point,
+--    and 2a confirmed it held. What nobody asked before the build is what is
+--    LEFT in those groups. Query 5 answers it, because it reads every title
+--    matching the regex regardless of where it ended up:
+--
+--      honorary, STILL ASSIGNED, by VECTOR:
+--        researcher        241 titles   1,127 records   <- IN the Researcher audience
+--        trainee_clinical  100 titles     198 records
+--        practitioner       92 titles     113 records
+--        leadership         17 titles      19 records
+--        student            11 titles      14 records
+--        pharmacist          3 titles       3 records
+--
+--      visiting scholar / fellow, STILL ASSIGNED, by VECTOR:
+--        researcher        285 titles   1,216 records   <- IN the Researcher audience
+--        student            33 titles      38 records
+--        trainee_clinical   13 titles      17 records
+--        practitioner       11 titles      11 records
+--
+--    THE TWO RESIDUES ARE NOT THE SAME KIND OF THING, and the difference is
+--    the whole point.
+--
+--    VISITING IS CONSISTENT AND NEEDS NOTHING. `visiting researcher` (67,191
+--    records) and `visiting scientist` (32,662) were deliberately sent to the
+--    researcher group on 2026-10-09 and 2026-10-21, on the argument that they
+--    name research. `visiting research fellow` is the same title with a
+--    different noun, so leaving it in Researcher follows the decision already
+--    taken rather than escaping it. The question answered on 19 November was
+--    whether a visiting fellow is TEACHING STAFF, and it is answered.
+--
+--    HONORARY IS NOT CONSISTENT, and it contradicts a decision this project
+--    already took. On 2026-10-16 marketing REJECTED `honorary researcher`
+--    outright - it is in this result as `researcher / HUMAN / 1 title / 71
+--    records`, not assigned to anything. But 241 other honorary titles sit in
+--    the researcher group by VECTOR and ARE assigned, carrying 1,127 records:
+--    `honorary research fellow` and its family. So the same reasoning that
+--    removed one string leaves 241 of its siblings in the project's
+--    highest-scoring audience.
+--
+--    NO RULE IS PROPOSED HERE. Widening the honorary pattern to the researcher
+--    group is one field, and it would take ~1,127 records out of a 99.0%
+--    audience - which is a definition question of exactly the shape marketing
+--    just answered for Lecturer, asked again about Researcher, and not a thing
+--    to decide from the size of it. It is written up as an open item instead.
+--
+--    AND THE CLINICAL RESIDUE IS THE SCOPE WORKING, not a hole. 198 records in
+--    trainee_clinical and 113 in practitioner are honorary clinical posts. An
+--    honorary consultant is usually a working clinician who holds the honorary
+--    title so they can supervise students - the person the November decision
+--    explicitly did not want to lose - and the teaching scope is what kept
+--    them. This is the one place where leaving a pattern narrow was the whole
+--    reason it was safe.
+--
+--    ONE SMALL STRUCTURAL HOLE, measured at 10 records and not patched.
+--    `bare qualification / student / PATTERN / 1 title / 10 records` is not
+--    the new rule firing. Seed row 28 sends student-shaped titles from the
+--    RESEARCHER group into `student`, and its alternation contains `phd` and
+--    `ph d`. The new rule is scoped to model group `student`, so a bare
+--    qualification the model read as researcher is claimed by row 28, lands
+--    in Students, and the exclusion never sees it. The two do not collide
+--    because they are scoped to different groups, which is why the test
+--    passed. The clean fix is an `unless_pattern` on ROW 28 - a title that is
+--    nothing but a qualification is not a doctoral student - and it is one
+--    field. Left alone pending Merve, because it is 10 records today and the
+--    honorary question above would land in the same build.
 -- ----------------------------------------------------------------------------
 select
     case

@@ -31,12 +31,12 @@ def build(d, F):
     table(d, ["Audience", "Correct", "Wrong", "Not sure", "Correct, of the decided", "Wrong people, est."],
      [["**Researcher**", "96.8%", "1.0%", "2.3%", "**99.0% ± 1.0**", "~3,400"],
       ["**Lecturer**", "98.2%", "1.2%", "0.5%", "**98.7% ± 1.1**", "~5,100"],
-      ["**Students**", "91.8%", "1.2%", "7.0%", "**98.7% ± 1.3**", "~1,300"],
+      ["**Students**", "91.8%", "1.2%", "7.0%", "**98.7% ± 1.3**", "~1,200"],
       ["**Librarian** (all 700 read)", "97.1%", "1.4%", "1.4%", "**98.5%**", "10"],
       ["**Pharmacist**", "82.5%", "3.8%", "13.8%", "**95.7% ± 1.9**", "~80"],
       ["**HCP administrator**", "88.0%", "4.8%", "7.2%", "**94.9% ± 2.2**", "~400"],
       ["HCP practitioner", "82.0%", "5.8%", "12.2%", "93.4% ± 2.6", "~3,300"],
-      ["HCP broad", "81.5%", "8.5%", "10.0%", "90.6% ± 3.0", "~15,100"],
+      ["HCP broad", "81.5%", "8.5%", "10.0%", "90.6% ± 3.0", "~15,200"],
       ["HCP researcher", "81.2%", "9.0%", "9.8%", "90.0% ± 3.1", "~9,900"],
       ["**Head of Faculty**", "56.2%", "11.2%", "32.5%", "**83.3% ± 4.4**", "~1,900"]],
      widths=[1.75, 0.7, 0.65, 0.75, 1.35, 1.2], size=8.5)
@@ -82,7 +82,7 @@ def build(d, F):
             bullet(d, t)
         d.paragraphs[-1].paragraph_format.space_after = Pt(10)
 
-    aud("LECTURER — 427,256 people, 98.7% correct", [
+    aud("LECTURER — 426,449 people, 98.7% correct", [
       "**How it is decided.** Does the job title name a teaching post — professor, "
       "lecturer, reader, docent, instructor, tutor. There is no department check at "
       "all, and past posts count.",
@@ -105,11 +105,24 @@ def build(d, F):
       "group rather than being deleted. **Wider than the question asked:** honorary "
       "lecturer and honorary reader go with honorary professor, because the argument "
       "is about the word *honorary* and not about the rank beside it.",
-      "**Not yet measured.** The size of both rules is counted before the build by "
-      "analyses/55 query 2, and the audience is re-counted after it by query 4. No "
-      "number is quoted here until those have run."])
+      "**Measured on the build of 20 November: the two rules cost 2,956 people.** "
+      "Lecturer went from 427,256 to 426,449 while the four audiences no decision "
+      "could touch grew by a median 0.503%, so the audience would have been 429,405 "
+      "without the change. Counted before the build, the two rules could see 978 "
+      "people on an honorary title and 1,727 on a visiting one, and neither rule "
+      "reached a second audience — no clinical row, no researcher row. The scope "
+      "held, measured rather than argued.",
+      "**Open, and found by the same measurement: 241 honorary titles carrying "
+      "1,127 records are still in the Researcher audience.** The pattern is scoped "
+      "to the teaching group, so `honorary research fellow` and its family were "
+      "never in its reach. That matters because marketing already rejected the "
+      "exact string `honorary researcher` on 16 October — so the same reasoning now "
+      "removes one title and leaves 241 of its siblings in the project's "
+      "highest-scoring audience. Widening the rule is one field; whether an "
+      "honorary research fellow is an active researcher is the same definition "
+      "question marketing just answered for Lecturer, asked again about Researcher."])
 
-    aud("RESEARCHER — 343,716 people, 99.0% correct", [
+    aud("RESEARCHER — 344,847 people, 99.0% correct", [
       "**How it is decided.** Does the job title name research work — researcher, "
       "scientist, postdoc, principal investigator, group leader. Any field: a plant "
       "pathologist and a medieval historian are both correct. Past posts count.",
@@ -124,7 +137,7 @@ def build(d, F):
       "group is in both Lecturer and Researcher; the survey records one answer, so one "
       "of the two memberships is counted wrong whatever we do."])
 
-    aud("STUDENTS — 107,091 people, 98.7% correct", [
+    aud("STUDENTS — 102,026 people, 98.7% correct", [
       "**The newest audience, built and read in November, and third of the ten.** 400 "
       "records read one by one on 13 November: 367 correct, 5 wrong, 28 not sure.",
       "**Three rules, each measured before it was set.** The title must name a student. "
@@ -149,10 +162,20 @@ def build(d, F):
       "untouched, and it is scoped to the student group. **`doctor` and `dr` are "
       "deliberately left out of it**, because the same day ruled that a bare doctor "
       "stays in Practitioner.",
-      "**Not yet measured.** analyses/55 query 2 lists the exact titles it takes "
-      "before the build; query 4 re-counts the audience after."])
+      "**Measured on the build of 20 November: it cost 5,604 people.** Students went "
+      "from 107,091 to 102,026, against an expected 107,630 had nothing changed — "
+      "a 4.7% audience, and by far the most expensive of the five decisions. The "
+      "rule took 26 job titles carrying 11,304 records. Counted before the build it "
+      "looked like 4,241 people, and that figure was published as a floor for a "
+      "stated reason: it ran on the raw title, so every spelling the cleaning "
+      "changes — `Ph.D.` becomes `ph d` — was invisible to it. The floor turned out "
+      "to be 76% of the real cost.",
+      "**One hole left, measured at 10 records.** A bare qualification the machine "
+      "reads as research is routed into this audience by a different rule, which "
+      "the new exclusion is not scoped to see. Ten records today, and whatever the "
+      "machine does on the next rebuild. The fix is one field on that other rule."])
 
-    aud("HEALTHCARE (BROAD) — 177,645 people, 90.6% correct", [
+    aud("HEALTHCARE (BROAD) — 178,556 people, 90.6% correct", [
       "**How it is decided.** The widest net: a clinical job title is mandatory, and "
       "everyone from Practitioner, Clinical researcher, Clinical administrator and "
       "Pharmacist rolls up into it as well.",
@@ -164,7 +187,7 @@ def build(d, F):
       "Whether that is right is the one question blocking us, and it is a naming "
       "question, not an accuracy one."])
 
-    aud("PRACTITIONER and CLINICAL RESEARCHER — 57,297 and 109,486 people, "
+    aud("PRACTITIONER and CLINICAL RESEARCHER — 57,351 and 109,854 people, "
         "93.4% and 90.0% correct", [
       "**How they are decided.** Both need the title **and** the department to agree. "
       "Practitioner wants a clinician who treats patients; Clinical researcher wants "
@@ -199,7 +222,22 @@ def build(d, F):
       "audience, which has no department test, and they stay in Healthcare (broad) "
       "only through Clinical researcher, which does — so a medical physicist in a "
       "physics department leaves the healthcare audiences altogether. analyses/55 "
-      "query 3b counts both cases before the build.",
+      "query 3b measured both before the build, and the answer was better than "
+      "expected: all 170 of the medical physicists this pipeline confirms work in "
+      "radiotherapy, radiology or oncology departments, so every one of them "
+      "re-confirms as a clinical researcher and rolls back up into Healthcare "
+      "(broad). The feared case — a medical physicist in a physics department — "
+      "does not exist among the people we confirm. Healthcare (broad) grew 0.513% "
+      "on the build against a control median of 0.503%: the move cost it nothing.",
+      "**And one thing the measurement could not do, which is worth knowing before "
+      "the next small decision.** 291 people typed this title and only 170 were in "
+      "any audience, so the move recruited about 121 people who were nowhere "
+      "before. That gain is invisible in the Researcher audience: 291 people is "
+      "0.085% of it, while the four control audiences spread across 0.455 "
+      "percentage points — about 1,560 people at that size. Comparing audience "
+      "counts cannot resolve a decision smaller than about half a percent of the "
+      "audience. The dictionary can, and it does: one title, 354 records, moved by "
+      "a named person, with no growth term in it at all.",
       "**Settled 19 November, nothing moves.** A bare `doctor` (4,465 records) stays "
       "in Practitioner, written down as a human decision so it cannot drift on the "
       "next dictionary rebuild. Unlike `consultant`, which is a hospital specialist "
@@ -212,7 +250,7 @@ def build(d, F):
       "decision. Neither is an engineering call; both need somebody to say whether "
       "the field is healthcare."])
 
-    aud("CLINICAL ADMINISTRATOR — 8,377 people, 94.9% correct", [
+    aud("CLINICAL ADMINISTRATOR — 8,398 people, 94.9% correct", [
       "**How it is decided.** A leadership title **and** a human-health department. "
       "Patient contact is not required: somebody running a cardiology unit is correct.",
       "**88.9% → 94.9% on 5 November, re-measured on a fresh sample.** The organisation "
@@ -239,7 +277,7 @@ def build(d, F):
       "we have and nothing here needs deciding - but it is older than the audience "
       "it describes, and the honest way to quote it is with its date."])
 
-    aud("HEAD OF FACULTY — 17,305 people, 83.3% correct — PARKED", [
+    aud("HEAD OF FACULTY — 17,421 people, 83.3% correct — PARKED", [
       "**How it is decided.** A faculty-level title — dean, head of department, rector, "
       "provost, chancellor — at an organisation ROR types as *Education*. Current posts "
       "only. It is the one audience built for precision rather than reach.",
@@ -257,7 +295,7 @@ def build(d, F):
       "**And it is about to change shape.** Marketing have asked for it to be opened up "
       "beyond academia, to reach decision makers and budget holders. Section 7, item 4."])
 
-    aud("PHARMACIST — 2,083 people, 95.7% correct", [
+    aud("PHARMACIST — 2,090 people, 95.7% correct", [
       "**How it is decided.** The title must name a pharmacist, and the title is the "
       "only way in — nobody becomes a pharmacist by working in a pharmacy department.",
       "**81.8% → 95.7% on 5 November**, the second figure on a fresh sample. It was the "
@@ -270,7 +308,7 @@ def build(d, F):
       "**Open:** Portuguese and Spanish forms the English stems miss, and clinical "
       "chemists. Overrides, not a new rule."])
 
-    aud("LIBRARIAN — 708 people, 98.5% correct", [
+    aud("LIBRARIAN — 713 people, 98.5% correct", [
       "**How it is decided.** Eleven literal patterns, not the machine: a title either "
       "contains a library word or it does not. The employer carries no weight at all. "
       "Current posts only.",

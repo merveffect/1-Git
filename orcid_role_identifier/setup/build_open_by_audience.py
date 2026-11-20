@@ -33,7 +33,7 @@ r.font.color.rgb = PLUM; r.font.name = SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("What is still open, audience by audience")
 r.bold = True; r.font.size = Pt(20); r.font.color.rgb = INK; r.font.name = SANS
-para(d, "19 November 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "20 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 
 para(d, "Every question still waiting, filed under the audience it affects. The status "
@@ -89,26 +89,35 @@ para(d, "Everything else below can wait without stopping anything.", size=9, col
 # ---------------------------------------------------------------- AUDIENCES
 h(d, "By audience")
 
-aud("Lecturer — 427,256 people, 98.7% correct",
-    "**Nothing is open.** Both questions were answered on 19 November.",
- [], "**Answered, written, and not yet built.** Visiting scholars and visiting fellows "
+aud("Lecturer — 426,449 people, 98.7% correct",
+    "Both questions were answered on 19 November and built on 20 November. The build "
+    "then raised one new question, in Researcher rather than here.",
+ [], "**Answered and built — it cost 2,956 people.** Visiting scholars and visiting fellows "
      "are not teaching staff — the post is temporary, usually unpaid, and the title "
      "names a visit rather than a job. An honorary post is conferred rather than held, "
      "which completes the family begun on 16 October when `emeritus professor`, "
      "`retired professor` and `honorary researcher` were rejected. Both leave Lecturer "
      "for the holding group, so they can be brought back by name. `visiting researcher` "
      "and `visiting scientist` are untouched — they name research and are already in "
-     "Researcher. Neither size has been counted yet; analyses/55 counts both before the "
-     "build.")
+     "Researcher. Before the build the two rules could see 978 people on an honorary "
+     "title and 1,727 on a visiting one, and neither rule reached a second audience. "
+     "Afterwards Lecturer had gone from 427,256 to 426,449 against an expected 429,405, "
+     "so the measured cost is 2,956 — the prediction held.")
 
-aud("Researcher — 343,716 people, 99.0% correct",
-    "**Nothing is open.** The highest-scoring audience in the project and the only one "
-    "with an empty list.",
- [], "The 43.9% survey agreement is not a fault and not a question. A professor who runs "
+aud("Researcher — 344,847 people, 99.0% correct",
+    "One item, and it arrived on 20 November from a decision taken about another "
+    "audience.",
+ [["**Is an honorary research fellow an active researcher?** Honorary posts left "
+   "Lecturer on 20 November, but that rule is scoped to teaching titles, so `honorary "
+   "research fellow` and its family were never in its reach. Marketing rejected the "
+   "exact string `honorary researcher` on 16 October — so the same reasoning removes "
+   "one title and leaves 241 of its siblings in this audience. Widening the rule is "
+   "one field.", "241 titles, 1,127 records", "**Marketing**"]],
+ "The 43.9% survey agreement is not a fault and not a question. A professor who runs "
      "a research group is in both Lecturer and Researcher; the survey records one answer, "
      "so one of the two is counted wrong whatever we do.")
 
-aud("Students — 107,091 people, 98.7% correct",
+aud("Students — 102,026 people, 98.7% correct",
     "Built and read in November. Three open items; the largest source of doubt in the "
     "reading was answered on 19 November.",
  [["**Does Students mean doctoral candidates, or every student?** Doctoral, master's and "
@@ -125,12 +134,19 @@ aud("Students — 107,091 people, 98.7% correct",
   "status — one person wrote `Phd holder` outright — and it was 6% of the sample and "
   "the largest single source of doubt here. The rule matches the whole title or "
   "nothing, so `PhD student` is untouched, and `doctor` and `dr` are deliberately left "
-  "out of it because the same day ruled a bare doctor stays in Practitioner.",
+  "out of it because the same day ruled a bare doctor stays in Practitioner. **It cost "
+  "5,604 people** — from 107,091 to 102,026 against an expected 107,630 — which makes "
+  "it by far the most expensive of the five decisions. Before the build it looked like "
+  "4,241, published as a floor because that count ran on the raw title and could not "
+  "see the spellings the cleaning changes. The floor was 76% of the real cost.",
+  "**One hole left, measured at 10 records.** A bare qualification the machine reads as "
+  "research is routed here by a different rule that the new exclusion is not scoped to "
+  "see. The fix is one field on that other rule.",
   "Not a question: the employer rule refuses 10,316 people whose titles plainly say "
   "`phd student`, because ROR types Max Planck as a facility and teaching hospitals as "
   "healthcare. That bill was measured and accepted on 11 November."])
 
-aud("Healthcare Professional (broad) — 177,645 people, 90.6% correct",
+aud("Healthcare Professional (broad) — 178,556 people, 90.6% correct",
     "Not weak — undefined. See question 1 above.",
  [["**What it should mean and be called.** Our recommendation is to rename it, because "
    "Practitioner already is the clinical audience and nobody needs two of those. The "
@@ -140,7 +156,7 @@ aud("Healthcare Professional (broad) — 177,645 people, 90.6% correct",
  "improves when they do. 887 of the people in it describe themselves as professors or "
  "researchers rather than clinicians.")
 
-aud("Clinical / Biomedical Researcher — 109,486 people, 90.0% correct",
+aud("Clinical / Biomedical Researcher — 109,854 people, 90.0% correct",
     "Grew when biomedical research was ruled in on 11 November. Two items, neither sized.",
  [["**Where does “biomedical” stop?** The audience accepts human-health and "
    "biomedical departments. Nobody has drawn the line at the far edge of biomedical — "
@@ -150,7 +166,7 @@ aud("Clinical / Biomedical Researcher — 109,486 people, 90.0% correct",
    "States, a researcher in the United Kingdom. Flagged in the reviewer rules as "
    "unsure and never settled.", "not measured", "Us"]])
 
-aud("Practitioner — 57,297 people, 93.4% correct",
+aud("Practitioner — 57,351 people, 93.4% correct",
     "The least-read group in the project: reviewed titles cover 38% of its records "
     "against 75% for researchers. Five items left; two were answered on 19 November.",
  [["**Does a research nurse treat patients?** `research nurse`, `clinical research "
@@ -173,14 +189,20 @@ aud("Practitioner — 57,297 people, 93.4% correct",
   "physics leaves the healthcare audiences altogether. A bare `doctor` (4,465 records) "
   "STAYS in Practitioner, written down so it cannot drift on the next rebuild; unlike "
   "`consultant` it names a medical qualification in every language that borrowed it. "
-  "That is not the bare `dr` above, which is a form of address and is still open.",
+  "That is not the bare `dr` above, which is a form of address and is still open. "
+  "**Measured on the build: all 170 of the medical physicists we confirm work in "
+  "radiotherapy, radiology or oncology departments**, so every one re-confirms as a "
+  "clinical researcher and rolls back up into Healthcare (broad) — which grew 0.513% "
+  "against a control median of 0.503%, so the move cost it nothing. 291 people typed "
+  "the title and only 170 were in any audience, so it also recruited about 121 who "
+  "were nowhere before.",
   "**A caveat rather than a question:** the 93.4% was measured before 19 November, when "
   "every title containing `consultant` left this audience and took about 5,400 people "
   "with it. The people removed included known errors, so the figure is more likely to "
   "understate than overstate — but it has not been re-read and should be quoted with "
   "its date."])
 
-aud("Clinical Administrator — 8,377 people, 94.9% correct",
+aud("Clinical Administrator — 8,398 people, 94.9% correct",
     "**Nothing is open.** The one item this audience carried was checked on 19 November "
     "and closed.",
  [], "Closed on 19 November: the worry that industry medical directors, blocked here "
@@ -190,7 +212,7 @@ aud("Clinical Administrator — 8,377 people, 94.9% correct",
      "Clinic, Mayo. A caveat remains: the 94.9% was read on 5 November and this audience "
      "gained about 1% in new members on 19 November.")
 
-aud("Head of Faculty — 17,305 people, 83.3% correct — PARKED",
+aud("Head of Faculty — 17,421 people, 83.3% correct — PARKED",
     "Parked and not delivered. Everything below is frozen until marketing answers the "
     "seven questions sent on 18 November — they change what the audience is, so "
     "working on it now risks building the wrong thing.",
@@ -216,13 +238,13 @@ aud("Head of Faculty — 17,305 people, 83.3% correct — PARKED",
  "who would arrive have an employer nobody could identify. What blocks them is employer "
  "identification, not their job title.")
 
-aud("Pharmacist — 2,083 people, 95.7% correct",
+aud("Pharmacist — 2,090 people, 95.7% correct",
     "Was the weakest audience in the project in October. One item left, and it is "
     "vocabulary rather than a rule.",
  [["**Portuguese and Spanish forms the English stems miss**, and clinical chemists. "
    "Overrides, not a new rule.", "not measured", "Us"]])
 
-aud("Librarian — 708 people, 98.5% correct",
+aud("Librarian — 713 people, 98.5% correct",
     "The only audience where every member was read rather than a sample. One item, and "
     "it is a confirmation rather than a question.",
  [["**Two exclusions we chose.** Archivists, because the word also collected "

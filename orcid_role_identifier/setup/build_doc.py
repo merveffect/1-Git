@@ -20,7 +20,7 @@ r.font.color.rgb=TEAL; r.font.name=SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
-para(d, "Working document  ·  updated 19 November 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "Working document  ·  updated 20 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHERE THIS STANDS", [
  "**All ten audiences are built, and all ten have a measured accuracy.** Every one was "
@@ -34,7 +34,7 @@ box(d, "WHERE THIS STANDS", [
  "*Head of Faculty* is the one weak audience at 83.3%, because the job title is the only "
  "evidence it has. Both are waiting on marketing, not on engineering.",
  "",
- "**The newest audience is Students** - 107,091 people, built and read in November, "
+ "**The newest audience is Students** - 102,026 people, built and read in November, "
  "98.7% correct and third of the ten.",
  "",
  "**Practitioner is about 5,400 people smaller than it was last week, on purpose.** Every job title containing the word *consultant* was taken out of it on 19 November. The word means a hospital specialist in Britain and Ireland and a business adviser almost everywhere else, and the record does not say which. The audience is smaller and more certain; section 6 gives the number and the reasoning.",
@@ -74,12 +74,21 @@ table(d, ["", "Today", "What it means"],
 para(d, "**Three quarters of the people we can name are reachable** - 580,462 of 787,057. "
         "The rest are not in the CDP or have not opted in, and no amount of classification "
         "changes that.")
-para(d, "**The first two rows and the last two are not the same age.** The people counts "
-        "read ORCID live and moved by 3,764 in the week to 19 November. The vocabulary "
-        "counts are rebuilt deliberately rather than continuously, so they are the figures "
-        "from the last dictionary build - a job title that arrived this week is counted in "
-        "the people column only once the vocabulary is rebuilt. Worth knowing before "
-        "dividing one by the other.", size=9, color=MUT)
+para(d, "**Every row in this table is a 19 November count, and the 20 November build "
+        "moved three of them.** It is left as it stands rather than half-corrected: the "
+        "five figures come from one query, the query has not been re-run, and a table "
+        "with two of its rows refreshed would be worse than one that says it is a day "
+        "old. The direction is known - the audience decisions of 20 November took people "
+        "out of three audiences, so row 1 is slightly lower than it says, and row 4 is "
+        "higher because the title vocabulary was rebuilt on the same job.", size=9, color=MUT)
+para(d, "**The first two rows and the last two are not the same age either.** The "
+        "people counts read ORCID live. The vocabulary counts are rebuilt deliberately "
+        "rather than continuously, and the two halves of the vocabulary do not even move "
+        "together: the 20 November build rebuilt the job-title dictionary and not the "
+        "department one, because only the first sits upstream of the model that was "
+        "rebuilt. A job title that arrived this week is counted in the people column "
+        "only once the vocabulary is rebuilt. Worth knowing before dividing one by "
+        "the other.", size=9, color=MUT)
 para(d, "The last two rows are the reason this is affordable. We do the thinking once, "
         "over the vocabulary, and store the answers. Giving every person their profession "
         "after that is an ordinary database join.", space_after=10)
@@ -156,26 +165,29 @@ para(d, "Every figure here is a people figure, counted directly. *Right, of the 
         "not settled or a record that does not say enough to judge. It is never counted "
         "as correct.")
 table(d, ["Audience", "People", "Right, of the decided", "Verdict"],
- [["**Lecturer**", "427,256", "**98.7% \u00b1 1.1**", "Solid"],
-  ["**Researcher**", "343,716", "**99.0% \u00b1 1.0**", "Solid"],
-  ["Healthcare (broad)", "177,645", "90.6% \u00b1 3.0", "**Not weak - undefined.** Waiting on a name"],
-  ["Clinical researcher", "109,486", "90.0% \u00b1 3.1", "Good. Grew when biomedical research was ruled in"],
-  ["**Students**", "107,091", "**98.7% \u00b1 1.3**", "**New.** Solid"],
-  ["Practitioner", "57,297", "93.4% \u00b1 2.6",
+ [["**Lecturer**", "426,449", "**98.7% \u00b1 1.1**", "Solid"],
+  ["**Researcher**", "344,847", "**99.0% \u00b1 1.0**", "Solid"],
+  ["Healthcare (broad)", "178,556", "90.6% \u00b1 3.0", "**Not weak - undefined.** Waiting on a name"],
+  ["Clinical researcher", "109,854", "90.0% \u00b1 3.1", "Good. Grew when biomedical research was ruled in"],
+  ["**Students**", "102,026", "**98.7% \u00b1 1.3**", "**New.** Solid"],
+  ["Practitioner", "57,351", "93.4% \u00b1 2.6",
    "**The figure predates 19 November** - needs re-reading"],
-  ["Head of faculty", "17,305", "83.3% \u00b1 4.4", "**Parked** - not being delivered"],
-  ["Clinical administrator", "8,377", "94.9% \u00b1 2.2", "Good. Was 88.9% in October"],
-  ["Pharmacist", "2,083", "95.7% \u00b1 1.9", "Good. Was 81.8% in October"],
-  ["Librarian", "708", "98.5%", "Solid. All 700 were read in November"]],
+  ["Head of faculty", "17,421", "83.3% \u00b1 4.4", "**Parked** - not being delivered"],
+  ["Clinical administrator", "8,398", "94.9% \u00b1 2.2", "Good. Was 88.9% in October"],
+  ["Pharmacist", "2,090", "95.7% \u00b1 1.9", "Good. Was 81.8% in October"],
+  ["Librarian", "713", "98.5%", "Solid. All 700 were read in November"]],
  widths=[1.6,0.85,1.3,2.85], size=8.8)
-para(d, "**People counted on the build of 19 November; the accuracy column was not "
-        "re-measured on it.** That matters for one row. Practitioner lost about 5,400 "
-        "people on 19 November when every job title containing *consultant* was taken "
-        "out of it - a deliberate decision, recorded with its cost. The removed people "
-        "included known errors, so 93.4% is more likely to understate the audience than "
-        "to overstate it, but **it was measured on the population before the change and "
-        "should be read as out of date rather than as a current figure.** The other nine "
-        "rows moved only by a week of ORCID growth, between 0.5% and 1.4%.",
+para(d, "**People counted on the build of 20 November; no accuracy figure in this "
+        "column was re-measured on it.** That matters for two rows now. Practitioner "
+        "lost about 5,400 people on 19 November, when every job title containing "
+        "*consultant* was taken out of it, and Students lost 5,604 on 20 November, when "
+        "a job title that is nothing but a degree was taken out of it. Both were "
+        "deliberate and both are recorded with their cost. In each case the people "
+        "removed included known errors, so 93.4% and 98.7% are more likely to understate "
+        "their audience than to overstate it - but **both were measured on the "
+        "population before the change and should be read as out of date rather than as "
+        "current figures.** Lecturer also lost 2,956 people on 20 November, which is "
+        "0.7% of it and inside the interval on its 98.7%.",
      size=9, color=MUT, space_after=4)
 para(d, "Each audience is written out in section 6: how it is decided, how it was "
         "measured, and what is still open in it.", space_after=10)
@@ -184,9 +196,15 @@ h(d, "3.1  How much of each audience can actually be reached", 2)
 para(d, "Being in an audience and being contactable are different things. **Reachable** "
         "means the person is in the CDP under any of four legal bases - marketing "
         "opt-in, advertising opt-in, legitimate interest, or book-author consent. "
-        "**Both columns were counted on 19 November on the same build as section 3**, so "
-        "the people figures here and there now agree; earlier versions of this document "
-        "carried two counts nine days apart.", space_after=4)
+        "**This table is ONE BUILD BEHIND section 3, and knowingly so.** Both columns "
+        "were counted on 19 November. Section 3 was re-counted on the 20 November build "
+        "and this was not, because the reachable column needs its own query and that "
+        "query has not been run yet - so the People column here is lower than section 3 "
+        "for the six audiences the 20 November decisions touched, and 5,604 too high for "
+        "Students. It is labelled rather than quietly refreshed, because an earlier "
+        "version of this document carried two counts nine days apart without saying so. "
+        "**Quote section 3 for a size and this table only for a RATE**, which is the "
+        "column that barely moves.", space_after=4)
 table(d, ["Audience", "People", "Reachable", "Of those"],
  [["**Lecturer**", "427,256", "**332,051**", "77.7%"],
   ["**Researcher**", "343,716", "**244,942**", "71.3%"],
@@ -345,22 +363,25 @@ audiences.build(d, F)
 h(d, "7.  What happens next")
 table(d, ["#", "What", "Why now", "Who"],
  [["1","**What \"Healthcare Professional (broad)\" means**","The only thing that blocks us. Biomedical researchers now roll up into it, so 54,426 people who have never seen a patient are in an audience with that name. One sentence from marketing settles it.","Marketing"],
-  ["2","Build the five answers of 19 November","Marketing answered everything in sections 6.1 to 6.5. The seed rows are written and **not yet built**: visiting scholars and fellows out of Lecturer, honorary posts out of Lecturer, the bare qualification out of Students, `medical physicist` into Clinical researcher, a bare `doctor` confirmed in Practitioner. `analyses/55` sizes all five before the build and re-counts the audiences after it.","Us"],
+  ["2","**Is an honorary research fellow an active researcher?**","Found by measuring the 20 November build. Honorary posts left Lecturer, but the rule is scoped to teaching titles, so **241 honorary titles carrying 1,127 records are still in Researcher** - `honorary research fellow` and its family. Marketing already rejected the exact string `honorary researcher` on 16 October, so the same reasoning removes one title and leaves 241 of its siblings in the project's best audience. Widening the rule is one field. `analyses/55` query 5.","Marketing"],
   ["3","A country condition on `research scholar`","It is a `student` anchor, so it matches at score 1.0 with no country test. In India it means a doctoral student; elsewhere it can be a senior post. Found in the Students reading.","Us"],
   ["4","**A decision-maker audience**","Marketing have asked for Head of Faculty to be opened up beyond academia, to reach opinion leaders, budget holders and purchase influencers. Seven definition questions are with them; the measurement on our side can start before they answer.","Marketing / us"],
   ["5","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
   ["6","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
   ["7","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 4 may change what this audience is for.","Us"],
-  ["8","Veterinarians and sport and exercise science","91 and 78 people, in the healthcare audiences by accident rather than by decision. The only item left open in sections 6.1 to 6.5, and the only one that is not an engineering call: somebody has to say whether the field is healthcare.","Matthew"]],
+  ["8","Veterinarians and sport and exercise science","91 and 78 people, in the healthcare audiences by accident rather than by decision. The only item left open in sections 6.1 to 6.5, and the only one that is not an engineering call: somebody has to say whether the field is healthcare.","Matthew"],
+  ["9","Close the bare-qualification bypass","Measured at 10 records. A title that is nothing but a degree, which the machine reads as research rather than as study, is routed into Students by a different rule the new exclusion is not scoped to see. One field on that other rule closes it. Small today, and it reopens every time the dictionary is rebuilt.","Us"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
 box(d, "WHAT CAME OFF THIS LIST", [
- "**Five open items were answered on 19 November**, reading this document through to "
- "section 6.5: visiting scholars and fellows and honorary posts leave Lecturer, the bare "
- "qualification leaves Students, `medical physicist` becomes a Clinical researcher, and a "
- "bare `doctor` stays in Practitioner. They are written into the seeds and are item 2 "
- "above until they are built and counted. One item from the same reading stays open and "
- "is now item 8.",
+ "**Five open items were answered on 19 November and built on 20 November.** Visiting "
+ "scholars and fellows and honorary posts left Lecturer, the bare qualification left "
+ "Students, `medical physicist` became a Clinical researcher, and a bare `doctor` was "
+ "confirmed in Practitioner. All five were sized before the build and re-counted after "
+ "it - the first time this project has priced a seed change by subtraction rather than "
+ "by estimate. The bill: 2,956 people out of Lecturer, 5,604 out of Students, and "
+ "nothing at all out of Healthcare (broad). One item from that reading stays open and is "
+ "now item 8; the measurement found a new one, which is now item 2.",
  "",
  "**Statisticians and economists are settled** — the 2,177 records in no audience stay "
  "out. They were never read title by title, and an audience is something a title earns "
