@@ -1903,6 +1903,23 @@ anchor, with no override, no pattern and no veto anywhere in
 route needs a new seed plus model logic. That is a model change and it is not
 written.
 
+**THE DEPARTMENT HALF IS NOT BEING DONE, DECIDED 2026-11-20.** Merve, reading the
+write-up above: *"bence bunu cikarmana gerek yok. departman veteriner ise ve
+unvani sadece profesor ise girsin. bizim onceligimiz zaten unvan hep... 35 kisi
+icin bir kural yazma sen genele odaklan."*
+
+So a professor in a veterinary faculty stays in Clinical researcher, and that is
+the decision rather than a defect we are tolerating. **It is also the project's
+own architecture stated out loud: the title decides and the department
+corroborates.** The same principle retired `title_or_field` on 2026-11-04, when
+the field arm alone was found to be admitting 6,115 CONFIRMED people with no
+clinical job title at all. A veterinary department with a title that says only
+*professor* is the mirror image of that case, and the answer is the same one.
+
+**What this closes.** No new seed, no model change, and the "way to exclude a
+department" item is off the list. The title route built above is the whole of
+this decision.
+
 **AND A FIGURE IN THIS REPO SHOULD NOT BE QUOTED.** The `veterinarian` anchor
 note in `seeds/title_group_anchors.csv` says 2,684 real vets were reaching
 `dentist` before the anchor was added, and on 2026-11-20 I passed that on as
@@ -1957,10 +1974,18 @@ day.** An anchor can only pull departments IN. Nothing can push one out.
   arguable either way — reads as clinical on the word **health**, and cannot be
   pushed out. No override, no pattern, no veto exists on this axis.
 
-So two separate decisions taken on 20 November are each half-blocked by one
-missing mechanism, and the same model change would clear both. That is the
-strongest case this project has had for building it: it is no longer one
-audience's problem.
+**AND THAT HALF IS NOT BEING DONE EITHER, DECIDED THE SAME DAY.** Merve: *"spor
+icin science birak demis olabilirim ama departmanda health sciences healthi
+yakaliyorsa klinik okunabilir sorun degil. unvan onemli yine burda da."* So
+`Faculty of Sport and Health Sciences` reads as clinical and stays, on the same
+principle as 1.18: the title decides, the department corroborates. The ~35
+people are a decision now, not a defect.
+
+The mechanism that would have been needed - a way to exclude a department - is
+off the list. It was briefly promoted to its own item in the status document on
+the grounds that two decisions needed it; both decisions then went the other
+way, which is the right outcome and a reminder that a missing mechanism is only
+worth building when something real is actually waiting on it.
 
 **Three anchors were added and then removed before the build.** `sport and
 exercise science`, `exercise physiology` and `kinesiology` went in on a first
@@ -4117,8 +4142,38 @@ refused" is exactly true.
    is the only one that recovers 172,469 real labels - 269,752 once lecturer
    has rules - and it is also the only one that costs a seed change.
 
-Nothing is being changed on either until they are answered. The test stays at
-`warn` so the build keeps saying it out loud.
+**BOTH DECIDED 2026-11-20.** Merve: *"role detail alanina cok ugrasmayalim. sen
+karar ver ve bana karari soyle."* Taken on the engineering merits, since the
+business case for a drill-down nobody has asked for either way is thin in both
+directions.
+
+**1. Yes, Lecturer gets a detailed role, with the same setting values as the
+other nine** - University / Hospital / Research Institute / Industry / Public
+Sector / Nonprofit. The reasoning: it is the LARGEST audience in the project at
+426,449 people and the only one that cannot be segmented at all, the other nine
+already carry these values, and the cost is six seed rows copying a pattern that
+already exists and is already tested. Leaving the biggest audience unsegmentable
+to save six rows is the wrong trade. It also clears
+`assert_every_role_has_detail_rules`, which has warned on every build since it
+was written and fails on exactly this one row - so a second open item closes
+with it.
+
+**2. Label the fallback-rescued people from the name pattern that rescued
+them.** Of the three answers this is the only one that recovers real labels
+rather than renaming the gap: `Unknown` is honest but puts ~270,000 people in an
+Unknown bucket in a field that is actually delivered, and leaving it null is the
+same outcome without the honesty. The information is already in hand - we match
+`universi`, `colleg`, `institut` to rescue the score and then throw away which
+word matched. Needs a type column on `org_name_patterns`, which has only a score
+today.
+
+**ONE CHECK BEFORE NUMBER 2 SHIPS, and it is not an engineering one.** It fills
+about 270,000 values that are blank today, and blank-to-value is a change for
+whoever reads the field downstream. A comment in this repo is not evidence of
+what the consumer does with a null, so that gets confirmed before the seed
+change goes out - not after.
+
+Neither is built yet. The test stays at `warn` until the first one lands.
 
 ---
 
