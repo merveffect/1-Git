@@ -719,7 +719,64 @@ order by question, people desc
 --    extend from what the output returns rather than from what I guessed.
 --
 --    RESULT 2026-11-20:
---      [paste here]
+--
+--      8a  THE CEILING       1,390 people   1,867 records   1,078 titles
+--
+--      8b  BY AUDIENCE, CONFIRMED, title-based (rows OVERLAP, do not add):
+--            hcp_broad          161   reachable 121
+--            lecturer           146             108
+--            hcp_practitioner   121              91
+--            researcher          80              60
+--            hcp_researcher      38              28
+--            students            29              23
+--            faculty_head         6               6
+--            hcp_administrator    2               2
+--            librarian            1               0
+--
+--      8c  SECTOR: `Industry` appears ONCE in the whole result - one person,
+--          in hcp_practitioner. Everything else is Academia, University,
+--          Research Institute, Hospital, Public Sector or Government.
+--
+--    ⭐ SO THE ANSWER TO MATTHEW IS NO, AND NOT FOR THE REASON EITHER OF US
+--    EXPECTED. Not "too few vets" - 1,390 is a real population. The reason is
+--    that the veterinarians this pipeline can identify are ACADEMIC: 146 in
+--    Lecturer, 80 in Researcher, 29 Students, and the sector column is
+--    universities, vet faculties and research institutes almost to the row.
+--    His hypothesis was animal-medicine pharma, and there is exactly ONE
+--    person in industry in the entire veterinary population. The commercial
+--    audience he was sizing is not in this data, and that is a finding about
+--    ORCID rather than about our classification: industry vets do not keep
+--    ORCID records, because ORCID is a publishing identifier.
+--
+--    ⭐⭐ AND A FIGURE I TOLD MERVE WAS SAFE TO QUOTE IS NOT. The
+--    `veterinarian` anchor note says 2,684 real vets were reaching `dentist`
+--    before 2026-10-20, and I passed that on as quotable. It is a RECORDS
+--    figure from before the 2026-11-10 discovery that dim_title_group.frequency
+--    had frozen on first sight and was running 14-30x high - and it is larger
+--    than the 1,867 records that carry a veterinary title in total today. It
+--    cannot be right. Do not quote it. The measured population is 1,390 people
+--    across 1,867 records, counted here.
+--
+--    AND 91 IS A DIFFERENT MEASURE, NOT A CONTRADICTION. docs/open-questions.md
+--    1.18 counts 91 people by DEPARTMENT, inside hcp_researcher only, and
+--    labels itself a floor in those words. This query counts by TITLE, across
+--    every audience. The two routes into the healthcare audiences are genuinely
+--    separate:
+--      TITLE   `veterinarian` is a practitioner anchor, so it reaches hcp_broad
+--              on the title alone (title_required).
+--      FIELD   `veterinary medicine` is a LIFE_BIOMEDICAL discipline anchor, so
+--              a vet faculty reaches hcp_researcher - which accepts
+--              health_clinical OR life_biomedical - without any vet word in the
+--              job title at all. A professor in a vet faculty arrives this way.
+--    Neither number is wrong and neither is the whole thing. 1.18's own closing
+--    line still stands: the department route across ALL the healthcare
+--    audiences has never been measured. It is not needed to answer Matthew,
+--    and it IS needed before the cleanup is actually built.
+--
+--    NO DETAIL IS NOT A VETERINARY ANOMALY. Lecturer shows NO DETAIL for all
+--    146, and that is docs/open-questions.md 2.20 - role_detail is null for at
+--    least 656,021 people for three separate reasons, already recorded and
+--    still open. Nothing here adds to it.
 -- ----------------------------------------------------------------------------
 -- 8a. THE CEILING: every person whose job title names a veterinarian, in any
 --     audience or none. Read off the record table, so no audience filter can

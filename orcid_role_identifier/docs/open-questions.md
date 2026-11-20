@@ -1812,6 +1812,65 @@ departments, 14 people, whose subject is by definition the intersection.
 
 Working answer **no**, consistent with 1.11. One line to change.
 
+**MEASURED 2026-11-20, because Matthew asked a different question than this
+one.** Put to him on 20 November, he replied: *"I'm not sure how much we work
+with pharma companies that do animal medicine - how many would we have?"* and
+*"I just wonder if it's either a new opportunity to take to the team or if it's
+actually worth doing."* He was sizing a possible AUDIENCE, not reviewing the
+cleanup this question is about, so `analyses/55` query 8 measured the title
+route across every audience:
+
+| | People | Reachable |
+| --- | --- | --- |
+| **Ceiling - any job title naming a vet, audience or not** | **1,390** | - |
+| in Healthcare (broad) | 161 | 121 |
+| in Lecturer | 146 | 108 |
+| in Healthcare Practitioner | 121 | 91 |
+| in Researcher | 80 | 60 |
+| in Clinical researcher | 38 | 28 |
+| in Students | 29 | 23 |
+
+Rows overlap and must not be added. 1,867 employment records across 1,078
+distinct job titles.
+
+**The answer is no, and not for the reason either of us expected.** Not "too few
+vets" - 1,390 is a real population. The reason is that the veterinarians this
+pipeline can identify are ACADEMIC: 146 in Lecturer, 80 in Researcher, 29
+Students, and the sector column is universities, vet faculties and research
+institutes almost to the row. `Industry` appears **once in the entire veterinary
+population** - one person. The commercial audience Matthew was sizing is not in
+this data, and that is a fact about ORCID rather than about our classification:
+ORCID is a publishing identifier, so industry vets largely do not have one.
+
+**⭐ TWO MEASURES, NOT A CONTRADICTION, and the distinction decides what the
+cleanup costs.** The 91 above is counted by DEPARTMENT inside `hcp_researcher`
+only. Query 8 counts by TITLE across every audience. There are genuinely two
+separate routes in:
+
+- **TITLE.** `veterinarian` is a practitioner anchor, added deliberately on
+  2026-10-20, so it reaches `hcp_broad` on the title alone because that role is
+  `title_required`.
+- **FIELD.** `veterinary medicine` is a **life_biomedical** discipline anchor, so
+  a veterinary faculty reaches `hcp_researcher` - which accepts health_clinical
+  OR life_biomedical - with no veterinary word in the job title at all. A
+  professor in a vet faculty arrives this way and query 8 cannot see them.
+
+So this section's closing line still stands and is still the gap: **the
+department route across all the healthcare audiences has never been measured.**
+It was not needed to answer Matthew. It IS needed before the cleanup is built,
+because it is the half of the population the title regex cannot reach.
+
+**AND A FIGURE IN THIS REPO SHOULD NOT BE QUOTED.** The `veterinarian` anchor
+note in `seeds/title_group_anchors.csv` says 2,684 real vets were reaching
+`dentist` before the anchor was added, and on 2026-11-20 I passed that on as
+safe to quote to a colleague. It is a RECORDS figure from before the 2026-11-10
+discovery that `dim_title_group.frequency` had frozen on first sight and was
+running 14 to 30 times high, and it is larger than the 1,867 records that carry
+a veterinary title in total today. It cannot be right. The measured population
+is 1,390 people; the 2,684 stays in the seed note as the reasoning of the day it
+was written, and should be read as one of the inflated figures that era
+produced.
+
 ### 1.19 Is sport and exercise science a healthcare field? — ASKED 2026-11-10
 
 Same reading, same day, and this one splits down the middle of its own
