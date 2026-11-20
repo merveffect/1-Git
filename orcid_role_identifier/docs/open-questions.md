@@ -1784,7 +1784,7 @@ exactly in half between `health_clinical` (40 departments, 910 records) and
 disciplines is arbitrary either way, and only one of those two feeds an
 audience.
 
-### 1.18 Are veterinarians healthcare professionals? — ASKED 2026-11-10
+### 1.18 Are veterinarians healthcare professionals? — DECIDED NO 2026-11-20, TITLE ROUTE BUILT, DEPARTMENT ROUTE STILL OPEN
 
 Found while reading 100 CONFIRMED `hcp_researcher` people by hand. Veterinary
 departments read as `health_clinical`, so vets are in the healthcare audiences
@@ -1859,6 +1859,49 @@ So this section's closing line still stands and is still the gap: **the
 department route across all the healthcare audiences has never been measured.**
 It was not needed to answer Matthew. It IS needed before the cleanup is built,
 because it is the half of the population the title regex cannot reach.
+
+**DECIDED 2026-11-20. Merve:** *"veterinerleri dahil etmeyelim. hayir bizim
+icin insanla ilgili olmali her hcp audiencei. yani dahil etme."* Every HCP
+audience is about humans. The argument was never that a vet is not a clinician -
+it is that every audience here is defined by treating PEOPLE, which is 1.11's
+test applied one subject over: the work, not the subject.
+
+**What was written: two rows in `seeds/title_group_patterns.csv`**, moving
+veterinary titles out of `practitioner` and out of `trainee_clinical` into the
+holding group, both carrying the librarian veto. Two rows and not one because
+`hcp_broad` accepts both groups and `applies_when_title_group` takes a single
+value, so a `veterinary intern` would otherwise walk through the gap the first
+row closes.
+
+**The anchor stays.** `veterinarian` was added to `title_group_anchors.csv` on
+2026-10-20 because without it vets were reaching `dentist`, and deleting it
+would restore exactly that. The title keeps its group; the pattern moves it out
+of the audiences instead.
+
+**It is not a rejection.** A veterinary professor stays in Lecturer and a
+veterinary researcher stays in Researcher - neither is an HCP audience, and
+neither of those titles sits in the practitioner group. A plain `veterinarian`
+is now in none of the ten, which is the decision rather than a side effect.
+
+**⭐ HALF OF THIS DECISION CANNOT BE BUILT, AND THAT IS ARCHITECTURAL. Do not
+record 1.18 as closed.** The title route is done. The department route is not
+and cannot be with a seed: a veterinary faculty reaches `hcp_researcher` through
+its DEPARTMENT, with no veterinary word in the job title, so no title rule can
+see those people. Two things that look like fixes and are not:
+
+1. **Moving the `veterinary medicine` anchor to a new discipline does not work.**
+   The departments measured above - `Veterinary Pathology` (13 people),
+   `Veterinary Public Health` (7), `Veterinary Epidemiology` (2) - match the
+   `pathology`, `public health` and `epidemiology` anchors, all of which are
+   health_clinical, independently of the veterinary anchor.
+2. **Deleting the anchor is the `dentist` mistake again**, one axis over.
+
+The real cause: the **TITLE axis has three mechanisms** - HUMAN overrides,
+PATTERN rules, VECTOR - and the **DEPARTMENT axis has exactly one**, the nearest
+anchor, with no override, no pattern and no veto anywhere in
+`dim_department_discipline` or `int_discipline_match`. Closing the department
+route needs a new seed plus model logic. That is a model change and it is not
+written.
 
 **AND A FIGURE IN THIS REPO SHOULD NOT BE QUOTED.** The `veterinarian` anchor
 note in `seeds/title_group_anchors.csv` says 2,684 real vets were reaching

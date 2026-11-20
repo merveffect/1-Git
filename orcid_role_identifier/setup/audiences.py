@@ -245,10 +245,22 @@ def build(d, F):
       "medical qualification in every language that borrowed it, and the audience "
       "already requires a human-health department beside the title. This is not the "
       "bare `dr` on the marketing list, which is a form of address and still open.",
-      "**Open — with Matthew:** veterinarians (91 people) and sport and exercise "
-      "science (78), both in the healthcare audiences today by accident rather than "
-      "decision. Neither is an engineering call; both need somebody to say whether "
-      "the field is healthcare."])
+      "**Veterinarians: decided NO on 20 November, and half built.** Every HCP "
+      "audience is about humans — the test is the work, not the subject. Measured "
+      "first: 161 people carry a veterinary job title in Healthcare (broad), 121 of "
+      "them contactable, and 121 in Practitioner. The job-title route is closed. "
+      "**The department route is not, and cannot be with a seed:** a veterinary "
+      "faculty reaches Clinical researcher through its department with no "
+      "veterinary word in the title, and the department axis has no override, no "
+      "pattern and no veto — the title axis has all three. Closing it is a model "
+      "change and is not written.",
+      "**Open — sport and exercise science.** Put to Matthew on 20 November, who "
+      "answered that it could be argued either way and was not sure we needed it. "
+      "That is a lean, not a decision, and the veterinary principle does not settle "
+      "it: sport science IS about humans. The working answer in the project is to "
+      "split on the word — keep the departments that say *medicine*, drop the ones "
+      "that say *science* — because a sports physician treats patients and a sport "
+      "scientist studies performance."])
 
     aud("CLINICAL ADMINISTRATOR — 8,398 people, 94.9% correct", [
       "**How it is decided.** A leadership title **and** a human-health department. "
