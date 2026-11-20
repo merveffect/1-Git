@@ -379,7 +379,7 @@ table(d, ["#", "What", "Why now", "Who"],
   ["5","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
   ["6","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
   ["7","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 4 may change what this audience is for.","Us"],
-  ["8","Veterinarians and sport and exercise science","91 and 78 people, in the healthcare audiences by accident rather than by decision. The only item left open in sections 6.1 to 6.5, and the only one that is not an engineering call: somebody has to say whether the field is healthcare.","Matthew"],
+  ["8","**A way to exclude a department**","Both decisions of 20 November are half-blocked by the same missing mechanism, which is what makes this worth building now. The **title** axis has three ways to intervene - a human override, a literal pattern, the model. The **department** axis has exactly one, the nearest anchor, so a department can be pulled IN and never pushed OUT. That leaves a veterinary faculty in Clinical researcher and *Faculty of Sport and Health Sciences* in the healthcare audiences, with no seed able to touch either. A new seed plus model logic.","Us"],
   ["9","Close the bare-qualification bypass","Measured at 10 records. A title that is nothing but a degree, which the machine reads as research rather than as study, is routed into Students by a different rule the new exclusion is not scoped to see. One field on that other rule closes it. Small today, and it reopens every time the dictionary is rebuilt.","Us"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
@@ -392,6 +392,14 @@ box(d, "WHAT CAME OFF THIS LIST", [
  "by estimate. The bill: 2,956 people out of Lecturer, 5,604 out of Students, and "
  "nothing at all out of Healthcare (broad). One item from that reading stays open and is "
  "now item 8; the measurement found a new one, which is now item 2.",
+ "",
+ "**And on 20 November both of the items that had gone to Matthew were decided.** "
+ "Veterinarians are out of the healthcare audiences - every one of those audiences "
+ "is about humans, and the test is the work rather than the subject. Sport and "
+ "exercise science is split on the word: the departments that say *medicine* stay, "
+ "the ones that say *science* do not. Each decision is half built, and both are "
+ "blocked by the same missing mechanism - which is why that mechanism is now item "
+ "8 rather than a note in one audience.",
  "",
  "**Statisticians and economists are settled** — the 2,177 records in no audience stay "
  "out. They were never read title by title, and an audience is something a title earns "

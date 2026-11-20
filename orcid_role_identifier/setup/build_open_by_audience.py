@@ -168,17 +168,20 @@ aud("Clinical / Biomedical Researcher — 109,854 people, 90.0% correct",
 
 aud("Practitioner — 57,351 people, 93.4% correct",
     "The least-read group in the project: reviewed titles cover 38% of its records "
-    "against 75% for researchers. Five items left; two were answered on 19 November.",
+    "against 75% for researchers. Four items left; two were answered on 19 November and "
+    "two more on 20 November.",
  [["**Does a research nurse treat patients?** `research nurse`, `clinical research "
    "nurse`, `research midwife`, `research dietitian`, `nurse scientist`. A real "
    "question and nobody has asked it.", "~286 records", "Us / clinical expert"],
   ["**Is a bare `dr` plus a clinical department enough?** It says the person is "
    "medically qualified and works in a clinical setting, but not what they do. Accepted "
    "as clinical evidence today.", "not measured", "**Marketing**"],
-  ["**Are veterinarians healthcare professionals?** In the healthcare audiences today "
-   "by accident rather than by decision.", "91 people", "**Matthew**"],
-  ["**Is sport and exercise science a healthcare field?** Same situation.",
-   "78 people", "**Matthew**"],
+  ["**A way to exclude a department.** Both calls of 20 November are half-blocked by "
+   "the same gap. The job-title side has three ways to intervene; the department side "
+   "has one, and it can only pull a department IN, never push it out. So a veterinary "
+   "faculty stays in Clinical researcher and *Faculty of Sport and Health Sciences* "
+   "stays in the healthcare audiences, and no configuration can touch either.",
+   "~35 people here, plus the veterinary faculties, uncounted", "Us"],
   ["**Is a psychologist a clinician?** Flagged unsure in the reviewer rules and never "
    "settled.", "not measured", "Marketing"]],
  ["**Answered 19 November, written, not yet built.** `medical physicist` (346 records) "
@@ -196,6 +199,14 @@ aud("Practitioner — 57,351 people, 93.4% correct",
   "against a control median of 0.503%, so the move cost it nothing. 291 people typed "
   "the title and only 170 were in any audience, so it also recruited about 121 who "
   "were nowhere before.",
+  "**Veterinarians: decided NO on 20 November** — every HCP audience is about humans, "
+  "and the test is the work rather than the subject. 161 people carried a veterinary "
+  "job title in Healthcare (broad), 121 of them contactable. The job-title route is "
+  "closed; a veterinary professor still belongs in Lecturer and a veterinary researcher "
+  "in Researcher, neither being an HCP audience.",
+  "**Sport and exercise science: decided 20 November, split on the word** — keep the "
+  "departments that say *medicine*, drop the ones that say *science*. A sports physician "
+  "treats patients; a sport scientist studies performance.",
   "**A caveat rather than a question:** the 93.4% was measured before 19 November, when "
   "every title containing `consultant` left this audience and took about 5,400 people "
   "with it. The people removed included known errors, so the figure is more likely to "

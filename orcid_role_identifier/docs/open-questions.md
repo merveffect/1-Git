@@ -1914,7 +1914,7 @@ is 1,390 people; the 2,684 stays in the seed note as the reasoning of the day it
 was written, and should be read as one of the inflated figures that era
 produced.
 
-### 1.19 Is sport and exercise science a healthcare field? — ASKED 2026-11-10
+### 1.19 Is sport and exercise science a healthcare field? — DECIDED 2026-11-20, SPLIT ON THE WORD, HALF NOT IMPLEMENTABLE
 
 Same reading, same day, and this one splits down the middle of its own
 vocabulary.
@@ -1931,6 +1931,43 @@ The third family names both at once, which is why this needs a line drawn
 rather than a judgement per department. Working answer: **keep the ones that
 say *medicine*, drop the rest** — the work, not the subject, same test as
 1.11. Also a floor, same reason as 1.18.
+
+**DECIDED 2026-11-20. Merve, after putting it to Matthew:** *"yani medicine
+diyeni tut science diyeni birak."* The line is drawn at a WORD rather than per
+department, which is what this section asked for. A sports physician treats
+patients; a sport scientist studies performance.
+
+Matthew's own answer was *"I suppose it could be argued that it is, but again
+not sure if it's something we would particularly need"* — a lean, not a
+decision, and it is recorded as his lean rather than as his call.
+
+**What was written: two anchors in `seeds/discipline_anchors.csv`**, both
+carrying the word *medicine* — `sports medicine` and `sport and exercise
+medicine`. They add nobody by themselves: the ~25 people in those departments
+already read as clinical by resemblance, and the anchors turn that resemblance
+into a stated rule. On the department axis that is the only mechanism there is.
+
+**⭐ AND HALF OF IT IS NOT IMPLEMENTABLE — the same wall as 1.18, on the same
+day.** An anchor can only pull departments IN. Nothing can push one out.
+
+- The ~45 `Faculty of Sport Sciences` and 6 `Physical Education and Sports`
+  people were already outside, so "drop the science ones" needs no action for
+  them and is satisfied.
+- `Faculty of Sport and Health Sciences` — ~35 people, the family Matthew called
+  arguable either way — reads as clinical on the word **health**, and cannot be
+  pushed out. No override, no pattern, no veto exists on this axis.
+
+So two separate decisions taken on 20 November are each half-blocked by one
+missing mechanism, and the same model change would clear both. That is the
+strongest case this project has had for building it: it is no longer one
+audience's problem.
+
+**Three anchors were added and then removed before the build.** `sport and
+exercise science`, `exercise physiology` and `kinesiology` went in on a first
+reading of the decision as a blanket "sport science is in", and came out when
+Merve clarified the word test. Recorded because the first reading was wrong in a
+way worth seeing: it would have brought the ~45 in, which is the opposite of
+what was decided.
 
 ### 1.20 A plant pathologist is a researcher — and that is not the question
 

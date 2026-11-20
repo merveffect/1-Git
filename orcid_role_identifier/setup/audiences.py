@@ -254,13 +254,17 @@ def build(d, F):
       "veterinary word in the title, and the department axis has no override, no "
       "pattern and no veto — the title axis has all three. Closing it is a model "
       "change and is not written.",
-      "**Open — sport and exercise science.** Put to Matthew on 20 November, who "
-      "answered that it could be argued either way and was not sure we needed it. "
-      "That is a lean, not a decision, and the veterinary principle does not settle "
-      "it: sport science IS about humans. The working answer in the project is to "
-      "split on the word — keep the departments that say *medicine*, drop the ones "
-      "that say *science* — because a sports physician treats patients and a sport "
-      "scientist studies performance."])
+      "**Sport and exercise science: decided 20 November, split on the word.** Keep the departments that say *medicine*, drop the ones that say *science* — a sports "
+      "physician treats patients, a sport scientist studies performance. Two "
+      "anchors were written, both carrying the word medicine, and they add nobody "
+      "by themselves: those ~25 people already read as clinical, and the anchors "
+      "turn a resemblance into a stated rule.",
+      "**And the same wall, twice in one day.** An anchor can only pull departments IN; nothing can push one out. The ~45 *Faculty of Sport Sciences* people were "
+      "already outside, so for them the decision needs no action. But *Faculty of "
+      "Sport and Health Sciences* — ~35 people — reads as clinical on the word "
+      "*health* and cannot be removed, exactly as a veterinary faculty cannot. Two "
+      "decisions, one missing mechanism, and the same model change would clear "
+      "both."])
 
     aud("CLINICAL ADMINISTRATOR — 8,398 people, 94.9% correct", [
       "**How it is decided.** A leadership title **and** a human-health department. "
