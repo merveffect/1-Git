@@ -471,6 +471,145 @@ para(d, "This is worth reading twice, because it is the shape of problem we will
 para(d, "**Re-measured on 19 November, and it is not closed.** Taking the hospital path out removed the route this box describes, but 52 people are still in Head of Faculty on a clinical job title - 27 of them on the words *medical director* alone. They arrive through employers that ROR types as education, or whose name reads like a university, rather than through hospitals. 42 of the 52 carry no academic word at all. The audience is parked and not delivered, so nobody can reach them today; the number is here so that the day it ships starts from a known defect rather than a clean slate.")
 
 
+# ============================================================ 8
+h(d, "8.  What we need decided, in one sitting")
+para(d, "Everything still waiting on somebody outside engineering, in the order it "
+        "matters. Nothing here is a request for work - each one is a sentence from the "
+        "people who own the audiences, and every one of them is reversible in one line "
+        "of configuration afterwards.", space_after=8)
+
+h(d, "8.1  The one audience that cannot ship", 2)
+table(d, ["What we need", "Why it is blocked", "What it moves"],
+ [["**What is Head of Faculty FOR?** Who should be in it, which job classes count, and "
+   "whether it opens beyond academia to reach decision makers and budget holders.",
+   "It is the only audience parked rather than delivered. Not because of accuracy - "
+   "because the answer changes what the audience IS, so there is nothing to build "
+   "towards. 83.3% is the lowest of the ten, and the cause is structural: the job title "
+   "is the only evidence it has, so a vague title has nothing to contradict it. 20% of "
+   "it holds nothing but *director*, *head* or *chair*.",
+   "**17,421 today** (universities only). Opening it to research institutes takes it to "
+   "**23,676**; opening it to every employer type takes it to **35,378**. Industry "
+   "medical directors go from 0 to 408 at both of the wider settings. Measured, "
+   "`analyses/53`."]],
+ widths=[2.2, 2.9, 1.7], size=8.5)
+
+h(d, "8.2  Four decisions that change who is in an audience", 2)
+table(d, ["#", "The question", "Where it stands", "Size"],
+ [["1", "**Should a job somebody has LEFT still count?**",
+   "Seven of the ten audiences accept any job in a person's history. A researcher in "
+   "2010 who runs a bakery today is still in Researcher. Head of Faculty, Librarian and "
+   "Students already count current posts only. The thing worth knowing before deciding: "
+   "the job title and employer we hand over are the ones that PUT the person in the "
+   "audience, so for anybody who is in on a past job, both can be years out of date on "
+   "a campaign brief.",
+   "**Not measured.** It is the largest unmeasured question we have, and we would "
+   "measure it before changing anything."],
+  ["2", "**Is `md` on its own enough?**",
+   "50,189 records. A bare `dr` was settled on 20 November - a medical qualification "
+   "beside a clinical department is accepted as clinical evidence. `md` is the same "
+   "shape and nobody has been asked about it.",
+   "50,189 records, resolved entirely by the department beside them."],
+  ["3", "**Four health roles that are regulated in some countries and support roles in "
+   "others.** Mental health support workers, genetic counsellors, counsellors, clinical "
+   "scientists.",
+   "All of them are in Practitioner today, by the machine rather than by a decision. "
+   "`medical physicist` was the fifth and was settled on 20 November - it became a "
+   "clinical researcher.",
+   "326 / 866 / 1,205 records, counsellors being the largest."],
+  ["4", "**The two titles kept out of Librarian.** Archivists, and *information "
+   "specialist*.",
+   "Both excluded by us, for measured reasons: `archivist` as an example word also "
+   "collected archaeologists, glaciologists and clerks, and `information specialist` "
+   "collected every IT job in the data. Either is one row to reverse, as a decision "
+   "rather than a guess.",
+   "**Unmeasured, and the cheapest reach we have.** Librarian is 713 people - see 8.4."]],
+ widths=[0.3, 2.0, 3.1, 1.4], size=8.5)
+
+h(d, "8.3  The question nobody has answered twice, and it decides two items on our list", 2)
+box(d, "DOES ANYBODY ACTUALLY READ `role_detail`?", [
+ "`role_detail` is the drill-down beside each delivered row - Hospital, Academia, "
+ "Industry, Research Institute. It is the difference between *clinical researchers* and "
+ "*clinical researchers in industry* on a brief.",
+ "",
+ "**We asked in November and could not settle it from our own side.** The column was "
+ "deleted once on the understanding that nothing read it, and put straight back the same "
+ "day because a comment in our repository is not evidence of what a consumer does. That "
+ "is recorded as a mistake of ours, not a change of mind.",
+ "",
+ "**If nobody reads it, say so and we delete it** - the model, the seed and three tests, "
+ "and two items come off our list with it. **If somebody does read it**, two things need "
+ "doing and we have decided how, so this is the only input needed: Lecturer has never "
+ "had any values at all, which leaves the largest audience in the project - 426,449 "
+ "people - as the only one nobody can segment; and about 270,000 people are "
+ "structurally blank, because when the public register cannot identify an employer we "
+ "rescue the SCORE from its name and the label keys on the TYPE, which stays unknown.",
+ "",
+ "**One warning that comes with filling them in:** it turns about 270,000 blanks into "
+ "values, and blank-to-value is a change for whoever reads the field.",
+])
+
+h(d, "8.4  Reach we could buy, if it is wanted", 2)
+table(d, ["What", "The finding", "What it would take"],
+ [["**Librarians are a SOURCE gap, not a classification gap.**",
+   "713 people, and the audience is 98.5% correct - every one of the 700 was read. The "
+   "reason it is small is that ORCID is a publishing identifier: you create one to "
+   "attach your name to papers, and librarians largely never do. It is also the only "
+   "audience besides Head of Faculty and Students that counts current posts only.",
+   "A different dataset, if that business matters. Separately, including past library "
+   "posts would grow it - unmeasured, one line."],
+  ["**The holding group - people we deliberately took OUT.**",
+   "Every job title containing *consultant* (about 17,360 records), veterinarians, "
+   "honorary posts, visiting scholars and fellows, and job titles that are nothing but "
+   "a degree all now sit in a group that feeds no audience. None of them is deleted; "
+   "they were kept retrievable by name on purpose.",
+   "**The biggest one is consultants.** In Britain and Ireland a consultant is a "
+   "hospital specialist; almost everywhere else it is a business adviser, and the "
+   "record does not say which. A country condition would recover a real clinical "
+   "population, and it is the single largest group we have set aside."],
+  ["**Psychology and psychiatry.**",
+   "Psychologists were ruled clinical on 20 November. Psychiatry is already in on both "
+   "axes; psychology is in on the job title only, because the subject is classified as "
+   "social and behavioural rather than clinical.",
+   "Being counted now, `analyses/56`. It may be worth proposing as an audience of its "
+   "own."]],
+ widths=[1.7, 3.2, 2.0], size=8.5)
+
+h(d, "8.5  Three things we need that are not decisions", 2)
+bullet(d, "**A clinical expert.** The one outside source this project has asked for and "
+          "does not have. The role library Market Intelligence keeps has no list of "
+          "clinical specialties at all - no cardiologist, no anaesthetist, no midwife - "
+          "and 52 of our 58 clinical example words are absent from it. The survey does "
+          "not reach enough clinicians to settle them either. This is the gap that "
+          "makes healthcare the hardest part of the project, and no amount of our own "
+          "measuring closes it.")
+bullet(d, "**A second reader.** Every accuracy figure in this document is ONE reader - "
+          "the analyst, against the definitions written here. About 30 rows per audience "
+          "read independently is what turns them into figures we would guarantee to "
+          "somebody outside the team. It is a day of somebody's time, not a project.")
+bullet(d, "**The survey data in BigQuery.** Chloe pointed at `Staging_Response`. Today "
+          "the external check is a one-off export from 30 October; in BigQuery it "
+          "becomes a query that re-runs after every change, which is worth more than "
+          "the single number it produced.")
+d.paragraphs[-1].paragraph_format.space_after = Pt(10)
+
+box(d, "AND THREE THINGS TO SAY RATHER THAN ASK", [
+ "**Practitioner's 93.4% is out of date and we are re-reading it.** It was measured "
+ "before every `consultant` title left the audience on 19 November, about 5,400 people, "
+ "and before `medical physicist` left on 20 November. The people removed included known "
+ "errors, so it is more likely to understate than overstate - but it describes a "
+ "population that no longer exists.",
+ "",
+ "**Nine of the ten audiences are being delivered. Head of Faculty is not.** That is a "
+ "decision, not a defect, and 8.1 is what unparks it.",
+ "",
+ "**A job title belongs to exactly one group, and that is a design choice worth "
+ "knowing.** 463,603 records contain the word *professor* and sit outside the Lecturer "
+ "group - `research assistant professor`, `research professor`, `research associate "
+ "professor` - and almost every one of them belongs where it is. It is the largest thing "
+ "the review has turned up that is not a defect, and it is not a question unless "
+ "somebody expects a professor to be in Lecturer by definition.",
+], fill="FBF6EE", accent=AMBER)
+
 # See the note in build_mkt.py: the committed copy is the one Merve pulls.
 for out in (os.path.join(os.path.dirname(SP), "docs", "ORCID-Role-Enrichment-Status-and-Plan.docx"),
             os.path.join(os.path.expanduser("~"), "Downloads", "ORCID-Role-Enrichment-Status-and-Plan.docx")):
