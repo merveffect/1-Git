@@ -3409,6 +3409,53 @@ PASS=79 WARN=1 ERROR=0 SKIP=0, the one warning being the known
 `assert_second_group_rules_do_not_collide` baseline, which moved 247 -> 250 with
 the refreshed vocabulary.
 
+**THE HEADLINE TABLE AND THE REACHABLE COLUMN, closed the same day rather than
+left labelled.** Both come from models query 4 cannot see, so they needed their
+own run - `analyses/55` queries 6 and 6a:
+
+| Measure | Before | After |
+|---|---|---|
+| people with a profession | 787,057 | **783,990** |
+| of those, reachable | 580,462 | **577,722** |
+| different job titles handled | 315,190 | **319,032** |
+| different departments handled | 458,263 | **458,263** |
+
+**The first row went DOWN while ORCID grew, and that is not a regression.** For
+some people Students or Lecturer was the ONLY audience they were in - a bare
+`PhD` at a university is in Students and nothing else - so excluding a title
+does not move them to another audience, it empties them. 8,560 people left an
+audience on 20 November and 3,067 of them lost their profession entirely. The
+rest hold a second role that keeps them named.
+
+**The two halves of the vocabulary moved separately, to the record.**
+`dbt build --select +dim_title_group+` rebuilt `int_title_distinct`, an ANCESTOR
+of dim_title_group, and left `int_department_distinct` untouched - it is neither
+an ancestor nor a descendant, but a sibling feeding `int_employment_scored`. So
+319,032 is a 20 November figure and 458,263 is still the last dictionary build's,
+unchanged by a single record. The document now says which is which, because
+anybody dividing one by the other would otherwise be mixing two dates.
+
+**AND A CHECK THAT PASSED, worth re-running whenever either model changes.**
+`fct_role_audience_summary.identified` equals query 4 on all ten rows, to the
+person. The two tables the status document quotes side by side are the same
+grain and the same population.
+
+**⭐ NINE OF THE TEN REACHABLE RATES FELL BY EXACTLY 0.1 POINTS**, and the
+uniformity is the finding. It is not our change: no decision could reach
+faculty_head, pharmacist or librarian, and all three fell by 0.1 too. It is
+background - the people arriving in ORCID are slightly LESS reachable than the
+base they join, so every audience's reachable rate drifts down a little with each
+build. One build is not a trend, but it is measured once now and the next build
+can confirm or kill it.
+
+**It is also what makes Students readable.** Students fell 0.6 points, so 0.5 of
+it is ours. 3,927 reachable people left an audience that is 64.7% reachable,
+which puts the bare-qualification group at about 70% reachable - MORE contactable
+than the audience average. So the exclusion cost 5,604 people and 3,927 reachable
+ones, where the audience rate alone would have predicted 3,626. A small
+over-cost, real, and invisible without the 0.1-point background to subtract from
+it.
+
 ### 2.23a The residue nobody asked about before the build - FOUND 2026-11-20, ONE ITEM OPEN
 
 **The question that was not asked.** Both teaching patterns are scoped to the

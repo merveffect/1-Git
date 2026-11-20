@@ -518,3 +518,102 @@ where title in ('medical physicist', 'doctor')
 group by decision, title_group, decision_source
 order by decision, records desc
 ;
+
+
+-- ----------------------------------------------------------------------------
+-- 6. THE TWO TABLES THE STATUS DOCUMENT COULD NOT REFRESH FROM QUERY 4.
+--
+--    Section 1 is five headline figures and section 3.1 is the reachable
+--    column, and neither comes from fct_researcher_roles. They were labelled
+--    ONE BUILD BEHIND in the document rather than half-corrected, and this
+--    query is what closes the label.
+--
+--    RESULT 2026-11-20, after the build:
+--
+--      people with a profession      787,057 -> 783,990    -3,067
+--      of those, reachable           580,462 -> 577,722    -2,740
+--      audiences                          10 ->      10
+--      different job titles handled  315,190 -> 319,032    +3,842
+--      different departments handled 458,263 -> 458,263         0
+--
+--    ⭐ THE TWO HALVES OF THE VOCABULARY MOVED SEPARATELY, exactly as the
+--    document now says they can. `dbt build --select +dim_title_group+`
+--    rebuilt int_title_distinct, which is an ANCESTOR of dim_title_group, and
+--    left int_department_distinct alone, which is neither an ancestor nor a
+--    descendant of it - it is a sibling feeding int_employment_scored. So the
+--    title count is a 20 November figure and the department count is still the
+--    one from the last dictionary build, to the record. Anyone dividing one of
+--    these by the other should know which is which.
+--
+--    AND `people with a profession` WENT DOWN while ORCID grew. 3,067 fewer
+--    people have a profession at all, because for some of them Students or
+--    Lecturer was the ONLY audience they were in - a bare `PhD` at a
+--    university is in Students and nothing else - so an exclusion does not
+--    move them, it empties them. That is the honest headline cost of the 20
+--    November decisions and it is smaller than the 8,560 people the two
+--    exclusions removed from their audiences, because most of those people
+--    hold a second role that keeps them named.
+-- ----------------------------------------------------------------------------
+select 'people with a profession' as measure, cast(count(distinct snid) as string) as value
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+where role_label = 'CONFIRMED'
+union all select 'of those, reachable',
+  cast(count(distinct if(is_marketable or is_advertisable
+       or is_legitimate_interest or is_book_author, snid, null)) as string)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+where role_label = 'CONFIRMED'
+union all select 'audiences', cast(count(distinct role_key) as string)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+where role_label = 'CONFIRMED'
+union all select 'different job titles handled', cast(count(*) as string)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_title_distinct`
+union all select 'different departments handled', cast(count(*) as string)
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_dictionary.int_department_distinct`
+order by measure
+;
+
+
+-- 6a. The reachable column, and a CHECK worth more than the column.
+--
+--     RESULT 2026-11-20, after the build:
+--
+--       lecturer          426,449   331,399   77.7%   (was 77.7%)
+--       researcher        344,847   245,569   71.2%   (was 71.3%)
+--       hcp_broad         178,556   132,954   74.5%   (was 74.5%)
+--       hcp_researcher    109,854    81,213   73.9%   (was 74.0%)
+--       students          102,026    66,045   64.7%   (was 65.3%)
+--       hcp_practitioner   57,351    42,818   74.7%   (was 74.7%)
+--       faculty_head       17,421    13,664   78.4%   (was 78.5%)
+--       hcp_administrator   8,398     6,560   78.1%   (was 78.2%)
+--       pharmacist          2,090     1,546   74.0%   (was 74.1%)
+--       librarian             713       391   54.8%   (was 54.9%)
+--
+--     THE CHECK FIRST. `identified` here equals query 4 on all ten rows, to
+--     the person. fct_role_audience_summary and fct_researcher_roles agree, so
+--     the two tables the document quotes side by side are the same grain and
+--     the same population. Worth re-running whenever either model changes.
+--
+--     ⭐ NINE OF THE TEN RATES FELL BY EXACTLY 0.1 POINTS, and that uniformity
+--     is the finding. It is not our change - no decision could touch
+--     faculty_head, pharmacist or librarian, and they fell by 0.1 too. It is
+--     background: the people arriving in ORCID are slightly LESS reachable
+--     than the base they join, so every audience's reachable rate drifts down
+--     a little with each build. One build is not a trend, but it is now
+--     measured once and the next build can confirm or kill it.
+--
+--     AND IT IS WHAT MAKES STUDENTS READABLE. Students fell 0.6 points, so
+--     0.5 of it is ours. 3,927 reachable people left an audience that was
+--     64.7% reachable, which means the bare-qualification group was about
+--     70% reachable - MORE contactable than the audience average. So the
+--     exclusion cost 5,604 people and 3,927 reachable ones, where the
+--     audience rate would have predicted 3,626. A small over-cost, real, and
+--     invisible without the 0.1-point background to subtract.
+select
+    role_key,
+    identified                                          as people,
+    reachable,
+    round(100 * safe_divide(reachable, identified), 1)   as pct
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience_summary`
+where role_label = 'CONFIRMED'
+order by people desc
+;

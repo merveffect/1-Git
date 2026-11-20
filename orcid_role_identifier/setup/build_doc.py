@@ -65,30 +65,32 @@ para(d, "ORCID is where researchers write their own employment history: job titl
 # people counts grew by 3,764. Quoting a people-per-title ratio off this table
 # would divide a live number by a stale one.
 table(d, ["", "Today", "What it means"],
- [["People with a profession", "**787,057**", "We can name a profession for them"],
-  ["Reachable", "**580,462**", "In the CDP and opted in. This is what a campaign can use"],
+ [["People with a profession", "**783,990**", "We can name a profession for them"],
+  ["Reachable", "**577,722**", "In the CDP and opted in. This is what a campaign can use"],
   ["Audiences", "**10**", "Before this project there was one"],
-  ["Different job titles handled", "**315,190**", "The work runs once per title, not once per person"],
+  ["Different job titles handled", "**319,032**", "The work runs once per title, not once per person"],
   ["Different departments handled", "**458,263**", "Same again, for the subject area"]],
  widths=[2.3,1.1,3.3])
-para(d, "**Three quarters of the people we can name are reachable** - 580,462 of 787,057. "
+para(d, "**Three quarters of the people we can name are reachable** - 577,722 of 783,990. "
         "The rest are not in the CDP or have not opted in, and no amount of classification "
         "changes that.")
-para(d, "**Every row in this table is a 19 November count, and the 20 November build "
-        "moved three of them.** It is left as it stands rather than half-corrected: the "
-        "five figures come from one query, the query has not been re-run, and a table "
-        "with two of its rows refreshed would be worse than one that says it is a day "
-        "old. The direction is known - the audience decisions of 20 November took people "
-        "out of three audiences, so row 1 is slightly lower than it says, and row 4 is "
-        "higher because the title vocabulary was rebuilt on the same job.", size=9, color=MUT)
+para(d, "**Counted on the 20 November build, and the first row went DOWN.** 3,067 "
+        "fewer people have a profession at all than a day earlier, even though ORCID "
+        "grew. Worth knowing before anybody reads that as a regression: for some people "
+        "Students or Lecturer was the ONLY audience they were in - a bare *PhD* at a "
+        "university is in Students and nothing else - so excluding a title does not move "
+        "those people to another audience, it empties them. 8,560 people left an "
+        "audience on 20 November and 3,067 of them lost their profession entirely; the "
+        "rest hold a second role that keeps them named.", size=9, color=MUT)
 para(d, "**The first two rows and the last two are not the same age either.** The "
         "people counts read ORCID live. The vocabulary counts are rebuilt deliberately "
-        "rather than continuously, and the two halves of the vocabulary do not even move "
-        "together: the 20 November build rebuilt the job-title dictionary and not the "
-        "department one, because only the first sits upstream of the model that was "
-        "rebuilt. A job title that arrived this week is counted in the people column "
-        "only once the vocabulary is rebuilt. Worth knowing before dividing one by "
-        "the other.", size=9, color=MUT)
+        "rather than continuously, and the two halves of the vocabulary do not even "
+        "move together. **Measured on this build:** the job titles went from 315,190 to "
+        "319,032 and the departments did not move by a single record, because the title "
+        "dictionary sits upstream of the model that was rebuilt and the department one "
+        "does not. So row 4 is a 20 November figure and row 5 is still the one from the "
+        "last dictionary build. Worth knowing before dividing one of them by the "
+        "other.", size=9, color=MUT)
 para(d, "The last two rows are the reason this is affordable. We do the thinking once, "
         "over the vocabulary, and store the answers. Giving every person their profession "
         "after that is an ordinary database join.", space_after=10)
@@ -196,34 +198,42 @@ h(d, "3.1  How much of each audience can actually be reached", 2)
 para(d, "Being in an audience and being contactable are different things. **Reachable** "
         "means the person is in the CDP under any of four legal bases - marketing "
         "opt-in, advertising opt-in, legitimate interest, or book-author consent. "
-        "**This table is ONE BUILD BEHIND section 3, and knowingly so.** Both columns "
-        "were counted on 19 November. Section 3 was re-counted on the 20 November build "
-        "and this was not, because the reachable column needs its own query and that "
-        "query has not been run yet - so the People column here is lower than section 3 "
-        "for the six audiences the 20 November decisions touched, and 5,604 too high for "
-        "Students. It is labelled rather than quietly refreshed, because an earlier "
-        "version of this document carried two counts nine days apart without saying so. "
-        "**Quote section 3 for a size and this table only for a RATE**, which is the "
-        "column that barely moves.", space_after=4)
+        "**Both columns were counted on the 20 November build, on the same population "
+        "as section 3** - the People column here equals section 3 on all ten rows, to "
+        "the person, which is a check worth re-running whenever either model changes. "
+        "An earlier version of this document carried two counts nine days apart.",
+     space_after=4)
 table(d, ["Audience", "People", "Reachable", "Of those"],
- [["**Lecturer**", "427,256", "**332,051**", "77.7%"],
-  ["**Researcher**", "343,716", "**244,942**", "71.3%"],
-  ["**Healthcare (broad)**", "177,645", "**132,373**", "74.5%"],
-  ["**Clinical researcher**", "109,486", "**80,976**", "74.0%"],
-  ["**Students**", "107,091", "**69,972**", "**65.3%**"],
-  ["**Practitioner**", "57,297", "**42,826**", "74.7%"],
-  ["**Head of Faculty**", "17,305", "**13,591**", "78.5%"],
-  ["**Clinical administrator**", "8,377", "**6,548**", "78.2%"],
-  ["**Pharmacist**", "2,083", "**1,543**", "74.1%"],
-  ["**Librarian**", "708", "**389**", "54.9%"]],
+ [["**Lecturer**", "426,449", "**331,399**", "77.7%"],
+  ["**Researcher**", "344,847", "**245,569**", "71.2%"],
+  ["**Healthcare (broad)**", "178,556", "**132,954**", "74.5%"],
+  ["**Clinical researcher**", "109,854", "**81,213**", "73.9%"],
+  ["**Students**", "102,026", "**66,045**", "**64.7%**"],
+  ["**Practitioner**", "57,351", "**42,818**", "74.7%"],
+  ["**Head of Faculty**", "17,421", "**13,664**", "78.4%"],
+  ["**Clinical administrator**", "8,398", "**6,560**", "78.1%"],
+  ["**Pharmacist**", "2,090", "**1,546**", "74.0%"],
+  ["**Librarian**", "713", "**391**", "54.8%"]],
  widths=[1.9, 1.1, 1.2, 0.9], size=9)
 para(d, "**The rows overlap and must not be added up** - one person can be a Lecturer "
         "and a Clinical researcher at once. **Students is the least reachable of the "
-        "ten at 65.3%**, so a campaign gets 69,972 of the 107,091; Librarian is lower "
+        "ten at 64.7%**, so a campaign gets 66,045 of the 102,026; Librarian is lower "
         "still on a much smaller base. Neither is a classification problem - it is "
-        "consent. **Practitioner is reachable for 42,826 people**, down from 46,450 "
+        "consent. **Practitioner is reachable for 42,818 people**, down from 46,450 "
         "before the consultant decision of 19 November - that is where the 5,400 are "
-        "felt in a campaign brief.", space_after=10)
+        "felt in a campaign brief.", space_after=4)
+para(d, "**Nine of the ten rates fell by exactly 0.1 points on this build, and that "
+        "uniformity is the useful part.** It is not any decision of ours - no decision "
+        "could reach Head of Faculty, Pharmacist or Librarian and all three fell by 0.1 "
+        "too. It is background: the people arriving in ORCID are slightly less "
+        "contactable than the base they join, so every rate drifts down a little with "
+        "each build. One build is not a trend, but it is measured now and the next build "
+        "will confirm or kill it. **And it is what makes the tenth row readable.** "
+        "Students fell 0.6 points, so 0.5 of it is ours: 3,927 reachable people left an "
+        "audience that is 64.7% reachable, which means the bare-qualification group was "
+        "about 70% reachable - more contactable than the audience average. The exclusion "
+        "cost 5,604 people and 3,927 reachable ones, where the audience rate alone would "
+        "have predicted 3,626.", size=9, color=MUT, space_after=10)
 
 box(d, "WHY HEALTHCARE IS THE HARDEST PART", [
  "Academic titles are nearly the same everywhere: Professor, Associate Professor, "
