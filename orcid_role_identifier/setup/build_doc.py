@@ -474,9 +474,27 @@ para(d, "**Re-measured on 19 November, and it is not closed.** Taking the hospit
 # ============================================================ 8
 h(d, "8.  What we need decided, in one sitting")
 para(d, "Everything still waiting on somebody outside engineering, in the order it "
-        "matters. Nothing here is a request for work - each one is a sentence from the "
-        "people who own the audiences, and every one of them is reversible in one line "
-        "of configuration afterwards.", space_after=8)
+        "matters. Every decision below is reversible in one line of configuration "
+        "afterwards.", space_after=4)
+box(d, "WHAT TO COME OUT OF THE ROOM WITH", [
+ "**SEVEN DECISIONS, and we cannot take any of them.** What Head of Faculty is for "
+ "(8.1). Whether a job somebody has left still counts (8.2). Whether `md` on its own is "
+ "enough (8.2). Whether the four part-regulated health roles stay in (8.2). Whether "
+ "Librarian's two exclusions come back (8.2). **Whether anybody uses `role_detail`, or "
+ "we delete it (8.3).** And whether anything in the holding group is wanted as an "
+ "audience - consultants above all, which is the largest group we have set aside (8.4).",
+ "",
+ "**THREE OR FOUR ASKS, which are resource rather than definition.** A clinical expert, "
+ "a second reader, and the survey data in BigQuery (8.5) - plus whether we should go "
+ "looking for a librarian data source, since 713 people is a source gap and not a "
+ "classification one (8.4).",
+ "",
+ "**AND FOUR THINGS THAT ARE INFORMATION ONLY** - they need no answer and are here so "
+ "nobody is surprised later: Practitioner's accuracy figure describes a population that "
+ "no longer exists; nine of the ten audiences are delivered and Head of Faculty is not; "
+ "one job title can put somebody in two audiences, deliberately; and the psychology "
+ "count is running.",
+], fill="FBF6EE", accent=AMBER)
 
 h(d, "8.1  The one audience that cannot ship", 2)
 table(d, ["What we need", "Why it is blocked", "What it moves"],
