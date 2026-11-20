@@ -168,12 +168,6 @@ aud("Practitioner — 57,351 people, 93.4% correct",
    "nurse`, `research midwife`, `research dietitian`, `nurse scientist`. A real "
    "question and nobody has asked it.", "~286 records", "Us / clinical expert"],
 
-  ["**A way to exclude a department.** Both calls of 20 November are half-blocked by "
-   "the same gap. The job-title side has three ways to intervene; the department side "
-   "has one, and it can only pull a department IN, never push it out. So a veterinary "
-   "faculty stays in Clinical researcher and *Faculty of Sport and Health Sciences* "
-   "stays in the healthcare audiences, and no configuration can touch either.",
-   "~35 people here, plus the veterinary faculties, uncounted", "Us"],
   ["**Psychology: the field side is not done.** Psychologists were ruled clinical on "
    "20 November, and psychiatry is already in on both axes. But `psychology` is "
    "classified as a social and behavioural subject rather than a clinical one, and this "
@@ -204,6 +198,13 @@ aud("Practitioner — 57,351 people, 93.4% correct",
   "**Sport and exercise science: decided 20 November, split on the word** — keep the "
   "departments that say *medicine*, drop the ones that say *science*. A sports physician "
   "treats patients; a sport scientist studies performance.",
+  "**And the department half of both calls was dropped, deliberately.** A professor in a "
+  "veterinary faculty stays in Clinical researcher, and *Faculty of Sport and Health "
+  "Sciences* stays in the healthcare audiences. The title is always the priority, and a "
+  "rule is not worth writing for 35 people. It is also the project's own architecture "
+  "said out loud — the title decides and the department corroborates, the same principle "
+  "that retired the field-only route on 4 November when it was admitting 6,115 people "
+  "with no clinical job title at all.",
   "**A caveat rather than a question:** the 93.4% was measured before 19 November, when "
   "every title containing `consultant` left this audience and took about 5,400 people "
   "with it. The people removed included known errors, so the figure is more likely to "
