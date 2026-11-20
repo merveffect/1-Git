@@ -602,12 +602,13 @@ box(d, "AND THREE THINGS TO SAY RATHER THAN ASK", [
  "**Nine of the ten audiences are being delivered. Head of Faculty is not.** That is a "
  "decision, not a defect, and 8.1 is what unparks it.",
  "",
- "**A job title belongs to exactly one group, and that is a design choice worth "
- "knowing.** 463,603 records contain the word *professor* and sit outside the Lecturer "
- "group - `research assistant professor`, `research professor`, `research associate "
- "professor` - and almost every one of them belongs where it is. It is the largest thing "
- "the review has turned up that is not a defect, and it is not a question unless "
- "somebody expects a professor to be in Lecturer by definition.",
+ "**A job title that names two jobs is given BOTH, and that is already built.** A "
+ "`research professor` is in Researcher and in Lecturer; a `professor and dean` is in "
+ "Lecturer and in Head of Faculty; a `doctoral researcher` is in Researcher and in "
+ "Students. Five rules do this, each one a literal word match rather than a guess, and "
+ "they are what the standing warning on every build is counting - 250 job titles today. "
+ "Worth saying out loud because the obvious assumption is that a title lands in one "
+ "place and has to be argued out of the others.",
 ], fill="FBF6EE", accent=AMBER)
 
 # See the note in build_mkt.py: the committed copy is the one Merve pulls.

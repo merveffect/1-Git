@@ -292,7 +292,31 @@ department confirms them; otherwise they stay Probable. The question is
 whether that is acceptable or whether a title carrying no occupational
 information should be excluded outright. *Source: analyses/22 query 2.*
 
-### 1.10 Should a job title be allowed in more than one group?
+### 1.10 Should a job title be allowed in more than one group? — ANSWERED YES AND BUILT; the text below is the question as it was asked on 2026-10-20
+
+**SUPERSEDED, and flagged 2026-11-20 because it was nearly quoted in a meeting as
+current.** A second group was built: `seeds/title_group_second.csv` carries five
+rules, `int_employment_scored` tests BOTH `title_group` and `title_group_2`
+against every audience's list, and `assert_second_group_rules_do_not_collide` -
+the warning that fires on every single build, 250 titles today - is this
+mechanism. So a `research professor` is in Researcher AND Lecturer, a `professor
+and dean` is in Lecturer AND Head of Faculty, and a `doctoral researcher` is in
+Researcher AND Students.
+
+Merve caught it: *"bu ne demek burdan emin misin cunku biz onceden eger adinda
+researcher ve lecturer gecen birini iki gruba da atama islemi yapmistik sanki
+diye hatirliyorum."* She was right and the status document had the opposite
+written in it, in a section built for a meeting. The 463,603 figure below is a
+20 October count taken BEFORE the second group existed, and it is exactly the
+population the second group was built to serve - so quoting it as evidence that
+titles sit in one group was quoting the problem as if it were the design.
+
+**The rule for reading this file from now on: a section headed with a question
+and no outcome is a question as it was ASKED, not as it stands.** Part 2 is
+where outcomes live. This one had no outcome line and nothing pointed from it to
+the build.
+
+
 
 This is new on 2026-10-20 and it is the largest thing the review has turned
 up that is not a defect.
