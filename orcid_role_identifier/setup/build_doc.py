@@ -23,6 +23,12 @@ r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
 para(d, "Working document  ·  updated 25 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHERE THIS STANDS", [
+ "**THE PIPELINE IS BUILT. WHAT IS LEFT IS VALIDATION.** Nothing in the classification "
+ "is waiting on engineering any more - the ten audiences, the scoring, the consent "
+ "filtering and the delivered contract are all finished and running. The remaining work "
+ "is reading the output and taking out of it everything that cannot be true. Section 7 "
+ "says how, and that is the only thing standing between this and delivery.",
+ "",
  "**All ten audiences are built, and all ten have a measured accuracy.** Every one was "
  "read by hand - 400 people per audience, one record at a time, marked correct, wrong "
  "or not sure. Seven are at 93% or better and the two largest are at 99%. Nothing in "
@@ -368,6 +374,32 @@ para(d, "It is also repeatable. The comparison is a query, so it re-runs after e
 audiences.build(d, F)
 
 # ============================================================ 7
+box(d, "WHAT VALIDATION MEANS HERE, BECAUSE IT IS NOT MORE CLASSIFYING", [
+ "**The remaining work removes matches rather than adding them, and it is a judgement "
+ "rather than a model.** The machine has done what it can. What is left is the set of "
+ "things that are impossible rather than merely unlikely, and a person has to say which "
+ "those are. Accuracy is what this project is judged on - somebody who is not a "
+ "clinician must not be in a healthcare audience - so where coverage and correctness "
+ "pull against each other, correctness wins and the match is deleted.",
+ "",
+ "**Two checks are being run, and neither of them looks at the job title again.** The "
+ "first reads what the CDP already knows about the people we matched and asks whether it "
+ "agrees. The second looks for one person appearing in two audiences that cannot both be "
+ "true - a Head of Faculty who is also in Students is about 70 people today, and not one "
+ "of them can be both.",
+ "",
+ "**The second check has to be written carefully, because holding several roles is "
+ "correct here and is built on purpose.** A *research professor* is in Researcher and in "
+ "Lecturer; a *doctoral researcher* is in Researcher and in Students. Those are right. "
+ "So the rule is not \u201cappears twice\u201d - it is a named list of pairs that "
+ "contradict each other, written one pair at a time.",
+ "",
+ "**What it costs: the delivered population falls slightly, not steeply.** These are "
+ "contradictions in the tens and low hundreds against audiences in the hundreds of "
+ "thousands. The figures in sections 1 and 3 are the pre-validation counts and will be "
+ "restated once the eliminations are in.",
+], fill="F2F6F5", accent=TEAL)
+
 h(d, "7.  What happens next")
 table(d, ["#", "What", "Why now", "Who"],
  [["1","**Re-read Practitioner**","Its 93.4% was measured before two deliberate changes: every `consultant` title left on 19 November, about 5,400 people, and `medical physicist` left on 20 November. The audience it describes no longer exists. It is also the least-read group in the project - reviewed titles cover 38% of its records against 75% for researchers - so this is the one accuracy figure that should not be quoted without its date.","Us"],
@@ -477,39 +509,53 @@ para(d, "Everything still waiting on somebody outside engineering, in the order 
         "matters. Every decision below is reversible in one line of configuration "
         "afterwards.", space_after=4)
 box(d, "WHAT TO COME OUT OF THE ROOM WITH", [
- "**SEVEN DECISIONS, and we cannot take any of them.** What Head of Faculty is for "
- "(8.1). Whether a job somebody has left still counts (8.2). Whether `md` on its own is "
- "enough (8.2). Whether the four part-regulated health roles stay in (8.2). Whether "
- "Librarian's two exclusions come back (8.2). **Whether anybody uses `role_detail`, or "
- "we delete it (8.3).** And whether anything in the holding group is wanted as an "
- "audience - consultants above all, which is the largest group we have set aside (8.4).",
+ "**FIRST, THE POSITION. The pipeline is finished and nothing here is waiting on "
+ "engineering.** What remains on our side is validation - deleting the matches that "
+ "cannot be true - and it takes the delivered figures down slightly rather than steeply. "
+ "Section 7 says what it consists of.",
  "",
- "**THREE OR FOUR ASKS, which are resource rather than definition.** A clinical expert, "
- "a second reader, and the survey data in BigQuery (8.5) - plus whether we should go "
- "looking for a librarian data source, since 713 people is a source gap and not a "
- "classification one (8.4).",
+ "**SIX DECISIONS, and we cannot take any of them.** Whether a job somebody has left "
+ "still counts (8.2). Whether `md` on its own is enough (8.2). Whether the four "
+ "part-regulated health roles stay in (8.2). Whether Librarian's two exclusions come "
+ "back (8.2). **Whether anybody uses `role_detail`, or we delete it (8.3).** And whether "
+ "anything in the holding group is wanted as an audience - consultants above all, which "
+ "is the largest group we have set aside (8.4).",
+ "",
+ "**ONE SCOPE, on an audience already decided.** Head of Faculty is being widened into a "
+ "decision-maker audience rather than repaired (8.1). The decision is taken; what we "
+ "need is which job classes and which industries count.",
+ "",
+ "**TWO ASKS, which are resource rather than definition** - a second reader and the "
+ "survey data in BigQuery (8.5) - plus whether we should go looking for a librarian data "
+ "source, since 713 people is a source gap and not a classification one (8.4). **The "
+ "clinical-expert ask has come off this list:** Springer Medicine is the route, and 8.5 "
+ "says how.",
  "",
  "**AND FOUR THINGS THAT ARE INFORMATION ONLY** - they need no answer and are here so "
  "nobody is surprised later: Practitioner's accuracy figure describes a population that "
- "no longer exists; nine of the ten audiences are delivered and Head of Faculty is not; "
- "one job title can put somebody in two audiences, deliberately; and the psychology "
- "count is running.",
+ "no longer exists; one job title can put somebody in two audiences, deliberately; every "
+ "figure in this document counts the people we DELIVER and there is a larger number "
+ "upstream that is never delivered; and the psychology count is running.",
 ], fill="FBF6EE", accent=AMBER)
 
-h(d, "8.1  The one audience that cannot ship", 2)
-table(d, ["What we need", "Why it is blocked", "What it moves"],
- [["**What is Head of Faculty FOR?** Who should be in it, which job classes count, and "
-   "whether it opens beyond academia to reach decision makers and budget holders.",
-   "It is the only audience parked rather than delivered. Not because of accuracy - "
-   "because the answer changes what the audience IS, so there is nothing to build "
-   "towards. 83.3% is the lowest of the ten, and the cause is structural: the job title "
-   "is the only evidence it has, so a vague title has nothing to contradict it. 20% of "
-   "it holds nothing but *director*, *head* or *chair*.",
-   "**17,421 today** (universities only). Opening it to research institutes takes it to "
-   "**23,676**; opening it to every employer type takes it to **35,378**. Industry "
-   "medical directors go from 0 to 408 at both of the wider settings. Measured, "
-   "`analyses/53`."]],
- widths=[2.2, 2.9, 1.7], size=8.5)
+h(d, "8.1  Head of Faculty is being replaced by a decision-maker audience", 2)
+para(d, "**This is no longer an open question and is here as a decision already taken.** "
+        "Head of Faculty was parked rather than delivered because the job title was its "
+        "only evidence and a vague one had nothing to contradict it - 83.3%, the lowest "
+        "of the ten, with 20% of the audience holding nothing but *director*, *head* or "
+        "*chair*. The answer agreed is not to repair it but to widen what it is for: a "
+        "**decision-maker** audience reaching budget holders, opinion leaders and "
+        "purchase influencers in companies and other industries as well as in "
+        "universities.")
+table(d, ["What was measured", "What it gives", "What is still needed from you"],
+ [["The audience at three employer settings, `analyses/53`.",
+   "**17,421** as universities only, which is what exists today. **23,676** opening it "
+   "to research institutes. **35,378** opening it to every employer type - and industry "
+   "medical directors go from 0 to 408 at both of the wider settings.",
+   "**The scope, not the decision.** Which job classes count as a decision maker, and "
+   "which industries are wanted. The widest setting is measured and buildable; what we "
+   "cannot choose for you is where inside that range the audience should sit."]],
+ widths=[1.6, 3.1, 2.1], size=8.5)
 
 h(d, "8.2  Four decisions that change who is in an audience", 2)
 table(d, ["#", "The question", "Where it stands", "Size"],
@@ -593,13 +639,17 @@ table(d, ["What", "The finding", "What it would take"],
  widths=[1.7, 3.2, 2.0], size=8.5)
 
 h(d, "8.5  Three things we need that are not decisions", 2)
-bullet(d, "**A clinical expert.** The one outside source this project has asked for and "
-          "does not have. The role library Market Intelligence keeps has no list of "
-          "clinical specialties at all - no cardiologist, no anaesthetist, no midwife - "
-          "and 52 of our 58 clinical example words are absent from it. The survey does "
-          "not reach enough clinicians to settle them either. This is the gap that "
-          "makes healthcare the hardest part of the project, and no amount of our own "
-          "measuring closes it.")
+bullet(d, "**A clinical expert - and this one now has a route.** It is the one outside "
+          "source the project has asked for and never had: the role library Market "
+          "Intelligence keeps has no list of clinical specialties at all - no "
+          "cardiologist, no anaesthetist, no midwife - and 52 of our 58 clinical example "
+          "words are absent from it, while the survey does not reach enough clinicians "
+          "to settle them either. **The route agreed is Springer Medicine.** The "
+          "healthcare audiences go to Bernadeta, who checks them against the coverage in "
+          "their own data and returns an analysis, and that analysis is what cleans the "
+          "weakest group in the project. **Nothing is needed from you except awareness "
+          "that this is the plan** - and if there is a governance view on moving the "
+          "data, we would rather hear it before it moves than after.")
 bullet(d, "**A second reader.** Every accuracy figure in this document is ONE reader - "
           "the analyst, against the definitions written here. About 30 rows per audience "
           "read independently is what turns them into figures we would guarantee to "
