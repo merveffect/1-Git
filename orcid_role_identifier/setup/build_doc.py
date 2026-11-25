@@ -20,7 +20,7 @@ r.font.color.rgb=TEAL; r.font.name=SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
-para(d, "Working document  ·  updated 20 November 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "Working document  ·  updated 25 November 2026  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHERE THIS STANDS", [
  "**All ten audiences are built, and all ten have a measured accuracy.** Every one was "
@@ -238,9 +238,9 @@ box(d, "WHY HEALTHCARE IS THE HARDEST PART", [
  "Lecturer. Clinical titles are not. **Resident, Registrar, Facharzt, Interno** and "
  "**Jefe de Servicio** can all mean a doctor in training, and they share no common word.",
  "",
- "Real example: before October we had no example word for anaesthetists, so 2,765 of "
- "them were matched to **neurosurgeon**. And 2,684 veterinarians were matched to "
- "**dentist**, because dentist was the closest word we had given the machine.",
+ "Real example: before October we had no example word for anaesthetists, so they were "
+ "matched to **neurosurgeon**. And veterinarians were matched to **dentist**, because "
+ "dentist was the closest word we had given the machine.",
  "",
  "Both are fixed. It is here because it explains why the healthcare audiences sit at "
  "90-95% while the academic ones sit at 99%, and why a clinical expert is still the one "
@@ -610,7 +610,7 @@ bullet(d, "**The survey data in BigQuery.** Chloe pointed at `Staging_Response`.
           "the single number it produced.")
 d.paragraphs[-1].paragraph_format.space_after = Pt(10)
 
-box(d, "AND THREE THINGS TO SAY RATHER THAN ASK", [
+box(d, "AND FOUR THINGS TO SAY RATHER THAN ASK", [
  "**Practitioner's 93.4% is out of date and we are re-reading it.** It was measured "
  "before every `consultant` title left the audience on 19 November, about 5,400 people, "
  "and before `medical physicist` left on 20 November. The people removed included known "
@@ -619,6 +619,18 @@ box(d, "AND THREE THINGS TO SAY RATHER THAN ASK", [
  "",
  "**Nine of the ten audiences are being delivered. Head of Faculty is not.** That is a "
  "decision, not a defect, and 8.1 is what unparks it.",
+ "",
+ "**Every figure in this document counts the people we DELIVER, and there is a bigger "
+ "number in the warehouse that does not.** The scoring table keeps two confidence "
+ "tiers, CONFIRMED and PROBABLE, so that we can see what sits just below each "
+ "threshold. Only CONFIRMED is ever delivered. Read one table upstream of delivery and "
+ "Head of Faculty looks like 36,000 people rather than 17,421 - which is exactly what "
+ "happened on 24 November when the roles were checked against Braze from the other "
+ "side. Nothing is wrong: the gap IS the rule that holds that audience together, "
+ "because an employer the public register cannot identify scores zero and lands in "
+ "PROBABLE. The delivered table is `fct_braze_contact_roles` and it applies two "
+ "filters, the confidence tier and a consent basis. **If a figure for one of these "
+ "audiences does not match this document, that is the first thing to check.**",
  "",
  "**A job title that names two jobs is given BOTH, and that is already built.** A "
  "`research professor` is in Researcher and in Lecturer; a `professor and dean` is in "
