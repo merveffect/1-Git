@@ -35,6 +35,64 @@ vars:
   target_project: 'dat-analytics-eng-ec869189'
   public_visibility_only: true
 
+  # *** RECENCY WINDOW - marketing, 2026-11-25: "en guncel unvanlarin
+  # alinmasi istendi". A job that ENDED more than this many months ago does
+  # not give anybody a role. A job with no end date is ongoing and always
+  # counts; a record with no dates at all counts, because there is nothing
+  # to judge it by. Set to null to switch the rule off entirely.
+  #
+  # MEASURED FIRST, and the number is large enough that it was taken back
+  # to marketing before it shipped. Of 1,803,198 employment records:
+  # 133,800 carry no dates, 811,058 are open-ended, and 858,340 have an end
+  # date. At six months this removes 808,450 records - 44.83% of every
+  # employment record in the project.
+  #
+  # THE WINDOW IS NEARLY BINARY, which is the finding nobody expected. Only
+  # 49,890 of the 858,340 ended records - 5.8% - ended inside six months,
+  # so the window saves 2.8% of all records. In this data "six months" and
+  # "six years" are almost the same rule, because ORCID end dates are
+  # overwhelmingly old: 498,391 ended records (58%) are more than five
+  # years old. Cumulative records removed by window: 6m 808,450 /
+  # 1y 777,169 / 2y 706,229 / 3y 635,530 / 5y 498,391 / 10y 258,304.
+  #
+  # WHAT IT COSTS PER AUDIENCE at six months, counted exactly by joining
+  # fct_researcher_roles back to stg_role_records (unmatched joins 175 at
+  # worst, 0.14%):
+  #
+  #   hcp_researcher    -43,988 of 109,854   40.0%
+  #   hcp_broad         -58,324 of 178,556   32.7%
+  #   researcher       -110,561 of 344,847   32.1%
+  #   pharmacist           -661 of   2,090   31.6%
+  #   hcp_practitioner  -13,923 of  57,351   24.3%
+  #   hcp_administrator  -1,491 of   8,398   17.8%
+  #   lecturer          -39,126 of 426,449    9.2%
+  #   students / librarian / faculty_head         0  (current_only already)
+  #
+  # THE GRADIENT IS CONTRACT TYPE, NOT STALE DATA. Research posts are
+  # fixed-term - postdocs, fixed-term researchers, project positions - and
+  # carry an end date; professorships are open-ended and do not. That is
+  # why lecturer loses 9.2% and researcher loses 32.1%. A postdoc whose
+  # contract ended eight months ago is almost certainly still a researcher;
+  # the end date says the contract ended, not that the profession did. At
+  # three years the rule still removes 79% of what six months removes
+  # (635,530 against 808,450), which is the trade marketing was shown.
+  #
+  # ONE PROPERTY WORTH KNOWING: the undated exemption penalises complete
+  # records. Somebody who wrote "Professor, 2005-2015" is removed; somebody
+  # who wrote "Professor" with no dates is kept, even if that post ended in
+  # 1995. The filter is strictest on the best-maintained profiles.
+  #
+  # AND IT MAKES THE AUDIENCE TIME-DEPENDENT. The window is measured from
+  # CURRENT_DATE() at build time, so people leave an audience as time
+  # passes with no change in the data at all. That is what "most current"
+  # asks for, but it is new behaviour for whoever reads the contract.
+  #
+  # current_only stays as it is for faculty_head, librarian and students -
+  # Merve, 2026-11-25: the stricter rule wins per audience, because this
+  # window is looser than `end_date is null` and did not arrive to
+  # loosen three audiences marketing had already signed off.
+  recency_months: 6
+
   tier_a_min_frequency: 50
   tier_b_min_frequency: 3
 

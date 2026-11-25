@@ -53,6 +53,11 @@ def current_only_predicate(col='is_current'):
     if not ks: return 'TRUE'
     return f"(role_key NOT IN ({sql_in_list(ks)}) OR {col})"
 
+def recency_predicate(col='end_date'):
+    m = var('recency_months', None)
+    if m is None: return 'TRUE'
+    return f"({col} IS NULL OR {col} >= DATE_SUB(CURRENT_DATE(), INTERVAL {m} MONTH))"
+
 def role_flag_columns(qualified_labels=('CONFIRMED', 'PROBABLE')):
     out = []
     for k in role_keys():
@@ -101,6 +106,7 @@ ctx = dict(config=lambda **k: '', ref=lambda n: f'`p.d.{n}`', source=lambda a, b
            role_match_mode=lambda k: roles[k].get('match', 'title_required'),
            composite_score_expr=composite_score_expr, role_label_expr=role_label_expr,
            current_only_predicate=current_only_predicate,
+           recency_predicate=recency_predicate,
            parent_rollup_union=parent_rollup_union, roles_with_parent=roles_with_parent,
            role_flag_columns=role_flag_columns, consent_predicate=consent_predicate,
            contract_array_order=contract_array_order,

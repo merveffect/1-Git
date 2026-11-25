@@ -73,6 +73,41 @@
 
 
 {#-
+    Drops employment records whose post ended longer ago than
+    vars.recency_months. Open-ended and undated records always survive -
+    there is nothing in them to judge. Used in a WHERE clause, and it
+    applies to every role: unlike current_only_predicate it does not
+    switch on role_key.
+
+    WHERE THIS GOES MATTERS, and it is not interchangeable with
+    current_only_predicate's position. int_employment_scored ends with
+
+        qualify row_number() over (partition by snid, role_key
+                                   order by is_current desc, recency_rank asc) = 1
+
+    and recency_rank (stg_role_records) orders by start_date BEFORE
+    end_date. So a post that ran 2010-2012 outranks one that ran
+    2005-2024, and the record this model keeps is not necessarily the one
+    that ended most recently. Filter after the qualify and a person is
+    dropped because the kept record is old, while another qualifying post
+    of theirs ended last month. Filter before it - in the `records` CTE -
+    and the qualify chooses from records that already passed. The measured
+    per-audience costs in dbt_project.yml assume the early position.
+
+    Pass null for recency_months to disable the rule.
+-#}
+{% macro recency_predicate(end_date_col='end_date') %}
+    {%- set months = var('recency_months', none) -%}
+    {%- if months is none -%}
+        TRUE
+    {%- else -%}
+        ({{ end_date_col }} IS NULL
+         OR {{ end_date_col }} >= DATE_SUB(CURRENT_DATE(), INTERVAL {{ months }} MONTH))
+    {%- endif -%}
+{% endmacro %}
+
+
+{#-
     Parent roll-up rows.
     Example: pharmacist -> the same person is also written as
     hcp / PRACTITIONER. Relationships come from roles.*.parent.

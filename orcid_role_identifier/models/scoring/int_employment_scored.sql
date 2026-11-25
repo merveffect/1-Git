@@ -27,7 +27,24 @@
 */
 
 with records as (
+    /*
+        ⭐ THE RECENCY WINDOW IS APPLIED HERE, AT THE FRONT, AND THE
+        POSITION IS LOAD-BEARING. See the macro's own comment: the qualify
+        at the bottom of this model orders by recency_rank, which sorts on
+        start_date before end_date, so the record it keeps is not reliably
+        the one that ended most recently. Filtering here means the qualify
+        only ever chooses between records that already passed the window.
+
+        It is in the `records` CTE rather than in per_role because the
+        window is a statement about which employment records exist for
+        scoring, not about which role they support - and because the
+        dictionary models sit UPSTREAM of this one, so nothing here
+        shrinks the title or department vocabulary. 319,032 titles and
+        every override, pattern and embedding are untouched; what changes
+        is only which record may give a person a role.
+    */
     select * from {{ ref('stg_role_records') }}
+    where {{ recency_predicate('end_date') }}
 ),
 
 -- title -> position group
@@ -264,6 +281,9 @@ select
     org_canonical_name  as evidence_org_canonical,
     country_code,
     is_current,
+    -- carried out of staging so the recency window is testable on this
+    -- model's own output rather than only in the WHERE that produced it
+    end_date,
     source_key,
     source_last_updated,
     recency_rank
