@@ -20,7 +20,7 @@ r.font.color.rgb=TEAL; r.font.name=SANS
 p = d.add_paragraph(); p.paragraph_format.space_after = Pt(4)
 r = p.add_run("Where we are, and what to do next"); r.bold=True
 r.font.size=Pt(22); r.font.color.rgb=INK; r.font.name=SANS
-para(d, "Working document  ·  updated 26 November 2026  ·  Analytics Engineering, Researcher 360",
+para(d, "Working document  ·  updated 26 November 2026 (second build)  ·  Analytics Engineering, Researcher 360",
      size=9.5, color=MUT, space_after=10)
 box(d, "WHERE THIS STANDS", [
  "**ONE RULE ARRIVED LATE AND IS THE LARGEST CHANGE THIS PROJECT HAS MADE.** On 25 "
@@ -77,13 +77,13 @@ para(d, "ORCID is where researchers write their own employment history: job titl
 # people counts grew by 3,764. Quoting a people-per-title ratio off this table
 # would divide a live number by a stale one.
 table(d, ["", "Today", "What it means"],
- [["People with a profession", "**731,584**", "We can name a profession for them"],
-  ["Reachable", "**542,838**", "In the CDP and opted in. This is what a campaign can use"],
+ [["People with a profession", "**732,872**", "We can name a profession for them"],
+  ["Reachable", "**543,241**", "In the CDP and opted in. This is what a campaign can use"],
   ["Audiences", "**10**", "Before this project there was one"],
-  ["Different job titles handled", "**319,032**", "The work runs once per title, not once per person"],
-  ["Different departments handled", "**463,345**", "Same again, for the subject area"]],
+  ["Different job titles handled", "**321,483**", "The work runs once per title, not once per person"],
+  ["Different departments handled", "**466,540**", "Same again, for the subject area"]],
  widths=[2.3,1.1,3.3])
-para(d, "**Three quarters of the people we can name are reachable** - 542,838 of 731,584. "
+para(d, "**Three quarters of the people we can name are reachable** - 543,241 of 732,872. "
         "The rest are not in the CDP or have not opted in, and no amount of classification "
         "changes that.")
 para(d, "**Counted on the 26 November build, which applied one rule and nothing else: "
@@ -98,14 +98,21 @@ para(d, "**The audiences fell by 9 to 40 per cent, and this table fell by 6.7.**
         "and only those who held a single ageing role are emptied. Lecturer is the "
         "largest audience and lost the least, 8.6%, which is what carries the "
         "headline.", size=9, color=MUT)
-para(d, "**And row 4 did not move by a single title.** 319,032 before the rule and "
-        "319,032 after it, which is the proof that none of the dictionary work was "
-        "spent: every one of those titles, 608 human decisions, 35 patterns and every "
-        "embedding are untouched. The rule filters employment records downstream of the "
-        "vocabulary - it changes which record may give a person a role, never what a "
-        "title means. Row 5 rose by 5,082, which only a rebuild of the department "
-        "dictionary explains and this build did not perform; that is being checked.",
-     size=9, color=MUT)
+para(d, "**The recency rule cost nothing from the dictionary, and that was checked "
+        "rather than assumed.** On the build that applied it alone, row 4 read 319,032 "
+        "before and 319,032 after - every title, 608 human decisions, 35 patterns and "
+        "every embedding untouched, because the rule filters employment records "
+        "downstream of the vocabulary. It changes which record may give a person a "
+        "role, never what a title means.", size=9, color=MUT)
+para(d, "**A SECOND BUILD ON THE SAME DAY REBUILT THE DICTIONARY, and that is why "
+        "this table went UP while two rules were taking people out.** It carried three "
+        "decisions from 8.0, four seed changes from 23 November that had never been "
+        "built, and a vocabulary rebuild that added 2,451 job titles and 3,195 "
+        "departments. Those new titles classify people who had nobody to be, so every "
+        "audience gained more than the rules removed. **Nothing in this build is "
+        "attributable to one change** - that is the cost of batching, it was known "
+        "before it ran, and the figures below are simply where the project stands "
+        "rather than the price of anything.", size=9, color=MUT)
 para(d, "**The first two rows and the last two are not the same age.** The people "
         "counts read ORCID live. The vocabulary counts are rebuilt deliberately rather "
         "than continuously, so rows 4 and 5 describe the last dictionary build and not "
@@ -187,18 +194,18 @@ para(d, "Every figure here is a people figure, counted directly. *Right, of the 
         "not settled or a record that does not say enough to judge. It is never counted "
         "as correct.")
 table(d, ["Audience", "People", "Right, of the decided", "Verdict"],
- [["**Lecturer**", "389,779", "**98.7% \u00b1 1.1**", "Solid. -8.6% on 26 November"],
-  ["**Researcher**", "235,916", "**99.0% \u00b1 1.0**", "Solid. **-31.6%** on 26 November"],
-  ["Healthcare (broad)", "124,618", "90.6% \u00b1 3.0", "**-30.2%** on 26 November"],
-  ["**Students**", "102,970", "**98.7% \u00b1 1.3**", "Solid. Untouched by the recency rule"],
-  ["Clinical researcher", "66,885", "90.0% \u00b1 3.1",
-   "**-39.1%** on 26 November, the largest fall of the ten"],
-  ["Practitioner", "43,869", "93.4% \u00b1 2.6",
-   "**-23.5%.** Figure also predates 19 November - needs re-reading"],
-  ["Head of faculty", "17,496", "83.3% \u00b1 4.4", "**Being replaced** - see 8.1. Untouched"],
-  ["Clinical administrator", "7,075", "94.9% \u00b1 2.2", "-15.8% on 26 November"],
-  ["Pharmacist", "1,437", "95.7% \u00b1 1.9", "**-31.2%** on 26 November"],
-  ["Librarian", "714", "98.5%", "Solid. Untouched by the rule"]],
+ [["**Lecturer**", "390,405", "**98.7% \u00b1 1.1**", "Solid. -8.5% since 20 November"],
+  ["**Researcher**", "236,370", "**99.0% \u00b1 1.0**", "Solid. **-31.5%** since 20 November"],
+  ["Healthcare (broad)", "125,121", "90.6% \u00b1 3.0", "**-29.9%** since 20 November"],
+  ["**Students**", "102,857", "**98.7% \u00b1 1.3**", "Solid. The recency rule could not reach it"],
+  ["Clinical researcher", "67,094", "90.0% \u00b1 3.1",
+   "**-38.9%** since 20 November, the largest fall of the ten"],
+  ["Practitioner", "44,102", "93.4% \u00b1 2.6",
+   "**-23.1%.** Figure also predates 19 November - needs re-reading"],
+  ["Head of faculty", "17,566", "83.3% \u00b1 4.4", "**Being replaced** - see 8.1"],
+  ["Clinical administrator", "7,101", "94.9% \u00b1 2.2", "-15.4% since 20 November"],
+  ["Pharmacist", "1,440", "95.7% \u00b1 1.9", "**-31.1%** since 20 November"],
+  ["Librarian", "717", "98.5%", "Solid. The recency rule could not reach it"]],
  widths=[1.6,0.85,1.3,2.85], size=8.8)
 para(d, "**Read the two number columns as different dates, because they are.** The "
         "People column is the 26 November build. **Not one accuracy figure beside it "
@@ -229,20 +236,20 @@ para(d, "Being in an audience and being contactable are different things. **Reac
         "An earlier version of this document carried two counts nine days apart.",
      space_after=4)
 table(d, ["Audience", "People", "Reachable", "Of those"],
- [["**Lecturer**", "389,779", "**305,759**", "78.4%"],
-  ["**Researcher**", "235,916", "**166,658**", "70.6%"],
-  ["**Healthcare (broad)**", "124,618", "**93,070**", "74.7%"],
-  ["**Students**", "102,970", "**67,092**", "**65.2%**"],
-  ["**Clinical researcher**", "66,885", "**49,404**", "73.9%"],
-  ["**Practitioner**", "43,869", "**32,968**", "75.2%"],
-  ["**Head of Faculty**", "17,496", "**13,740**", "78.5%"],
-  ["**Clinical administrator**", "7,075", "**5,512**", "77.9%"],
-  ["**Pharmacist**", "1,437", "**1,069**", "74.4%"],
-  ["**Librarian**", "714", "**391**", "54.8%"]],
+ [["**Lecturer**", "390,405", "**306,044**", "78.4%"],
+  ["**Researcher**", "236,370", "**166,814**", "70.6%"],
+  ["**Healthcare (broad)**", "125,121", "**93,337**", "74.6%"],
+  ["**Students**", "102,857", "**66,811**", "**65.0%**"],
+  ["**Clinical researcher**", "67,094", "**49,510**", "73.8%"],
+  ["**Practitioner**", "44,102", "**33,107**", "75.1%"],
+  ["**Head of Faculty**", "17,566", "**13,784**", "78.5%"],
+  ["**Clinical administrator**", "7,101", "**5,523**", "77.8%"],
+  ["**Pharmacist**", "1,440", "**1,071**", "74.4%"],
+  ["**Librarian**", "717", "**393**", "54.8%"]],
  widths=[1.9, 1.1, 1.2, 0.9], size=9)
 para(d, "**The rows overlap and must not be added up** - one person can be a Lecturer "
         "and a Clinical researcher at once. **Students is the least reachable of the "
-        "ten at 65.2%**, so a campaign gets 67,092 of the 102,970; Librarian is lower "
+        "ten at 65.0%**, so a campaign gets 66,811 of the 102,857; Librarian is lower "
         "still at 54.8% on a much smaller base. Neither is a classification problem - "
         "it is consent.", space_after=4)
 para(d, "**The recency rule left the audiences more contactable than it found them, "
@@ -576,7 +583,11 @@ table(d, ["The question", "The decision, and what it rests on", "What it moves"]
    "Decided on what the title states - two FINISHED degrees, which is a credential and "
    "not a status. The rule is anchored to the whole title, so `MD/PhD Student`, "
    "`Graduate Assistant (MD/PhD)` and `MPhil/MD/PhD Offer Holder` are untouched.",
-   "**~140 people** leave Students and enter the holding group, retrievable by name."],
+   "**~140 people** leave Students and enter the holding group, retrievable by name. "
+   "**Verified after the build: one person still carries such a title in Students**, "
+   "which is a 99% landing and is being traced - most likely a human override that "
+   "predates the rule and beats it by design, or a title reaching Students through its "
+   "SECOND group, which a pattern scoped to the primary group cannot see."],
   ["**Healthcare Professional (broad) confirms at 0.60 while its four children confirm "
    "at 0.70.** So somebody scoring 0.65 is refused as a Clinical Administrator and "
    "delivered as a Healthcare Professional.",
@@ -599,7 +610,9 @@ table(d, ["The question", "The decision, and what it rests on", "What it moves"]
    "48 of the 239, because the rest hold another job that would have kept them "
    "classified.",
    "**587 people in total** with the 348 competitor-employed - 0.066% of the 890,940 we "
-   "read. No title leaves the dictionary: the rule sits downstream of the vocabulary."]],
+   "read. No title leaves the dictionary: the rule sits downstream of the vocabulary. "
+   "**Verified after the build: zero people whose record names an excluded employer "
+   "hold any audience.** This is the only one of the three that landed exactly."]],
  widths=[1.7, 3.5, 1.7], size=8.5)
 
 h(d, "8.1  Head of Faculty is being replaced by a decision-maker audience", 2)
