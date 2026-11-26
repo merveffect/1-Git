@@ -596,12 +596,23 @@ table(d, ["The question", "The decision, and what it rests on", "What it moves"]
    "together, so no other kind of person can reach the band at all. 2,424 of them "
    "arrive as researchers in biomedical departments, which is precisely what marketing "
    "ruled in on 11 November; raising the threshold would throw them out and contradict "
-   "that decision. **The weak half is named rather than left unsaid:** of the 1,416 who "
-   "arrive through clinical leadership, titles like `CEO`, `President` and `Owner` "
-   "describe a business, not a profession. That is a title problem and will be fixed "
-   "with overrides, not by moving the threshold.",
-   "**Nothing today.** 3,840 people stay. The corporate-title subset is being counted "
-   "before any rule is written for it."],
+   "that decision. **And the half we expected to be weak is not.** We said the "
+   "`CEO`, `President` and `Owner` titles arriving through clinical leadership "
+   "described a business rather than a profession, and set out to clean them with "
+   "overrides. Measured on 26 November with the EMPLOYER read beside the title, that "
+   "was wrong. The employers behind those titles are hospitals, rehabilitation "
+   "hospitals, pathology centres, prenatal clinics, dental practices and "
+   "single-doctor neurology rooms. **In healthcare the owner of the clinic is usually "
+   "the clinician** - a dentist who owns the practice writes Owner, and a hospital "
+   "director writes CEO. 99 corporate titles and 95 in the `President` family against "
+   "8,171 leadership titles in the audience, 0.15% of it; of those roughly 194, about "
+   "twenty are genuinely industry rather than clinical - an architecture firm, a car "
+   "company, senior vice presidents at three pharmaceutical companies. A title rule "
+   "would remove about 170 real clinic owners to catch them.",
+   "**Nothing, and no rule.** 3,840 people stay and the override pass is cancelled. "
+   "What separates the twenty is the EMPLOYER, not the title, and the pipeline already "
+   "has that lever - hcp_administrator scores a company at zero. Reopening this means "
+   "working the employer axis, not writing titles down."],
   ["**Springer Nature's own employees** - 239 people whose ORCID record names one of "
    "our imprints.",
    "**Removed from the pipeline entirely, exactly as our competitors are.** Removal is "
@@ -614,6 +625,34 @@ table(d, ["The question", "The decision, and what it rests on", "What it moves"]
    "**Verified after the build: zero people whose record names an excluded employer "
    "hold any audience.** This is the only one of the three that landed exactly."]],
  widths=[1.7, 3.5, 1.7], size=8.5)
+
+box(d, "THREE LIMITS FOUND WHILE CHECKING THESE RULES, WORTH KNOWING BEFORE THE NEXT ONE", [
+ "**A PATTERN SCOPED TO ONE TITLE GROUP CANNOT REACH A TITLE THAT ARRIVES THROUGH ITS "
+ "SECOND GROUP.** A title gets its second group from a rule matched on its PRIMARY "
+ "group, and every pattern is matched the same way - so a research-supervision title "
+ "sits primarily in the researcher group, is given Students as a second group because "
+ "the words `postgraduate research` appear in it, and is then invisible to a rule "
+ "scoped to Students. Eight people survived the supervisor rule this way and one "
+ "survived the two-degree rule. Left alone deliberately: closing it means vetoing the "
+ "second-group rule itself, which would also drop genuine students who name their own "
+ "status first and a role they also hold - a doctoral researcher who supervises a "
+ "master's student is correctly in Students. One expression cannot tell those apart, "
+ "because BigQuery's regular expressions have no lookahead.",
+ "",
+ "**IT ALSO MEANS THE VETERINARY DECISION HAS THE SAME GAP.** A veterinary title that "
+ "leads with a leadership word is still in a healthcare audience, because the "
+ "veterinary patterns are scoped to the practitioner and trainee groups. One person, "
+ "found by accident while reading employers for something else, recorded rather than "
+ "fixed.",
+ "",
+ "**AND A PATTERN IS THE WRONG INSTRUMENT FOR A CLASS THAT VARIES BY SPELLING.** The "
+ "bare-qualification titles in Students run to roughly 1,500 distinct strings and are "
+ "overwhelmingly real students writing their status in ways no list would predict - "
+ "`PhD Sudent`, `PhD Canditate`, and the Hungarian, Russian and South Asian forms. "
+ "Every one is correctly placed, by similarity rather than by a rule. A regex that "
+ "removed the degrees would have removed them too, so that class gets named overrides "
+ "instead.",
+], fill="FBF6EE", accent=AMBER)
 
 h(d, "8.1  Head of Faculty is being replaced by a decision-maker audience", 2)
 para(d, "**This is no longer an open question and is here as a decision already taken.** "
