@@ -229,6 +229,19 @@ seeds:
         tests: [not_null]
 
   - name: title_group_patterns
+    # THE GRAIN IS (name_pattern, applies_when_title_group), NOT name_pattern.
+    # The same regex deliberately appears under two scopes where one was not
+    # enough: the bare-qualification pattern is scoped to BOTH student and
+    # researcher, because vetoing only the student row moved a bare degree out
+    # of Students and into Researcher rather than out of both; and the
+    # veterinary pattern is scoped to BOTH practitioner and trainee_clinical.
+    # A plain unique test on name_pattern forbids that and had simply never
+    # been built against those rows - they were added on 23 November and the
+    # first build that saw them was 26 November.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [name_pattern, applies_when_title_group]
     description: >
       A title containing one of these strings IS that group. No embedding,
       no similarity, no threshold - it beats the vector and loses only to a
@@ -286,7 +299,7 @@ seeds:
       - name: title_group
         tests: [not_null]
       - name: name_pattern
-        tests: [not_null, unique]
+        tests: [not_null]
       - name: applies_when_title_group
         description: >
           Empty for an unconditional pattern. Otherwise the title group the
