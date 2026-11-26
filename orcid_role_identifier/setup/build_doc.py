@@ -532,6 +532,11 @@ box(d, "WHAT TO COME OUT OF THE ROOM WITH", [
  "cannot be true - and it takes the delivered figures down slightly rather than steeply. "
  "Section 7 says what it consists of.",
  "",
+ "**THREE WERE DECIDED INSIDE THE TEAM ON 26 NOVEMBER AND ARE BUILT** - see 8.0. "
+ "They are here to be read rather than answered: the `MD, PhD` titles, the 0.60 "
+ "threshold on Healthcare Professional (broad), and our own employees leaving the "
+ "pipeline alongside our competitors'.",
+ "",
  "**FIVE DECISIONS, and we cannot take any of them.** Whether `md` on its own is "
  "enough (8.2). Whether the four part-regulated health roles stay in (8.2). Whether "
  "Librarian's two exclusions come back (8.2). **Whether anybody uses `role_detail`, or "
@@ -556,6 +561,46 @@ box(d, "WHAT TO COME OUT OF THE ROOM WITH", [
  "figure in this document counts the people we DELIVER and there is a larger number "
  "upstream that is never delivered; and the psychology count is running.",
 ], fill="FBF6EE", accent=AMBER)
+
+h(d, "8.0  Decided on 26 November, and already built", 2)
+para(d, "**These three came to us as questions and were answered inside the team "
+        "rather than sent out.** Each is one line of configuration and each is "
+        "reversible; what they are not is a guess, and the reasoning is recorded "
+        "beside the rule in the seed that carries it.", space_after=4)
+table(d, ["The question", "The decision, and what it rests on", "What it moves"],
+ [["**A job title that is nothing but two degrees - `MD, PhD`.** Was in Students.",
+   "**Out, and into no audience at all.** The ambiguity was real and is why it was "
+   "asked: in the United States MD-PhD is the name of a combined degree PROGRAMME, so "
+   "somebody writing it at a university may be enrolled in it, while everywhere else "
+   "and in the US after graduation it is how a qualified physician lists two diplomas. "
+   "Decided on what the title states - two FINISHED degrees, which is a credential and "
+   "not a status. The rule is anchored to the whole title, so `MD/PhD Student`, "
+   "`Graduate Assistant (MD/PhD)` and `MPhil/MD/PhD Offer Holder` are untouched.",
+   "**~140 people** leave Students and enter the holding group, retrievable by name."],
+  ["**Healthcare Professional (broad) confirms at 0.60 while its four children confirm "
+   "at 0.70.** So somebody scoring 0.65 is refused as a Clinical Administrator and "
+   "delivered as a Healthcare Professional.",
+   "**The threshold stays at 0.60.** All 3,840 people in that band hold a clinical or "
+   "biomedical DEPARTMENT - the child audiences require the title and the field "
+   "together, so no other kind of person can reach the band at all. 2,424 of them "
+   "arrive as researchers in biomedical departments, which is precisely what marketing "
+   "ruled in on 11 November; raising the threshold would throw them out and contradict "
+   "that decision. **The weak half is named rather than left unsaid:** of the 1,416 who "
+   "arrive through clinical leadership, titles like `CEO`, `President` and `Owner` "
+   "describe a business, not a profession. That is a title problem and will be fixed "
+   "with overrides, not by moving the threshold.",
+   "**Nothing today.** 3,840 people stay. The corporate-title subset is being counted "
+   "before any rule is written for it."],
+  ["**Springer Nature's own employees** - 239 people whose ORCID record names one of "
+   "our imprints.",
+   "**Removed from the pipeline entirely, exactly as our competitors are.** Removal is "
+   "at the PERSON level rather than the record level: one job naming an excluded "
+   "employer takes the whole person out. Record-level removal would have emptied only "
+   "48 of the 239, because the rest hold another job that would have kept them "
+   "classified.",
+   "**587 people in total** with the 348 competitor-employed - 0.066% of the 890,940 we "
+   "read. No title leaves the dictionary: the rule sits downstream of the vocabulary."]],
+ widths=[1.7, 3.5, 1.7], size=8.5)
 
 h(d, "8.1  Head of Faculty is being replaced by a decision-maker audience", 2)
 para(d, "**This is no longer an open question and is here as a decision already taken.** "

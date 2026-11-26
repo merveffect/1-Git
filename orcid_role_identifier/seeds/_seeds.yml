@@ -28,6 +28,23 @@ seeds:
       - name: anchor_term
         tests: [not_null]
 
+  - name: excluded_employers
+    description: >
+      Employers whose people we do not classify at all - our own imprints
+      and our competitors. Applied at the PERSON level in
+      int_employment_scored: one record naming an excluded employer removes
+      the whole person. Merve, 2026-11-26. 587 people, 0.066%.
+    config:
+      column_types: {name_pattern: STRING, category: STRING, note: STRING}
+    columns:
+      - name: name_pattern
+        tests: [unique, not_null]
+      - name: category
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['springer_nature', 'competitor']
+
   - name: org_name_patterns
     description: >
       Organisation fallback for the 21% of records with no resolvable ROR

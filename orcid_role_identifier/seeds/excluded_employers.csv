@@ -1,0 +1,29 @@
+name_pattern,category,note
+springer nature,springer_nature,46+45+37+30+10+9+7+6+4+3+2 records across country suffixes
+springernature,springer_nature,"no-space spelling, 3 records"
+^springer$,springer_nature,"the bare name, 3 records. ANCHORED ON PURPOSE - unanchored `springer` also matched `martin springer center for conflict studies`, a research centre at Bar-Ilan named after a person"
+springer science,springer_nature,"springer science+business media llc, the legacy name"
+springer international,springer_nature,springer international publishing ag
+nature publishing group,springer_nature,25 records
+biomed central,springer_nature,7 records
+palgrave,springer_nature,"Palgrave Macmillan. `macmillan` alone is NOT a pattern here - it matched `macmillan cancer support`, a UK cancer charity with 5 records and no connection to us"
+scientific american,springer_nature,
+\badis\b,springer_nature,"Adis, the drug-information imprint. Bounded - `adis` is a substring of ordinary words"
+elsevier,competitor,"41+33+29+10+9+9+5+2+1 records. Also catches `elsevier foundation`, the charitable arm, and `reed elsevier` - both kept in deliberately"
+wiley,competitor,"wiley, wiley-vch, wiley blackwell, john wiley & sons. Checked against the organisation list before committing: no Wiley College in the data"
+taylor & francis|taylor and francis,competitor,both spellings appear
+sage publi,competitor,scoped to `publi` - bare `sage` would match Sage University and Sage Hospital
+wolters kluwer,competitor,
+clarivate,competitor,
+frontiers media,competitor,
+\bmdpi\b,competitor,"also matches journal names given as the employer - fluids mdpi, micromachines mdpi, bioengineering mdpi. Those are editors and are in scope"
+hindawi,competitor,
+emerald publi,competitor,
+de gruyter,competitor,"walter de gruyter, de gruyter open"
+oxford university press,competitor,"the press, not the university - the pattern says so"
+cambridge university press,competitor,also cambridge university press & assessment
+\bkarger\b,competitor,"s karger, karger publishers"
+thieme,competitor,thieme medical publishers
+\bplos\b,competitor,"plos, plos one, plos global public health"
+bentham science,competitor,
+springer publishing co,competitor,"NOT US. Springer Publishing Company is an independent New York health and nursing publisher with no connection to Springer Nature, so it belongs on this half of the list"

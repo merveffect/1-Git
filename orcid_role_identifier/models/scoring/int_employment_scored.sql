@@ -26,7 +26,43 @@
     out unnamed. That cost a run with "Unrecognized name: dept_score".
 */
 
-with records as (
+with /*
+    *** PEOPLE WE DO NOT CLASSIFY AT ALL - Merve, 2026-11-26.
+    Our own imprints and our competitors, both removed, and removed at the
+    PERSON level rather than the record level: one employment record naming
+    an excluded employer takes the whole person out, not just that record.
+
+    MEASURED FIRST. 445 records name a competitor and 294 name a Springer
+    Nature imprint; that is 348 and 239 people. Record-level removal would
+    have emptied only 27 and 48 of them - everybody else holds another job
+    that would have kept them classified - so person-level costs 512 people
+    more and the total is 587 out of 890,940, 0.066%.
+
+    WHY PERSON-LEVEL. Merve: "rakipleri direkt eleyelim hicbir yere
+    girmesinler." A competitor's editor is a competitor's editor whichever
+    of their jobs we read. Our own staff were the separate question and the
+    answer on 26 November was the same treatment.
+
+    NOT_EXISTS RATHER THAN NOT IN, deliberately. `snid NOT IN (subquery)`
+    returns NULL for every row the moment one NULL snid appears in the
+    subquery, which would silently empty this model rather than fail it.
+
+    THE DICTIONARY IS NOT TOUCHED, which is why this sits here and not in
+    staging. int_title_distinct and int_department_distinct are upstream, so
+    no title leaves the vocabulary and nothing re-embeds. The exclusion is
+    about who gets a role, not about what a title means.
+*/
+excluded_people as (
+
+    select distinct r.snid
+    from {{ ref('stg_role_records') }} r
+    join {{ ref('excluded_employers') }} x
+      on regexp_contains(coalesce(r.organisation, ''), x.name_pattern)
+    where r.snid is not null
+
+),
+
+records as (
     /*
         ⭐ THE RECENCY WINDOW IS APPLIED HERE, AT THE FRONT, AND THE
         POSITION IS LOAD-BEARING. See the macro's own comment: the qualify
@@ -43,8 +79,12 @@ with records as (
         every override, pattern and embedding are untouched; what changes
         is only which record may give a person a role.
     */
-    select * from {{ ref('stg_role_records') }}
-    where {{ recency_predicate('end_date') }}
+    select s.*
+    from {{ ref('stg_role_records') }} s
+    where {{ recency_predicate('s.end_date') }}
+      and not exists (
+          select 1 from excluded_people e where e.snid = s.snid
+      )
 ),
 
 -- title -> position group
