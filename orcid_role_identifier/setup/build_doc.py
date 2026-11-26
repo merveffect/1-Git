@@ -623,7 +623,26 @@ table(d, ["The question", "The decision, and what it rests on", "What it moves"]
    "**587 people in total** with the 348 competitor-employed - 0.066% of the 890,940 we "
    "read. No title leaves the dictionary: the rule sits downstream of the vocabulary. "
    "**Verified after the build: zero people whose record names an excluded employer "
-   "hold any audience.** This is the only one of the three that landed exactly."]],
+   "hold any audience.** This is the only one of the three that landed exactly."],
+  ["**A job title that is a spelled-out degree** - `Doctor of Philosophy`, `Master of "
+   "Science`, `MSc Graduate`. Was in Students.",
+   "**Out, and into no audience.** This is not a new decision: it finishes the one "
+   "taken on 20 November, when a title that is nothing but a qualification left "
+   "Students. That rule was anchored to the whole title, so it caught `PhD` and "
+   "`MSc` and missed `Doctor of Philosophy` and `Master of Science`, which say the "
+   "same thing in full. **Eighteen named titles rather than a pattern, and the "
+   "measurement is the reason:** the audience holds the bare degree AND the degree "
+   "with a status word beside it, and only an exact-title rule separates them. "
+   "`master of science` is 25 people and `master of science student` is 9. "
+   "`doctor of philosophy` is 57 and `doctor of philosophy candidate` is 3. `phd "
+   "graduate` is 13 and **`phd graduate student` is 23**. A rule written on the "
+   "degree would have taken every one of them, along with the several hundred real "
+   "students who write their status in spellings no list predicts.",
+   "**156 people** leave Students across 18 titles. Checked against 52 cases before "
+   "committing - 30 that must go and 22 that must stay - and all 52 behaved. One row "
+   "is a judgement rather than a certainty and is marked as such in the seed: in "
+   "American usage `graduate` alone can mean a graduate student, so `phd graduate` "
+   "was removed on the balance of the data rather than on certainty."]],
  widths=[1.7, 3.5, 1.7], size=8.5)
 
 box(d, "THREE LIMITS FOUND WHILE CHECKING THESE RULES, WORTH KNOWING BEFORE THE NEXT ONE", [
