@@ -74,9 +74,13 @@
 --     nobody outside has ever checked. And allied health.
 -- ============================================================================
 
-create or replace table
-  `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.hcp_validation_dach_2026_11_26`
-as
+--      THE SELECT ONLY. It was run wrapped in
+--      CREATE OR REPLACE TABLE <presentation>.hcp_validation_dach_2026_11_26
+--      on 2026-11-26, returning 9,089 rows. The wrapper is not kept here
+--      because the destination is not a dbt model and setup/check_analyses.py
+--      cannot resolve it - the definition of WHAT was shared is this query,
+--      and that is the part worth keeping under review.
+-- ----------------------------------------------------------------------------
 with hcp as (
 
     /*  Filtered BEFORE the grouping, not after. Two reasons. A HAVING on an
@@ -120,10 +124,39 @@ group by snid
 -- ----------------------------------------------------------------------------
 -- 57.1 THE FIGURES QUOTED IN THE COVERING LETTER.
 --
---      Run against the table itself rather than against an estimate, because
---      a number in a letter to another team has to match the object it
---      describes. RESULT 2026-11-26: (paste here)
+--      Computed from the SAME source and filters as the extract above rather
+--      than from the shared table, so this runs whether or not that table
+--      exists and stays checkable by setup/check_analyses.py - it references
+--      only real models. A number in a letter to another team has to match
+--      the object it describes, and the earlier per-country estimate did not.
+--
+--      RESULT 2026-11-26 - paste here
 -- ----------------------------------------------------------------------------
+with hcp as (
+
+    select snid, role_key
+    from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.fct_role_audience`
+    where role_label = 'CONFIRMED'
+      and role_key in ('hcp_broad', 'hcp_practitioner', 'hcp_researcher',
+                       'hcp_administrator', 'pharmacist')
+      and country_code in ('DE', 'AT', 'CH')
+      and contact_email is not null
+
+),
+
+per_person as (
+
+    select
+        snid,
+        logical_or(role_key = 'hcp_practitioner')   as is_practitioner,
+        logical_or(role_key = 'hcp_researcher')     as is_researcher,
+        logical_or(role_key = 'hcp_administrator')  as is_administrator,
+        logical_or(role_key = 'pharmacist')         as is_pharmacist
+    from hcp
+    group by snid
+
+)
+
 select
     count(*)                                            as people,
     countif(is_practitioner)                            as practitioner,
@@ -134,5 +167,5 @@ select
                  or is_administrator or is_pharmacist)) as broad_only,
     round(100 * countif(is_researcher)   / count(*))    as pct_researcher,
     round(100 * countif(is_practitioner) / count(*))    as pct_practitioner
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_presentation.hcp_validation_dach_2026_11_26`
+from per_person
 ;
