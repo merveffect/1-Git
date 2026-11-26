@@ -130,7 +130,18 @@ group by snid
 --      only real models. A number in a letter to another team has to match
 --      the object it describes, and the earlier per-country estimate did not.
 --
---      RESULT 2026-11-26 - paste here
+--      RESULT 2026-11-26, and these are the figures the covering letter
+--      quotes:
+--
+--        people            9,089
+--        pct_researcher     62.0
+--        pct_practitioner   26.0
+--
+--      The letter went out saying 63% rather than 62%. It changes nothing in
+--      the argument it supports - most of this extract is researchers, so a
+--      low overall match rate is a definition difference and not an error -
+--      and no correction was sent. Recorded here so the follow-up quotes the
+--      table rather than the letter.
 -- ----------------------------------------------------------------------------
 with hcp as (
 
