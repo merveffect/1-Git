@@ -253,7 +253,22 @@ typed as (
           and f.org_id is not distinct from o.org_id
 )
 select
-    case when org_type = 'Education' then 'Education - QUALIFIES'
+    /*
+        FIXED 2026-11-27. This compared org_type to 'Education', which is
+        NEVER TRUE. ROR writes its types in lowercase and the `typed` CTE
+        above does not upper() them, unlike analyses/52 which does. The
+        same bug was measured in analyses/52 query 6 and corrected in
+        int_role_detail.sql: 0 exact matches on all 30 seed pairs against
+        180,682 once case is ignored.
+
+        SO EVERY ROW FELL INTO THE ELSE AND THE `Education - QUALIFIES`
+        BUCKET CAME BACK EMPTY. The employer dimension of this query
+        collapsed to one value. Whatever was read off it about how many
+        trainee-word titles sit at an education employer was read off a
+        dead comparison, and query 1c-iii has to be re-run before that
+        reading is trusted.
+    */
+    case when upper(org_type) = 'EDUCATION' then 'Education - QUALIFIES'
          else 'not Education - already refused' end     as employer,
     if(also_names_a_student, 'title also names a student',
                              'TRAINEE WORD ONLY')       as title_says,
