@@ -24,10 +24,17 @@
     id_type = org_id_source, so every ORCID record whose employer is
     identified by a Ringgold id misses route 2 entirely and falls through to
     NAME_EXACT or to no resolution at all. Ringgold is the LARGEST identifier
-    group in the source at 31.7%, so the bridge delivers GRID 7.8% plus
-    FUNDREF 4.0% - about 11.8%, not the 43.5% the comment promised. An
-    unresolved employer has no ROR type, which moves org_score, which is a
-    weighted component of every composite score.
+    group in the source: 482,455 records, of which 219,925 - 153,611 people -
+    resolve to nothing. An unresolved employer has no ROR type, which moves
+    org_score, which is a weighted component of every composite score.
+
+    MEASURING IT TURNED UP A SECOND, SEPARATE BUG THAT WAS FIXABLE. FUNDREF
+    rows exist here - 29,988 of them - and yet not one FundRef record ever
+    bridged either, because ORCID writes the id as the DOI that contains it
+    and ROR stores it bare. int_org_resolved now takes the last path segment
+    on the ORCID side, which recovered 64,514 of 65,195 records, 99.0%. The
+    Ringgold half has no such fix: there is nothing on the other side of the
+    join to reach.
 
     NOT FIXED HERE, BECAUSE IT MAY NOT BE FIXABLE IN CODE. If ROR genuinely
     does not publish Ringgold ids then this is a SOURCING problem - it needs

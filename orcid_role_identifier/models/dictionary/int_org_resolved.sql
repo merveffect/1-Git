@@ -57,12 +57,37 @@ by_ror_id as (
     ROUTE 2: bridge through other identifier systems
 
     THIS SAID `RINGGOLD 31.7% + GRID 7.8% + FUNDREF 4.0% = 43.5%` UNTIL
-    2026-11-27, AND IT WAS WRONG. stg_ror__external_ids carries no RINGGOLD
-    rows at all - measured, GRID / WIKIDATA / ISNI / FUNDREF and nothing
-    else - so the join below cannot match a Ringgold id. This route delivers
-    GRID 7.8% plus FUNDREF 4.0%, about 11.8%. The largest identifier group
-    in the source falls through to ROUTE 3 or to nothing, which moves
-    org_score. See the block comment in stg_ror__external_ids.sql.
+    2026-11-27. MEASURED THAT DAY, THE ROUTE WAS CARRYING GRID AND NOTHING
+    ELSE - 113,857 records of 1,808,514, 6.3%, against the 43.5% promised:
+
+        ROR direct          744,335   41.2%
+        EXTERNAL_ID_GRID    113,857    6.3%
+        NAME_EXACT          414,060   22.9%
+        unresolved          536,262   29.7%
+
+    TWO SEPARATE CAUSES, and only one of them is fixable here.
+
+    FUNDREF - FIXED BELOW. The types matched and the VALUES did not. ORCID
+    writes a FundRef id as the DOI that contains it,
+    `http://dx.doi.org/10.13039/501100003339`, while ROR stores the bare
+    `501100003339`. So 65,195 records never bridged: 39,957 were rescued by
+    ROUTE 3 at 0.90 confidence and 25,238 resolved to nothing at all.
+    Taking the last path segment recovers 64,514 of them - 99.0%, 54,414
+    people - measured before the change. The 681 that still miss are left
+    alone; they are either malformed or genuinely absent from ROR.
+
+    THE EXTRACTION IS A NO-OP FOR EVERY OTHER SOURCE, which is why it is
+    applied unconditionally rather than wrapped in a CASE: GRID ids read
+    `grid.4991.5`, Ringgold and LEI ids are bare, and none of them contains
+    a slash, so the expression returns them unchanged.
+
+    RINGGOLD - NOT FIXABLE HERE. stg_ror__external_ids carries no RINGGOLD
+    rows at all: GRID, WIKIDATA, ISNI, FUNDREF and nothing else. This is not
+    a format problem, there is nothing on the other side of the join. It is
+    the LARGEST identifier group in the source - 482,455 records, of which
+    219,925 (153,611 people) resolve to nothing - and reaching it needs
+    another mapping, not another join. A sourcing decision, not a code one.
+    See the block comment in stg_ror__external_ids.sql.
 */
 by_external_id as (
 
@@ -77,7 +102,9 @@ by_external_id as (
     from employment_orgs o
     join {{ ref('stg_ror__external_ids') }} x
       on x.id_type  = o.org_id_source
-     and x.id_value = o.org_id
+     -- the last path segment, so ORCID's DOI-wrapped FundRef ids reach ROR's
+     -- bare ones. A no-op for every id that contains no slash - see above.
+     and x.id_value = regexp_extract(coalesce(o.org_id, ''), r'([^/]+)$')
     join ror r
       on r.ror_id = x.ror_id
     where o.org_id_source != 'ROR'
