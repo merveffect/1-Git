@@ -129,5 +129,12 @@ select
 from combined
 qualify row_number() over (
     partition by organisation, org_id
-    order by resolution_confidence desc
+    -- TIE-BREAKER ADDED 2026-11-27. resolution_confidence takes one of three
+    -- values - 1.0 ORCID_ROR_ID, 0.95 EXTERNAL_ID, 0.9 NAME_EXACT - so two
+    -- candidates resolved by the same method tie exactly, and row_number()
+    -- then picked between them arbitrarily. The same organisation could
+    -- resolve to a different ROR id from one build to the next, which moves
+    -- org_type, which moves org_score, which can move a person across a
+    -- threshold. Nothing downstream would report it.
+    order by resolution_confidence desc, ror_id, resolution_method, canonical_name
 ) = 1

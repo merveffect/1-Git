@@ -19,17 +19,14 @@
     END
 {% endmacro %}
 
-
-{#- role_key -> detail dimension ('bucket' | 'setting' | 'org_type' | 'none') -#}
-{% macro role_detail_dimension_expr(col='role_key') %}
-    CASE {{ col }}
-    {%- for k in role_keys() %}
-        WHEN '{{ k }}' THEN '{{ role(k).get("detail_dimension", "none") }}'
-    {%- endfor %}
-        ELSE 'none'
-    END
-{% endmacro %}
-
+{#-
+    role_detail_dimension_expr WAS REMOVED 2026-11-27. It read
+    roles.<key>.detail_dimension from dbt_project.yml and no model ever
+    called it. Dead code here is not free: reviewing the missing librarian
+    display_name, this macro made detail_dimension look load-bearing and
+    produced a recommendation to add it, which would have done nothing. The
+    detail label is built in int_role_detail.sql from role_detail_map.csv.
+-#}
 
 {#-
     Array ordering key. All four arrays MUST use this same ORDER BY.

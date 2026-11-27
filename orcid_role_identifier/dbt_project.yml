@@ -278,6 +278,19 @@ vars:
       current_only: false
 
     librarian:
+      # display_name ADDED 2026-11-27. It was the only enabled role without
+      # one, and role_display_name_expr renders a missing value as the empty
+      # string rather than falling through to its ELSE, so every CONFIRMED
+      # librarian was delivered to Braze with role_inferred = '' and
+      # role_detailed_inferred = ' - University'. 717 people.
+      # assert_detailed_prefix_matches_role could not catch it: every string
+      # starts_with the empty string, so the test passed vacuously for the
+      # one role that was broken. Merve chose the name on 2026-11-27, the
+      # same form as pharmacist, where label and display_name also agree.
+      # NO detail_dimension: that var is read only by role_detail_dimension_expr,
+      # which no model calls. The detail label comes from role_detail_map.csv,
+      # which already carries six librarian org_type rows.
+      display_name: 'Librarian'
       enabled: true
       label: 'Librarian / Information Professional'
       axis: profession
@@ -490,7 +503,7 @@ vars:
       #                   what marketing question 4.1b asked for
       #
       # current_only: true, AND THIS IS THE SETTING THAT DEFINES THE AUDIENCE.
-      # Seven of the nine roles count a post somebody has left, because a
+      # Seven of the ten roles count a post somebody has left, because a
       # researcher in 2010 is still a researcher. A student in 2010 is not a
       # student - they are most likely a professor by now, and with
       # current_only false this audience would fill up with the very people

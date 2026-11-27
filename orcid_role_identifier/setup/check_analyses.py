@@ -15,6 +15,15 @@ script reported 113 failures that were all one bug.
    statement in half. It is a warning, not a failure.
 """
 import glob, io, os, re, sys
+
+# ROOT ADDED 2026-11-27. The parse loop below already resolved its path from
+# __file__, but the reference check used BARE RELATIVE globs. Run from the repo
+# root instead of the project directory they matched nothing, so the script
+# scanned 0 analyses against 1 known relation, printed `reference check: OK`
+# and EXITED 0. check_sql.py and validate_registry.py both die with rc=1 from
+# the wrong directory; this one passed silently, which is worse, because the
+# commit gates read the exit code.
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 import sqlglot
 
 
@@ -103,16 +112,21 @@ SKIP_DATASETS = {'review'}
 HAND_LOADED = {'survey_self_declared_roles': {'raw'}}
 
 where = dict((k, set(v)) for k, v in HAND_LOADED.items())
-for f in glob.glob('models/*/*.sql'):
+for f in glob.glob(os.path.join(ROOT, 'models', '*', '*.sql')):
     where.setdefault(os.path.basename(f)[:-4], set()).add(
         os.path.basename(os.path.dirname(f)))
-for f in glob.glob('seeds/*.csv'):
+for f in glob.glob(os.path.join(ROOT, 'seeds', '*.csv')):
     where.setdefault(os.path.basename(f)[:-4], set()).add('seeds')
 
 ref_re = re.compile(r'`' + re.escape(PROJECT) + r'\.' + re.escape(PREFIX)
                     + r'([a-z_]+)\.([A-Za-z_][A-Za-z_0-9]*)')
 ref_bad = 0
-for path in sorted(glob.glob('analyses/*.sql')):
+analyses = sorted(glob.glob(os.path.join(ROOT, 'analyses', '*.sql')))
+if not analyses or len(where) < 10:
+    print(f'  LAYOUT ERROR: {len(analyses)} analyses and {len(where)} relations found '
+          f'under {ROOT} - refusing to report OK on an empty scan')
+    sys.exit(1)
+for path in analyses:
     body = strip_comments(io.open(path, encoding='utf-8').read())
     for dataset, relation in set(ref_re.findall(body)):
         if dataset in SKIP_DATASETS or relation == 'INFORMATION_SCHEMA':

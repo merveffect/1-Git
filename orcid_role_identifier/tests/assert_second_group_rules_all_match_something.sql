@@ -17,7 +17,13 @@ with hits as (
     select
         s.applies_when_title_group,
         s.second_title_group,
-        count(*)                  as titles_claimed,
+        -- count(d.title_key), NOT count(*). FIXED 2026-11-27: after a LEFT
+        -- JOIN count(*) counts the left row itself, so it was never below 1
+        -- and the final `where titles_claimed = 0` could never be true. The
+        -- test could not fail, and a second-group rule matching no title at
+        -- all would have gone unnoticed. count() of a right-side column
+        -- ignores the NULL row the LEFT JOIN manufactures.
+        count(d.title_key)        as titles_claimed,
         sum(d.frequency)          as records_claimed
     from {{ ref('title_group_second') }} s
     left join {{ ref('dim_title_group') }} d

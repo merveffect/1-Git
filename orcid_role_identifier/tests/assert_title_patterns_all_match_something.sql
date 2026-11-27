@@ -38,6 +38,14 @@ with hits as (
     select
         p.title_group,
         p.name_pattern,
+        -- applies_when_title_group ADDED TO THE GRAIN 2026-11-27. The grain of
+        -- this seed is (name_pattern, applies_when_title_group) - the same regex
+        -- deliberately appears under two scopes. Grouping without the scope made
+        -- the test depend on the two rows having different notes to stay apart,
+        -- which they happen to do today, so nothing is masked right now. That is
+        -- luck, not a guarantee: two same-pattern rows sharing a note would merge
+        -- and a dead scope would hide behind a live one.
+        coalesce(p.applies_when_title_group, '') as applies_when_title_group,
         count(m.title)      as matched_titles,
         sum(m.frequency)    as matched_records,
         coalesce(p.note, '')    as note
@@ -51,10 +59,10 @@ with hits as (
        and (p.unless_pattern is null
             or p.unless_pattern = ''
             or not regexp_contains(m.title, p.unless_pattern))
-    group by 1, 2, 5
+    group by 1, 2, 3, 6
 )
 
-select title_group, name_pattern, matched_titles, matched_records
+select title_group, name_pattern, applies_when_title_group, matched_titles, matched_records
 from hits
 where matched_titles = 0
   and not contains_substr(note, '[pre-emptive]')
