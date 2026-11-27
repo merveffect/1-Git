@@ -55,8 +55,14 @@ by_ror_id as (
 
 /*
     ROUTE 2: bridge through other identifier systems
-    RINGGOLD 31.7% + GRID 7.8% + FUNDREF 4.0% = 43.5%
-    ROR carries these identifiers inside external_ids.
+
+    THIS SAID `RINGGOLD 31.7% + GRID 7.8% + FUNDREF 4.0% = 43.5%` UNTIL
+    2026-11-27, AND IT WAS WRONG. stg_ror__external_ids carries no RINGGOLD
+    rows at all - measured, GRID / WIKIDATA / ISNI / FUNDREF and nothing
+    else - so the join below cannot match a Ringgold id. This route delivers
+    GRID 7.8% plus FUNDREF 4.0%, about 11.8%. The largest identifier group
+    in the source falls through to ROUTE 3 or to nothing, which moves
+    org_score. See the block comment in stg_ror__external_ids.sql.
 */
 by_external_id as (
 
