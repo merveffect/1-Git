@@ -432,8 +432,7 @@ table(d, ["#", "What", "Why now", "Who"],
   ["3","**A decision-maker audience**","Marketing have asked for Head of Faculty to be opened up beyond academia, to reach opinion leaders, budget holders and purchase influencers. A separate meeting is being held for it; the measurement on our side can start before it.","Marketing / us"],
   ["4","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
   ["5","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
-  ["6","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 3 may change what this audience is for.","Us"],
-  ["7","**Ringgold: 153,611 people have no employer at all**","ORCID identifies an employer with one of several ID systems. The public ROR registry publishes GRID, WIKIDATA, ISNI and FundRef identifiers - and no Ringgold ones. Ringgold is the LARGEST group in our source: 482,455 records. Half of them are rescued by matching the employer NAME, and 219,925 records - 153,611 people - resolve to nothing, which means no sector, no organisation score, and a weaker chance of clearing any threshold. This is not a bug we can fix in SQL; there is nothing on the other side to match against. It needs either a Ringgold-to-ROR mapping from somewhere, or a decision to accept the gap. **Found and measured on 27 November, while fixing the same class of problem for FundRef - that one WAS fixable and gave 54,414 people an employer.**","Merve / data eng"]],
+  ["6","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 3 may change what this audience is for.","Us"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
 box(d, "WHAT CAME OFF THIS LIST", [
@@ -548,10 +547,11 @@ box(d, "WHAT TO COME OUT OF THE ROOM WITH", [
 "group is wanted as an audience - consultants above all, which is the largest group "
 "we have set aside (8.4).",
 "",
-"**Two have come off the list.** A job that ended more than six months ago no longer "
-"counts, decided 25 November and built (8.2). And the `role_detail` question is "
-"answered and the column is gone, decided 27 November - it took three of our own open "
-"items with it (8.3).",
+"**Three have come off the list.** A job that ended more than six months ago no longer "
+"counts, decided 25 November and built (8.2). The `role_detail` question is answered and "
+"the column is gone, decided 27 November - it took three of our own open items with it "
+"(8.3). And the employer gap for 153,611 people is accepted as a known limit rather than "
+"chased, because 83.2% of them are already in an audience on their title alone (8.0).",
  "",
  "**ONE SCOPE, on an audience already decided.** Head of Faculty is being widened into a "
  "decision-maker audience rather than repaired (8.1). The decision is taken; what we "
@@ -570,11 +570,12 @@ box(d, "WHAT TO COME OUT OF THE ROOM WITH", [
  "upstream that is never delivered; and the psychology count is running.",
 ], fill="FBF6EE", accent=AMBER)
 
-h(d, "8.0  Decided on 26 November, and already built", 2)
-para(d, "**These four came to us as questions and were answered inside the team "
-        "rather than sent out.** Each is one line of configuration and each is "
-        "reversible; what they are not is a guess, and the reasoning is recorded "
-        "beside the rule in the seed that carries it.", space_after=4)
+h(d, "8.0  Decided on 26 and 27 November", 2)
+para(d, "**These five came to us as questions and were answered inside the team "
+        "rather than sent out.** Four are one line of configuration and reversible; "
+        "the fifth is a decision to accept a limit rather than to build something. "
+        "What none of them is, is a guess - the reasoning sits beside the rule in "
+        "the code or the seed that carries it.", space_after=4)
 table(d, ["The question", "The decision, and what it rests on", "What it moves"],
  [["**A job title that is nothing but two degrees - `MD, PhD`.** Was in Students.",
    "**Out, and into no audience at all.** The ambiguity was real and is why it was "
@@ -643,7 +644,8 @@ table(d, ["The question", "The decision, and what it rests on", "What it moves"]
    "committing - 30 that must go and 22 that must stay - and all 52 behaved. One row "
    "is a judgement rather than a certainty and is marked as such in the seed: in "
    "American usage `graduate` alone can mean a graduate student, so `phd graduate` "
-   "was removed on the balance of the data rather than on certainty."]],
+   "was removed on the balance of the data rather than on certainty."],
+  ["**153,611 people have no employer at all**, because the public registry does not publish the ID system ORCID recorded for them.","**Accepted as a known limit, and only after measuring what it costs.** ORCID identifies an employer with a machine ID, and we read the organisation TYPE - university, hospital, company - from the public ROR registry, which is 40% of the score. ROR publishes GRID, WIKIDATA, ISNI and FundRef identifiers and **no Ringgold ones**. Ringgold is our largest group: 482,455 records. Half are rescued by matching the employer NAME instead; 219,925 records resolve to nothing. There is nothing on the other side of the lookup, so this cannot be fixed in code - closing it would mean sourcing or licensing a commercial mapping.","**Nothing at all, for five people in six.** Of the 153,611, **127,816 - 83.2% - are already in an audience** on the strength of their job title. 6,102 reach only PROBABLE: that is the entire recoverable group, and even it is a ceiling, because a resolved employer type still has to clear the threshold. The remaining 19,693 never reached PROBABLE either, so their titles are weak as well and an employer alone would not rescue most of them. **The same class of problem was found for FundRef on the same day - that one WAS fixable, and it gave 54,414 people an employer.**"]],
  widths=[1.7, 3.5, 1.7], size=8.5)
 
 box(d, "THREE LIMITS FOUND WHILE CHECKING THESE RULES, WORTH KNOWING BEFORE THE NEXT ONE", [

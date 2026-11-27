@@ -28,6 +28,29 @@
     resolve to nothing. An unresolved employer has no ROR type, which moves
     org_score, which is a weighted component of every composite score.
 
+    ACCEPTED 2026-11-27, MERVE: "kabul edelim bence". MEASURED BEFORE THE
+    DECISION, which is the only reason it could be taken. Of the 153,611
+    people whose employer never resolves:
+
+        127,816   83.2%   are ALREADY CONFIRMED in some audience
+          6,102    4.0%   reach PROBABLE only - the recoverable group
+         19,693   12.8%   are in nothing at all
+
+    So the missing organisation type costs us nothing for five people in six -
+    the title carries them. The entire upside of finding a Ringgold mapping is
+    a CEILING of 6,102 people, and even that is a ceiling rather than a
+    forecast, because a resolved type still has to score high enough to clear
+    the threshold. The 19,693 in nothing never reached PROBABLE either, so
+    their titles are weak as well and an employer alone would not rescue most
+    of them.
+
+    Ringgold is a commercial registry, so closing this would mean sourcing or
+    licensing a mapping. 6,102 people is not a reason to do that.
+
+    SO THIS IS NOT A BUG AND PLEASE DO NOT REOPEN IT AS ONE. It is a known,
+    measured, accepted limit. If it is ever revisited, the thing that changes
+    the answer is the 6,102 growing, not the 153,611.
+
     MEASURING IT TURNED UP A SECOND, SEPARATE BUG THAT WAS FIXABLE. FUNDREF
     rows exist here - 29,988 of them - and yet not one FundRef record ever
     bridged either, because ORCID writes the id as the DOI that contains it

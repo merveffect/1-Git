@@ -121,8 +121,14 @@ by_ror_id as (
     a format problem, there is nothing on the other side of the join. It is
     the LARGEST identifier group in the source - 482,455 records, of which
     219,925 (153,611 people) resolve to nothing - and reaching it needs
-    another mapping, not another join. A sourcing decision, not a code one.
-    See the block comment in stg_ror__external_ids.sql.
+    another mapping, not another join.
+
+    ACCEPTED 2026-11-27 AS A KNOWN LIMIT, after measuring what it costs:
+    127,816 of those 153,611 people (83.2%) are already CONFIRMED in some
+    audience on their title alone, 6,102 reach only PROBABLE, and 19,693 are
+    in nothing. The whole upside of a Ringgold mapping is a ceiling of 6,102
+    people, which does not justify sourcing a commercial registry. Not a bug.
+    The full reasoning is in the block comment in stg_ror__external_ids.sql.
 */
 by_external_id as (
 
