@@ -587,26 +587,33 @@ vars:
     include_labels: ['CONFIRMED']
     array_order: 'alphabetical'
 
-  abbreviations:
-    - {from: '\\bprof\\b', to: 'professor'}
-    - {from: '\\bassoc\\b', to: 'associate'}
-    - {from: '\\basst\\b', to: 'assistant'}
-    - {from: '\\bsr\\b', to: 'senior'}
-    - {from: '\\bjr\\b', to: 'junior'}
-    - {from: '\\bdept\\b', to: 'department'}
-    - {from: '\\bdiv\\b', to: 'division'}
-    - {from: '\\bdir\\b', to: 'director'}
-    - {from: '\\bmgr\\b', to: 'manager'}
-    - {from: '\\bres\\b', to: 'research'}
-    - {from: '\\bsci\\b', to: 'scientist'}
-    - {from: '\\bphys\\b', to: 'physician'}
-    - {from: '\\bpharm\\b', to: 'pharmacy'}
-    - {from: '\\bmed\\b', to: 'medical'}
-    - {from: '\\bclin\\b', to: 'clinical'}
-    - {from: '\\buniv\\b', to: 'university'}
-    - {from: '\\bhosp\\b', to: 'hospital'}
-    - {from: '\\blib\\b', to: 'library'}
-    - {from: '\\bpi\\b', to: 'principal investigator'}
-    - {from: '\\bpdra\\b', to: 'postdoctoral research associate'}
-    - {from: '\\bpost doc\\b', to: 'postdoc'}
-    - {from: '\\bpost-doc\\b', to: 'postdoc'}
+  # THE ABBREVIATION RULES WERE REMOVED 2026-11-27. Merve: "a2 yi kaldir."
+  #
+  # There were 22 of them - prof -> professor, assoc -> associate, pi ->
+  # principal investigator - and NOT ONE HAD EVER RUN, for two independent
+  # reasons. macros/normalize.sql built the REGEXP_REPLACE chain with a
+  # {% set %} inside a {% for %}, and a Jinja assignment inside a loop does
+  # not survive the loop, so expand_abbreviations returned its input
+  # unchanged. And every pattern was written in single-quoted YAML as
+  # '\\bprof\\b', which YAML does not unescape, so even a working loop
+  # would have searched for a literal backslash followed by b.
+  #
+  # REMOVED RATHER THAN REPAIRED, and the choice was measured. Removing it
+  # renders byte-identical SQL - verified before the change - so not one
+  # title_key moves, nothing re-embeds and no figure we have published stops
+  # describing the delivered output. Repairing it would have changed the key
+  # of every title containing an abbreviation, forced a full refresh of the
+  # embeddings, collapsed `jr scientist` into `junior scientist` and broken
+  # the unique test on dim_title_group.title_key, and left every threshold
+  # tuned against a normalisation that no longer existed. That is a retune
+  # dressed as a bug fix.
+  #
+  # AND THE JOB IS ALREADY DONE ELSEWHERE. The vector puts `assoc prof`,
+  # `a/prof` and `asst prof` in teaching_academic on similarity, without
+  # needing the spelling normalised - which is the whole reason for using
+  # embeddings. Abbreviation expansion was a pre-embedding idea that never
+  # got switched on and was never missed.
+  #
+  # Dead code that looks live costs decisions: on this same day a reviewer
+  # recommended adding detail_dimension because a dead macro made it look
+  # load-bearing, and recommended repairing these rules. Git has them.

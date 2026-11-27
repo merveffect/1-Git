@@ -31,7 +31,15 @@
     values that are in the wrong field, which is why the damage is 0.28% of
     the dictionary and not a catastrophe.
 
-    WHY THE SEARCH IS NOT BEING RESTRUCTURED. Pre-filtering the anchors to
+    MERVE CLOSED THIS ON 2026-11-27: "a1 i bosverelim cunku unvana disiplin
+    yazildiysa eslestirme yapmak yanlis olur." That is the stronger reason
+    and it is the one to quote: if somebody typed a discipline into the job
+    title field, giving it a POSITION group would be wrong. The drop is not
+    a loss to be recovered, it is the right answer arrived at by accident.
+    What this test guards is the accident - that it stays small, and that
+    it never starts swallowing a title a pattern wanted.
+
+    WHY THE SEARCH IS NOT BEING RESTRUCTURED EITHER. Pre-filtering the anchors to
     one axis would make the loss visible as a REJECTION instead, which is
     better. But it also changes which anchors are the runner-up for every
     title that currently matches, and the decision rule here is the MARGIN

@@ -50,20 +50,20 @@
 {% endmacro %}
 
 
-{#- Builds a nested REGEXP_REPLACE chain from vars.abbreviations -#}
-{% macro expand_abbreviations(col) %}
-    {%- set expr = col -%}
-    {%- for a in var('abbreviations', []) -%}
-        {%- set expr = "REGEXP_REPLACE(" ~ expr ~ ", r'" ~ a['from'] ~ "', '" ~ a['to'] ~ "')" -%}
-    {%- endfor -%}
-    {{ expr }}
-{% endmacro %}
+{#-
+    expand_abbreviations WAS REMOVED 2026-11-27 with vars.abbreviations.
+    It never worked: the REGEXP_REPLACE chain was built with a {% set %}
+    inside a {% for %}, and a Jinja assignment inside a loop does not
+    survive it, so the macro returned its argument unchanged. Removing it
+    renders byte-identical SQL, which is why no rebuild came with it.
+    dbt_project.yml carries the full reasoning.
+-#}
 
 
-{#- Full pipeline: clean -> expand abbreviations -> collapse again -#}
+{#- Full pipeline: clean -> collapse again -#}
 {% macro normalize_title(col) %}
     NULLIF(TRIM(REGEXP_REPLACE(
-        {{ expand_abbreviations(clean_text(col)) }},
+        {{ clean_text(col) }},
         r'\s+', ' '
     )), '')
 {% endmacro %}

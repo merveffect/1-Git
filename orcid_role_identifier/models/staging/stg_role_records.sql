@@ -13,7 +13,8 @@
     already treats a NULL organisation or department as "no evidence".
 
     title_key hashes the NORMALISED title (lowercased, punctuation
-    stripped, abbreviations expanded in stg_orcid__employment), so
+    stripped in stg_orcid__employment - abbreviation expansion was removed
+    on 2026-11-27 because it had never run), so
     "Prof. Dr. med." and "professor doctor medical" collapse to the
     same key and are classified once.
 */

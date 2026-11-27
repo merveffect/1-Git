@@ -140,6 +140,16 @@ select
             opt-ins map to consent; the third flag is the separate
             legitimate-interest basis.
         */
+        /*
+            QUESTIONED 2026-11-27 AND CONFIRMED BY MERVE, so please do not
+            raise it again: both opt-ins map to the SAME value on purpose,
+            because they are the same business rule here. A reviewer read
+            the second branch as labelling somebody marketing_opt_in on an
+            advertising permission alone and flagged it as a legal risk.
+            Merve: they are one rule. The distinction that IS kept is
+            book_author_opt_in, three branches down, and the comment there
+            says why.
+        */
         when c.is_marketable          then 'marketing_opt_in'
         when c.is_advertisable        then 'marketing_opt_in'
         when c.is_legitimate_interest then 'legitimate_interest'
