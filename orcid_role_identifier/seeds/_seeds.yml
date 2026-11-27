@@ -64,6 +64,16 @@ seeds:
       (role, ROR organisation type) -> org score. Replaces the Phase-1
       organisation regex gradient. Because the type comes from ROR,
       variants like "St. Mary's Hosp." are no longer missed.
+    # THE GRAIN IS (role_key, org_type) AND IT WAS NEVER TESTED. Added
+    # 2026-11-27. int_employment_scored joins this seed on both columns, so a
+    # duplicated pair - UNKNOWN written twice for one role, say - multiplies
+    # that role's rows, and the build then fails at runtime with a message
+    # about the join rather than about the seed. The sibling seed
+    # title_group_patterns has carried this test since 26 November.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [role_key, org_type]
     config:
       column_types: {role_key: STRING, org_type: STRING, org_score: FLOAT64, note: STRING}
 

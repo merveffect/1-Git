@@ -19,9 +19,13 @@
 
     Needs pyyaml, jinja2 and sqlglot.
 """
-import sys, re, yaml, jinja2, sqlglot, pathlib
+import os, sys, re, yaml, jinja2, sqlglot, pathlib
 
-proj = yaml.safe_load(open('dbt_project.yml'))
+# ROOT, not a bare relative path: run from the repo root this died with
+# FileNotFoundError. check_analyses.py was anchored on 2026-11-27 and this is
+# the same fix.
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+proj = yaml.safe_load(open(os.path.join(ROOT, 'dbt_project.yml')))
 roles = proj['vars']['roles']
 V = proj['vars']
 
@@ -75,6 +79,12 @@ def contract_array_order():
     return 'role_inferred'
 
 def role_display_name_expr(col='role_key'):
+    # mirrors the guard in macros/contract.sql - the checker stubs the real
+    # macro, which is exactly why it could not see the missing librarian
+    # display_name in November 2026
+    missing = [k for k in role_keys() if not roles[k].get('display_name')]
+    if missing:
+        raise SystemExit(f'enabled roles with no display_name: {missing}')
     return 'CASE ' + ' '.join(
         f"WHEN {col} = '{k}' THEN '{roles[k].get('display_name', k)}'" for k in role_keys()) + ' END'
 
@@ -86,7 +96,7 @@ def roles_with_parent():
 
 env = jinja2.Environment()
 macro_src = ''
-for f in pathlib.Path('macros').glob('*.sql'):
+for f in pathlib.Path(ROOT, 'macros').glob('*.sql'):
     macro_src += f.read_text() + '\n'
 # pull parent_rollup_union out of the real macro file so it is not stubbed
 pr = macro_src.split('{% macro parent_rollup_union(cte_name) %}')[1].split('{% endmacro %}')[0]
@@ -112,8 +122,8 @@ ctx = dict(config=lambda **k: '', ref=lambda n: f'`p.d.{n}`', source=lambda a, b
 bad = 0
 # tests/ carries Jinja too - all_role_keys() loops, normalize_title() -
 # and a test that will not compile is a test that never fails.
-for f in sorted(pathlib.Path('models').rglob('*.sql')) + \
-         sorted(pathlib.Path('tests').rglob('*.sql')):
+for f in sorted(pathlib.Path(ROOT, 'models').rglob('*.sql')) + \
+         sorted(pathlib.Path(ROOT, 'tests').rglob('*.sql')):
     try:
         sql = env.from_string(f.read_text()).render(**ctx)
     except Exception as e:

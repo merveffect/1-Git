@@ -19,6 +19,29 @@
 
 {#- role_key -> the display name used in the contract -#}
 {% macro role_display_name_expr(col='role_key') %}
+    {#-
+        FAIL THE BUILD RATHER THAN SHIP AN EMPTY NAME. Added 2026-11-27.
+
+        Jinja renders a missing attribute as the empty string, so a role with
+        no display_name got `WHEN 'x' THEN ''` - not the ELSE branch, which
+        would at least have delivered the role key. That shipped 717 CONFIRMED
+        librarians to Braze with role_inferred = '' until it was noticed by
+        reading the registry, because nothing in the build objected:
+        assert_detailed_prefix_matches_role asserted starts_with(detailed,
+        role) and every string starts with the empty string.
+
+        The next role added to the registry would have repeated it. This makes
+        the omission impossible instead of invisible.
+    -#}
+    {%- for k in role_keys() -%}
+        {%- if not role(k).get('display_name') -%}
+            {%- do exceptions.raise_compiler_error(
+                "role '" ~ k ~ "' is enabled but has no display_name in "
+                ~ "dbt_project.yml. Every enabled role needs one - a missing "
+                ~ "value renders as the empty string and is delivered to Braze "
+                ~ "as an empty role name.") -%}
+        {%- endif -%}
+    {%- endfor -%}
     CASE {{ col }}
     {%- for k in role_keys() %}
         WHEN '{{ k }}' THEN '{{ role(k).display_name }}'

@@ -42,7 +42,7 @@ models:
   - name: fct_braze_contact_roles
     description: >
       ⭐ BRAZE DATA CONTRACT. One row = one contact.
-      The four arrays are POSITIONALLY aligned; all are derived from a
+      The three arrays are POSITIONALLY aligned; all are derived from a
       single ordered source. Alignment is verified on every build by
       tests/assert_contract_arrays_aligned.sql.
     columns:

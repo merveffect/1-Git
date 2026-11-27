@@ -25,10 +25,14 @@
 
     role_keys() returns only the enabled ones, which is right for the
     fan-out - a disabled role should not produce rows. But it is wrong for
-    validating the seeds: librarian is disabled with its reasoning
-    recorded, and its seed rows are deliberately kept so the role can be
-    switched back on without reconstructing them. Testing those rows
-    against role_keys() failed them for existing on purpose.
+    validating the seeds: a role can be switched off with its reasoning
+    recorded while its seed rows are deliberately kept, so it can be switched
+    back on without reconstructing them. Testing those rows against
+    role_keys() failed them for existing on purpose.
+
+    The example here used to be librarian, which was disabled when this was
+    written and has been enabled for a long time. No role is disabled today,
+    so all_role_keys() and role_keys() currently return the same ten.
 -#}
 {% macro all_role_keys() %}
     {{ return(var('roles').keys() | list | sort) }}

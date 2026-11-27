@@ -541,15 +541,25 @@ order by people desc
 --    researcher it means industrial R&D, for a student it means an intern or a
 --    Werkstudent. This says how many people that score is deciding.
 -- ----------------------------------------------------------------------------
+/*
+    FIXED 2026-11-27. This selected org_type from fct_researcher_roles, which
+    has no such column - the query could never have run. org_type lives in
+    int_employment_scored, one row per (snid, role_key), so it joins without
+    multiplying; role_label is only decided downstream, which is why both are
+    needed. Second defect found in this file the same way, after query 1c-iii
+    turned out to compare a lowercase ROR type to 'Education'.
+*/
 select
-    coalesce(org_type, 'UNRESOLVED')                    as org_type,
-    role_label,
-    count(distinct snid)                                as people,
-    round(avg(role_final_score), 3)                     as avg_score,
-    string_agg(distinct evidence_title order by evidence_title limit 6) as example_titles
-from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`
-where role_key = 'students'
-group by org_type, role_label
+    coalesce(e.org_type, 'UNRESOLVED')                  as org_type,
+    f.role_label,
+    count(distinct f.snid)                              as people,
+    round(avg(f.role_final_score), 3)                   as avg_score,
+    string_agg(distinct f.evidence_title order by f.evidence_title limit 6) as example_titles
+from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles` f
+join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.int_employment_scored` e
+  on e.snid = f.snid and e.role_key = f.role_key
+where f.role_key = 'students'
+group by org_type, f.role_label
 order by people desc
 ;
 
