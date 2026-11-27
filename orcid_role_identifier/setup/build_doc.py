@@ -432,7 +432,8 @@ table(d, ["#", "What", "Why now", "Who"],
   ["3","**A decision-maker audience**","Marketing have asked for Head of Faculty to be opened up beyond academia, to reach opinion leaders, budget holders and purchase influencers. A separate meeting is being held for it; the measurement on our side can start before it.","Marketing / us"],
   ["4","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
   ["5","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
-  ["6","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 3 may change what this audience is for.","Us"]],
+  ["6","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 3 may change what this audience is for.","Us"],
+  ["7","**Ringgold: 153,611 people have no employer at all**","ORCID identifies an employer with one of several ID systems. The public ROR registry publishes GRID, WIKIDATA, ISNI and FundRef identifiers - and no Ringgold ones. Ringgold is the LARGEST group in our source: 482,455 records. Half of them are rescued by matching the employer NAME, and 219,925 records - 153,611 people - resolve to nothing, which means no sector, no organisation score, and a weaker chance of clearing any threshold. This is not a bug we can fix in SQL; there is nothing on the other side to match against. It needs either a Ringgold-to-ROR mapping from somewhere, or a decision to accept the gap. **Found and measured on 27 November, while fixing the same class of problem for FundRef - that one WAS fixable and gave 54,414 people an employer.**","Merve / data eng"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
 box(d, "WHAT CAME OFF THIS LIST", [
