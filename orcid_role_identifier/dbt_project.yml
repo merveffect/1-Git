@@ -136,7 +136,6 @@ vars:
     # ------------------------------------------------------------------
     hcp_broad:
       display_name: 'Healthcare Professional (broad)'
-      detail_dimension: bucket
       enabled: true
       label: 'Healthcare Professional - any clinical signal'
       axis: profession
@@ -162,7 +161,6 @@ vars:
 
     hcp_practitioner:
       display_name: 'HCP - Practitioner'
-      detail_dimension: org_type
       enabled: true
       label: 'Healthcare Practitioner'
       axis: profession
@@ -183,7 +181,6 @@ vars:
 
     hcp_researcher:
       display_name: 'HCP - Researcher'
-      detail_dimension: org_type
       enabled: true
       label: 'Clinical / Biomedical Researcher'
       axis: profession
@@ -226,7 +223,6 @@ vars:
 
     hcp_administrator:
       display_name: 'HCP - Administrator'
-      detail_dimension: org_type
       enabled: true
       label: 'Clinical Leadership / Administration'
       axis: profession
@@ -243,7 +239,6 @@ vars:
 
     pharmacist:
       display_name: 'Pharmacist'
-      detail_dimension: setting
       enabled: true
       label: 'Pharmacist'
       axis: profession
@@ -287,9 +282,6 @@ vars:
       # starts_with the empty string, so the test passed vacuously for the
       # one role that was broken. Merve chose the name on 2026-11-27, the
       # same form as pharmacist, where label and display_name also agree.
-      # NO detail_dimension: that var is read only by role_detail_dimension_expr,
-      # which no model calls. The detail label comes from role_detail_map.csv,
-      # which already carries six librarian org_type rows.
       display_name: 'Librarian'
       enabled: true
       label: 'Librarian / Information Professional'
@@ -356,7 +348,6 @@ vars:
 
     researcher:
       display_name: 'Researcher'
-      detail_dimension: org_type
       enabled: true
       label: 'Researcher (all fields)'
       axis: position
@@ -369,7 +360,6 @@ vars:
 
     faculty_head:
       display_name: 'Head of Faculty'
-      detail_dimension: org_type
       enabled: true
       label: 'Head of Faculty / Department'
       axis: position
@@ -446,7 +436,6 @@ vars:
 
     lecturer:
       display_name: 'Lecturer'
-      detail_dimension: org_type
       enabled: true
       label: 'Lecturer / Teaching Academic'
       axis: position
@@ -479,7 +468,6 @@ vars:
       # 2.16; the constraint it confirms was written in 2.7 before anything
       # was measured.
       display_name: 'Student'
-      detail_dimension: org_type
       enabled: true
       label: 'Student / Doctoral Candidate'
       axis: position
@@ -598,8 +586,6 @@ vars:
     consent_basis: 'any_basis'
     include_labels: ['CONFIRMED']
     array_order: 'alphabetical'
-    detail_separator: ' - '
-    detail_source_separator: ' + '
 
   abbreviations:
     - {from: '\\bprof\\b', to: 'professor'}

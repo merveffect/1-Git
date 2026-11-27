@@ -51,8 +51,6 @@ models:
       - name: role_inferred
         description: "e.g. ['Head of Faculty', 'Healthcare Professional']"
         tests: [not_null]
-      - name: role_detailed_inferred
-        description: "e.g. ['Head of Faculty - University', 'Healthcare Professional - Practitioner']"
       - name: role_inferred_data_source
         description: "e.g. ['Orcid', 'Orcid + Web scraping'] - not needed in marketing tools"
       - name: consent_basis

@@ -249,9 +249,10 @@ ranked as (
         -- and handed to an AI, the declare block above is gone and nothing
         -- else in the payload says which rule to apply.
         r.role_key                              as audience,
-        -- The sub-dimension this audience reports - a bucket for hcp_broad, a
+        -- The sub-dimension this audience reported - a bucket for hcp_broad, a
         -- setting for pharmacist, an organisation type for the rest.
-        r.role_detail                           as audience_detail,
+        -- role_detail WAS REMOVED 2026-11-27 - the last meeting decided the detail is not needed.
+        -- This column is gone; the audience reports no sub-dimension now.
         -- ⭐ HOW THEY GOT IN. Null means the person qualified for this
         -- audience in their own right. A value means they ARRIVED THROUGH A
         -- CHILD ROLE rolling up - so an hcp_broad row reading

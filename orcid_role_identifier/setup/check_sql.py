@@ -80,8 +80,7 @@ def role_display_name_expr(col='role_key'):
 
 def roles_with_parent():
     return [{'child': k, 'parent': v['parent'],
-             'bucket': v.get('parent_bucket', 'X'),
-             'bucket_label': v.get('parent_bucket', 'X').lower().title()}
+             'bucket': v.get('parent_bucket', 'X')}
             for k, v in roles.items()
             if v.get('enabled', True) and v.get('parent') in role_keys()]
 

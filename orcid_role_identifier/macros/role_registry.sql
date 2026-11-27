@@ -63,9 +63,7 @@
             {%- do out.append({
                 'child':  k,
                 'parent': r.get('parent'),
-                'bucket': r.get('parent_bucket', 'UNSPECIFIED'),
-                'bucket_label': r.get('parent_bucket', 'UNSPECIFIED')
-                                 | lower | replace('_', ' ') | title
+                'bucket': r.get('parent_bucket', 'UNSPECIFIED')
             }) -%}
         {%- endif -%}
     {%- endfor -%}

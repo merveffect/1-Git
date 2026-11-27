@@ -1,12 +1,20 @@
 {#-
     BRAZE DATA CONTRACT HELPERS
     ---------------------------
-    role_inferred / role_detailed_inferred / role_inferred_data_source /
-    ..._last_updated must stay POSITIONALLY aligned.
+    role_inferred / role_inferred_data_source / ..._last_updated must
+    stay POSITIONALLY aligned.
 
-    That is why all four are derived from ONE ordered source. Writing
-    four independent ARRAY_AGGs would silently drift - the single
+    That is why all three are derived from ONE ordered source. Writing
+    three independent ARRAY_AGGs would silently drift - the single
     biggest risk in this contract.
+
+    role_detailed_inferred was the fourth until 2026-11-27. role_detail WAS REMOVED 2026-11-27. Merve: the last meeting decided the
+    detail is not needed. That answers the open question the 16 November
+    revert was waiting on - `does anything downstream read
+    role_detailed_inferred?` - which could not be settled from this repo,
+    because a header saying what we SEND is not evidence of what anyone
+    READS. The answer came from the people who own the ingestion, which is
+    where it had to come from.
 -#}
 
 {#- role_key -> the display name used in the contract -#}
@@ -20,16 +28,17 @@
 {% endmacro %}
 
 {#-
-    role_detail_dimension_expr WAS REMOVED 2026-11-27. It read
-    roles.<key>.detail_dimension from dbt_project.yml and no model ever
-    called it. Dead code here is not free: reviewing the missing librarian
-    display_name, this macro made detail_dimension look load-bearing and
-    produced a recommendation to add it, which would have done nothing. The
-    detail label is built in int_role_detail.sql from role_detail_map.csv.
+    role_detail_dimension_expr WAS REMOVED 2026-11-27, a few hours before the
+    detail machinery it described went with it. It read
+    roles.<key>.detail_dimension and no model ever called it, and dead code is
+    not free: reviewing the missing librarian display_name, this macro made
+    detail_dimension look load-bearing and produced a recommendation to add it,
+    which would have done nothing. int_role_detail.sql, role_detail_map.csv,
+    detail_dimension and role_detailed_inferred are all gone now.
 -#}
 
 {#-
-    Array ordering key. All four arrays MUST use this same ORDER BY.
+    Array ordering key. All three arrays MUST use this same ORDER BY.
     contract.array_order: 'alphabetical' | 'score'
 -#}
 {% macro contract_array_order() %}

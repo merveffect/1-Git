@@ -44,7 +44,7 @@ with audience as (
     select
         snid,
         contact_email,
-        role_detail,
+        -- role_detail WAS REMOVED 2026-11-27 - the last meeting decided the detail is not needed.
         role_label,
         role_final_score,
         country_code,
@@ -118,7 +118,6 @@ select
     a.snid,
     a.contact_email,
     a.country_code,
-    a.role_detail,
     a.role_label,
     round(a.role_final_score, 3)                as score,
     a.in_cdp,

@@ -618,7 +618,7 @@ with ranked as (
         is_current,
         title_group,
         round(role_final_score, 3)                      as score,
-        role_detail,
+        -- role_detail WAS REMOVED 2026-11-27 - the last meeting decided the detail is not needed.
         row_number() over (order by farm_fingerprint(cast(snid as string)))
                                                         as hash_position
     from `dat-analytics-eng-ec869189.dev_orcid_role_identifier_scoring.fct_researcher_roles`

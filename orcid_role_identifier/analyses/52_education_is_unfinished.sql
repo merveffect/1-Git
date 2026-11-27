@@ -308,6 +308,14 @@ limit 40
 --    this file that is not about the students audience, and it is here
 --    because the same result surfaced it.
 -- ----------------------------------------------------------------------------
+/*
+    THIS QUERY CANNOT RUN ANY MORE. role_detail WAS REMOVED 2026-11-27 - the last meeting decided the detail is not needed.
+    seeds/role_detail_map.csv and models/scoring/int_role_detail.sql are both
+    deleted, so the join below has nothing to join to. It is kept as the
+    record of what it proved: 0 rows matched exactly on all 30 seed pairs
+    against 180,682 that matched once case was ignored. That finding is
+    cited in analyses/51 query 1c-iii, which had the same bug and is fixed.
+
 select
     d.role_key,
     d.match_value                                       as seed_spelling,
@@ -323,6 +331,7 @@ join `dat-analytics-eng-ec869189.dev_orcid_role_identifier_seeds.role_detail_map
 group by d.role_key, d.match_value
 order by rows_that_would_match_ignoring_case desc
 limit 30
+*/
 ;
 
 

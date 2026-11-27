@@ -821,6 +821,16 @@ order by people desc
 --     derived once by the pipeline and tested by
 --     assert_role_detail_map_rules_all_fire. `Industry` is the value to look
 --     for - seeds/role_detail_map.csv maps ROR Company to it.
+/*
+    THIS QUERY CANNOT RUN ANY MORE. role_detail WAS REMOVED 2026-11-27 - the last meeting decided the detail is not needed.
+    The whole point of it was that role_detail IS the resolved employer
+    sector, which is why it did not join ROR. Asking the same question now
+    means joining int_org_resolved on organisation AND org_id - the note
+    above says why that is harder, and the grain is the reason.
+    Kept as the record of the answer it gave: in healthcare the owner of the
+    clinic is usually the clinician, and only ~20 of the leadership titles
+    were genuinely industry.
+
 select
     role_key,
     coalesce(role_detail, 'NO DETAIL')                  as sector,
@@ -830,4 +840,5 @@ where role_label = 'CONFIRMED'
   and regexp_contains(lower(evidence_title), r'veterinar|tierarzt|veteriner|veterinário|veterinario|\bdvm\b')
 group by role_key, sector
 order by people desc
+*/
 ;
