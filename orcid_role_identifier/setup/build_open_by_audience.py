@@ -278,11 +278,6 @@ table(d, ["What is open", "Reach", "Who answers"],
    "settle them. It is the one outside source this project has asked for and never had, "
    "and it is why the healthcare audiences sit at 90–95% while the academic ones sit "
    "at 99%.", "all healthcare", "Merve / Bernadeta"],
-  ["**Does anything downstream read `role_detailed_inferred`?** The column is delivered "
-   "in the Braze contract. For at least 656,021 people it is byte-identical to "
-   "`role_inferred`, so it carries no information for them. Nobody in this project can "
-   "say whether anything consumes it, and a delivered field must not be removed on a "
-   "guess.", "≥656,021 people", "Whoever owns ingestion"],
   ["**Reach the survey answers in BigQuery.** Chloe pointed at `Staging_Response`. It "
    "would make the self-declaration check repeatable instead of a one-off export.",
    "—", "Us / data eng"]],

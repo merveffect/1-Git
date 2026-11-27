@@ -431,11 +431,8 @@ table(d, ["#", "What", "Why now", "Who"],
   ["2","**Size psychology and psychiatry**","Psychologists were ruled clinical on 20 November. Psychiatry is already in on both axes; psychology is in on the title only, because `psychology` is classified as a social and behavioural subject rather than a clinical one. `analyses/56` counts both professions, what we can reach, and what the field side would cost. It may be worth taking to Matthew as an audience of its own.","Us, then Matthew"],
   ["3","**A decision-maker audience**","Marketing have asked for Head of Faculty to be opened up beyond academia, to reach opinion leaders, budget holders and purchase influencers. A separate meeting is being held for it; the measurement on our side can start before it.","Marketing / us"],
   ["4","Clinical expert call","The one gap no data source covers - see the box in section 3.","Merve / Bernadeta"],
-  ["5","**Give Lecturer a detailed role** - decided, not yet built","`role_detail` is the drill-down beside each delivered row: Hospital, Academia, Research Institute, Industry. Lecturer has never had any rules for it in any build, so the largest audience we have - 426,449 people - is the one audience nobody can segment. The other nine already split the setting and there is no argument for Lecturer being different. Six seed rows, copying the pattern the other nine use. It also clears the warning that fires on every build.","Us"],
-  ["6","**Label the people whose employer we rescued by name** - decided, not yet built","When ROR cannot identify an employer we recover the SCORE from its name - *universi*, *colleg*, *institut* - which is what saves \u201cIstanbul University-Cerrahpasa\u201d. It rescues the score and leaves the TYPE unknown, and the label keys on the type, so 172,469 people are guaranteed to have no label however many rules are added. **Decision: label them from the name pattern that rescued them.** It is the only one of the three answers that recovers real labels rather than renaming the gap, and the information is already in hand - we matched the word to rescue the score and then threw away what we matched. Needs a type column on the name-pattern seed. **One check before it ships:** this fills about 270,000 values that are blank today, and blank-to-value is a change for whoever reads the field.","Us"],
-  ["7","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
-  ["8","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 3 may change what this audience is for.","Us"],
-  ["9","Reconcile `org_type_scores` and `role_detail_map`","The two seeds that describe employers were written to different standards and only one was tested: the first carries all ten ROR types for all ten audiences, the second carries between two and six. That is where items 5 and 6 come from, and it is worth finishing in one pass rather than one audience at a time. `funder` alone - research councils, CNRS, INSERM, NIH - is 53,241 people with no label.","Us"]],
+  ["5","Reach the survey data in BigQuery","Chloe pointed at `Staging_Response`. Would make the check repeatable instead of a one-off export.","Us / data eng"],
+  ["6","A second source for Head of Faculty","It is parked, not delivered, until there is something besides the job title to test a vague one against. Item 3 may change what this audience is for.","Us"]],
  widths=[0.3,1.8,3.2,1.3], size=9)
 
 box(d, "WHAT CAME OFF THIS LIST", [
@@ -446,7 +443,7 @@ box(d, "WHAT CAME OFF THIS LIST", [
  "it - the first time this project has priced a seed change by subtraction rather than "
  "by estimate. The bill: 2,956 people out of Lecturer, 5,604 out of Students, and "
  "nothing at all out of Healthcare (broad). One item from that reading stays open and is "
- "now item 8; the measurement found a new one, which is now item 2.",
+ "now item 6; the measurement found a new one, which is now item 2.",
  "",
  "**And on 20 November both of the items that had gone to Matthew were decided.** "
  "Veterinarians are out of the healthcare audiences - every one of those audiences "
@@ -544,13 +541,16 @@ box(d, "WHAT TO COME OUT OF THE ROOM WITH", [
  "threshold on Healthcare Professional (broad), and our own employees leaving the "
  "pipeline alongside our competitors'.",
  "",
- "**FIVE DECISIONS, and we cannot take any of them.** Whether `md` on its own is "
- "enough (8.2). Whether the four part-regulated health roles stay in (8.2). Whether "
- "Librarian's two exclusions come back (8.2). **Whether anybody uses `role_detail`, or "
- "we delete it (8.3).** And whether anything in the holding group is wanted as an "
- "audience - consultants above all, which is the largest group we have set aside (8.4). "
- "**The sixth came off the list on 25 November:** a job that ended more than six months "
- "ago no longer counts, which was the largest question here and is built (8.2).",
+"**FOUR DECISIONS, and we cannot take any of them.** Whether `md` on its own is "
+"enough (8.2). Whether the four part-regulated health roles stay in (8.2). Whether "
+"Librarian's two exclusions come back (8.2). And whether anything in the holding "
+"group is wanted as an audience - consultants above all, which is the largest group "
+"we have set aside (8.4).",
+"",
+"**Two have come off the list.** A job that ended more than six months ago no longer "
+"counts, decided 25 November and built (8.2). And the `role_detail` question is "
+"answered and the column is gone, decided 27 November - it took three of our own open "
+"items with it (8.3).",
  "",
  "**ONE SCOPE, on an audience already decided.** Head of Faculty is being widened into a "
  "decision-maker audience rather than repaired (8.1). The decision is taken; what we "
@@ -570,7 +570,7 @@ box(d, "WHAT TO COME OUT OF THE ROOM WITH", [
 ], fill="FBF6EE", accent=AMBER)
 
 h(d, "8.0  Decided on 26 November, and already built", 2)
-para(d, "**These three came to us as questions and were answered inside the team "
+para(d, "**These four came to us as questions and were answered inside the team "
         "rather than sent out.** Each is one line of configuration and each is "
         "reversible; what they are not is a guess, and the reasoning is recorded "
         "beside the rule in the seed that carries it.", space_after=4)
@@ -728,27 +728,30 @@ table(d, ["#", "The question", "Where it stands", "Size"],
    "**Unmeasured, and the cheapest reach we have.** Librarian is 713 people - see 8.4."]],
  widths=[0.3, 2.0, 3.1, 1.4], size=8.5)
 
-h(d, "8.3  The question nobody has answered twice, and it decides two items on our list", 2)
-box(d, "DOES ANYBODY ACTUALLY READ `role_detail`?", [
- "`role_detail` is the drill-down beside each delivered row - Hospital, Academia, "
- "Industry, Research Institute. It is the difference between *clinical researchers* and "
- "*clinical researchers in industry* on a brief.",
+h(d, "8.3  Answered on 27 November, and already removed", 2)
+box(d, "`role_detail` IS GONE, AND THREE OF OUR OWN ITEMS WENT WITH IT", [
+ "`role_detail` was the drill-down beside each delivered row - Hospital, Academia, "
+ "Industry, Research Institute. The last meeting decided it is not needed, and it has "
+ "been removed: the model that built it, the seed of rules behind it, three tests, and "
+ "the delivered column itself. **The Braze contract now carries three aligned arrays "
+ "rather than four, which is a schema change for whoever ingests it and not only a "
+ "tidy-up.**",
  "",
- "**We asked in November and could not settle it from our own side.** The column was "
- "deleted once on the understanding that nothing read it, and put straight back the same "
- "day because a comment in our repository is not evidence of what a consumer does. That "
- "is recorded as a mistake of ours, not a change of mind.",
+ "**This is the question we could not answer from our own side, and the answer had to "
+ "come from outside it.** The column was deleted once in November on the understanding "
+ "that nothing read it, and put straight back the same day, because a comment in our "
+ "own repository describing what we SEND is not evidence of what anyone READS. That is "
+ "recorded as a mistake of ours rather than a change of mind, and it is why the question "
+ "was re-posed to the people who own the ingestion instead of being decided here.",
  "",
- "**If nobody reads it, say so and we delete it** - the model, the seed and three tests, "
- "and two items come off our list with it. **If somebody does read it**, two things need "
- "doing and we have decided how, so this is the only input needed: Lecturer has never "
- "had any values at all, which leaves the largest audience in the project - 426,449 "
- "people - as the only one nobody can segment; and about 270,000 people are "
- "structurally blank, because when the public register cannot identify an employer we "
- "rescue the SCORE from its name and the label keys on the TYPE, which stays unknown.",
+ "**Three open items came off our list with it, because they only existed to finish the "
+ "detail:** giving Lecturer a detailed role, which left the largest audience in the "
+ "project as the only one nobody could segment; labelling the ~270,000 people whose "
+ "employer we rescue by name, where the label keyed on a TYPE that stays unknown; and "
+ "reconciling the two employer seeds, one of which no longer exists.",
  "",
- "**One warning that comes with filling them in:** it turns about 270,000 blanks into "
- "values, and blank-to-value is a change for whoever reads the field.",
+ "**What is not affected.** No threshold, no title decision and no audience count moves. "
+ "`role_inferred` is unchanged, and the dictionary is untouched.",
 ])
 
 h(d, "8.4  Reach we could buy, if it is wanted", 2)
