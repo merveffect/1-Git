@@ -354,8 +354,9 @@ from with_org_fallback
     evidence coherent across roles - before, the same person could be
     represented by a 2015 post for hcp and a 2023 post for lecturer.
 
-    recency_rank is itself ordered current-first (end_date is null desc,
-    then start_date desc, then end_date desc, then ORCID's own ordering),
+    recency_rank is itself ordered current-first - (end_date is null or
+    end_date >= current_date()) desc, then start_date desc, then end_date
+    desc, then ORCID's own ordering -
     so is_current is redundant here. It stays because it makes the intent
     readable and survives a change to recency_rank's definition.
 
