@@ -73,8 +73,43 @@ by_ror_id as (
     `501100003339`. So 65,195 records never bridged: 39,957 were rescued by
     ROUTE 3 at 0.90 confidence and 25,238 resolved to nothing at all.
     Taking the last path segment recovers 64,514 of them - 99.0%, 54,414
-    people - measured before the change. The 681 that still miss are left
-    alone; they are either malformed or genuinely absent from ROR.
+    people - forecast before the change and then VERIFIED AFTER THE BUILD AT
+    EXACTLY 64,514 / 54,414. FUNDREF+UNRESOLVED fell 25,238 -> 566 and
+    FUNDREF+NAME_EXACT 39,957 -> 115. The 681 that still miss are left alone;
+    they are either malformed or genuinely absent from ROR.
+
+    AND THE WORRY ABOUT THIS CHANGE WAS WRONG, which is worth recording
+    because it was the reason for measuring. FundRef is a FUNDER registry, so
+    the fear was that the 39,957 records already rescued by name - sitting at
+    a university, ROR type education, org_score 1.00 - would be re-pointed at
+    a funding agency and scored down, since an identifier match at 0.95 beats
+    a name match at 0.90. The opposite is true. Of the 64,514 bridged records:
+
+        education   48,205   74.7%
+        funder       8,405   13.0%
+        facility     4,227
+        company      1,735
+        government     672
+        healthcare     599
+        nonprofit      436
+        other          138
+        archive         97
+
+    Three quarters of FundRef ids point at UNIVERSITIES, not at funders -
+    universities fund research, so they are in the registry. Only 13% are
+    actual funding bodies.
+
+    WHAT IT MOVED: +866 people across the audiences and NOT ONE LOST. students
+    +630, hcp_researcher +128, hcp_practitioner +57, hcp_administrator +29,
+    researcher +16, lecturer +2, pharmacist +2, hcp_broad +1, faculty_head +1,
+    librarian 0. Small against 54,414 people gaining an employer, and that is
+    the expected shape: org_score carries a 0.40 weight at most, so the change
+    only flips people who were already sitting on their threshold. students
+    moves most because it is the audience that leans hardest on an education
+    employer. hcp_broad gains only 1 while its three children gain 214, which
+    is the roll-up behaving correctly - those people were already CONFIRMED in
+    the parent at its lower 0.60 threshold and have now cleared the children's
+    0.70.
 
     THE EXTRACTION IS A NO-OP FOR EVERY OTHER SOURCE, which is why it is
     applied unconditionally rather than wrapped in a CASE: GRID ids read

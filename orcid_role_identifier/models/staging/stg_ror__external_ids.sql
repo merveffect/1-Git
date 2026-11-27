@@ -32,9 +32,11 @@
     rows exist here - 29,988 of them - and yet not one FundRef record ever
     bridged either, because ORCID writes the id as the DOI that contains it
     and ROR stores it bare. int_org_resolved now takes the last path segment
-    on the ORCID side, which recovered 64,514 of 65,195 records, 99.0%. The
-    Ringgold half has no such fix: there is nothing on the other side of the
-    join to reach.
+    on the ORCID side, which recovered 64,514 of 65,195 records, 99.0% -
+    verified after the build at exactly that, and three quarters of them
+    resolve to ROR type education rather than funder, because universities
+    fund research and so sit in the FundRef registry too. The Ringgold half
+    has no such fix: there is nothing on the other side of the join to reach.
 
     NOT FIXED HERE, BECAUSE IT MAY NOT BE FIXABLE IN CODE. If ROR genuinely
     does not publish Ringgold ids then this is a SOURCING problem - it needs
